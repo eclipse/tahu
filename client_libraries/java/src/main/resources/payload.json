@@ -1,0 +1,138 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Sparkplug B Payload",
+    "description": "A Sparkplug B payload",
+    "definitions" : {
+        "parameter" : {
+            "type" : "object",
+            "properties" : {
+                "name" : { "type" : "string" },
+                "type" : { "type" : "string" },
+                "value" : { "type" : [ "string", "number", "integer", "boolean" ] }
+            },
+            "additionalProperties" : false
+        },
+        "template" : {
+            "type" : "object",
+            "properties" : {
+                "version" : { "type" : "string" },
+                "reference" : { "type" : "string" },
+                "isDefinition" : { "type" : "boolean" },
+                "parameters" : {
+                    "type" : "array",
+                    "items" : { "$ref" : "#/definitions/parameter" }
+                },
+                "metrics" : {
+                    "type" : "array",
+                    "items" : { "$ref" : "#/definitions/metric" }
+                }
+            },
+            "additionalProperties" : false
+        },
+        "dataset" : {
+            "type" : "object",
+            "properties" : {
+                "numberOfColumns" : { "type" : "integer" },
+                "columnNames" : { 
+                    "type" : "array",
+                    "items" : { "type" : "string" }
+                },
+                "types" : { 
+                    "type" : "array",
+                    "items" : { "type" : "string" }
+                },
+                "rows" : {
+                    "type" : "array",
+                    "items" : {
+                        "type" : "array",
+                        "items" : { "type" : [ "string", "number", "integer", "boolean" ] }
+                    }
+                }
+            },
+            "additionalProperties" : false
+        },
+
+        "property" : {
+            "type" : "object",
+            "properties" : {
+                "type" : { "type" : "string" },
+                "value" : {
+                    "oneOf" : [
+                        { "type" : [ "string", "number", "integer", "boolean", "null" ] },
+                        { "$ref" : "#/definitions/propertySet" },
+                        {
+                            "type" : "array",
+                            "items" : { "$ref" : "#/definitions/propertySet" }
+                        }
+                    ]
+                }
+            },
+            "additionalProperties" : false
+        },
+
+        "propertySet" : {
+            "type" : "object",
+            "additionalProperties" : { "$ref" : "#/definitions/property" }
+        },
+
+        "metadata" : {
+            "type" : "object",
+            "properties" : { 
+                "contentType" : { "type" : "string" },
+                "isMultiPart" : { "type" : "boolean" },
+                "seq" : { "type" : "integer" },
+                "size" : { "type" : "integer" },
+                "fileName" : { "type" : "string" },
+                "fileType" : { "type" : "string" },
+                "md5" : { "type" : "string" },
+                "description" : { "type" : "string" }
+            }
+        },
+
+        "metric" : {
+            "type" : "object",
+            "properties" : { 
+                "name" : { "type" : "string" },
+                "alias" : { "type" : "integer" },
+                "timestamp" : { "type" : "integer" },
+                "datatype" : { "type" : "string" },
+                "isHistorical" : { "type" : "boolean" },
+                "isTransient" : { "type" : "boolean" },
+                "metadata" : { "$ref" : "#/definitions/metadata" },
+                "properties" : { "$ref" : "#/definitions/propertySet" },
+                "value" : {
+                    "oneOf" : [
+                        { "type" : [ "string", "number", "integer", "boolean", "null" ] },
+                        { "$ref" : "#/definitions/dataset" },
+                        { "$ref" : "#/definitions/template" }
+                    ]
+                }
+            }
+        }
+    },
+
+    "type": "object",
+    "properties": {
+        "timestamp" : { 
+            "description" : "A timestamp in milliseconds",
+            "type" : "integer" 
+        },
+        "seq" : { 
+            "description" : "A sequence number",
+            "type" : "integer"
+        },
+        "uuid" : {
+            "description" : "A unique identifier",
+            "type" : "string"
+        },
+        "body" : {
+            "description" : "A UTF-8 encoded string representing a byte array",
+            "type" : "string"
+        },
+        "metrics" : {
+            "description" : "An array of metrics",
+            "type" : "array",
+            "items" : { "$ref" : "#/definitions/metric" }
+        }
+    }
+}

@@ -1,0 +1,105 @@
+<!--
+/********************************************************************************
+ * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+-->
+
+<script type="text/javascript">
+    RED.nodes.registerType('sparkplug',{
+        category: 'function',
+        defaults: {
+            name: {value:""},
+            broker: {value:"tcp://localhost", required:true},
+            port: {value:"1883", required:true},
+            clientid: {value:'NodeREDSimpleEdgeNode', required:true},
+            groupid: {value:'Sparkplug Devices', required:true},
+            edgenode: {value:'Node-RED Edge Node', required:true},
+            version:{value: "spBv1.0"},
+            enablecache: {value: "false"},
+            publishdeath: {value: "true"},
+            user: {value: "admin"},
+            password: {value: "changeme"}
+        },
+        credentials: {
+            user: {type:"text"},
+            password: {type: "password"}
+        },
+        color:"#d8bfd8",
+        inputs:1,
+        outputs:1,
+        icon: "bridge.png",
+        align: "left",
+        label: function() {
+            return this.name||"sparkplug";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="sparkplug">
+    <div class="form-row">
+        <label for="node-input-broker" title="The URL of the MQTT server"><i class="fa fa-globe"></i> Server</label>
+        <input type="text" id="node-input-broker" placeholder="Server URL">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port" title="The port of the MQTT server"><i class="fa fa-globe"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="Server Port" style="width:45px">
+    </div>
+    <div class="form-row">
+        <label for="node-input-user" title="The username for the MQTT server connection"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-input-user" placeholder="Username">
+    </div>
+    <div class="form-row">
+        <label for="node-input-password" title="The password for the MQTT server connection"><i class="fa fa-lock"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="Password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clientid" title="A unique client ID for the MQTT server connection"><i class="fa fa-tag"></i> Client ID</label>
+        <input type="text" id="node-input-clientid" placeholder="Client ID">
+    </div>
+    <div class="form-row">
+        <label for="node-input-groupid" title="An ID representing a logical grouping of MQTT EoN Nodes and Devices into the infrastructure"><i class="fa fa-tag"></i> Group ID</label>
+        <input type="text" id="node-input-groupid" placeholder="Group ID">
+    </div>
+    <div class="form-row">
+        <label for="node-input-edgenode" title="An ID that uniquely identifies the MQTT EoN Node within the infrastructure"><i class="fa fa-tag"></i> Edge Node</label>
+        <input type="text" id="node-input-edgenode" placeholder="Edge Node">
+    </div>
+    <div class="form-row">
+        <label for="node-input-version" title="The Sparkplug namespace version"><i class="fa fa-tag"></i> Version</label>
+        <select id="node-input-version" style="width:125px !important">
+            <option value="spBv1.0">Sparkplug B</option>
+            <option value="spAv1.0">Sparkplug A</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-enablecache" title="Whether to enable EoN node caching"><i class="fa fa-tag"></i> Enable Cache</label>
+        <select id="node-input-enablecache" style="width:125px !important">
+            <option value="false">False</option>
+            <option value="true">True</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-publishdeath" title="Whether to publish the edge node's death certicate when the client cleanly disconnects"><i class="fa fa-tag"></i> Publish Death</label>
+        <select id="node-input-publishdeath" style="width:125px !important">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sparkplug">
+    <p>A Sparkplug edge node that connects to an MQTT broker and publishes birth and data messages for the edge node and
+       any input devices.</p>
+</script>

@@ -1,0 +1,10 @@
+{
+  "name" : "example",
+  "version" : "1.0.0-SNAPSHOT",
+  "description" : "An example Sparkplug B Node-RED node",
+  "license" : "EPL-1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cirrus-Link/Sparkplug.git"
+  }
+}

@@ -1,0 +1,11 @@
+(1) Eclipse Paho Client
+Copyright © 2014 Eclipse Paho. All Rights Reserved.
+The Software contains Eclipse Paho Client, which is protected under the Eclipse Public License, Version 1.0. 
+You can get the full source code for Eclipse Paho Client at: https://repo.eclipse.org/content/repositories/paho-releases. 
+A copy of the Eclipse Public License, Version 1.0 is available at http://www.eclipse.org/legal/epl-v10.html
+
+(2) Google Protocol Buffers
+Copyright 2014, Google Inc. All rights reserved.
+The Software contains Google Protocol Buffers, which is protected under a BSD style license. 
+You can get the full source code for Google Protocol Buffers at: https://github.com/google/protobuf. 
+A copy of the license is available at https://github.com/google/protobuf/blob/master/LICENSE
