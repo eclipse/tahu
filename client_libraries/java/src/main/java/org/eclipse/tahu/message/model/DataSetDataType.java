@@ -51,7 +51,7 @@ public enum DataSetDataType {
 	}
 	
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
-		if (value != null && !value.getClass().equals(clazz)) {
+		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			throw new SparkplugInvalidTypeException(value.getClass());
 		}
 	}
