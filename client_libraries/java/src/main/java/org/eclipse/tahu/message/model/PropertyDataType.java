@@ -60,7 +60,7 @@ public enum PropertyDataType {
 	}
 	
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
-		if (value != null && !value.getClass().equals(clazz)) {
+		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			if(clazz == List.class && value instanceof List) {
 				// Allow List subclasses
 			} else {
