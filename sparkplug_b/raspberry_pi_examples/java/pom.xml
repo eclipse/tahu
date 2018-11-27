@@ -34,6 +34,14 @@
       <artifactId>tahu-java</artifactId>
       <version>${tahu.version}</version>
     </dependency>
+   <dependency>
+      <groupId>org.eclipse.kura</groupId>
+      <artifactId>jdk.dio</artifactId>
+      <version>1.0.400</version>
+	</dependency>
+<!-- Thanks for using https://jar-download.com -->
+
+<!--
     <dependency>
       <groupId>com.pi4j</groupId>
       <artifactId>pi4j-core</artifactId>
@@ -44,6 +52,7 @@
       <artifactId>pi4j-device</artifactId>
       <version>1.0</version>
     </dependency>
+-->
   </dependencies>
   <build>
     <plugins>
