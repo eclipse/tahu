@@ -27,7 +27,13 @@
   <version>0.5.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Maven Quick Start Archetype</name>
-  <url>http://maven.apache.org</url>
+  <repositories>
+  	<repository>
+  	  <id>Kura Releases</id>
+  	  <name>Kura Repository - Releases</name>
+  	  <url>https://repo.eclipse.org/content/repositories/kura-releases/</url>
+  	</repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>org.eclipse.tahu</groupId>
@@ -39,20 +45,6 @@
       <artifactId>jdk.dio</artifactId>
       <version>1.0.400</version>
 	</dependency>
-<!-- Thanks for using https://jar-download.com -->
-
-<!--
-    <dependency>
-      <groupId>com.pi4j</groupId>
-      <artifactId>pi4j-core</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.pi4j</groupId>
-      <artifactId>pi4j-device</artifactId>
-      <version>1.0</version>
-    </dependency>
--->
   </dependencies>
   <build>
     <plugins>
