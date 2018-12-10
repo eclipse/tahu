@@ -62,7 +62,7 @@ public enum MetricDataType {
 	}
 	
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
-		if (value != null && !value.getClass().equals(clazz)) {
+		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			logger.warn("Failed type check - " + clazz + " != " + ((value != null) ? value.getClass().toString() : "null"));
 			throw new SparkplugInvalidTypeException(value.getClass());
 		}

@@ -35,35 +35,43 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
-import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.pi.dio.DioException;
+import org.eclipse.tahu.pi.dio.DioLibrary;
+import org.eclipse.tahu.pi.system.SystemInfo;
+import org.eclipse.tahu.pibrella.Pibrella;
+import org.eclipse.tahu.pibrella.PibrellaInputPin;
+import org.eclipse.tahu.pibrella.PibrellaInputPins;
+import org.eclipse.tahu.pibrella.PibrellaLED;
+import org.eclipse.tahu.pibrella.PibrellaLEDs;
+import org.eclipse.tahu.pibrella.PibrellaOutputPin;
+import org.eclipse.tahu.pibrella.PibrellaOutputPins;
+import org.eclipse.tahu.pibrella.PibrellaPins;
 
-import com.pi4j.component.button.ButtonState;
-import com.pi4j.component.button.ButtonStateChangeEvent;
-import com.pi4j.component.button.ButtonStateChangeListener;
-import com.pi4j.device.pibrella.Pibrella;
-import com.pi4j.device.pibrella.PibrellaInput;
-import com.pi4j.device.pibrella.PibrellaOutput;
-import com.pi4j.device.pibrella.impl.PibrellaDevice;
-import com.pi4j.io.gpio.PinState;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.system.SystemInfo;
+import jdk.dio.gpio.PinEvent;
+import jdk.dio.gpio.PinListener;
 
 /**
  * An example Sparkplug B application.
  */
 public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 
-	private static final Pibrella pibrella = new PibrellaDevice();
+	private Pibrella pibrella = Pibrella.getInstance();
 
 	private static final String NAMESPACE = "spBv1.0";
 
+	private static final String BUTTON_CNT_SETPOINT_METRICS_NAME = "button count setpoint";
+	private static final String DFLT_MQTT_SERVER_HOST_NAME = "192.168.1.53";
+	private static final int DFLT_MQTT_PORT = 1883;
+
 	// Configuration
 	private static final boolean USING_REAL_TLS = false;
-	private String serverUrl = "tcp://192.168.1.53:1883"; // Change to point to your MQTT Server
+	private static String mqttServerHostName;
+	private static int mqttServerPort;
+
 	private String groupId = "Sparkplug B Devices";
 	private String edgeNode = "Java Raspberry Pi Example";
 	private String deviceId = "Pibrella";
@@ -84,38 +92,68 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 	private long seq = 0;
 
 	private Object lock = new Object();
-	
+
 	public static void main(String[] args) {
+
+		parseCommandLineArguments(args);
+
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				shutdownPibrella();
+			}
+		});
+		try {
+			DioLibrary diolib = DioLibrary.getInstance();
+			diolib.setDioLibrary();
+			diolib.setJavaLibraryPath();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		SparkplugRaspberryPiExample example = new SparkplugRaspberryPiExample();
 		example.run();
 	}
-	
+
+	private static String formServerUrl(String mqttServerhostname, int port) {
+		StringBuilder sb = new StringBuilder("tcp://");
+		if (mqttServerhostname != null) {
+			sb.append(mqttServerhostname);
+		} else {
+			sb.append(DFLT_MQTT_SERVER_HOST_NAME);
+		}
+		sb.append(':');
+		if (port > 0) {
+			sb.append(port);
+		} else {
+			sb.append(DFLT_MQTT_PORT);
+		}
+		return sb.toString();
+	}
+
 	public void run() {
 		try {
-			// Create the Raspberry Pi Pibrella board listeners
-			createPibrellaListeners();
-
 			// Thread pool for outgoing published messages
 			executor = Executors.newFixedThreadPool(1);
-			
+
 			// Establish the session with autoreconnect = true;
 			establishMqttSession();
+
+			// Create the Raspberry Pi Pibrella board listeners
+			createPibrellaListeners();
 
 			// Wait for 'ctrl c' to exit
 			while (true) {
 				//
-				// This is a very simple loop for the demo that keeps the MQTT Session 
+				// This is a very simple loop for the demo that keeps the MQTT Session
 				// up, and publishes the Up Time metric based on the current value of
 				// the scanRateMs process variable.
 				//
 				if (client.isConnected()) {
 					synchronized (lock) {
 						SparkplugBPayload payload = new SparkplugBPayloadBuilder(getNextSeqNum())
-								.setTimestamp(new Date())
-								.addMetric(new MetricBuilder("Up Time ms",
-										MetricDataType.Int64,
-										System.currentTimeMillis() - upTimeStart)
-										.createMetric())
+								.setTimestamp(new Date()).addMetric(new MetricBuilder("Up Time ms",
+										MetricDataType.Int64, System.currentTimeMillis() - upTimeStart).createMetric())
 								.createPayload();
 
 						// Publish current Up Time
@@ -132,12 +170,10 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 	}
 
 	/**
-	 * Establish an MQTT Session with Sparkplug defined Death Certificate. It may not be
-	 * Immediately intuitive that the Death Certificate is created prior to publishing the
-	 * Birth Certificate, but the Death Certificate is actually part of the MQTT Session 
-	 * establishment. For complete details of the actual MQTT wire protocol refer to the 
-	 * latest OASyS MQTT V3.1.1 standards at:
-	 * http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html
+	 * Establish an MQTT Session with Sparkplug defined Death Certificate. It may not be Immediately intuitive that the
+	 * Death Certificate is created prior to publishing the Birth Certificate, but the Death Certificate is actually
+	 * part of the MQTT Session establishment. For complete details of the actual MQTT wire protocol refer to the latest
+	 * OASyS MQTT V3.1.1 standards at: http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html
 	 * 
 	 * @return true = MQTT Session Established
 	 */
@@ -148,12 +184,12 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 			// Setup the MQTT connection parameters using the Paho MQTT Client.
 			//
 			MqttConnectOptions options = new MqttConnectOptions();
-			
+
 			if (USING_REAL_TLS) {
 				SocketFactory sf = SSLSocketFactory.getDefault();
 				options.setSocketFactory(sf);
 			}
-			
+
 			// Autoreconnect enable
 			options.setAutomaticReconnect(true);
 			// MQTT session parameters Clean Start = true
@@ -171,13 +207,8 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 			// Certificate payload sequence number
 			// is not tied to the normal message sequence numbers.
 			//
-			SparkplugBPayload payload = new SparkplugBPayloadBuilder(getNextSeqNum())
-					.setTimestamp(new Date())
-					.addMetric(new MetricBuilder("bdSeq",
-							MetricDataType.Int64,
-							bdSeq)
-							.createMetric())
-					.createPayload();
+			SparkplugBPayload payload = new SparkplugBPayloadBuilder(getNextSeqNum()).setTimestamp(new Date())
+					.addMetric(new MetricBuilder("bdSeq", MetricDataType.Int64, bdSeq).createMetric()).createPayload();
 			byte[] bytes = new SparkplugBPayloadEncoder().getBytes(payload);
 			//
 			// Setup the Death Certificate Topic/Payload into the MQTT session
@@ -188,6 +219,7 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 			//
 			// Create a new Paho MQTT Client
 			//
+			String serverUrl = formServerUrl(mqttServerHostName, mqttServerPort);
 			client = new MqttClient(serverUrl, clientId);
 			//
 			// Using the parameters set above, try to connect to the define MQTT
@@ -212,15 +244,12 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 		return true;
 	}
 
-	
 	/**
-	 * Publish the EoN Node Birth Certificate and the Device Birth Certificate
-	 * per the Sparkplug Specification
+	 * Publish the EoN Node Birth Certificate and the Device Birth Certificate per the Sparkplug Specification
 	 */
 	public void publishBirth() {
 		try {
 			synchronized (lock) {
-				
 				// Since this is a birth - reset the seq number
 				// Note that message sequence numbers will appear in
 				// the "Node Metrics" folder in Ignition.
@@ -239,71 +268,50 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 				//
 				SparkplugBPayloadBuilder payloadBuilder = new SparkplugBPayloadBuilder(getNextSeqNum())
 						.setTimestamp(new Date())
-						.addMetric(new MetricBuilder("bdSeq",
-								MetricDataType.Int64,
-								bdSeq)
+						.addMetric(new MetricBuilder("bdSeq", MetricDataType.Int64, bdSeq).createMetric())
+						.addMetric(new MetricBuilder("Up Time ms", MetricDataType.Int64,
+								System.currentTimeMillis() - upTimeStart).createMetric())
+						.addMetric(new MetricBuilder("Node Control/Next Server", MetricDataType.Boolean, false)
 								.createMetric())
-						.addMetric(new MetricBuilder("Up Time ms",
-								MetricDataType.Int64,
-								System.currentTimeMillis() - upTimeStart)
+						.addMetric(
+								new MetricBuilder("Node Control/Rebirth", MetricDataType.Boolean, false).createMetric())
+						.addMetric(
+								new MetricBuilder("Node Control/Reboot", MetricDataType.Boolean, false).createMetric())
+						.addMetric(new MetricBuilder("Node Control/Scan Rate ms", MetricDataType.Int32, scanRateMs)
 								.createMetric())
-						.addMetric(new MetricBuilder("Node Control/Next Server",
-								MetricDataType.Boolean,
-								false)
-								.createMetric())
-						.addMetric(new MetricBuilder("Node Control/Rebirth",
-								MetricDataType.Boolean,
-								false)
-								.createMetric())
-						.addMetric(new MetricBuilder("Node Control/Reboot",
-								MetricDataType.Boolean,
-								false)
-								.createMetric())
-						.addMetric(new MetricBuilder("Node Control/Scan Rate ms",
-								MetricDataType.Int32,
-								scanRateMs)
-								.createMetric())
-						.addMetric(new MetricBuilder("Properties/Board Type",
-								MetricDataType.String,
-								SystemInfo.getBoardType().toString())
-								.createMetric())
-						.addMetric(new MetricBuilder("Properties/Hardware",
-								MetricDataType.String,
-								SystemInfo.getHardware())
-								.createMetric())
-						.addMetric(new MetricBuilder("Properties/OS FW Build",
-								MetricDataType.String,
-								SystemInfo.getOsFirmwareBuild())
-								.createMetric())
-						.addMetric(new MetricBuilder("Config Change Count",
-								MetricDataType.Int32,
-								configChangeCount)
+						.addMetric(new MetricBuilder("Properties/Board Model", MetricDataType.String,
+								SystemInfo.getInstance().getModel()).createMetric())
+						.addMetric(new MetricBuilder("Properties/Board Manufacturer", MetricDataType.String,
+								SystemInfo.getInstance().getManufacturer()).createMetric())
+						.addMetric(new MetricBuilder("Properties/Hardware", MetricDataType.String,
+								SystemInfo.getInstance().getHardware()).createMetric())
+						.addMetric(new MetricBuilder("Properties/OS FW Build", MetricDataType.String,
+								SystemInfo.getInstance().getOsFirmwareBuild()).createMetric())
+						.addMetric(new MetricBuilder("Config Change Count", MetricDataType.Int32, configChangeCount)
 								.createMetric());
-				
+
 				// Increment the bdSeq number for the next use
 				incrementBdSeqNum();
-								
+
 				try {
 					// Add the Raspberry Pi's real network addresses
 					Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
 					while (e.hasMoreElements()) {
-					    NetworkInterface n = (NetworkInterface) e.nextElement();
-					    Enumeration<InetAddress> ee = n.getInetAddresses();
-					    while (ee.hasMoreElements()) {
-					        InetAddress i = (InetAddress) ee.nextElement();
-					        if (i instanceof Inet4Address) {
-					        	payloadBuilder.addMetric(
-					        			new MetricBuilder("Properties/IP Addresses/" + n.getName() + "/" + "IPV4",
-					        								MetricDataType.String,
-					        								i.getHostAddress()).createMetric());
-					        } else if (i instanceof Inet6Address) {
-					        	payloadBuilder.addMetric(
-					        			new MetricBuilder("Properties/IP Addresses/" + n.getName() + "/" + "IPV6",
-					        					MetricDataType.String,
-					        					i.getHostAddress().substring(0, i.getHostAddress().indexOf("%")))
-					        				.createMetric());
-					        }
-					    }
+						NetworkInterface n = e.nextElement();
+						Enumeration<InetAddress> ee = n.getInetAddresses();
+						while (ee.hasMoreElements()) {
+							InetAddress i = ee.nextElement();
+							if (i instanceof Inet4Address) {
+								payloadBuilder.addMetric(
+										new MetricBuilder("Properties/IP Addresses/" + n.getName() + "/" + "IPV4",
+												MetricDataType.String, i.getHostAddress()).createMetric());
+							} else if (i instanceof Inet6Address) {
+								payloadBuilder.addMetric(new MetricBuilder(
+										"Properties/IP Addresses/" + n.getName() + "/" + "IPV6", MetricDataType.String,
+										i.getHostAddress().substring(0, i.getHostAddress().indexOf('%')))
+												.createMetric());
+							}
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -317,84 +325,60 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 				// metric
 				// is added into the payload by the Publisher() thread.
 				//
-				executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/NBIRTH/" + edgeNode, payloadBuilder.createPayload()));
+				executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/NBIRTH/" + edgeNode,
+						payloadBuilder.createPayload()));
 
 				//
 				// Create the Device BIRTH Certificate now. The tags defined
 				// here will appear in a
 				// folder hierarchy under the associated Device.
 				//
-				SparkplugBPayload payload = new SparkplugBPayloadBuilder(getNextSeqNum())
-						.setTimestamp(new Date())
+				SparkplugBPayload payload = new SparkplugBPayloadBuilder(getNextSeqNum()).setTimestamp(new Date())
 						// Create an "Inputs" folder of process variables
-						.addMetric(new MetricBuilder("Inputs/a",
-								MetricDataType.Boolean,
-								pibrella.getInputPin(PibrellaInput.A).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("Inputs/b",
-								MetricDataType.Boolean,
-								pibrella.getInputPin(PibrellaInput.B).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("Inputs/c",
-								MetricDataType.Boolean,
-								pibrella.getInputPin(PibrellaInput.C).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("Inputs/d",
-								MetricDataType.Boolean,
-								pibrella.getInputPin(PibrellaInput.D).isHigh())
-								.createMetric())
+						.addMetric(new MetricBuilder(PibrellaInputPins.A.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getInput(PibrellaInputPins.A).isHigh()).createMetric())
+						.addMetric(new MetricBuilder(PibrellaInputPins.B.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getInput(PibrellaInputPins.B).isHigh()).createMetric())
+						.addMetric(new MetricBuilder(PibrellaInputPins.C.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getInput(PibrellaInputPins.C).isHigh()).createMetric())
+						.addMetric(new MetricBuilder(PibrellaInputPins.D.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getInput(PibrellaInputPins.D).isHigh()).createMetric())
 						// Create an "Outputs" folder of process variables
-						.addMetric(new MetricBuilder("Outputs/e",
-								MetricDataType.Boolean,
-								pibrella.getOutputPin(PibrellaOutput.E).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("Outputs/f",
-								MetricDataType.Boolean,
-								pibrella.getOutputPin(PibrellaOutput.F).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("Outputs/g",
-								MetricDataType.Boolean,
-								pibrella.getOutputPin(PibrellaOutput.G).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("Outputs/h",
-								MetricDataType.Boolean,
-								pibrella.getOutputPin(PibrellaOutput.H).isHigh())
-								.createMetric())
+						.addMetric(new MetricBuilder(PibrellaOutputPins.E.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getOutput(PibrellaOutputPins.E).isHigh())
+										.createMetric())
+						.addMetric(new MetricBuilder(PibrellaOutputPins.F.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getOutput(PibrellaOutputPins.F).isHigh())
+										.createMetric())
+						.addMetric(new MetricBuilder(PibrellaOutputPins.G.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getOutput(PibrellaOutputPins.G).isHigh())
+										.createMetric())
+						.addMetric(new MetricBuilder(PibrellaOutputPins.H.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getOutput(PibrellaOutputPins.H).isHigh())
+										.createMetric())
 						// Create an additional folder under "Outputs" called "LEDs"
-						.addMetric(new MetricBuilder("Outputs/LEDs/green",
-								MetricDataType.Boolean,
-								pibrella.getOutputPin(PibrellaOutput.LED_GREEN).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("Outputs/LEDs/red",
-								MetricDataType.Boolean,
-								pibrella.getOutputPin(PibrellaOutput.LED_RED).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("Outputs/LEDs/yellow",
-								MetricDataType.Boolean,
-								pibrella.getOutputPin(PibrellaOutput.LED_YELLOW).isHigh())
-								.createMetric())
+						.addMetric(new MetricBuilder(PibrellaLEDs.GREEN.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getLED(PibrellaLEDs.GREEN).isOn()).createMetric())
+						.addMetric(new MetricBuilder(PibrellaLEDs.RED.getPin().getDescription(), MetricDataType.Boolean,
+								pibrella.getLED(PibrellaLEDs.RED).isOn()).createMetric())
+						.addMetric(new MetricBuilder(PibrellaLEDs.YELLOW.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getLED(PibrellaLEDs.YELLOW).isOn()).createMetric())
 						// Place the button process variables at the root level of the
 						// tag hierarchy
-						.addMetric(new MetricBuilder("button",
-								MetricDataType.Boolean,
-								pibrella.getInputPin(PibrellaInput.Button).isHigh())
-								.createMetric())
-						.addMetric(new MetricBuilder("button count",
-								MetricDataType.Int32,
-								buttonCounter)
-								.createMetric())
-						.addMetric(new MetricBuilder("button count setpoint",
-								MetricDataType.Int32,
-								buttonCounterSetpoint)
-								.createMetric())
-						.addMetric(new MetricBuilder("buzzer",
-								MetricDataType.Boolean,
-								false)
-								.createMetric())
+						.addMetric(new MetricBuilder(PibrellaPins.BUTTON.getDescription(), MetricDataType.Boolean,
+								pibrella.getButton().isPressed()).createMetric())
+						.addMetric(
+								new MetricBuilder("button count", MetricDataType.Int32, buttonCounter).createMetric())
+						.addMetric(new MetricBuilder(BUTTON_CNT_SETPOINT_METRICS_NAME, MetricDataType.Int32,
+								buttonCounterSetpoint).createMetric())
+						.addMetric(
+								new MetricBuilder(PibrellaPins.BUZZER.getDescription(), MetricDataType.Boolean, false)
+										.createMetric())
 						.createPayload();
 
 				// Publish the Device BIRTH Certificate now
-				executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/DBIRTH/" + edgeNode + "/" + deviceId, payload));
+				executor.execute(
+						new Publisher(NAMESPACE + "/" + groupId + "/DBIRTH/" + edgeNode + "/" + deviceId, payload));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -402,7 +386,7 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 	}
 
 	// Used to get the sequence number
-	private void incrementBdSeqNum() throws Exception {
+	private void incrementBdSeqNum() {
 		if (bdSeq == 256) {
 			bdSeq = 0;
 		} else {
@@ -411,17 +395,16 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 	}
 
 	// Used to get the sequence number
-	private long getNextSeqNum() throws Exception {
+	private long getNextSeqNum() {
 		long retSeq = seq;
 		if (seq == 256) {
 			seq = 0;
 		} else {
 			seq++;
 		}
-		
 		return retSeq;
 	}
-	
+
 	@Override
 	public void connectComplete(boolean reconnect, String serverURI) {
 		System.out.println("Connected! - publishing birth");
@@ -433,27 +416,26 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 	}
 
 	/**
-	 * Based on our subscriptions to the MQTT Server, the messageArrived() callback is
-	 * called on all arriving MQTT messages. Based on the Sparkplug Topic Namespace, 
-	 * each message is parsed and an appropriate action is taken.
+	 * Based on our subscriptions to the MQTT Server, the messageArrived() callback is called on all arriving MQTT
+	 * messages. Based on the Sparkplug Topic Namespace, each message is parsed and an appropriate action is taken.
 	 * 
 	 */
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		System.out.println("Message Arrived on topic " + topic);
 
 		// Initialize the outbound payload if required.
-		SparkplugBPayloadBuilder outboundPayloadBuilder = new SparkplugBPayloadBuilder(getNextSeqNum())
-				.setTimestamp(new Date());
+		SparkplugBPayloadBuilder outboundPayloadBuilder =
+				new SparkplugBPayloadBuilder(getNextSeqNum()).setTimestamp(new Date());
 
 		String[] splitTopic = topic.split("/");
 		if (splitTopic[0].equals(NAMESPACE) && splitTopic[1].equals(groupId) && splitTopic[2].equals("NCMD")
 				&& splitTopic[3].equals(edgeNode)) {
-			
+
 			SparkplugBPayload inboundPayload = new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload());
 
 			for (Metric metric : inboundPayload.getMetrics()) {
 				System.out.println("Metric: " + metric.getName() + " :: " + metric.getValue());
-				
+
 				if (metric.getName().equals("Node Control/Next Server")) {
 					System.out.println("Received a Next Server command.");
 				} else if (metric.getName().equals("Node Control/Rebirth")) {
@@ -466,14 +448,14 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 						// Limit Scan Rate to a minimum of 100ms
 						scanRateMs = 100;
 					}
-					outboundPayloadBuilder.addMetric(new MetricBuilder("Node Control/Scan Rate ms",
-											MetricDataType.Int32,
-											scanRateMs).createMetric());
-					
+					outboundPayloadBuilder
+							.addMetric(new MetricBuilder("Node Control/Scan Rate ms", MetricDataType.Int32, scanRateMs)
+									.createMetric());
+
 					// Publish the message in a new thread
 					synchronized (lock) {
-						executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/NDATA/" + edgeNode, 
-												outboundPayloadBuilder.createPayload()));
+						executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/NDATA/" + edgeNode,
+								outboundPayloadBuilder.createPayload()));
 					}
 				}
 			}
@@ -483,66 +465,75 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 				System.out.println("Command recevied for device: " + splitTopic[4] + " on topic: " + topic);
 
 				// Get the incoming metric key and value
-				SparkplugBPayload inboundPayload = new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload());
+				SparkplugBPayload inboundPayload =
+						new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload());
 
 				for (Metric metric : inboundPayload.getMetrics()) {
 					System.out.println("Metric: " + metric.getName() + " :: " + metric.getValue());
-					
-					if (metric.getName().equals("Outputs/e")) {
-						pibrella.getOutputPin(PibrellaOutput.E).setState((Boolean) metric.getValue());
-						outboundPayloadBuilder.addMetric(new MetricBuilder("Outputs/e", MetricDataType.Boolean, 
-													pibrella.getOutputPin(PibrellaOutput.E).isHigh()).createMetric());
-					} else if (metric.getName().equals("Outputs/f")) {
-						pibrella.getOutputPin(PibrellaOutput.F).setState((Boolean) metric.getValue());
-						outboundPayloadBuilder.addMetric(new MetricBuilder("Outputs/f", MetricDataType.Boolean, 
-													pibrella.getOutputPin(PibrellaOutput.F).isHigh()).createMetric());
-					} else if (metric.getName().equals("Outputs/g")) {
-						pibrella.getOutputPin(PibrellaOutput.G).setState((Boolean) metric.getValue());
-						outboundPayloadBuilder.addMetric(new MetricBuilder("Outputs/g", MetricDataType.Boolean, 
-													pibrella.getOutputPin(PibrellaOutput.G).isHigh()).createMetric());
-					} else if (metric.getName().equals("Outputs/h")) {
-						pibrella.getOutputPin(PibrellaOutput.H).setState((Boolean) metric.getValue());
-						outboundPayloadBuilder.addMetric(new MetricBuilder("Outputs/h", MetricDataType.Boolean, 
-													pibrella.getOutputPin(PibrellaOutput.H).isHigh()).createMetric());
-					} else if (metric.getName().equals("Outputs/LEDs/green")) {
-						if (((Boolean) metric.getValue()) == true) {
-							pibrella.ledGreen().on();
+
+					if (metric.getName().equals(PibrellaOutputPins.E.getPin().getDescription())) {
+						pibrella.getOutput(PibrellaOutputPins.E).setState((Boolean) metric.getValue());
+						outboundPayloadBuilder
+								.addMetric(new MetricBuilder(PibrellaOutputPins.E.getPin().getDescription(),
+										MetricDataType.Boolean, pibrella.getOutput(PibrellaOutputPins.E).isHigh())
+												.createMetric());
+					} else if (metric.getName().equals(PibrellaOutputPins.F.getPin().getDescription())) {
+						pibrella.getOutput(PibrellaOutputPins.F).setState((Boolean) metric.getValue());
+						outboundPayloadBuilder
+								.addMetric(new MetricBuilder(PibrellaOutputPins.F.getPin().getDescription(),
+										MetricDataType.Boolean, pibrella.getOutput(PibrellaOutputPins.F).isHigh())
+												.createMetric());
+					} else if (metric.getName().equals(PibrellaOutputPins.G.getPin().getDescription())) {
+						pibrella.getOutput(PibrellaOutputPins.G).setState((Boolean) metric.getValue());
+						outboundPayloadBuilder
+								.addMetric(new MetricBuilder(PibrellaOutputPins.G.getPin().getDescription(),
+										MetricDataType.Boolean, pibrella.getOutput(PibrellaOutputPins.G).isHigh())
+												.createMetric());
+					} else if (metric.getName().equals(PibrellaOutputPins.H.getPin().getDescription())) {
+						pibrella.getOutput(PibrellaOutputPins.H).setState((Boolean) metric.getValue());
+						outboundPayloadBuilder
+								.addMetric(new MetricBuilder(PibrellaOutputPins.H.getPin().getDescription(),
+										MetricDataType.Boolean, pibrella.getOutput(PibrellaOutputPins.H).isHigh())
+												.createMetric());
+					} else if (metric.getName().equals(PibrellaLEDs.GREEN.getPin().getDescription())) {
+						if (((Boolean) metric.getValue())) {
+							pibrella.getLED(PibrellaLEDs.GREEN).turnOn();
 						} else {
-							pibrella.ledGreen().off();
+							pibrella.getLED(PibrellaLEDs.GREEN).turnOff();
 						}
-						outboundPayloadBuilder.addMetric(new MetricBuilder("Outputs/LEDs/green", MetricDataType.Boolean, 
-													pibrella.ledGreen().isOn()).createMetric());
-					} else if (metric.getName().equals("Outputs/LEDs/red")) {
-						if (((Boolean) metric.getValue()) == true) {
-							pibrella.ledRed().on();
+						outboundPayloadBuilder.addMetric(new MetricBuilder(PibrellaLEDs.GREEN.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getLED(PibrellaLEDs.GREEN).isOn()).createMetric());
+					} else if (metric.getName().equals(PibrellaLEDs.RED.getPin().getDescription())) {
+						if (((Boolean) metric.getValue())) {
+							pibrella.getLED(PibrellaLEDs.RED).turnOn();
 						} else {
-							pibrella.ledRed().off();
+							pibrella.getLED(PibrellaLEDs.RED).turnOff();
 						}
-						outboundPayloadBuilder.addMetric(new MetricBuilder("Outputs/LEDs/red", MetricDataType.Boolean, 
-													pibrella.ledRed().isOn()).createMetric());
-					} else if (metric.getName().equals("Outputs/LEDs/yellow")) {
-						if (((Boolean) metric.getValue()) == true) {
-							pibrella.ledYellow().on();
+						outboundPayloadBuilder.addMetric(new MetricBuilder(PibrellaLEDs.RED.getPin().getDescription(),
+								MetricDataType.Boolean, pibrella.getLED(PibrellaLEDs.RED).isOn()).createMetric());
+					} else if (metric.getName().equals(PibrellaLEDs.YELLOW.getPin().getDescription())) {
+						if (((Boolean) metric.getValue())) {
+							pibrella.getLED(PibrellaLEDs.YELLOW).turnOn();
 						} else {
-							pibrella.ledYellow().off();
+							pibrella.getLED(PibrellaLEDs.YELLOW).turnOff();
 						}
-						outboundPayloadBuilder.addMetric(new MetricBuilder("Outputs/LEDs/yellow", 
-												MetricDataType.Boolean, pibrella.ledYellow().isOn()).createMetric());
-					} else if (metric.getName().equals("button count setpoint")) {
+						outboundPayloadBuilder.addMetric(
+								new MetricBuilder(PibrellaLEDs.YELLOW.getPin().getDescription(), MetricDataType.Boolean,
+										pibrella.getLED(PibrellaLEDs.YELLOW).isOn()).createMetric());
+					} else if (metric.getName().equals(BUTTON_CNT_SETPOINT_METRICS_NAME)) {
 						buttonCounterSetpoint = (Integer) metric.getValue();
-						outboundPayloadBuilder.addMetric(new MetricBuilder("button count setpoint", 
+						outboundPayloadBuilder.addMetric(new MetricBuilder(BUTTON_CNT_SETPOINT_METRICS_NAME,
 								MetricDataType.Int32, buttonCounterSetpoint).createMetric());
-					} else if (metric.getName().equals("buzzer")) {
+					} else if (metric.getName().equals(PibrellaPins.BUZZER.getDescription())) {
 						pibrella.getBuzzer().buzz(100, 2000);
 					} else {
 						System.out.println("Received unknown command for metric: " + metric.getName());
-					}						
+					}
 				}
 
 				// Publish the message in a new thread
-				executor.execute(
-						new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, 
-								outboundPayloadBuilder.createPayload()));
+				executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+						outboundPayloadBuilder.createPayload()));
 			}
 		}
 	}
@@ -575,129 +566,200 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 		}
 	}
 
-	private void createPibrellaListeners() {
-		pibrella.button().addListener(new ButtonStateChangeListener() {
-			public void onStateChange(ButtonStateChangeEvent event) {
-				try {
-					synchronized (lock) {
-						SparkplugBPayloadBuilder outboundPayloadBuilder = new SparkplugBPayloadBuilder(getNextSeqNum())
-								.setTimestamp(new Date());
-
-						
-						
-						if (event.getButton().getState() == ButtonState.PRESSED) {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("button", MetricDataType.Boolean,
-									true).createMetric());
-							buttonCounter++;
-							if (buttonCounter > buttonCounterSetpoint) {
-								buttonCounter = 0;
+	private void createPibrellaListeners() throws DioException {
+		try {
+			pibrella.getButton().getGpioPin().setInputListener(new PinListener() {
+				@Override
+				public void valueChanged(PinEvent pinEvent) {
+					try {
+						synchronized (lock) {
+							SparkplugBPayloadBuilder outboundPayloadBuilder =
+									new SparkplugBPayloadBuilder(getNextSeqNum()).setTimestamp(new Date());
+							if (pinEvent.getValue()) {
+								outboundPayloadBuilder.addMetric(new MetricBuilder(PibrellaPins.BUTTON.getDescription(),
+										MetricDataType.Boolean, true).createMetric());
+								buttonCounter++;
+								if (buttonCounter > buttonCounterSetpoint) {
+									buttonCounter = 0;
+								}
+								outboundPayloadBuilder.addMetric(
+										new MetricBuilder("button count", MetricDataType.Int32, buttonCounter)
+												.createMetric());
+							} else {
+								outboundPayloadBuilder.addMetric(new MetricBuilder(PibrellaPins.BUTTON.getDescription(),
+										MetricDataType.Boolean, false).createMetric());
 							}
-							outboundPayloadBuilder.addMetric(new MetricBuilder("button count", MetricDataType.Int32,
-									buttonCounter).createMetric());
-						} else {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("button", MetricDataType.Boolean,
-									false).createMetric());
+							executor.execute(
+									new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+											outboundPayloadBuilder.createPayload()));
 						}
-						byte[] bytes = new SparkplugBPayloadEncoder().getBytes(outboundPayloadBuilder.createPayload());
-						client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, bytes,
-								0, false);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
-			}
-		});
+			});
+		} catch (Exception e) {
+			throw new DioException("failed to set InputListener for " + PibrellaPins.BUTTON.getName(), e);
+		}
 
-		pibrella.inputA().addListener(new GpioPinListenerDigital() {
-			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				try {
-					synchronized (lock) {
-						SparkplugBPayloadBuilder outboundPayloadBuilder = new SparkplugBPayloadBuilder(getNextSeqNum())
-								.setTimestamp(new Date());
-						if (event.getState() == PinState.HIGH) {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("Inputs/a", MetricDataType.Boolean,
-									true).createMetric());
-						} else {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("Inputs/a", MetricDataType.Boolean,
-									false).createMetric());
+		try {
+			pibrella.getInput(PibrellaInputPins.A).getGpioPin().setInputListener(new PinListener() {
+				public void valueChanged(PinEvent pinEvent) {
+					try {
+						synchronized (lock) {
+							SparkplugBPayloadBuilder outboundPayloadBuilder =
+									new SparkplugBPayloadBuilder(getNextSeqNum()).setTimestamp(new Date());
+							if (pinEvent.getValue()) {
+								outboundPayloadBuilder
+										.addMetric(new MetricBuilder(PibrellaInputPins.A.getPin().getDescription(),
+												MetricDataType.Boolean, true).createMetric());
+							} else {
+								outboundPayloadBuilder
+										.addMetric(new MetricBuilder(PibrellaInputPins.A.getPin().getDescription(),
+												MetricDataType.Boolean, false).createMetric());
+							}
+							executor.execute(
+									new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+											outboundPayloadBuilder.createPayload()));
 						}
-						byte[] bytes = new SparkplugBPayloadEncoder().getBytes(outboundPayloadBuilder.createPayload());
-						client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, 
-								bytes, 0, false);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
-			}
-		});
+			});
+		} catch (Exception e) {
+			throw new DioException("failed to set InputListener for " + PibrellaInputPins.A.getName(), e);
+		}
 
-		pibrella.inputB().addListener(new GpioPinListenerDigital() {
-			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				try {
-					synchronized (lock) {
-						SparkplugBPayloadBuilder outboundPayloadBuilder = new SparkplugBPayloadBuilder(getNextSeqNum())
-								.setTimestamp(new Date());
-						if (event.getState() == PinState.HIGH) {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("Inputs/b", MetricDataType.Boolean,
-									true).createMetric());
-						} else {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("Inputs/b", MetricDataType.Boolean,
-									false).createMetric());
-						}
-						byte[] bytes = new SparkplugBPayloadEncoder().getBytes(outboundPayloadBuilder.createPayload());
-						client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, 
-								bytes, 0, false);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		try {
+			pibrella.getInput(PibrellaInputPins.B).getGpioPin().setInputListener(new PinListener() {
+				public void valueChanged(PinEvent pinEvent) {
+					try {
+						synchronized (lock) {
+							SparkplugBPayloadBuilder outboundPayloadBuilder =
+									new SparkplugBPayloadBuilder(getNextSeqNum()).setTimestamp(new Date());
+							if (pinEvent.getValue()) {
+								outboundPayloadBuilder
+										.addMetric(new MetricBuilder(PibrellaInputPins.B.getPin().getDescription(),
+												MetricDataType.Boolean, true).createMetric());
+							} else {
+								outboundPayloadBuilder
+										.addMetric(new MetricBuilder(PibrellaInputPins.B.getPin().getDescription(),
+												MetricDataType.Boolean, false).createMetric());
+							}
 
-		pibrella.inputC().addListener(new GpioPinListenerDigital() {
-			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				try {
-					synchronized (lock) {
-						SparkplugBPayloadBuilder outboundPayloadBuilder = new SparkplugBPayloadBuilder(getNextSeqNum())
-								.setTimestamp(new Date());
-						if (event.getState() == PinState.HIGH) {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("Inputs/c", MetricDataType.Boolean,
-									true).createMetric());
-						} else {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("Inputs/c", MetricDataType.Boolean,
-									false).createMetric());
+							executor.execute(
+									new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+											outboundPayloadBuilder.createPayload()));
 						}
-						byte[] bytes = new SparkplugBPayloadEncoder().getBytes(outboundPayloadBuilder.createPayload());
-						client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, 
-								bytes, 0, false);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
-			}
-		});
+			});
+		} catch (Exception e) {
+			throw new DioException("failed to set InputListener for " + PibrellaInputPins.B.getName(), e);
+		}
 
-		pibrella.inputD().addListener(new GpioPinListenerDigital() {
-			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				try {
-					synchronized (lock) {
-						SparkplugBPayloadBuilder outboundPayloadBuilder = new SparkplugBPayloadBuilder(getNextSeqNum())
-								.setTimestamp(new Date());
-						if (event.getState() == PinState.HIGH) {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("Inputs/d", MetricDataType.Boolean,
-									true).createMetric());
-						} else {
-							outboundPayloadBuilder.addMetric(new MetricBuilder("Inputs/d", MetricDataType.Boolean,
-									false).createMetric());
+		try {
+			pibrella.getInput(PibrellaInputPins.C).getGpioPin().setInputListener(new PinListener() {
+				public void valueChanged(PinEvent pinEvent) {
+					try {
+						synchronized (lock) {
+							SparkplugBPayloadBuilder outboundPayloadBuilder =
+									new SparkplugBPayloadBuilder(getNextSeqNum()).setTimestamp(new Date());
+							if (pinEvent.getValue()) {
+								outboundPayloadBuilder
+										.addMetric(new MetricBuilder(PibrellaInputPins.C.getPin().getDescription(),
+												MetricDataType.Boolean, true).createMetric());
+							} else {
+								outboundPayloadBuilder
+										.addMetric(new MetricBuilder(PibrellaInputPins.C.getPin().getDescription(),
+												MetricDataType.Boolean, false).createMetric());
+							}
+							executor.execute(
+									new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+											outboundPayloadBuilder.createPayload()));
 						}
-						byte[] bytes = new SparkplugBPayloadEncoder().getBytes(outboundPayloadBuilder.createPayload());
-						client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, 
-								bytes, 0, false);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
-			}
-		});
+			});
+		} catch (Exception e) {
+			throw new DioException("failed to set InputListener for " + PibrellaInputPins.C.getName(), e);
+		}
+
+		try {
+			pibrella.getInput(PibrellaInputPins.D).getGpioPin().setInputListener(new PinListener() {
+				public void valueChanged(PinEvent pinEvent) {
+					try {
+						synchronized (lock) {
+							SparkplugBPayloadBuilder outboundPayloadBuilder =
+									new SparkplugBPayloadBuilder(getNextSeqNum()).setTimestamp(new Date());
+							if (pinEvent.getValue()) {
+								outboundPayloadBuilder
+										.addMetric(new MetricBuilder(PibrellaInputPins.D.getPin().getDescription(),
+												MetricDataType.Boolean, true).createMetric());
+							} else {
+								outboundPayloadBuilder
+										.addMetric(new MetricBuilder(PibrellaInputPins.D.getPin().getDescription(),
+												MetricDataType.Boolean, false).createMetric());
+							}
+							executor.execute(
+									new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+											outboundPayloadBuilder.createPayload()));
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (Exception e) {
+			throw new DioException("failed to set InputListener for " + PibrellaInputPins.D.getName(), e);
+		}
+	}
+
+	private static void shutdownPibrella() {
+		System.out.println("Shutting down Sparkplug RaspberryPi Example ...");
+
+		System.out.println("Closing Pibrella LEDs");
+		PibrellaLED.closeAll();
+
+		System.out.println("Closing Pibrella outputs");
+		PibrellaOutputPin.closeAll();
+
+		System.out.println("Closing Pibrella inputs");
+		PibrellaInputPin.closeAll();
+
+		System.out.println("Closing Pibrella button");
+		try {
+			Pibrella.getInstance().getButton().close();
+		} catch (DioException e1) {
+			System.out.println("failed to close Pibrella button");
+		}
+
+		System.out.println("Closing Pibrella buzzer");
+		try {
+			Pibrella.getInstance().getBuzzer().close();
+		} catch (Exception e) {
+			System.out.println("failed to close Pibrella buzzer");
+		}
+	}
+
+	private static void parseCommandLineArguments(String[] args) {
+		switch (args.length) {
+			case 1:
+				mqttServerHostName = args[0];
+				mqttServerPort = DFLT_MQTT_PORT;
+				break;
+			case 2:
+				mqttServerHostName = args[0];
+				mqttServerPort = Integer.parseInt(args[1]);
+				break;
+			default:
+				mqttServerHostName = DFLT_MQTT_SERVER_HOST_NAME;
+				mqttServerPort = DFLT_MQTT_PORT;
+		}
 	}
 }

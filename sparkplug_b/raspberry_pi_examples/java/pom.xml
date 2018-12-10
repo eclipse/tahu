@@ -18,32 +18,33 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
   <groupId>org.eclipse.tahu.example</groupId>
   <artifactId>sparkplug_b_raspberry_pi_example</artifactId>
-  <version>0.5.1</version>
+  <version>0.5.2</version>
   <packaging>jar</packaging>
   <name>Maven Quick Start Archetype</name>
-  <url>http://maven.apache.org</url>
+  <repositories>
+  	<repository>
+  	  <id>Kura Releases</id>
+  	  <name>Kura Repository - Releases</name>
+  	  <url>https://repo.eclipse.org/content/repositories/kura-releases/</url>
+  	</repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>org.eclipse.tahu</groupId>
       <artifactId>tahu-java</artifactId>
       <version>${tahu.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.pi4j</groupId>
-      <artifactId>pi4j-core</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.pi4j</groupId>
-      <artifactId>pi4j-device</artifactId>
-      <version>1.0</version>
-    </dependency>
+   <dependency>
+      <groupId>org.eclipse.kura</groupId>
+      <artifactId>jdk.dio</artifactId>
+      <version>1.0.400</version>
+	</dependency>
   </dependencies>
   <build>
     <plugins>

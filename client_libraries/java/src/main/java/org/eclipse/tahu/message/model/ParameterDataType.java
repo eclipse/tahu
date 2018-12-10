@@ -55,7 +55,7 @@ public enum ParameterDataType {
 	}
 	
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
-		if (value != null && !value.getClass().equals(clazz)) {
+		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			logger.warn("Failed type check - " + clazz + " != " + value.getClass().toString());
 			throw new SparkplugInvalidTypeException(value.getClass());
 		}
