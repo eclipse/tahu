@@ -18,13 +18,13 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.3</version>
+    <version>0.5.4-SNAPSHOT</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
   <groupId>org.eclipse.tahu.example</groupId>
   <artifactId>sparkplug_b_device_timestamp_example</artifactId>
-  <version>0.5.3</version>
+  <version>0.5.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Maven Quick Start Archetype</name>
   <url>http://maven.apache.org</url>
