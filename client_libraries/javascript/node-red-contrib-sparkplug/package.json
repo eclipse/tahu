@@ -1,11 +1,11 @@
 {
   "name": "node-red-contrib-sparkplug",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A Sparkplug node for Node-RED",
-  "license": "EPL-1.0",
+  "license": "EPL-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cirrus-Link/Sparkplug.git"
+    "url": "git+https://github.com/eclipse/tahu.git"
   },
   "node-red": {
     "nodes": {
@@ -13,11 +13,13 @@
     }
   },
   "bugs": {
-    "url": "https://github.com/Cirrus-Link/Sparkplug/issues"
+    "url": "https://github.com/eclipse/tahu/issues"
   },
-  "homepage": "https://github.com/Cirrus-Link/Sparkplug#readme",
+  "homepage": "https://github.com/eclipse/tahu",
   "main": "sparkplug.js",
   "keywords": [
+    "tahu",
+    "mqtt",
     "sparkplug",
     "node-red"
   ],

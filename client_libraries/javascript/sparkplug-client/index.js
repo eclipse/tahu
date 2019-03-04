@@ -20,7 +20,7 @@ var mqtt = require('mqtt'),
 
 var compressed = "SPBV1.0_COMPRESSED";
 
-logger.level = 'info';
+logger.level = 'warn';
 
 var getRequiredProperty = function(config, propName) {
     if (config[propName] !== undefined) {
@@ -124,10 +124,8 @@ function SparkplugClient(config) {
 
         // See if any options have been set
         if (options !== undefined && options !== null) {
-                logger.info("test: " + options.algorithm);
             // Check algorithm
             if (options['algorithm']) {
-                logger.info("test");
                 algorithm = options['algorithm'];
             }
         }
@@ -363,14 +361,14 @@ function SparkplugClient(config) {
          * 'packetsend' handler
          */
         client.on("packetsend", function(packet) {
-            logger.info("packetsend: " + packet.cmd);
+            logger.debug("packetsend: " + packet.cmd);
         });
 
         /*
          * 'packetreceive' handler
          */
         client.on("packetreceive", function(packet) {
-            logger.info("packetreceive: " + packet.cmd);
+            logger.debug("packetreceive: " + packet.cmd);
         });
 
         /*
