@@ -430,6 +430,7 @@ client.on('close', function () {
 * 3.2.0 Added new 'offline' emitted event, added configurable keep alive,
         updated log messages and set default level to 'info', and disabled 
         ping rescheduling within the client.
+* 3.2.1 Updated License and repo links, cleaned up logging.
 
 ## License
 

@@ -1,22 +1,24 @@
 {
   "name": "sparkplug-payload",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library for encoding and decoding Sparkplug payloads",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cirrus-Link/Sparkplug.git"
+    "url": "git+https://github.com/eclipse/tahu.git"
   },
   "keywords": [
+    "tahu",
+    "mqtt",
     "sparkplug",
     "payload"
   ],
   "author": "Chad Kienle <chad.kienle@cirrus-link.com> (http://www.cirrus-link.com)",
-  "license": "EPL-1.0",
+  "license": "EPL-2.0",
   "bugs": {
-    "url": "https://github.com/Cirrus-Link/Sparkplug/issues"
+    "url": "https://github.com/eclipse/tahu/issues"
   },
-  "homepage": "https://github.com/Cirrus-Link/Sparkplug#readme",
+  "homepage": "https://github.com/eclipse/tahu",
   "files": [
     "index.js",
     "lib/sparkplugbpayload.js",

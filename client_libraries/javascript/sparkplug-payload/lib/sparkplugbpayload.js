@@ -600,11 +600,16 @@
             isHistorical = metric.isHistorical,
             isTransient = metric.isTransient,
             metadata = metric.metadata,
+            timestamp = metric.timestamp,
             properties = metric.properties;
         
         // Get metric type and value
         newMetric.datatype = datatype;
         setValue(datatype, value, newMetric);
+
+        if (timestamp !== undefined && timestamp !== null) {
+            newMetric.timestamp = timestamp;
+        }
 
         if (alias !== undefined && alias !== null) {
             newMetric.alias = alias;
@@ -640,7 +645,8 @@
             isTransient = protoMetric.isTransient,
             isNull = protoMetric.isNull,
             metadata = protoMetric.metadata,
-            properties = protoMetric.properties;
+            properties = protoMetric.properties,
+            timestamp = protoMetric.timestamp;
 
         metric.name = protoMetric.name;
         metric.type = decodeType(protoMetric.datatype);
@@ -650,6 +656,10 @@
             metric.value = null;
         } else {
             metric.value = getValue(protoMetric.datatype, protoMetric);
+        }
+
+        if (protoMetric.hasOwnProperty("timestamp")) {
+            metric.timestamp = protoMetric.timestamp.toNumber();
         }
 
         if (protoMetric.hasOwnProperty("alias")) {
