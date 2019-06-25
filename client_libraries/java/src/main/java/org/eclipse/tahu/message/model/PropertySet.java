@@ -31,7 +31,7 @@ public class PropertySet implements Map<String, PropertyValue> {
 	private Map<String, PropertyValue> map;
 	
 	public PropertySet() {
-		this.map = new HashMap<String, PropertyValue>();
+		this.map = new HashMap<>();
 	}
 	
 	private PropertySet(Map<String, PropertyValue> propertyMap) {
@@ -141,11 +141,15 @@ public class PropertySet implements Map<String, PropertyValue> {
 		private Map<String, PropertyValue> propertyMap;
 		
 		public PropertySetBuilder() {
-			this.propertyMap = new HashMap<String, PropertyValue>();
+			this.propertyMap = new HashMap<>();
+		}
+		
+		public PropertySetBuilder(Map<String, PropertyValue> propertyMap) {
+			this.propertyMap = propertyMap;
 		}
 		
 		public PropertySetBuilder(PropertySet propertySet) throws SparkplugInvalidTypeException {
-			this.propertyMap = new HashMap<String, PropertyValue>();
+			this.propertyMap = new HashMap<>();
 			for (String name : propertySet.getNames()) {
 				PropertyValue value = propertySet.getPropertyValue(name);
 				propertyMap.put(name, new PropertyValue(value.getType(), value.getValue()));
