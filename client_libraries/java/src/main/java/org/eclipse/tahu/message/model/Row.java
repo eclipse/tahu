@@ -24,6 +24,10 @@ public class Row {
 
 	private List<Value<?>> values;
 
+	public Row() {
+		this.values = new ArrayList<>();
+	}
+
 	public Row(List<Value<?>> values) {
 		this.values = values;
 	}

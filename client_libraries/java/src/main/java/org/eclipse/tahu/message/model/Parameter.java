@@ -44,7 +44,8 @@ public class Parameter {
 	@JsonProperty("value")
 	private Object value;
 	
-	
+	public Parameter() {}
+
 	/**
 	 * Constructs a Parameter instance.
 	 * 

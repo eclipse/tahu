@@ -57,7 +57,9 @@ public class DataSet {
 	 * A list containing the rows in the data set
 	 */
 	private List<Row> rows;
-	
+
+	public DataSet() {}
+
 	public DataSet(long numOfColumns, List<String> columnNames, List<DataSetDataType> types, List<Row> rows) {
 		this.numOfColumns = numOfColumns;
 		this.columnNames = columnNames;
