@@ -35,8 +35,9 @@ public class SparkplugBPayload {
 	private String uuid;
 	private byte[] body;
 
-	public SparkplugBPayload() {};
-	
+	public SparkplugBPayload() {
+	}
+
 	public SparkplugBPayload(Date timestamp, List<Metric> metrics, long seq, String uuid, byte[] body) {
 		this.timestamp = timestamp;
 		this.metrics = metrics;
@@ -52,23 +53,23 @@ public class SparkplugBPayload {
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
-	
+
 	public void addMetric(Metric metric) {
 		metrics.add(metric);
 	}
-	
+
 	public void addMetric(int index, Metric metric) {
 		metrics.add(index, metric);
 	}
-	
+
 	public void addMetrics(List<Metric> metrics) {
 		this.metrics.addAll(metrics);
 	}
-	
+
 	public Metric removeMetric(int index) {
 		return metrics.remove(index);
 	}
-	
+
 	public boolean removeMetric(Metric metric) {
 		return metrics.remove(metric);
 	}
@@ -76,7 +77,7 @@ public class SparkplugBPayload {
 	public List<Metric> getMetrics() {
 		return metrics;
 	}
-	
+
 	@JsonIgnore
 	public Integer getMetricCount() {
 		return metrics.size();
@@ -112,10 +113,21 @@ public class SparkplugBPayload {
 
 	@Override
 	public String toString() {
-		return "SparkplugBPayload [timestamp=" + timestamp + ", metrics=" + metrics + ", seq=" + seq + ", uuid=" + uuid
-				+ ", body=" + Arrays.toString(body) + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("SparkplugBPayload [timestamp=");
+		builder.append(timestamp);
+		builder.append(", metrics=");
+		builder.append(metrics);
+		builder.append(", seq=");
+		builder.append(seq);
+		builder.append(", uuid=");
+		builder.append(uuid);
+		builder.append(", body=");
+		builder.append(Arrays.toString(body));
+		builder.append("]");
+		return builder.toString();
 	}
-	
+
 	/**
 	 * A builder for creating a {@link SparkplugBPayload} instance.
 	 */
@@ -135,7 +147,7 @@ public class SparkplugBPayload {
 		public SparkplugBPayloadBuilder() {
 			metrics = new ArrayList<Metric>();
 		}
-		
+
 		public SparkplugBPayloadBuilder addMetric(Metric metric) {
 			this.metrics.add(metric);
 			return this;
@@ -165,7 +177,7 @@ public class SparkplugBPayload {
 			this.body = body;
 			return this;
 		}
-		
+
 		public SparkplugBPayload createPayload() {
 			return new SparkplugBPayload(timestamp, metrics, seq, uuid, body);
 		}

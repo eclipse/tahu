@@ -25,26 +25,27 @@ import com.fasterxml.jackson.annotation.JsonSetter;
  * A class to represent a parameter associated with a template.
  */
 public class Parameter {
-	
+
 	/**
 	 * The name of the parameter
 	 */
 	@JsonProperty("name")
 	private String name;
-	
+
 	/**
 	 * The data type of the parameter
 	 */
 	@JsonProperty("type")
 	private ParameterDataType type;
-	
+
 	/**
 	 * The value of the parameter
 	 */
 	@JsonProperty("value")
 	private Object value;
-	
-	public Parameter() {}
+
+	public Parameter() {
+	}
 
 	/**
 	 * Constructs a Parameter instance.
@@ -52,7 +53,7 @@ public class Parameter {
 	 * @param name The name of the parameter.
 	 * @param type The type of the parameter.
 	 * @param value The value of the parameter.
-	 * @throws SparkplugInvalidTypeException 
+	 * @throws SparkplugInvalidTypeException
 	 */
 	public Parameter(String name, ParameterDataType type, Object value) throws SparkplugInvalidTypeException {
 		this.name = name;
@@ -86,7 +87,7 @@ public class Parameter {
 	public void setValue(Object value) {
 		this.value = value;
 	}
-	
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -96,13 +97,20 @@ public class Parameter {
 			return false;
 		}
 		Parameter param = (Parameter) object;
-		return Objects.equals(name, param.getName())
-				&& Objects.equals(type, param.getType())
+		return Objects.equals(name, param.getName()) && Objects.equals(type, param.getType())
 				&& Objects.equals(value, param.getValue());
 	}
 
 	@Override
 	public String toString() {
-		return "Parameter [name=" + name + ", type=" + type + ", value=" + value + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("Parameter [name=");
+		builder.append(name);
+		builder.append(", type=");
+		builder.append(type);
+		builder.append(", value=");
+		builder.append(value);
+		builder.append("]");
+		return builder.toString();
 	}
 }

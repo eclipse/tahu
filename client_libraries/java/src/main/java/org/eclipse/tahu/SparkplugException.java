@@ -21,10 +21,11 @@ public class SparkplugException extends Exception {
 	/**
 	 * Default constructor.
 	 */
-	public SparkplugException() {};
-	
+	public SparkplugException() {
+	}
+
 	/**
-	 * Constructor 
+	 * Constructor
 	 * 
 	 * @param message an error message
 	 */
@@ -33,7 +34,7 @@ public class SparkplugException extends Exception {
 	}
 
 	/**
-	 * Constructor 
+	 * Constructor
 	 * 
 	 * @param message an error message
 	 * @param exception an underlying exception

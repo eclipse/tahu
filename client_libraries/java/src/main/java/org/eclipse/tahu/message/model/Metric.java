@@ -36,38 +36,39 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 @JsonIgnoreProperties(value = { "isNull" })
 @JsonInclude(Include.NON_NULL)
 public class Metric {
-	
+
 	@JsonProperty("name")
 	private String name;
-	
+
 	@JsonProperty("alias")
 	private Long alias;
-	
+
 	@JsonProperty("timestamp")
 	private Date timestamp;
-	
+
 	@JsonProperty("dataType")
 	private MetricDataType dataType;
-	
+
 	@JsonProperty("isHistorical")
 	private Boolean isHistorical;
-	
+
 	@JsonProperty("isTransient")
 	private Boolean isTransient;
-	
+
 	@JsonProperty("metaData")
 	private MetaData metaData;
-	
+
 	@JsonProperty("properties")
 	@JsonInclude(Include.NON_EMPTY)
 	private PropertySet properties;
-	
+
 	@JsonProperty("value")
 	private Object value;
-	
+
 	private Boolean isNull = null;
-	
-	public Metric() {};
+
+	public Metric() {
+	};
 
 	/**
 	 * @param name
@@ -80,11 +81,11 @@ public class Metric {
 	 * @param metaData
 	 * @param properties
 	 * @param value
-	 * @throws SparkplugInvalidTypeException 
+	 * @throws SparkplugInvalidTypeException
 	 */
 	public Metric(String name, Long alias, Date timestamp, MetricDataType dataType, Boolean isHistorical,
-			Boolean isTransient, MetaData metaData, PropertySet properties, Object value) 
-					throws SparkplugInvalidTypeException {
+			Boolean isTransient, MetaData metaData, PropertySet properties, Object value)
+			throws SparkplugInvalidTypeException {
 		super();
 		this.name = name;
 		this.alias = alias;
@@ -110,7 +111,7 @@ public class Metric {
 	public boolean hasName() {
 		return !(name == null);
 	}
-	
+
 	public boolean hasAlias() {
 		return !(alias == null);
 	}
@@ -205,14 +206,34 @@ public class Metric {
 	public Boolean getIsNull() {
 		return isNull;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Metric [name=" + name + ", alias=" + alias + ", timestamp=" + timestamp + ", dataType=" + dataType
-				+ ", isHistorical=" + isHistorical + ", isTransient=" + isTransient + ", isNull=" + isNull
-				+ ", metaData=" + metaData + ", propertySet=" + properties + ", value=" + value + "]";
-	}	
-	
+		StringBuilder builder = new StringBuilder();
+		builder.append("Metric [name=");
+		builder.append(name);
+		builder.append(", alias=");
+		builder.append(alias);
+		builder.append(", timestamp=");
+		builder.append(timestamp);
+		builder.append(", dataType=");
+		builder.append(dataType);
+		builder.append(", isHistorical=");
+		builder.append(isHistorical);
+		builder.append(", isTransient=");
+		builder.append(isTransient);
+		builder.append(", metaData=");
+		builder.append(metaData);
+		builder.append(", properties=");
+		builder.append(properties);
+		builder.append(", value=");
+		builder.append(value);
+		builder.append(", isNull=");
+		builder.append(isNull);
+		builder.append("]");
+		return builder.toString();
+	}
+
 	/**
 	 * A builder for creating a {@link Metric} instance.
 	 */
@@ -227,21 +248,21 @@ public class Metric {
 		private MetaData metaData = null;
 		private PropertySet properties = null;
 		private Object value;
-		
+
 		public MetricBuilder(String name, MetricDataType dataType, Object value) {
 			this.name = name;
 			this.timestamp = new Date();
 			this.dataType = dataType;
 			this.value = value;
 		}
-		
+
 		public MetricBuilder(Long alias, MetricDataType dataType, Object value) {
 			this.alias = alias;
 			this.timestamp = new Date();
 			this.dataType = dataType;
 			this.value = value;
 		}
-		
+
 		public MetricBuilder(Metric metric) throws SparkplugException {
 			this.name = metric.getName();
 			this.alias = metric.getAlias();
@@ -249,20 +270,19 @@ public class Metric {
 			this.dataType = metric.getDataType();
 			this.isHistorical = metric.isHistorical();
 			this.isTransient = metric.isTransient();
-			this.metaData = metric.getMetaData() != null 
-					? new MetaDataBuilder(metric.getMetaData()).createMetaData()
-					: null;
-			this.properties = metric.getMetaData() != null 
+			this.metaData =
+					metric.getMetaData() != null ? new MetaDataBuilder(metric.getMetaData()).createMetaData() : null;
+			this.properties = metric.getMetaData() != null
 					? new PropertySetBuilder(metric.getProperties()).createPropertySet()
 					: null;
 			switch (dataType) {
 				case DataSet:
-					this.value = metric.getValue() != null 
+					this.value = metric.getValue() != null
 							? new DataSetBuilder((DataSet) metric.getValue()).createDataSet()
 							: null;
 					break;
 				case Template:
-					this.value = metric.getValue() != null 
+					this.value = metric.getValue() != null
 							? new TemplateBuilder((Template) metric.getValue()).createTemplate()
 							: null;
 					break;
@@ -315,10 +335,9 @@ public class Metric {
 			this.value = value;
 			return this;
 		}
-		
+
 		public Metric createMetric() throws SparkplugInvalidTypeException {
-			return new Metric(name, alias, timestamp, dataType, isHistorical, isTransient, metaData, 
-					properties, value);
+			return new Metric(name, alias, timestamp, dataType, isHistorical, isTransient, metaData, properties, value);
 		}
 	}
 }

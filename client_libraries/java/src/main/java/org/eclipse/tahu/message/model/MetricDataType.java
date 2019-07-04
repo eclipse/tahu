@@ -24,7 +24,7 @@ import org.eclipse.tahu.SparkplugInvalidTypeException;
  * An enumeration of data types associated with the value of a {@link Metric}
  */
 public enum MetricDataType {
-	
+
 	// Basic Types
 	Int8(1, Byte.class),
 	Int16(2, Short.class),
@@ -40,34 +40,35 @@ public enum MetricDataType {
 	String(12, String.class),
 	DateTime(13, Date.class),
 	Text(14, String.class),
-	
+
 	// Custom Types for Metrics
 	UUID(15, String.class),
 	DataSet(16, DataSet.class),
 	Bytes(17, byte[].class),
 	File(18, File.class),
 	Template(19, Template.class),
-	
+
 	// Unknown
 	Unknown(0, Object.class);
-	
+
 	private static Logger logger = LogManager.getLogger(MetricDataType.class.getName());
-	
+
 	private Class<?> clazz = null;
 	private int intValue = 0;
-		
+
 	private MetricDataType(int intValue, Class<?> clazz) {
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
-	
+
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
-			logger.warn("Failed type check - " + clazz + " != " + ((value != null) ? value.getClass().toString() : "null"));
+			logger.warn(
+					"Failed type check - " + clazz + " != " + ((value != null) ? value.getClass().toString() : "null"));
 			throw new SparkplugInvalidTypeException(value.getClass());
 		}
 	}
-	
+
 	/**
 	 * Returns an integer representation of the data type.
 	 * 
@@ -76,7 +77,7 @@ public enum MetricDataType {
 	public int toIntValue() {
 		return this.intValue;
 	}
-	
+
 	/**
 	 * Converts the integer representation of the data type into a {@link MetricDataType} instance.
 	 * 
@@ -84,7 +85,7 @@ public enum MetricDataType {
 	 * @return a {@link MetricDataType} instance.
 	 */
 	public static MetricDataType fromInteger(int i) {
-		switch(i) {
+		switch (i) {
 			case 1:
 				return Int8;
 			case 2:
@@ -127,7 +128,7 @@ public enum MetricDataType {
 				return Unknown;
 		}
 	}
-	
+
 	/**
 	 * Returns the class type for this DataType
 	 * 

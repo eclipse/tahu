@@ -37,34 +37,35 @@ public class Template {
 	 */
 	@JsonProperty("version")
 	private String version;
-	
+
 	/**
 	 * The template reference
 	 */
 	@JsonProperty("reference")
 	private String templateRef;
-	
+
 	/**
 	 * True if the template is a definition, false otherwise.
 	 */
 	@JsonProperty("isDefinition")
 	private boolean isDefinition;
-	
+
 	/**
 	 * List of metrics.
 	 */
 	@JsonProperty("metrics")
 	private List<Metric> metrics;
-	
+
 	/**
 	 * List of parameters.
 	 */
 	@JsonProperty("parameters")
 	@JsonInclude(Include.NON_EMPTY)
 	private List<Parameter> parameters;
-	
-	public Template() {}
-	
+
+	public Template() {
+	}
+
 	/**
 	 * Constructor
 	 * 
@@ -117,7 +118,7 @@ public class Template {
 	public void setMetrics(List<Metric> metrics) {
 		this.metrics = metrics;
 	}
-	
+
 	public void addMetric(Metric metric) {
 		this.metrics.add(metric);
 	}
@@ -129,15 +130,26 @@ public class Template {
 	public void setParameters(List<Parameter> parameters) {
 		this.parameters = parameters;
 	}
-	
+
 	public void addParameter(Parameter parameter) {
 		this.parameters.add(parameter);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Template [version=" + version + ", templateRef=" + templateRef + ", isDefinition=" + isDefinition
-				+ ", metrics=" + metrics + ", parameters=" + parameters + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("Template [version=");
+		builder.append(version);
+		builder.append(", templateRef=");
+		builder.append(templateRef);
+		builder.append(", isDefinition=");
+		builder.append(isDefinition);
+		builder.append(", metrics=");
+		builder.append(metrics);
+		builder.append(", parameters=");
+		builder.append(parameters);
+		builder.append("]");
+		return builder.toString();
 	}
 
 	/**
@@ -150,7 +162,7 @@ public class Template {
 		private boolean isDefinition;
 		private List<Metric> metrics;
 		private List<Parameter> parameters;
-		
+
 		/**
 		 * @param name
 		 * @param version
@@ -164,7 +176,7 @@ public class Template {
 			this.metrics = new ArrayList<Metric>();
 			this.parameters = new ArrayList<Parameter>();
 		}
-		
+
 		public TemplateBuilder(Template template) throws SparkplugException {
 			this.version = template.getVersion();
 			this.templateRef = template.getTemplateRef();
@@ -213,7 +225,7 @@ public class Template {
 			this.parameters.addAll(parameters);
 			return this;
 		}
-		
+
 		public Template createTemplate() {
 			return new Template(version, templateRef, isDefinition, metrics, parameters);
 		}

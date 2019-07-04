@@ -17,11 +17,11 @@ package org.eclipse.tahu.json;
  * Validates JSON.
  */
 public class JsonValidator {
-	
+
 	protected static final String JSON_SCHEMA_FILENAME = "payload.json";
-	
+
 	private static JsonValidator instance = null;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -39,7 +39,7 @@ public class JsonValidator {
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * Returns loads and returns the {@link JsonSchema} instance associated with this validator.
 	 * 
@@ -47,13 +47,13 @@ public class JsonValidator {
 	 * @throws IOException
 	 * @throws ProcessingException
 	 */
-/*	protected JsonSchema getSchema() throws IOException, ProcessingException {	
-		//Get file from resources folder
-		ClassLoader classLoader = getClass().getClassLoader();
-		File schemaFile = new File(classLoader.getResource(JSON_SCHEMA_FILENAME).getFile());
-        return JsonSchemaFactory.byDefault().getJsonSchema(JsonLoader.fromFile(schemaFile));
-	}*/
-	
+//	protected JsonSchema getSchema() throws IOException, ProcessingException {
+//		// Get file from resources folder
+//		ClassLoader classLoader = getClass().getClassLoader();
+//		File schemaFile = new File(classLoader.getResource(JSON_SCHEMA_FILENAME).getFile());
+//		return JsonSchemaFactory.byDefault().getJsonSchema(JsonLoader.fromFile(schemaFile));
+//	}
+
 	/**
 	 * Returns true if the supplied JSON text is valid, false otherwise.
 	 * 
@@ -62,7 +62,7 @@ public class JsonValidator {
 	 * @throws ProcessingException
 	 * @throws IOException
 	 */
-/*	public boolean isJsonValid(String jsonText) throws ProcessingException, IOException {
-        return getSchema().validate(JsonLoader.fromString(jsonText)).isSuccess();
-    }*/
+//	public boolean isJsonValid(String jsonText) throws ProcessingException, IOException {
+//		return getSchema().validate(JsonLoader.fromString(jsonText)).isSuccess();
+//	}
 }

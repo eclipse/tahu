@@ -33,7 +33,7 @@ public class FileSerializer extends StdSerializer<File> {
 	protected FileSerializer() {
 		super(File.class);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -47,5 +47,4 @@ public class FileSerializer extends StdSerializer<File> {
 	public void serialize(File value, JsonGenerator generator, SerializerProvider provider) throws IOException {
 		generator.writeString(Base64.encodeBytes(value.getBytes()));
 	}
-
 }

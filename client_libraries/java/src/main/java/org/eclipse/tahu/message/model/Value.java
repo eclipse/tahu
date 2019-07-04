@@ -14,10 +14,10 @@
 package org.eclipse.tahu.message.model;
 
 public class Value<V> {
-	
+
 	private DataSetDataType type;
 	private V value;
-	
+
 	public Value() {
 		super();
 	}
@@ -46,6 +46,12 @@ public class Value<V> {
 
 	@Override
 	public String toString() {
-		return "Value [type=" + type + ", value=" + value + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("Value [type=");
+		builder.append(type);
+		builder.append(", value=");
+		builder.append(value);
+		builder.append("]");
+		return builder.toString();
 	}
 }
