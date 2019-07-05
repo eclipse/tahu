@@ -14,12 +14,12 @@
 package org.eclipse.tahu;
 
 /**
- * An Exception thrown if an error is encountered while parsing a payload or topic. 
+ * An Exception thrown if an error is encountered while parsing a payload or topic.
  */
 public class SparkplugParsingException extends SparkplugException {
 
 	/**
-	 * Constructor 
+	 * Constructor
 	 * 
 	 * @param message an error message
 	 */
@@ -28,7 +28,7 @@ public class SparkplugParsingException extends SparkplugException {
 	}
 
 	/**
-	 * Constructor 
+	 * Constructor
 	 * 
 	 * @param message an error message
 	 * @param exception an underlying exception
@@ -36,5 +36,4 @@ public class SparkplugParsingException extends SparkplugException {
 	public SparkplugParsingException(String message, Throwable exception) {
 		super(message, exception);
 	}
-
 }

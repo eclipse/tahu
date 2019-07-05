@@ -23,19 +23,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * The value of a property in a {@link PropertySet}.
  */
 public class PropertyValue {
-	
+
 	private PropertyDataType type;
 	private Object value;
 	private Boolean isNull = null;
-	
-	public PropertyValue() {}
-	
+
+	public PropertyValue() {
+	}
+
 	/**
 	 * A constructor.
 	 * 
 	 * @param type the property type
 	 * @param value the property value
-	 * @throws SparkplugInvalidTypeException 
+	 * @throws SparkplugInvalidTypeException
 	 */
 	public PropertyValue(PropertyDataType type, Object value) throws SparkplugInvalidTypeException {
 		this.type = type;
@@ -60,12 +61,12 @@ public class PropertyValue {
 		this.value = value;
 		isNull = (value == null) ? true : false;
 	}
-	
+
 	@JsonIgnore
 	public Boolean isNull() {
 		return isNull;
 	}
-	
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -75,12 +76,19 @@ public class PropertyValue {
 			return false;
 		}
 		PropertyValue propValue = (PropertyValue) object;
-		return Objects.equals(type, propValue.getType())
-				&& Objects.equals(value, propValue.getValue());
+		return Objects.equals(type, propValue.getType()) && Objects.equals(value, propValue.getValue());
 	}
 
 	@Override
 	public String toString() {
-		return "PropertyValue [type=" + type + ", value=" + value + ", isNull=" + isNull + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("PropertyValue [type=");
+		builder.append(type);
+		builder.append(", value=");
+		builder.append(value);
+		builder.append(", isNull=");
+		builder.append(isNull);
+		builder.append("]");
+		return builder.toString();
 	}
 }

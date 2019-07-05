@@ -19,9 +19,9 @@ package org.eclipse.tahu.message.model;
 public class Message {
 
 	private Topic topic;
-	
+
 	private SparkplugBPayload payload;
-	
+
 	/**
 	 * @param topic
 	 * @param payload
@@ -39,33 +39,34 @@ public class Message {
 	public SparkplugBPayload getPayload() {
 		return payload;
 	}
-	
+
 	/**
 	 * A builder for creating a {@link SparkplugBPayload} instance.
 	 */
 	public static class MessageBuilder {
-		
+
 		private Topic topic;
-		
+
 		private SparkplugBPayload payload;
-		
-		public MessageBuilder(Topic topic, SparkplugBPayload payload)  {
+
+		public MessageBuilder(Topic topic, SparkplugBPayload payload) {
 			this.topic = topic;
 			this.payload = payload;
 		}
-		
-		public MessageBuilder() {}
-		
+
+		public MessageBuilder() {
+		}
+
 		public MessageBuilder topic(Topic topic) {
 			this.topic = topic;
 			return this;
 		}
-		
+
 		public MessageBuilder payload(SparkplugBPayload payload) {
 			this.payload = payload;
 			return this;
 		}
-		
+
 		public Message build() {
 			return new Message(this.topic, this.payload);
 		}

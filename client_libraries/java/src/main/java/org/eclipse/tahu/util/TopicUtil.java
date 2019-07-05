@@ -27,16 +27,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Provides utility methods for handling Sparkplug MQTT message topics.
  */
 public class TopicUtil {
-	
+
 	private static final Map<String, String[]> SPLIT_TOPIC_CACHE = new HashMap<String, String[]>();
-	
+
 	public static String[] getSplitTopic(String topic) {
 		String[] splitTopic = SPLIT_TOPIC_CACHE.get(topic);
 		if (splitTopic == null) {
 			splitTopic = topic.split("/");
 			SPLIT_TOPIC_CACHE.put(topic, splitTopic);
 		}
-		
+
 		return splitTopic;
 	}
 

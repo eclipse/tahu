@@ -20,7 +20,7 @@ public enum CompressionAlgorithm {
 
 	GZIP,
 	DEFLATE;
-	
+
 	public static CompressionAlgorithm parse(String algorithm) {
 		return CompressionAlgorithm.valueOf(algorithm.toUpperCase());
 	}

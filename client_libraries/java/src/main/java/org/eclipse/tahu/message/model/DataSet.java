@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  */
 @JsonDeserialize(using = DataSetDeserializer.class)
 public class DataSet {
-	
+
 	private static Logger logger = LogManager.getLogger(DataSet.class.getName());
 
 	/**
@@ -40,24 +40,27 @@ public class DataSet {
 	 */
 	@JsonProperty("numberOfColumns")
 	private long numOfColumns;
-	
+
 	/**
 	 * A list containing the names of each column
 	 */
 	@JsonProperty("columnNames")
 	private List<String> columnNames;
-	
+
 	/**
 	 * A list containing the data types of each column
 	 */
 	@JsonProperty("types")
 	private List<DataSetDataType> types;
-	
+
 	/**
 	 * A list containing the rows in the data set
 	 */
 	private List<Row> rows;
-	
+
+	public DataSet() {
+	}
+
 	public DataSet(long numOfColumns, List<String> columnNames, List<DataSetDataType> types, List<Row> rows) {
 		this.numOfColumns = numOfColumns;
 		this.columnNames = columnNames;
@@ -88,7 +91,7 @@ public class DataSet {
 	public List<Row> getRows() {
 		return rows;
 	}
-	
+
 	@JsonGetter("rows")
 	public List<List<Object>> getRowsAsLists() {
 		List<List<Object>> list = new ArrayList<List<Object>>(getRows().size());
@@ -101,19 +104,19 @@ public class DataSet {
 	public void addRow(Row row) {
 		this.rows.add(row);
 	}
-	
+
 	public void addRow(int index, Row row) {
 		this.rows.add(index, row);
 	}
-	
+
 	public Row removeRow(int index) {
 		return rows.remove(index);
 	}
-	
+
 	public boolean removeRow(Row row) {
 		return rows.remove(row);
 	}
-	
+
 	public void setRows(List<Row> rows) {
 		this.rows = rows;
 	}
@@ -125,19 +128,28 @@ public class DataSet {
 	public void setTypes(List<DataSetDataType> types) {
 		this.types = types;
 	}
-	
+
 	public void addType(DataSetDataType type) {
 		this.types.add(type);
 	}
-	
+
 	public void addType(int index, DataSetDataType type) {
 		this.types.add(index, type);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "DataSet [numOfColumns=" + numOfColumns + ", columnNames=" + columnNames + ", types=" + types + ", rows="
-				+ rows + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("DataSet [numOfColumns=");
+		builder.append(numOfColumns);
+		builder.append(", columnNames=");
+		builder.append(columnNames);
+		builder.append(", types=");
+		builder.append(types);
+		builder.append(", rows=");
+		builder.append(rows);
+		builder.append("]");
+		return builder.toString();
 	}
 
 	/**
@@ -154,14 +166,14 @@ public class DataSet {
 			this.numOfColumns = numOfColumns;
 			this.columnNames = new ArrayList<String>();
 			this.types = new ArrayList<DataSetDataType>();
-			this.rows =  new ArrayList<Row>();
+			this.rows = new ArrayList<Row>();
 		}
-		
+
 		public DataSetBuilder(DataSet dataSet) {
 			this.numOfColumns = dataSet.getNumOfColumns();
 			this.columnNames = new ArrayList<String>(dataSet.getColumnNames());
 			this.types = new ArrayList<DataSetDataType>(dataSet.getTypes());
-			this.rows =  new ArrayList<Row>(dataSet.getRows().size());
+			this.rows = new ArrayList<Row>(dataSet.getRows().size());
 			for (Row row : dataSet.getRows()) {
 				rows.add(new RowBuilder(row).createRow());
 			}
@@ -196,7 +208,7 @@ public class DataSet {
 			this.rows.addAll(rows);
 			return this;
 		}
-		
+
 		public DataSet createDataSet() throws SparkplugException {
 			logger.trace("Number of columns: " + numOfColumns);
 			for (String columnName : columnNames) {
@@ -212,22 +224,22 @@ public class DataSet {
 			validate();
 			return new DataSet(numOfColumns, columnNames, types, rows);
 		}
-		
+
 		public void validate() throws SparkplugException {
 			if (columnNames.size() != numOfColumns) {
-				throw new SparkplugException("Invalid number of columns in data set column names: " + 
-						columnNames.size() + " vs expected " + numOfColumns);
+				throw new SparkplugException("Invalid number of columns in data set column names: " + columnNames.size()
+						+ " vs expected " + numOfColumns);
 			}
 			if (types.size() != numOfColumns) {
-				throw new SparkplugException("Invalid number of columns in data set types: " +
-						types.size() + " vs expected: " + numOfColumns);
+				throw new SparkplugException("Invalid number of columns in data set types: " + types.size()
+						+ " vs expected: " + numOfColumns);
 			}
 			for (int i = 0; i < types.size(); i++) {
 				for (Row row : rows) {
 					List<Value<?>> values = row.getValues();
 					if (values.size() != numOfColumns) {
-						throw new SparkplugException("Invalid number of columns in data set row: " +
-								values.size() + " vs expected: " + numOfColumns);
+						throw new SparkplugException("Invalid number of columns in data set row: " + values.size()
+								+ " vs expected: " + numOfColumns);
 					}
 					types.get(i).checkType(row.getValues().get(i).getValue());
 				}

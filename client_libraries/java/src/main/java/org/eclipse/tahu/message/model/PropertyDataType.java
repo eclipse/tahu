@@ -25,7 +25,7 @@ import org.eclipse.tahu.SparkplugInvalidTypeException;
  * An enumeration of data types for values of a {@link PropertySet}
  */
 public enum PropertyDataType {
-	
+
 	// Basic Types
 	Int8(1, Byte.class),
 	Int16(2, Short.class),
@@ -41,27 +41,27 @@ public enum PropertyDataType {
 	String(12, String.class),
 	DateTime(13, Date.class),
 	Text(14, String.class),
-	
+
 	// Custom Types for PropertySets
 	PropertySet(20, PropertySet.class),
 	PropertySetList(21, List.class),
-	
+
 	// Unknown
 	Unknown(0, Object.class);
-	
+
 	private static Logger logger = LogManager.getLogger(PropertyDataType.class.getName());
-	
+
 	private Class<?> clazz = null;
 	private int intValue = 0;
-	
+
 	private PropertyDataType(int intValue, Class<?> clazz) {
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
-	
+
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
-			if(clazz == List.class && value instanceof List) {
+			if (clazz == List.class && value instanceof List) {
 				// Allow List subclasses
 			} else {
 				logger.warn("Failed type check - " + clazz + " != " + value.getClass().toString());
@@ -69,7 +69,7 @@ public enum PropertyDataType {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns an integer representation of the data type.
 	 * 
@@ -78,7 +78,7 @@ public enum PropertyDataType {
 	public int toIntValue() {
 		return this.intValue;
 	}
-	
+
 	/**
 	 * Converts the integer representation of the data type into a {@link PropertyDataType} instance.
 	 * 
@@ -86,7 +86,7 @@ public enum PropertyDataType {
 	 * @return a {@link PropertyDataType} instance.
 	 */
 	public static PropertyDataType fromInteger(int i) {
-		switch(i) {
+		switch (i) {
 			case 1:
 				return Int8;
 			case 2:
@@ -123,7 +123,7 @@ public enum PropertyDataType {
 				return Unknown;
 		}
 	}
-	
+
 	/**
 	 * Returns the class type for this DataType
 	 * 

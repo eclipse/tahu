@@ -45,17 +45,18 @@ public class MetricDeserializer extends StdDeserializer<Metric> implements Resol
 	}
 
 	@Override
-	public Metric deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-		
+	public Metric deserialize(JsonParser parser, DeserializationContext ctxt)
+			throws IOException, JsonProcessingException {
+
 		Metric metric = (Metric) defaultDeserializer.deserialize(parser, ctxt);
 		System.out.println(metric);
-		
+
 		// Check if the data type is a File
 		if (metric.getDataType().equals(MetricDataType.File)) {
 			// Perform the custom logic for File types by building up the File object.
 			MetaData metaData = metric.getMetaData();
 			String fileName = metaData == null ? null : metaData.getFileName();
-			File file = new File(fileName, Base64.getDecoder().decode((String)metric.getValue()));
+			File file = new File(fileName, Base64.getDecoder().decode((String) metric.getValue()));
 			metric.setValue(file);
 		}
 		return metric;
@@ -65,5 +66,4 @@ public class MetricDeserializer extends StdDeserializer<Metric> implements Resol
 	public void resolve(DeserializationContext ctxt) throws JsonMappingException {
 		((ResolvableDeserializer) defaultDeserializer).resolve(ctxt);
 	}
-
 }

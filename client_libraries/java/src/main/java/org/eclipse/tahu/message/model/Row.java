@@ -24,6 +24,10 @@ public class Row {
 
 	private List<Value<?>> values;
 
+	public Row() {
+		this.values = new ArrayList<>();
+	}
+
 	public Row(List<Value<?>> values) {
 		this.values = values;
 	}
@@ -44,7 +48,7 @@ public class Row {
 	public String toString() {
 		return "Row [values=" + values + "]";
 	}
-	
+
 	/**
 	 * Converts a {@link Row} instance to a {@link List} of Objects representing the values.
 	 * 
@@ -58,18 +62,18 @@ public class Row {
 		}
 		return list;
 	}
-	
+
 	/**
 	 * A builder for creating a {@link Row} instance.
 	 */
 	public static class RowBuilder {
-		
+
 		private List<Value<?>> values;
-		
+
 		public RowBuilder() {
 			this.values = new ArrayList<Value<?>>();
 		}
-		
+
 		public RowBuilder(Row row) {
 			this.values = new ArrayList<Value<?>>(row.getValues());
 		}

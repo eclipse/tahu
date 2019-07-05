@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 @JsonInclude(Include.NON_NULL)
 public class Topic {
-	
+
 	/**
 	 * The Sparkplug namespace version.
 	 */
@@ -31,17 +31,17 @@ public class Topic {
 	 * The ID of the logical grouping of Edge of Network (EoN) Nodes and devices.
 	 */
 	private String groupId;
-	
+
 	/**
 	 * The ID of the Edge of Network (EoN) Node.
 	 */
 	private String edgeNodeId;
-	
+
 	/**
 	 * The ID of the device.
 	 */
 	private String deviceId;
-	
+
 	/**
 	 * The message type.
 	 */
@@ -126,19 +126,17 @@ public class Topic {
 	public MessageType getType() {
 		return type;
 	}
-	
+
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(getNamespace()).append("/")
-				.append(getGroupId()).append("/")
-				.append(getType()).append("/")
-				.append(getEdgeNodeId());
+		StringBuilder sb = new StringBuilder(getNamespace()).append("/").append(getGroupId()).append("/")
+				.append(getType()).append("/").append(getEdgeNodeId());
 		if (getDeviceId() != null) {
 			sb.append("/").append(getDeviceId());
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Returns true if this topic's type matches the passes in type, false otherwise.
 	 * 
@@ -148,6 +146,5 @@ public class Topic {
 	public boolean isType(MessageType type) {
 		return this.type != null && this.type.equals(type);
 	}
-	
 
 }

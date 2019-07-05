@@ -22,16 +22,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class DeserializerModule extends SimpleModule {
 
-    private BeanDeserializerModifier deserializerModifier;
+	private BeanDeserializerModifier deserializerModifier;
 
-    public DeserializerModule(BeanDeserializerModifier deserializerModifier) {
-        super("DeserializerModule", Version.unknownVersion());
-        this.deserializerModifier = deserializerModifier;
-    }
+	public DeserializerModule(BeanDeserializerModifier deserializerModifier) {
+		super("DeserializerModule", Version.unknownVersion());
+		this.deserializerModifier = deserializerModifier;
+	}
 
-    @Override
-    public void setupModule(SetupContext context) {
-        super.setupModule(context);
-        context.addBeanDeserializerModifier(deserializerModifier);
-    }
+	@Override
+	public void setupModule(SetupContext context) {
+		super.setupModule(context);
+		context.addBeanDeserializerModifier(deserializerModifier);
+	}
 }

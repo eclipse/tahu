@@ -22,7 +22,7 @@ import org.eclipse.tahu.SparkplugInvalidTypeException;
  * A enumeration of data types of values in a {@link DataSet}
  */
 public enum DataSetDataType {
-	
+
 	// Basic Types
 	Int8(1, Byte.class),
 	Int16(2, Short.class),
@@ -38,24 +38,24 @@ public enum DataSetDataType {
 	String(12, String.class),
 	DateTime(13, Date.class),
 	Text(14, String.class),
-	
+
 	// Unknown
 	Unknown(0, Object.class);
-	
+
 	private Class<?> clazz = null;
 	private int intValue = 0;
-	
+
 	private DataSetDataType(int intValue, Class<?> clazz) {
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
-	
+
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			throw new SparkplugInvalidTypeException(value.getClass());
 		}
 	}
-	
+
 	/**
 	 * Returns an integer representation of the data type.
 	 * 
@@ -64,7 +64,7 @@ public enum DataSetDataType {
 	public int toIntValue() {
 		return this.intValue;
 	}
-	
+
 	/**
 	 * Converts the integer representation of the data type into a {@link DataSetDataType} instance.
 	 * 
@@ -72,7 +72,7 @@ public enum DataSetDataType {
 	 * @return a {@link DataSetDataType} instance.
 	 */
 	public static DataSetDataType fromInteger(int i) {
-		switch(i) {
+		switch (i) {
 			case 1:
 				return Int8;
 			case 2:
