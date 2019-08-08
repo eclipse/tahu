@@ -25,13 +25,13 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
  */
 public class DeserializerModifier extends BeanDeserializerModifier {
 
-    @Override
-    public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
-        if (Metric.class.equals(beanDesc.getBeanClass())) {
-            return new MetricDeserializer(deserializer);
-        }
+	@Override
+	public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc,
+			JsonDeserializer<?> deserializer) {
+		if (Metric.class.equals(beanDesc.getBeanClass())) {
+			return new MetricDeserializer(deserializer);
+		}
 
-        return super.modifyDeserializer(config, beanDesc, deserializer);
-    }
-
+		return super.modifyDeserializer(config, beanDesc, deserializer);
+	}
 }

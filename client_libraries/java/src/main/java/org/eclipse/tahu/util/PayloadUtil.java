@@ -151,8 +151,8 @@ public class PayloadUtil {
 		// Encode bytes
 		byte[] encoded = encoder.getBytes(payload);
 		byte[] compressed = null;
-		Metric algorithmMetric = new MetricBuilder(METRIC_ALGORITHM, MetricDataType.String, algorithm.toString())
-				.createMetric();
+		Metric algorithmMetric =
+				new MetricBuilder(METRIC_ALGORITHM, MetricDataType.String, algorithm.toString()).createMetric();
 
 		// Switch over compression algorithm
 		switch (algorithm) {

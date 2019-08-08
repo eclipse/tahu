@@ -19,9 +19,9 @@ package org.eclipse.tahu;
 public class SparkplugInvalidTypeException extends SparkplugException {
 
 	private Class<?> type;
-	
+
 	public SparkplugInvalidTypeException(Class<?> type) {
 		super("Invalid type " + type);
-		this.type = type;	
+		this.type = type;
 	}
 }

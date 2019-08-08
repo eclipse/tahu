@@ -23,20 +23,20 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonIgnoreProperties(value = { "fileName" })
 @JsonSerialize(using = FileSerializer.class)
 public class File {
-	
+
 	private String fileName;
 	private byte[] bytes;
-	
+
 	public File() {
 		super();
 	}
-	
+
 	public File(String fileName, byte[] bytes) {
 		super();
-		this.fileName = fileName == null 
-				? null 
-				: fileName.replace("/", System.getProperty("file.separator"))
-						.replace("\\", System.getProperty("file.separator"));
+		this.fileName = fileName == null
+				? null
+				: fileName.replace("/", System.getProperty("file.separator")).replace("\\",
+						System.getProperty("file.separator"));
 		this.bytes = Arrays.copyOf(bytes, bytes.length);
 	}
 
@@ -55,9 +55,15 @@ public class File {
 	public void setBytes(byte[] bytes) {
 		this.bytes = bytes;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "File [fileName=" + fileName + ", bytes length=" + bytes.length + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("File [fileName=");
+		builder.append(fileName);
+		builder.append(", bytes=");
+		builder.append(Arrays.toString(bytes));
+		builder.append("]");
+		return builder.toString();
 	}
 }

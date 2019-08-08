@@ -38,9 +38,9 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  * A JSON deserializer for {@link DataSet} instances.
  */
 public class DataSetDeserializer extends StdDeserializer<DataSet> {
-	
+
 	private static Logger logger = LogManager.getLogger(DataSetDeserializer.class.getName());
-	
+
 	private static final String FIELD_SIZE = "numberOfColumns";
 	private static final String FIELD_TYPES = "types";
 	private static final String FIELD_NAMES = "columnNames";
@@ -56,7 +56,7 @@ public class DataSetDeserializer extends StdDeserializer<DataSet> {
 	}
 
 	@Override
-	public DataSet deserialize(JsonParser parser, DeserializationContext context) 
+	public DataSet deserialize(JsonParser parser, DeserializationContext context)
 			throws IOException, JsonProcessingException {
 		JsonNode node = parser.getCodec().readTree(parser);
 		long size = (Long) node.get(FIELD_SIZE).numberValue();
@@ -94,29 +94,29 @@ public class DataSetDeserializer extends StdDeserializer<DataSet> {
 		}
 		return null;
 	}
-	
+
 	/*
 	 * Creates and returns a Value instance
 	 */
 	private Value<?> getValueFromNode(JsonNode nodeValue, DataSetDataType type) {
 		switch (type) {
 			case Boolean:
-				return new Value<Boolean>(type, (boolean)nodeValue.asBoolean());
+				return new Value<Boolean>(type, (boolean) nodeValue.asBoolean());
 			case DateTime:
 				return new Value<Date>(type, new Date(nodeValue.asLong()));
 			case Double:
 				return new Value<Double>(type, nodeValue.asDouble());
 			case Float:
-				return new Value<Float>(type, (float)nodeValue.asDouble());
+				return new Value<Float>(type, (float) nodeValue.asDouble());
 			case Int16:
 			case UInt8:
-				return new Value<Byte>(type, (byte)nodeValue.asInt());
+				return new Value<Byte>(type, (byte) nodeValue.asInt());
 			case UInt16:
 			case Int32:
 				return new Value<Integer>(type, nodeValue.asInt());
 			case UInt32:
 			case Int64:
-				return new Value<Long>(type, (long)nodeValue.asLong());
+				return new Value<Long>(type, (long) nodeValue.asLong());
 			case Text:
 			case String:
 				return new Value<String>(type, nodeValue.asText());

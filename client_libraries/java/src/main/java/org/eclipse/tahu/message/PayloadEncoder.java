@@ -20,13 +20,13 @@ import java.io.IOException;
  * 
  * @param <P> the type of payload.
  */
-public interface PayloadEncoder <P> {
+public interface PayloadEncoder<P> {
 
 	/**
 	 * Converts a payload object into a byte array.
 	 * 
 	 * @param payload a payload object
-	 * @return the byte array representing the payload 
+	 * @return the byte array representing the payload
 	 * @throws IOException
 	 */
 	public byte[] getBytes(P payload) throws IOException;

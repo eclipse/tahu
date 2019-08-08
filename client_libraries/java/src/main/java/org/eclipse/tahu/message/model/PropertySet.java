@@ -26,43 +26,43 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * A class that maintains a set of properties associated with a {@link Metric}.
  */
 public class PropertySet implements Map<String, PropertyValue> {
-	
+
 	@JsonIgnore
 	private Map<String, PropertyValue> map;
-	
+
 	public PropertySet() {
-		this.map = new HashMap<String, PropertyValue>();
+		this.map = new HashMap<>();
 	}
-	
+
 	private PropertySet(Map<String, PropertyValue> propertyMap) {
 		this.map = propertyMap;
 	}
-	
+
 	@JsonIgnore
 	public PropertyValue getPropertyValue(String name) {
 		return this.map.get(name);
 	}
-	
+
 	@JsonIgnore
 	public void setProperty(String name, PropertyValue value) {
 		this.map.put(name, value);
 	}
-	
+
 	@JsonIgnore
 	public void removeProperty(String name) {
 		this.map.remove(name);
 	}
-	
+
 	@JsonIgnore
 	public void clear() {
 		this.map.clear();
 	}
-	
+
 	@JsonIgnore
 	public Set<String> getNames() {
 		return map.keySet();
 	}
-	
+
 	@JsonIgnore
 	public Collection<PropertyValue> getValues() {
 		return map.values();
@@ -72,12 +72,12 @@ public class PropertySet implements Map<String, PropertyValue> {
 	public Map<String, PropertyValue> getPropertyMap() {
 		return map;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "PropertySet [propertyMap=" + map + "]";
 	}
-	
+
 	@Override
 	public int size() {
 		return map.size();
@@ -137,31 +137,35 @@ public class PropertySet implements Map<String, PropertyValue> {
 	 * A builder for a PropertySet instance
 	 */
 	public static class PropertySetBuilder {
-		
+
 		private Map<String, PropertyValue> propertyMap;
-		
+
 		public PropertySetBuilder() {
-			this.propertyMap = new HashMap<String, PropertyValue>();
+			this.propertyMap = new HashMap<>();
 		}
-		
+
+		public PropertySetBuilder(Map<String, PropertyValue> propertyMap) {
+			this.propertyMap = propertyMap;
+		}
+
 		public PropertySetBuilder(PropertySet propertySet) throws SparkplugInvalidTypeException {
-			this.propertyMap = new HashMap<String, PropertyValue>();
+			this.propertyMap = new HashMap<>();
 			for (String name : propertySet.getNames()) {
 				PropertyValue value = propertySet.getPropertyValue(name);
 				propertyMap.put(name, new PropertyValue(value.getType(), value.getValue()));
 			}
 		}
-		
+
 		public PropertySetBuilder addProperty(String name, PropertyValue value) {
 			this.propertyMap.put(name, value);
 			return this;
 		}
-		
+
 		public PropertySetBuilder addProperties(Map<String, PropertyValue> properties) {
 			this.propertyMap.putAll(properties);
 			return this;
 		}
-		
+
 		public PropertySet createPropertySet() {
 			return new PropertySet(propertyMap);
 		}

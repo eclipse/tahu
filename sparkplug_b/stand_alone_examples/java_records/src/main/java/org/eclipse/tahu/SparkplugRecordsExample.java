@@ -12,6 +12,7 @@ import static org.eclipse.tahu.message.model.MetricDataType.String;
 
 import java.util.Date;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -146,21 +147,21 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 		// Metric properties = Record fields
 		return new MetricBuilder(type, String, null)
 				.timestamp(timestamp)
-				.properties(new PropertySetBuilder()
+				.properties(new PropertySetBuilder(new TreeMap<>()) // TreeMap for natural ordering of the fields
 						.addProperty("intField", new PropertyValue(PropertyDataType.PropertySet,
-								new PropertySetBuilder()
+								new PropertySetBuilder(new TreeMap<>())
 										.addProperty("fieldValue",
 												new PropertyValue(PropertyDataType.Int32, random.nextInt()))
 										.createPropertySet()))
 						.addProperty("fltField",
 								new PropertyValue(PropertyDataType.PropertySet,
-										new PropertySetBuilder()
+										new PropertySetBuilder(new TreeMap<>())
 												.addProperty("fieldValue",
 														new PropertyValue(PropertyDataType.Float, random.nextFloat()))
 												.createPropertySet()))
 						.addProperty("strField",
 								new PropertyValue(PropertyDataType.PropertySet,
-										new PropertySetBuilder()
+										new PropertySetBuilder(new TreeMap<>())
 												.addProperty("fieldValue",
 														new PropertyValue(PropertyDataType.String, newUUID()))
 												.createPropertySet()))

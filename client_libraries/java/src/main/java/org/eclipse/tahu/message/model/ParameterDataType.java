@@ -23,8 +23,8 @@ import org.eclipse.tahu.SparkplugInvalidTypeException;
 /**
  * An enumeration of data types for the value of a {@link Parameter} for a {@link Template}
  */
-public enum ParameterDataType {	
-	
+public enum ParameterDataType {
+
 	// Basic Types
 	Int8(1, Byte.class),
 	Int16(2, Short.class),
@@ -40,27 +40,27 @@ public enum ParameterDataType {
 	String(12, String.class),
 	DateTime(13, Date.class),
 	Text(14, String.class),
-	
+
 	// Unknown
 	Unknown(0, Object.class);
-	
+
 	private static Logger logger = LogManager.getLogger(ParameterDataType.class.getName());
-	
+
 	private Class<?> clazz = null;
 	private int intValue = 0;
-	
+
 	private ParameterDataType(int intValue, Class<?> clazz) {
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
-	
+
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			logger.warn("Failed type check - " + clazz + " != " + value.getClass().toString());
 			throw new SparkplugInvalidTypeException(value.getClass());
 		}
 	}
-	
+
 	/**
 	 * Returns an integer representation of the data type.
 	 * 
@@ -69,7 +69,7 @@ public enum ParameterDataType {
 	public int toIntValue() {
 		return this.intValue;
 	}
-	
+
 	/**
 	 * Converts the integer representation of the data type into a {@link ParameterDataType} instance.
 	 * 
@@ -77,7 +77,7 @@ public enum ParameterDataType {
 	 * @return a {@link ParameterDataType} instance.
 	 */
 	public static ParameterDataType fromInteger(int i) {
-		switch(i) {
+		switch (i) {
 			case 1:
 				return Int8;
 			case 2:
@@ -110,7 +110,7 @@ public enum ParameterDataType {
 				return Unknown;
 		}
 	}
-	
+
 	/**
 	 * Returns the class type for this DataType
 	 * 

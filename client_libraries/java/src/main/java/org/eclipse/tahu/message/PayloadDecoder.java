@@ -18,13 +18,13 @@ package org.eclipse.tahu.message;
  * 
  * @param <P> the type of payload.
  */
-public interface PayloadDecoder <P> {
+public interface PayloadDecoder<P> {
 
 	/**
 	 * Builds a payload from a supplied byte array.
 	 * 
 	 * @param bytes the bytes representing the payload
-	 * @return a payload object built from the byte array 
+	 * @return a payload object built from the byte array
 	 * @throws Exception
 	 */
 	public P buildFromByteArray(byte[] bytes) throws Exception;

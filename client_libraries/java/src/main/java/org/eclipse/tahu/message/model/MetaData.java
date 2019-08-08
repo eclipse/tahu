@@ -28,17 +28,17 @@ public class MetaData {
 	 * Indicates if the metric represents one of multiple parts.
 	 */
 	private Boolean isMultiPart;
-	
+
 	/**
 	 * A content type associated with the metric.
 	 */
 	private String contentType;
-	
-	/** 
+
+	/**
 	 * A size associated with the metric.
 	 */
 	private Long size;
-	
+
 	/**
 	 * A sequence associated with the metric.
 	 */
@@ -48,26 +48,27 @@ public class MetaData {
 	 * A file name associated with the metric.
 	 */
 	private String fileName;
-	
-	/** 
+
+	/**
 	 * A file type associated with the metric.
 	 */
 	private String fileType;
-	
+
 	/**
 	 * A MD5 sum associated with the metric.
 	 */
 	private String md5;
-	
+
 	/**
 	 * A description associated with the metric.
 	 */
 	private String description;
-	
+
 	/**
 	 * Default no-arg constructor.
 	 */
-	public MetaData() {}
+	public MetaData() {
+	}
 
 	/**
 	 * Constructor with fields.
@@ -81,8 +82,8 @@ public class MetaData {
 	 * @param md5 a MD5 sum associated with the metric.
 	 * @param description a description associated with the metric
 	 */
-	public MetaData(Boolean isMultiPart, String contentType, Long size, Long seq, String fileName, 
-			String fileType, String md5, String description) {
+	public MetaData(Boolean isMultiPart, String contentType, Long size, Long seq, String fileName, String fileType,
+			String md5, String description) {
 		this.isMultiPart = isMultiPart;
 		this.contentType = contentType;
 		this.size = size;
@@ -167,11 +168,27 @@ public class MetaData {
 
 	@Override
 	public String toString() {
-		return "MetaData [isMultiPart=" + isMultiPart + ", contentType=" + contentType + ", size=" + size + ", seq=" 
-				+ seq + ", fileName=" + fileName + ", fileType=" + fileType + ", md5=" + md5 + ", description=" 
-				+ description + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("MetaData [isMultiPart=");
+		builder.append(isMultiPart);
+		builder.append(", contentType=");
+		builder.append(contentType);
+		builder.append(", size=");
+		builder.append(size);
+		builder.append(", seq=");
+		builder.append(seq);
+		builder.append(", fileName=");
+		builder.append(fileName);
+		builder.append(", fileType=");
+		builder.append(fileType);
+		builder.append(", md5=");
+		builder.append(md5);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append("]");
+		return builder.toString();
 	}
-	
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -181,16 +198,12 @@ public class MetaData {
 			return false;
 		}
 		MetaData meta = (MetaData) object;
-		return Objects.equals(isMultiPart, meta.isMultiPart())
-				&& Objects.equals(contentType, meta.getContentType())
-				&& Objects.equals(size, meta.getSize())
-				&& Objects.equals(seq, meta.getSeq())
-				&& Objects.equals(fileName, meta.getFileName())
-				&& Objects.equals(fileType, meta.getFileType())
-				&& Objects.equals(md5, meta.getMd5())
-				&& Objects.equals(description, meta.getDescription());
+		return Objects.equals(isMultiPart, meta.isMultiPart()) && Objects.equals(contentType, meta.getContentType())
+				&& Objects.equals(size, meta.getSize()) && Objects.equals(seq, meta.getSeq())
+				&& Objects.equals(fileName, meta.getFileName()) && Objects.equals(fileType, meta.getFileType())
+				&& Objects.equals(md5, meta.getMd5()) && Objects.equals(description, meta.getDescription());
 	}
-	
+
 	/**
 	 * A Builder for a MetaData instance.
 	 */
@@ -204,8 +217,9 @@ public class MetaData {
 		private String fileType;
 		private String md5;
 		private String description;
-		
-		public MetaDataBuilder() {};
+
+		public MetaDataBuilder() {
+		};
 
 		public MetaDataBuilder(MetaData metaData) {
 			this.isMultiPart = metaData.isMultiPart();
@@ -227,37 +241,37 @@ public class MetaData {
 			this.contentType = contentType;
 			return this;
 		}
-		
+
 		public MetaDataBuilder size(Long size) {
 			this.size = size;
 			return this;
 		}
-		
+
 		public MetaDataBuilder seq(Long seq) {
 			this.seq = seq;
 			return this;
 		}
-		
+
 		public MetaDataBuilder fileName(String fileName) {
 			this.fileName = fileName;
 			return this;
 		}
-		
+
 		public MetaDataBuilder fileType(String fileType) {
 			this.fileType = fileType;
 			return this;
 		}
-		
+
 		public MetaDataBuilder md5(String md5) {
 			this.md5 = md5;
 			return this;
 		}
-		
+
 		public MetaDataBuilder description(String description) {
 			this.description = description;
 			return this;
 		}
-		
+
 		public MetaData createMetaData() {
 			return new MetaData(isMultiPart, contentType, size, seq, fileName, fileType, md5, description);
 		}
