@@ -204,7 +204,7 @@ bool decode_metric(org_eclipse_tahu_protobuf_Payload_Metric *metric, pb_istream_
  */
 int grow_char_array(char **array, int current_size, int num_new_elems) {
         const int total_size = current_size + num_new_elems;
-	char *temp = (char *)realloc(*array, (total_size * sizeof(char)));
+	char *temp = (char *)realloc(*array, (total_size * sizeof(char*)));
 
 	if (temp == NULL) {
 		fprintf(stderr, "Cannot allocate more memory.\n");
@@ -693,6 +693,26 @@ void free_payload(org_eclipse_tahu_protobuf_Payload *payload) {
 			free(payload->metrics[i].value.string_value);
 		  }
 		}
+		
+		if (payload->metrics[i].has_properties)
+		{
+			int j=0;
+			for (j=0; j<payload->metrics[i].properties.keys_count; j++){
+				free(payload->metrics[i].properties.keys[j]);
+				
+				if(payload->metrics[i].properties.values[j].which_value ==
+					com_cirruslink_sparkplug_protobuf_Payload_PropertyValue_string_value_tag) 
+				{
+					if(payload->metrics[i].properties.values[j].value.string_value)
+					{	
+						free(payload->metrics[i].properties.values[j].value.string_value);
+					}
+				}
+			}
+			free(payload->metrics[i].properties.keys);
+			free(payload->metrics[i].properties.values);	
+		}	
+		
 	}
 }
 
