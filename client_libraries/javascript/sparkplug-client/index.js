@@ -88,7 +88,7 @@ function SparkplugClient(config) {
             metric = [ {
                 "name" : "bdSeq", 
                 "value" : bdSeq, 
-                "type" : "int"
+                "type" : "uint64"
             } ];
         payload.metrics = metric;
         return payload;
@@ -212,7 +212,7 @@ function SparkplugClient(config) {
         if (metrics !== undefined && metrics !== null) {
             metrics.push({
                 "name" : "bdSeq",
-                "type" : "uint32", 
+                "type" : "uint64", 
                 "value" : bdSeq
             });
         }
@@ -260,7 +260,8 @@ function SparkplugClient(config) {
 
     // Publishes Node BIRTH certificates for the edge node
     this.publishDeviceDeath = function(deviceId, payload) {
-        var topic = version + "/" + groupId + "/DDEATH/" + edgeNode + "/" + deviceId;
+        var topic = version + "/" + groupId + "/DDEATH/" + edgeNode + "/" + deviceId,
+            options = {};
         // Add seq number
         addSeqNumber(payload);
         // Publish
