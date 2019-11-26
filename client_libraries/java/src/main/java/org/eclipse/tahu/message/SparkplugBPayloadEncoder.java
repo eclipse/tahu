@@ -97,6 +97,9 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		// Set the name, data type, and value
 		if (metric.hasName()) {
 			builder.setName(metric.getName());
+		} else {
+			// name is an empty String by default and must be cleared
+			builder.clearName();
 		}
 
 		// Set the alias
