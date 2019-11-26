@@ -94,26 +94,28 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		MetricDataType dataType = MetricDataType.fromInteger((protoMetric.getDatatype()));
 
 		// Build and return the Metric
-		return new MetricBuilder(protoMetric.getName(), dataType, getMetricValue(protoMetric))
-				.isHistorical(
-						protoMetric.hasIsHistorical() ? protoMetric.getIsHistorical() : null)
-				.isTransient(protoMetric
-						.hasIsTransient() ? protoMetric.getIsTransient() : null)
-				.timestamp(protoMetric.hasTimestamp() ? new Date(protoMetric.getTimestamp()) : null)
-				.alias(protoMetric.hasAlias() ? protoMetric.getAlias() : null)
-				.metaData(protoMetric.hasMetadata()
-						? new MetaDataBuilder().contentType(protoMetric.getMetadata().getContentType())
-								.size(protoMetric.getMetadata().getSize()).seq(protoMetric.getMetadata().getSeq())
-								.fileName(protoMetric.getMetadata().getFileName())
-								.fileType(protoMetric.getMetadata().getFileType())
-								.md5(protoMetric.getMetadata().getMd5())
-								.description(protoMetric.getMetadata().getDescription()).createMetaData()
-						: null)
-				.properties(protoMetric.hasProperties()
-						? new PropertySetBuilder().addProperties(convertProperties(protoMetric.getProperties()))
-								.createPropertySet()
-						: null)
-				.createMetric();
+		return new MetricBuilder(protoMetric.hasName() ? protoMetric.getName() : null, dataType,
+				getMetricValue(protoMetric))
+						.isHistorical(protoMetric.hasIsHistorical() ? protoMetric.getIsHistorical() : null)
+						.isTransient(
+								protoMetric.hasIsTransient() ? protoMetric.getIsTransient() : null)
+						.timestamp(protoMetric
+								.hasTimestamp() ? new Date(protoMetric.getTimestamp()) : null)
+						.alias(protoMetric.hasAlias() ? protoMetric.getAlias() : null)
+						.metaData(protoMetric.hasMetadata()
+								? new MetaDataBuilder().contentType(protoMetric.getMetadata().getContentType())
+										.size(protoMetric.getMetadata().getSize())
+										.seq(protoMetric.getMetadata().getSeq())
+										.fileName(protoMetric.getMetadata().getFileName())
+										.fileType(protoMetric.getMetadata().getFileType())
+										.md5(protoMetric.getMetadata().getMd5())
+										.description(protoMetric.getMetadata().getDescription()).createMetaData()
+								: null)
+						.properties(protoMetric.hasProperties()
+								? new PropertySetBuilder().addProperties(convertProperties(protoMetric.getProperties()))
+										.createPropertySet()
+								: null)
+						.createMetric();
 	}
 
 	private Map<String, PropertyValue> convertProperties(SparkplugBProto.Payload.PropertySet decodedPropSet)
