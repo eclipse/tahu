@@ -259,7 +259,7 @@ function SparkplugClient(config) {
     };
 
     // Publishes Node BIRTH certificates for the edge node
-    this.publishDeviceDeath = function(deviceId, payload) {
+    this.publishDeviceDeath = function(deviceId, payload, options) {
         var topic = version + "/" + groupId + "/DDEATH/" + edgeNode + "/" + deviceId;
         // Add seq number
         addSeqNumber(payload);
