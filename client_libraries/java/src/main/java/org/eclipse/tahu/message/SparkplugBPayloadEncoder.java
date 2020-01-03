@@ -97,6 +97,9 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		// Set the name, data type, and value
 		if (metric.hasName()) {
 			builder.setName(metric.getName());
+		} else {
+			// name is an empty String by default and must be cleared
+			builder.clearName();
 		}
 
 		// Set the alias
@@ -498,7 +501,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				if (value.getValue() != null) {
 					protoValueBuilder.setStringValue((String) value.getValue());
 				} else {
-					logger.warn("String value for dataset is null");
+					logger.debug("String value for dataset is null");
 					protoValueBuilder.setStringValue("null");
 				}
 				break;
