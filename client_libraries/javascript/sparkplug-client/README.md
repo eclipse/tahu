@@ -431,6 +431,7 @@ client.on('close', function () {
         updated log messages and set default level to 'info', and disabled 
         ping rescheduling within the client.
 * 3.2.1 Updated License and repo links, cleaned up logging.
+* 3.2.2 Bug Fixes
 
 ## License
 
