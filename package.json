@@ -1,23 +1,23 @@
 {
   "name": "sparkplug-client",
-  "version": "3.2.1",
-  "description": "A client module for MQTT communication using the Sparkplug specification from Cirrus Link Solutions",
+  "version": "0.0.0",
+  "description": "A fork of the eclipse tahu javascript sparkplug b client (v3.2.1) with additional features.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eclipse/tahu.git"
+    "url": "git+https://github.com/joyja/tentacle-sparkplug-client"
   },
   "keywords": [
     "tahu",
     "mqtt",
     "sparkplug"
   ],
-  "author": "Chad Kienle <chad.kienle@cirrus-link.com> (http://www.cirrus-link.com)",
+  "author": "James Joy <joyja@jarautomation.io> (http://www.jarautomation.io)",
   "license": "EPL-2.0",
   "bugs": {
-    "url": "https://github.com/eclipse/tahu/issues"
+    "url": "https://github.com/joyja/tentacle-sparkplug-client/issues"
   },
-  "homepage": "https://github.com/eclipse/tahu",
+  "homepage": "https://github.com/joyja/tentacle-sparkplug-client",
   "files": [
     "index.js",
     "README.md",
