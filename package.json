@@ -1,6 +1,6 @@
 {
   "name": "tentacle-sparkplug-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A fork of the eclipse tahu javascript sparkplug b client (v3.2.1) with additional features.",
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
