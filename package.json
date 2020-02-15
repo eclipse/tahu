@@ -9,7 +9,7 @@
     "fix": "eslint --ext .js,.vue --fix --ignore-path .gitignore .",
     "coveralls": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/joyja/tentacle-sparkplug-client"
