@@ -1,5 +1,5 @@
 {
-  "name": "sparkplug-client",
+  "name": "tentacle-sparkplug-client",
   "version": "0.0.0",
   "description": "A fork of the eclipse tahu javascript sparkplug b client (v3.2.1) with additional features.",
   "scripts": {
