@@ -2,6 +2,13 @@
   "name": "sparkplug-client",
   "version": "0.0.0",
   "description": "A fork of the eclipse tahu javascript sparkplug b client (v3.2.1) with additional features.",
+  "scripts": {
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "test": "jest --watchAll",
+    "test:coverage": "jest --coverage",
+    "fix": "eslint --ext .js,.vue --fix --ignore-path .gitignore .",
+    "coveralls": "jest --coverage --coverageReporters=text-lcov | coveralls"
+  },
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -31,6 +38,7 @@
   },
   "devDependencies": {
     "coveralls": "^3.0.9",
+    "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-jest": "^23.7.0",
