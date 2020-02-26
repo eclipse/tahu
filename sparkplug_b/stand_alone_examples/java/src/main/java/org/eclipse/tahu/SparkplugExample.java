@@ -46,6 +46,8 @@ import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.Row.RowBuilder;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
+import org.eclipse.tahu.util.CompressionAlgorithm;
+import org.eclipse.tahu.util.PayloadUtil;
 
 /**
  * An example Sparkplug B application.
@@ -60,6 +62,8 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 	// Configuration
 	private static final boolean USING_REAL_TLS = false;
+	private static final boolean USING_COMPRESSION = false;
+	private static final CompressionAlgorithm compressionAlgorithm = CompressionAlgorithm.GZIP;
 	private String serverUrl = "tcp://localhost:1883";
 	private String groupId = "Sparkplug B Devices";
 	private String edgeNode = "Java Sparkplug B Example";
@@ -90,7 +94,13 @@ public class SparkplugExample implements MqttCallbackExtended {
 			// Build up DEATH payload - note DEATH payloads don't have a regular sequence number
 			SparkplugBPayloadBuilder deathPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date());
 			deathPayload = addBdSeqNum(deathPayload);
-			byte [] deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
+			byte[] deathBytes;
+			if (USING_COMPRESSION) {
+				// Compress payload (optional)
+				deathBytes = new SparkplugBPayloadEncoder().getBytes(PayloadUtil.compress(deathPayload.createPayload(), compressionAlgorithm));
+			} else {
+				deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
+			}
 			
 			MqttConnectOptions options = new MqttConnectOptions();
 			
@@ -132,8 +142,16 @@ public class SparkplugExample implements MqttCallbackExtended {
 								newUUID(), 
 								null);
 						
-						client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, 
-								new SparkplugBPayloadEncoder().getBytes(payload), 0, false);
+						// Compress payload (optional)
+						if (USING_COMPRESSION) {
+							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+									new SparkplugBPayloadEncoder().getBytes(
+											PayloadUtil.compress(payload, compressionAlgorithm)),
+									0, false);
+						} else {
+							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+									new SparkplugBPayloadEncoder().getBytes(payload), 0, false);
+						}
 					}
 				} else {
 					System.out.println("Not connected - not publishing data");
@@ -603,7 +621,14 @@ public class SparkplugExample implements MqttCallbackExtended {
 			try {
 				outboundPayload.setTimestamp(new Date());
 				SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
-				client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+				
+				// Compress payload (optional)
+				if (USING_COMPRESSION) {
+					client.publish(topic, encoder.getBytes(PayloadUtil.compress(outboundPayload, compressionAlgorithm)),
+							0, false);
+				} else {
+					client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+				}
 			} catch (MqttPersistenceException e) {
 				e.printStackTrace();
 			} catch (MqttException e) {
