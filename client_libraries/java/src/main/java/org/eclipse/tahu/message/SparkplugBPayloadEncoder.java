@@ -528,6 +528,9 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				}
 				break;
 			case Boolean:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setBooleanValue(toBoolean(value.getValue()));
 				break;
 			case DateTime:
