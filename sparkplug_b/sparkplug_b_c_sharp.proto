@@ -76,7 +76,7 @@ message Payload {
             }
 
             message ParameterValueExtension {
-		repeated google.protobuf.Any extensions = 1;
+                repeated google.protobuf.Any extensions = 1;
             }
         }
 
@@ -85,7 +85,7 @@ message Payload {
         repeated Parameter parameters        = 3;
         string template_ref                  = 4;          // Reference to a template if this is extending a Template or an instance - must exist if an instance
         bool is_definition                   = 5;
-	repeated google.protobuf.Any details = 6;
+        repeated google.protobuf.Any details = 6;
     }
 
     message DataSet {
@@ -103,7 +103,7 @@ message Payload {
             }
 
             message DataSetValueExtension {
-		repeated google.protobuf.Any details = 1;
+                repeated google.protobuf.Any details = 1;
             }
         }
 
@@ -116,13 +116,13 @@ message Payload {
         repeated string   columns           = 2;
         repeated uint32   types             = 3;
         repeated Row      rows              = 4;
-	repeated google.protobuf.Any details = 5;
+        repeated google.protobuf.Any details = 5;
     }
 
     message PropertyValue {
 
         uint32     type                   = 1;
-	bool       is_null                = 2;
+        bool       is_null                = 2;
 
         oneof value {
             uint32          int_value              = 3;
@@ -181,7 +181,7 @@ message Payload {
         bool     is_transient  = 6;        // Tells consuming clients such as MQTT Engine to not store this as a tag
         bool     is_null       = 7;        // If this is null - explicitly say so rather than using -1, false, etc for some datatypes.
         MetaData metadata      = 8;        // Metadata for the payload
-	PropertySet properties = 9;
+        PropertySet properties = 9;
 
         oneof value {
             uint32   int_value                      = 10;

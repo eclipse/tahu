@@ -12,7 +12,7 @@
 //
 // To compile:
 // cd client_libraries/java
-// protoc --proto_path=../../ --java_out=src/main/java ../../sparkplug_b.proto 
+// protoc --proto_path=../../ --java_out=src/main/java ../../sparkplug_b.proto
 //
 
 syntax = "proto2";
@@ -121,7 +121,7 @@ message Payload {
     message PropertyValue {
 
         optional uint32     type                    = 1;
-        optional bool       is_null                 = 2; 
+        optional bool       is_null                 = 2;
 
         oneof value {
             uint32          int_value               = 3;
