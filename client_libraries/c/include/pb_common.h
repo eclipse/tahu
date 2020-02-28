@@ -11,20 +11,18 @@
 extern "C" {
 #endif
 
-/* Iterator for pb_field_t list */
-struct pb_field_iter_s {
-    const pb_field_t *start;       /* Start of the pb_field_t array */
-    const pb_field_t *pos;         /* Current position of the iterator */
-    unsigned required_field_index; /* Zero-based index that counts only the required fields */
-    void *dest_struct;             /* Pointer to start of the structure */
-    void *pData;                   /* Pointer to current field value */
-    void *pSize;                   /* Pointer to count/has field */
-};
-typedef struct pb_field_iter_s pb_field_iter_t;
-
 /* Initialize the field iterator structure to beginning.
  * Returns false if the message type is empty. */
-bool pb_field_iter_begin(pb_field_iter_t *iter, const pb_field_t *fields, void *dest_struct);
+bool pb_field_iter_begin(pb_field_iter_t *iter, const pb_msgdesc_t *desc, void *message);
+
+/* Get a field iterator for extension field. */
+bool pb_field_iter_begin_extension(pb_field_iter_t *iter, pb_extension_t *extension);
+
+/* Same as pb_field_iter_begin(), but for const message pointer.
+ * Note that the pointers in pb_field_iter_t will be non-const but shouldn't
+ * be written to when using these functions. */
+bool pb_field_iter_begin_const(pb_field_iter_t *iter, const pb_msgdesc_t *desc, const void *message);
+bool pb_field_iter_begin_extension_const(pb_field_iter_t *iter, const pb_extension_t *extension);
 
 /* Advance the iterator to the next field.
  * Returns false when the iterator wraps back to the first field. */
@@ -33,6 +31,11 @@ bool pb_field_iter_next(pb_field_iter_t *iter);
 /* Advance the iterator until it points at a field with the given tag.
  * Returns false if no such field exists. */
 bool pb_field_iter_find(pb_field_iter_t *iter, uint32_t tag);
+
+#ifdef PB_VALIDATE_UTF8
+/* Validate UTF-8 text string */
+bool pb_validate_utf8(const char *s);
+#endif
 
 #ifdef __cplusplus
 } /* extern "C" */
