@@ -24,81 +24,81 @@ namespace Org.Eclipse.Tahu.Protobuf {
           string.Concat(
             "CiVzcGFya3BsdWdfYi9zcGFya3BsdWdfYl9jX3NoYXJwLnByb3RvEhlvcmcu",
             "ZWNsaXBzZS50YWh1LnByb3RvYnVmGhlnb29nbGUvcHJvdG9idWYvYW55LnBy",
-            "b3RvIrAYCgdQYXlsb2FkEhEKCXRpbWVzdGFtcBgBIAEoBBI5CgZtZXRyaWMY",
-            "AiADKAsyKS5vcmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxvYWQuTWV0",
-            "cmljEgsKA3NlcRgDIAEoBBIMCgR1dWlkGAQgASgJEgwKBGJvZHkYBSABKAwS",
-            "JQoHZGV0YWlscxgGIAMoCzIULmdvb2dsZS5wcm90b2J1Zi5Bbnka4wQKCFRl",
-            "bXBsYXRlEg8KB3ZlcnNpb24YASABKAkSOgoHbWV0cmljcxgCIAMoCzIpLm9y",
-            "Zy5lY2xpcHNlLnRhaHUucHJvdG9idWYuUGF5bG9hZC5NZXRyaWMSSQoKcGFy",
-            "YW1ldGVycxgDIAMoCzI1Lm9yZy5lY2xpcHNlLnRhaHUucHJvdG9idWYuUGF5",
-            "bG9hZC5UZW1wbGF0ZS5QYXJhbWV0ZXISFAoMdGVtcGxhdGVfcmVmGAQgASgJ",
-            "EhUKDWlzX2RlZmluaXRpb24YBSABKAgSJQoHZGV0YWlscxgGIAMoCzIULmdv",
-            "b2dsZS5wcm90b2J1Zi5Bbnka6gIKCVBhcmFtZXRlchIMCgRuYW1lGAEgASgJ",
-            "EgwKBHR5cGUYAiABKA0SEwoJaW50X3ZhbHVlGAMgASgNSAASFAoKbG9uZ192",
-            "YWx1ZRgEIAEoBEgAEhUKC2Zsb2F0X3ZhbHVlGAUgASgCSAASFgoMZG91Ymxl",
-            "X3ZhbHVlGAYgASgBSAASFwoNYm9vbGVhbl92YWx1ZRgHIAEoCEgAEhYKDHN0",
-            "cmluZ192YWx1ZRgIIAEoCUgAEmgKD2V4dGVuc2lvbl92YWx1ZRgJIAEoCzJN",
-            "Lm9yZy5lY2xpcHNlLnRhaHUucHJvdG9idWYuUGF5bG9hZC5UZW1wbGF0ZS5Q",
-            "YXJhbWV0ZXIuUGFyYW1ldGVyVmFsdWVFeHRlbnNpb25IABpDChdQYXJhbWV0",
-            "ZXJWYWx1ZUV4dGVuc2lvbhIoCgpleHRlbnNpb25zGAEgAygLMhQuZ29vZ2xl",
-            "LnByb3RvYnVmLkFueUIHCgV2YWx1ZRruBAoHRGF0YVNldBIWCg5udW1fb2Zf",
-            "Y29sdW1ucxgBIAEoBBIPCgdjb2x1bW5zGAIgAygJEg0KBXR5cGVzGAMgAygN",
-            "EjwKBHJvd3MYBCADKAsyLi5vcmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBh",
-            "eWxvYWQuRGF0YVNldC5Sb3cSJQoHZGV0YWlscxgFIAMoCzIULmdvb2dsZS5w",
-            "cm90b2J1Zi5BbnkazAIKDERhdGFTZXRWYWx1ZRITCglpbnRfdmFsdWUYASAB",
-            "KA1IABIUCgpsb25nX3ZhbHVlGAIgASgESAASFQoLZmxvYXRfdmFsdWUYAyAB",
-            "KAJIABIWCgxkb3VibGVfdmFsdWUYBCABKAFIABIXCg1ib29sZWFuX3ZhbHVl",
-            "GAUgASgISAASFgoMc3RyaW5nX3ZhbHVlGAYgASgJSAASaAoPZXh0ZW5zaW9u",
-            "X3ZhbHVlGAcgASgLMk0ub3JnLmVjbGlwc2UudGFodS5wcm90b2J1Zi5QYXls",
-            "b2FkLkRhdGFTZXQuRGF0YVNldFZhbHVlLkRhdGFTZXRWYWx1ZUV4dGVuc2lv",
-            "bkgAGj4KFURhdGFTZXRWYWx1ZUV4dGVuc2lvbhIlCgdkZXRhaWxzGAEgAygL",
-            "MhQuZ29vZ2xlLnByb3RvYnVmLkFueUIHCgV2YWx1ZRp3CgNSb3cSSQoIZWxl",
-            "bWVudHMYASADKAsyNy5vcmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxv",
-            "YWQuRGF0YVNldC5EYXRhU2V0VmFsdWUSJQoHZGV0YWlscxgCIAMoCzIULmdv",
-            "b2dsZS5wcm90b2J1Zi5BbnkahgQKDVByb3BlcnR5VmFsdWUSDAoEdHlwZRgB",
-            "IAEoDRIPCgdpc19udWxsGAIgASgIEhMKCWludF92YWx1ZRgDIAEoDUgAEhQK",
-            "CmxvbmdfdmFsdWUYBCABKARIABIVCgtmbG9hdF92YWx1ZRgFIAEoAkgAEhYK",
-            "DGRvdWJsZV92YWx1ZRgGIAEoAUgAEhcKDWJvb2xlYW5fdmFsdWUYByABKAhI",
-            "ABIWCgxzdHJpbmdfdmFsdWUYCCABKAlIABJLChFwcm9wZXJ0eXNldF92YWx1",
-            "ZRgJIAEoCzIuLm9yZy5lY2xpcHNlLnRhaHUucHJvdG9idWYuUGF5bG9hZC5Q",
-            "cm9wZXJ0eVNldEgAElAKEnByb3BlcnR5c2V0c192YWx1ZRgKIAEoCzIyLm9y",
-            "Zy5lY2xpcHNlLnRhaHUucHJvdG9idWYuUGF5bG9hZC5Qcm9wZXJ0eVNldExp",
-            "c3RIABJiCg9leHRlbnNpb25fdmFsdWUYCyABKAsyRy5vcmcuZWNsaXBzZS50",
-            "YWh1LnByb3RvYnVmLlBheWxvYWQuUHJvcGVydHlWYWx1ZS5Qcm9wZXJ0eVZh",
-            "bHVlRXh0ZW5zaW9uSAAaPwoWUHJvcGVydHlWYWx1ZUV4dGVuc2lvbhIlCgdk",
-            "ZXRhaWxzGAEgAygLMhQuZ29vZ2xlLnByb3RvYnVmLkFueUIHCgV2YWx1ZRqE",
-            "AQoLUHJvcGVydHlTZXQSDAoEa2V5cxgBIAMoCRJACgZ2YWx1ZXMYAiADKAsy",
-            "MC5vcmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxvYWQuUHJvcGVydHlW",
-            "YWx1ZRIlCgdkZXRhaWxzGAMgAygLMhQuZ29vZ2xlLnByb3RvYnVmLkFueRp9",
-            "Cg9Qcm9wZXJ0eVNldExpc3QSQwoLcHJvcGVydHlzZXQYASADKAsyLi5vcmcu",
-            "ZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxvYWQuUHJvcGVydHlTZXQSJQoH",
-            "ZGV0YWlscxgCIAMoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnkawQEKCE1ldGFE",
-            "YXRhEhUKDWlzX211bHRpX3BhcnQYASABKAgSFAoMY29udGVudF90eXBlGAIg",
-            "ASgJEgwKBHNpemUYAyABKAQSCwoDc2VxGAQgASgEEhEKCWZpbGVfbmFtZRgF",
-            "IAEoCRIRCglmaWxlX3R5cGUYBiABKAkSCwoDbWQ1GAcgASgJEhMKC2Rlc2Ny",
-            "aXB0aW9uGAggASgJEiUKB2RldGFpbHMYCSADKAsyFC5nb29nbGUucHJvdG9i",
-            "dWYuQW55GtwFCgZNZXRyaWMSDAoEbmFtZRgBIAEoCRINCgVhbGlhcxgCIAEo",
-            "BBIRCgl0aW1lc3RhbXAYAyABKAQSEAoIZGF0YXR5cGUYBCABKA0SFQoNaXNf",
-            "aGlzdG9yaWNhbBgFIAEoCBIUCgxpc190cmFuc2llbnQYBiABKAgSDwoHaXNf",
-            "bnVsbBgHIAEoCBI9CghtZXRhZGF0YRgIIAEoCzIrLm9yZy5lY2xpcHNlLnRh",
-            "aHUucHJvdG9idWYuUGF5bG9hZC5NZXRhRGF0YRJCCgpwcm9wZXJ0aWVzGAkg",
-            "ASgLMi4ub3JnLmVjbGlwc2UudGFodS5wcm90b2J1Zi5QYXlsb2FkLlByb3Bl",
-            "cnR5U2V0EhMKCWludF92YWx1ZRgKIAEoDUgAEhQKCmxvbmdfdmFsdWUYCyAB",
-            "KARIABIVCgtmbG9hdF92YWx1ZRgMIAEoAkgAEhYKDGRvdWJsZV92YWx1ZRgN",
-            "IAEoAUgAEhcKDWJvb2xlYW5fdmFsdWUYDiABKAhIABIWCgxzdHJpbmdfdmFs",
-            "dWUYDyABKAlIABIVCgtieXRlc192YWx1ZRgQIAEoDEgAEkMKDWRhdGFzZXRf",
-            "dmFsdWUYESABKAsyKi5vcmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxv",
-            "YWQuRGF0YVNldEgAEkUKDnRlbXBsYXRlX3ZhbHVlGBIgASgLMisub3JnLmVj",
-            "bGlwc2UudGFodS5wcm90b2J1Zi5QYXlsb2FkLlRlbXBsYXRlSAASWQoPZXh0",
-            "ZW5zaW9uX3ZhbHVlGBMgASgLMj4ub3JnLmVjbGlwc2UudGFodS5wcm90b2J1",
-            "Zi5QYXlsb2FkLk1ldHJpYy5NZXRyaWNWYWx1ZUV4dGVuc2lvbkgAGj0KFE1l",
-            "dHJpY1ZhbHVlRXh0ZW5zaW9uEiUKB2RldGFpbHMYASADKAsyFC5nb29nbGUu",
-            "cHJvdG9idWYuQW55QgcKBXZhbHVlQiwKGW9yZy5lY2xpcHNlLnRhaHUucHJv",
-            "dG9idWZCD1NwYXJrcGx1Z0JQcm90b2IGcHJvdG8z"));
+            "b3RvIrEYCgdQYXlsb2FkEhEKCXRpbWVzdGFtcBgBIAEoBBI6CgdtZXRyaWNz",
+            "GAIgAygLMikub3JnLmVjbGlwc2UudGFodS5wcm90b2J1Zi5QYXlsb2FkLk1l",
+            "dHJpYxILCgNzZXEYAyABKAQSDAoEdXVpZBgEIAEoCRIMCgRib2R5GAUgASgM",
+            "EiUKB2RldGFpbHMYBiADKAsyFC5nb29nbGUucHJvdG9idWYuQW55GuMECghU",
+            "ZW1wbGF0ZRIPCgd2ZXJzaW9uGAEgASgJEjoKB21ldHJpY3MYAiADKAsyKS5v",
+            "cmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxvYWQuTWV0cmljEkkKCnBh",
+            "cmFtZXRlcnMYAyADKAsyNS5vcmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBh",
+            "eWxvYWQuVGVtcGxhdGUuUGFyYW1ldGVyEhQKDHRlbXBsYXRlX3JlZhgEIAEo",
+            "CRIVCg1pc19kZWZpbml0aW9uGAUgASgIEiUKB2RldGFpbHMYBiADKAsyFC5n",
+            "b29nbGUucHJvdG9idWYuQW55GuoCCglQYXJhbWV0ZXISDAoEbmFtZRgBIAEo",
+            "CRIMCgR0eXBlGAIgASgNEhMKCWludF92YWx1ZRgDIAEoDUgAEhQKCmxvbmdf",
+            "dmFsdWUYBCABKARIABIVCgtmbG9hdF92YWx1ZRgFIAEoAkgAEhYKDGRvdWJs",
+            "ZV92YWx1ZRgGIAEoAUgAEhcKDWJvb2xlYW5fdmFsdWUYByABKAhIABIWCgxz",
+            "dHJpbmdfdmFsdWUYCCABKAlIABJoCg9leHRlbnNpb25fdmFsdWUYCSABKAsy",
+            "TS5vcmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxvYWQuVGVtcGxhdGUu",
+            "UGFyYW1ldGVyLlBhcmFtZXRlclZhbHVlRXh0ZW5zaW9uSAAaQwoXUGFyYW1l",
+            "dGVyVmFsdWVFeHRlbnNpb24SKAoKZXh0ZW5zaW9ucxgBIAMoCzIULmdvb2ds",
+            "ZS5wcm90b2J1Zi5BbnlCBwoFdmFsdWUa7gQKB0RhdGFTZXQSFgoObnVtX29m",
+            "X2NvbHVtbnMYASABKAQSDwoHY29sdW1ucxgCIAMoCRINCgV0eXBlcxgDIAMo",
+            "DRI8CgRyb3dzGAQgAygLMi4ub3JnLmVjbGlwc2UudGFodS5wcm90b2J1Zi5Q",
+            "YXlsb2FkLkRhdGFTZXQuUm93EiUKB2RldGFpbHMYBSADKAsyFC5nb29nbGUu",
+            "cHJvdG9idWYuQW55GswCCgxEYXRhU2V0VmFsdWUSEwoJaW50X3ZhbHVlGAEg",
+            "ASgNSAASFAoKbG9uZ192YWx1ZRgCIAEoBEgAEhUKC2Zsb2F0X3ZhbHVlGAMg",
+            "ASgCSAASFgoMZG91YmxlX3ZhbHVlGAQgASgBSAASFwoNYm9vbGVhbl92YWx1",
+            "ZRgFIAEoCEgAEhYKDHN0cmluZ192YWx1ZRgGIAEoCUgAEmgKD2V4dGVuc2lv",
+            "bl92YWx1ZRgHIAEoCzJNLm9yZy5lY2xpcHNlLnRhaHUucHJvdG9idWYuUGF5",
+            "bG9hZC5EYXRhU2V0LkRhdGFTZXRWYWx1ZS5EYXRhU2V0VmFsdWVFeHRlbnNp",
+            "b25IABo+ChVEYXRhU2V0VmFsdWVFeHRlbnNpb24SJQoHZGV0YWlscxgBIAMo",
+            "CzIULmdvb2dsZS5wcm90b2J1Zi5BbnlCBwoFdmFsdWUadwoDUm93EkkKCGVs",
+            "ZW1lbnRzGAEgAygLMjcub3JnLmVjbGlwc2UudGFodS5wcm90b2J1Zi5QYXls",
+            "b2FkLkRhdGFTZXQuRGF0YVNldFZhbHVlEiUKB2RldGFpbHMYAiADKAsyFC5n",
+            "b29nbGUucHJvdG9idWYuQW55GoYECg1Qcm9wZXJ0eVZhbHVlEgwKBHR5cGUY",
+            "ASABKA0SDwoHaXNfbnVsbBgCIAEoCBITCglpbnRfdmFsdWUYAyABKA1IABIU",
+            "Cgpsb25nX3ZhbHVlGAQgASgESAASFQoLZmxvYXRfdmFsdWUYBSABKAJIABIW",
+            "Cgxkb3VibGVfdmFsdWUYBiABKAFIABIXCg1ib29sZWFuX3ZhbHVlGAcgASgI",
+            "SAASFgoMc3RyaW5nX3ZhbHVlGAggASgJSAASSwoRcHJvcGVydHlzZXRfdmFs",
+            "dWUYCSABKAsyLi5vcmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxvYWQu",
+            "UHJvcGVydHlTZXRIABJQChJwcm9wZXJ0eXNldHNfdmFsdWUYCiABKAsyMi5v",
+            "cmcuZWNsaXBzZS50YWh1LnByb3RvYnVmLlBheWxvYWQuUHJvcGVydHlTZXRM",
+            "aXN0SAASYgoPZXh0ZW5zaW9uX3ZhbHVlGAsgASgLMkcub3JnLmVjbGlwc2Uu",
+            "dGFodS5wcm90b2J1Zi5QYXlsb2FkLlByb3BlcnR5VmFsdWUuUHJvcGVydHlW",
+            "YWx1ZUV4dGVuc2lvbkgAGj8KFlByb3BlcnR5VmFsdWVFeHRlbnNpb24SJQoH",
+            "ZGV0YWlscxgBIAMoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnlCBwoFdmFsdWUa",
+            "hAEKC1Byb3BlcnR5U2V0EgwKBGtleXMYASADKAkSQAoGdmFsdWVzGAIgAygL",
+            "MjAub3JnLmVjbGlwc2UudGFodS5wcm90b2J1Zi5QYXlsb2FkLlByb3BlcnR5",
+            "VmFsdWUSJQoHZGV0YWlscxgDIAMoCzIULmdvb2dsZS5wcm90b2J1Zi5Bbnka",
+            "fQoPUHJvcGVydHlTZXRMaXN0EkMKC3Byb3BlcnR5c2V0GAEgAygLMi4ub3Jn",
+            "LmVjbGlwc2UudGFodS5wcm90b2J1Zi5QYXlsb2FkLlByb3BlcnR5U2V0EiUK",
+            "B2RldGFpbHMYAiADKAsyFC5nb29nbGUucHJvdG9idWYuQW55GsEBCghNZXRh",
+            "RGF0YRIVCg1pc19tdWx0aV9wYXJ0GAEgASgIEhQKDGNvbnRlbnRfdHlwZRgC",
+            "IAEoCRIMCgRzaXplGAMgASgEEgsKA3NlcRgEIAEoBBIRCglmaWxlX25hbWUY",
+            "BSABKAkSEQoJZmlsZV90eXBlGAYgASgJEgsKA21kNRgHIAEoCRITCgtkZXNj",
+            "cmlwdGlvbhgIIAEoCRIlCgdkZXRhaWxzGAkgAygLMhQuZ29vZ2xlLnByb3Rv",
+            "YnVmLkFueRrcBQoGTWV0cmljEgwKBG5hbWUYASABKAkSDQoFYWxpYXMYAiAB",
+            "KAQSEQoJdGltZXN0YW1wGAMgASgEEhAKCGRhdGF0eXBlGAQgASgNEhUKDWlz",
+            "X2hpc3RvcmljYWwYBSABKAgSFAoMaXNfdHJhbnNpZW50GAYgASgIEg8KB2lz",
+            "X251bGwYByABKAgSPQoIbWV0YWRhdGEYCCABKAsyKy5vcmcuZWNsaXBzZS50",
+            "YWh1LnByb3RvYnVmLlBheWxvYWQuTWV0YURhdGESQgoKcHJvcGVydGllcxgJ",
+            "IAEoCzIuLm9yZy5lY2xpcHNlLnRhaHUucHJvdG9idWYuUGF5bG9hZC5Qcm9w",
+            "ZXJ0eVNldBITCglpbnRfdmFsdWUYCiABKA1IABIUCgpsb25nX3ZhbHVlGAsg",
+            "ASgESAASFQoLZmxvYXRfdmFsdWUYDCABKAJIABIWCgxkb3VibGVfdmFsdWUY",
+            "DSABKAFIABIXCg1ib29sZWFuX3ZhbHVlGA4gASgISAASFgoMc3RyaW5nX3Zh",
+            "bHVlGA8gASgJSAASFQoLYnl0ZXNfdmFsdWUYECABKAxIABJDCg1kYXRhc2V0",
+            "X3ZhbHVlGBEgASgLMioub3JnLmVjbGlwc2UudGFodS5wcm90b2J1Zi5QYXls",
+            "b2FkLkRhdGFTZXRIABJFCg50ZW1wbGF0ZV92YWx1ZRgSIAEoCzIrLm9yZy5l",
+            "Y2xpcHNlLnRhaHUucHJvdG9idWYuUGF5bG9hZC5UZW1wbGF0ZUgAElkKD2V4",
+            "dGVuc2lvbl92YWx1ZRgTIAEoCzI+Lm9yZy5lY2xpcHNlLnRhaHUucHJvdG9i",
+            "dWYuUGF5bG9hZC5NZXRyaWMuTWV0cmljVmFsdWVFeHRlbnNpb25IABo9ChRN",
+            "ZXRyaWNWYWx1ZUV4dGVuc2lvbhIlCgdkZXRhaWxzGAEgAygLMhQuZ29vZ2xl",
+            "LnByb3RvYnVmLkFueUIHCgV2YWx1ZUIsChlvcmcuZWNsaXBzZS50YWh1LnBy",
+            "b3RvYnVmQg9TcGFya3BsdWdCUHJvdG9iBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.AnyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload), global::Org.Eclipse.Tahu.Protobuf.Payload.Parser, new[]{ "Timestamp", "Metric", "Seq", "Uuid", "Body", "Details" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Parser, new[]{ "Version", "Metrics", "Parameters", "TemplateRef", "IsDefinition", "Details" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Types.Parameter), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Types.Parameter.Parser, new[]{ "Name", "Type", "IntValue", "LongValue", "FloatValue", "DoubleValue", "BooleanValue", "StringValue", "ExtensionValue" }, new[]{ "Value" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Types.Parameter.Types.ParameterValueExtension), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Types.Parameter.Types.ParameterValueExtension.Parser, new[]{ "Extensions" }, null, null, null)})}),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload), global::Org.Eclipse.Tahu.Protobuf.Payload.Parser, new[]{ "Timestamp", "Metrics", "Seq", "Uuid", "Body", "Details" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Parser, new[]{ "Version", "Metrics", "Parameters", "TemplateRef", "IsDefinition", "Details" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Types.Parameter), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Types.Parameter.Parser, new[]{ "Name", "Type", "IntValue", "LongValue", "FloatValue", "DoubleValue", "BooleanValue", "StringValue", "ExtensionValue" }, new[]{ "Value" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Types.Parameter.Types.ParameterValueExtension), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Template.Types.Parameter.Types.ParameterValueExtension.Parser, new[]{ "Extensions" }, null, null, null)})}),
             new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.DataSet), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.DataSet.Parser, new[]{ "NumOfColumns", "Columns", "Types_", "Rows", "Details" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.DataSet.Types.DataSetValue), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.DataSet.Types.DataSetValue.Parser, new[]{ "IntValue", "LongValue", "FloatValue", "DoubleValue", "BooleanValue", "StringValue", "ExtensionValue" }, new[]{ "Value" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.DataSet.Types.DataSetValue.Types.DataSetValueExtension), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.DataSet.Types.DataSetValue.Types.DataSetValueExtension.Parser, new[]{ "Details" }, null, null, null)}),
             new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.DataSet.Types.Row), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.DataSet.Types.Row.Parser, new[]{ "Elements", "Details" }, null, null, null)}),
             new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.PropertyValue), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.PropertyValue.Parser, new[]{ "Type", "IsNull", "IntValue", "LongValue", "FloatValue", "DoubleValue", "BooleanValue", "StringValue", "PropertysetValue", "PropertysetsValue", "ExtensionValue" }, new[]{ "Value" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Org.Eclipse.Tahu.Protobuf.Payload.Types.PropertyValue.Types.PropertyValueExtension), global::Org.Eclipse.Tahu.Protobuf.Payload.Types.PropertyValue.Types.PropertyValueExtension.Parser, new[]{ "Details" }, null, null, null)}),
@@ -114,37 +114,33 @@ namespace Org.Eclipse.Tahu.Protobuf {
   #region Messages
   /// <summary>
   ///
-  /// // Indexes of Data Types
-  ///
-  /// // Unknown placeholder for future expansion.
-  /// Unknown         = 0;
-  ///
-  /// // Basic Types
-  /// Int8            = 1;
-  /// Int16           = 2;
-  /// Int32           = 3;
-  /// Int64           = 4;
-  /// UInt8           = 5;
-  /// UInt16          = 6;
-  /// UInt32          = 7;
-  /// UInt64          = 8;
-  /// Float           = 9;
-  /// Double          = 10;
-  /// Boolean         = 11;
-  /// String          = 12;
-  /// DateTime        = 13;
-  /// Text            = 14;
-  ///
-  /// // Additional Metric Types
-  /// UUID            = 15;
-  /// DataSet         = 16;
-  /// Bytes           = 17;
-  /// File            = 18;
-  /// Template        = 19;
-  ///
-  /// // Additional PropertyValue Types
-  /// PropertySet     = 20;
-  /// PropertySetList = 21;
+  ///// Indexes of Data Types
+  ///// Unknown placeholder for future expansion.
+  ///Unknown         = 0;
+  ///// Basic Types
+  ///Int8            = 1;
+  ///Int16           = 2;
+  ///Int32           = 3;
+  ///Int64           = 4;
+  ///UInt8           = 5;
+  ///UInt16          = 6;
+  ///UInt32          = 7;
+  ///UInt64          = 8;
+  ///Float           = 9;
+  ///Double          = 10;
+  ///Boolean         = 11;
+  ///String          = 12;
+  ///DateTime        = 13;
+  ///Text            = 14;
+  ///// Additional Metric Types
+  ///UUID            = 15;
+  ///DataSet         = 16;
+  ///Bytes           = 17;
+  ///File            = 18;
+  ///Template        = 19;
+  ///// Additional PropertyValue Types
+  ///PropertySet     = 20;
+  ///PropertySetList = 21;
   /// </summary>
   public sealed partial class Payload : pb::IMessage<Payload> {
     private static readonly pb::MessageParser<Payload> _parser = new pb::MessageParser<Payload>(() => new Payload());
@@ -171,7 +167,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Payload(Payload other) : this() {
       timestamp_ = other.timestamp_;
-      metric_ = other.metric_.Clone();
+      metrics_ = other.metrics_.Clone();
       seq_ = other.seq_;
       uuid_ = other.uuid_;
       body_ = other.body_;
@@ -187,7 +183,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
     public const int TimestampFieldNumber = 1;
     private ulong timestamp_;
     /// <summary>
-    ///  Timestamp at message sending time
+    /// Timestamp at message sending time
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong Timestamp {
@@ -197,24 +193,24 @@ namespace Org.Eclipse.Tahu.Protobuf {
       }
     }
 
-    /// <summary>Field number for the "metric" field.</summary>
-    public const int MetricFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric> _repeated_metric_codec
+    /// <summary>Field number for the "metrics" field.</summary>
+    public const int MetricsFieldNumber = 2;
+    private static readonly pb::FieldCodec<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric> _repeated_metrics_codec
         = pb::FieldCodec.ForMessage(18, global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric.Parser);
-    private readonly pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric> metric_ = new pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric>();
+    private readonly pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric> metrics_ = new pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric>();
     /// <summary>
-    ///  Repeated forever - no limit in Google Protobufs
+    /// Repeated forever - no limit in Google Protobufs
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric> Metric {
-      get { return metric_; }
+    public pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric> Metrics {
+      get { return metrics_; }
     }
 
     /// <summary>Field number for the "seq" field.</summary>
     public const int SeqFieldNumber = 3;
     private ulong seq_;
     /// <summary>
-    ///  Sequence number
+    /// Sequence number
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong Seq {
@@ -228,7 +224,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
     public const int UuidFieldNumber = 4;
     private string uuid_ = "";
     /// <summary>
-    ///  UUID to track message type in terms of schema definitions
+    /// UUID to track message type in terms of schema definitions
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Uuid {
@@ -242,7 +238,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
     public const int BodyFieldNumber = 5;
     private pb::ByteString body_ = pb::ByteString.Empty;
     /// <summary>
-    ///  To optionally bypass the whole definition above
+    /// To optionally bypass the whole definition above
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Body {
@@ -276,7 +272,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         return true;
       }
       if (Timestamp != other.Timestamp) return false;
-      if(!metric_.Equals(other.metric_)) return false;
+      if(!metrics_.Equals(other.metrics_)) return false;
       if (Seq != other.Seq) return false;
       if (Uuid != other.Uuid) return false;
       if (Body != other.Body) return false;
@@ -288,7 +284,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
     public override int GetHashCode() {
       int hash = 1;
       if (Timestamp != 0UL) hash ^= Timestamp.GetHashCode();
-      hash ^= metric_.GetHashCode();
+      hash ^= metrics_.GetHashCode();
       if (Seq != 0UL) hash ^= Seq.GetHashCode();
       if (Uuid.Length != 0) hash ^= Uuid.GetHashCode();
       if (Body.Length != 0) hash ^= Body.GetHashCode();
@@ -307,7 +303,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         output.WriteRawTag(8);
         output.WriteUInt64(Timestamp);
       }
-      metric_.WriteTo(output, _repeated_metric_codec);
+      metrics_.WriteTo(output, _repeated_metrics_codec);
       if (Seq != 0UL) {
         output.WriteRawTag(24);
         output.WriteUInt64(Seq);
@@ -329,7 +325,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
       if (Timestamp != 0UL) {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Timestamp);
       }
-      size += metric_.CalculateSize(_repeated_metric_codec);
+      size += metrics_.CalculateSize(_repeated_metrics_codec);
       if (Seq != 0UL) {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Seq);
       }
@@ -351,7 +347,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
       if (other.Timestamp != 0UL) {
         Timestamp = other.Timestamp;
       }
-      metric_.Add(other.metric_);
+      metrics_.Add(other.metrics_);
       if (other.Seq != 0UL) {
         Seq = other.Seq;
       }
@@ -377,7 +373,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
             break;
           }
           case 18: {
-            metric_.AddEntriesFrom(input, _repeated_metric_codec);
+            metrics_.AddEntriesFrom(input, _repeated_metrics_codec);
             break;
           }
           case 24: {
@@ -445,7 +441,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int VersionFieldNumber = 1;
         private string version_ = "";
         /// <summary>
-        ///  The version of the Template to prevent mismatches
+        /// The version of the Template to prevent mismatches
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public string Version {
@@ -461,7 +457,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
             = pb::FieldCodec.ForMessage(18, global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric.Parser);
         private readonly pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric> metrics_ = new pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric>();
         /// <summary>
-        ///  Each metric is the name of the metric and the datatype of the member but does not contain a value
+        /// Each metric is the name of the metric and the datatype of the member but does not contain a value
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public pbc::RepeatedField<global::Org.Eclipse.Tahu.Protobuf.Payload.Types.Metric> Metrics {
@@ -482,7 +478,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int TemplateRefFieldNumber = 4;
         private string templateRef_ = "";
         /// <summary>
-        ///  Reference to a template if this is extending a Template or an instance - must exist if an instance
+        /// Reference to a template if this is extending a Template or an instance - must exist if an instance
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public string TemplateRef {
@@ -2112,7 +2108,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         /// <summary>Field number for the "propertysets_value" field.</summary>
         public const int PropertysetsValueFieldNumber = 10;
         /// <summary>
-        ///  List of Property Values
+        /// List of Property Values
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public global::Org.Eclipse.Tahu.Protobuf.Payload.Types.PropertySetList PropertysetsValue {
@@ -2570,7 +2566,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
             = pb::FieldCodec.ForString(10);
         private readonly pbc::RepeatedField<string> keys_ = new pbc::RepeatedField<string>();
         /// <summary>
-        ///  Names of the properties
+        /// Names of the properties
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public pbc::RepeatedField<string> Keys {
@@ -2855,7 +2851,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int IsMultiPartFieldNumber = 1;
         private bool isMultiPart_;
         /// <summary>
-        ///  Bytes specific metadata
+        /// Bytes specific metadata
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public bool IsMultiPart {
@@ -2869,7 +2865,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int ContentTypeFieldNumber = 2;
         private string contentType_ = "";
         /// <summary>
-        ///  General metadata
+        /// General metadata
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public string ContentType {
@@ -2883,7 +2879,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int SizeFieldNumber = 3;
         private ulong size_;
         /// <summary>
-        ///  File size, String size, Multi-part size, etc
+        /// File size, String size, Multi-part size, etc
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public ulong Size {
@@ -2897,7 +2893,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int SeqFieldNumber = 4;
         private ulong seq_;
         /// <summary>
-        ///  Sequence number for multi-part messages
+        /// Sequence number for multi-part messages
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public ulong Seq {
@@ -2911,7 +2907,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int FileNameFieldNumber = 5;
         private string fileName_ = "";
         /// <summary>
-        ///  File metadata
+        /// File metadata
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public string FileName {
@@ -2925,7 +2921,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int FileTypeFieldNumber = 6;
         private string fileType_ = "";
         /// <summary>
-        ///  File type (i.e. xml, json, txt, cpp, etc)
+        /// File type (i.e. xml, json, txt, cpp, etc)
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public string FileType {
@@ -2939,7 +2935,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int Md5FieldNumber = 7;
         private string md5_ = "";
         /// <summary>
-        ///  md5 of data
+        /// md5 of data
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public string Md5 {
@@ -2953,7 +2949,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int DescriptionFieldNumber = 8;
         private string description_ = "";
         /// <summary>
-        ///  Catchalls and future expansion
+        /// Catchalls and future expansion
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public string Description {
@@ -3245,7 +3241,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int NameFieldNumber = 1;
         private string name_ = "";
         /// <summary>
-        ///  Metric name - should only be included on birth
+        /// Metric name - should only be included on birth
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public string Name {
@@ -3259,7 +3255,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int AliasFieldNumber = 2;
         private ulong alias_;
         /// <summary>
-        ///  Metric alias - tied to name on birth and included in all later DATA messages
+        /// Metric alias - tied to name on birth and included in all later DATA messages
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public ulong Alias {
@@ -3273,7 +3269,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int TimestampFieldNumber = 3;
         private ulong timestamp_;
         /// <summary>
-        ///  Timestamp associated with data acquisition time
+        /// Timestamp associated with data acquisition time
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public ulong Timestamp {
@@ -3287,7 +3283,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int DatatypeFieldNumber = 4;
         private uint datatype_;
         /// <summary>
-        ///  DataType of the metric/tag value
+        /// DataType of the metric/tag value
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public uint Datatype {
@@ -3301,7 +3297,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int IsHistoricalFieldNumber = 5;
         private bool isHistorical_;
         /// <summary>
-        ///  If this is historical data and should not update real time tag
+        /// If this is historical data and should not update real time tag
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public bool IsHistorical {
@@ -3315,7 +3311,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int IsTransientFieldNumber = 6;
         private bool isTransient_;
         /// <summary>
-        ///  Tells consuming clients such as MQTT Engine to not store this as a tag
+        /// Tells consuming clients such as MQTT Engine to not store this as a tag
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public bool IsTransient {
@@ -3329,7 +3325,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int IsNullFieldNumber = 7;
         private bool isNull_;
         /// <summary>
-        ///  If this is null - explicitly say so rather than using -1, false, etc for some datatypes.
+        /// If this is null - explicitly say so rather than using -1, false, etc for some datatypes.
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public bool IsNull {
@@ -3343,7 +3339,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         public const int MetadataFieldNumber = 8;
         private global::Org.Eclipse.Tahu.Protobuf.Payload.Types.MetaData metadata_;
         /// <summary>
-        ///  Metadata for the payload
+        /// Metadata for the payload
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public global::Org.Eclipse.Tahu.Protobuf.Payload.Types.MetaData Metadata {
@@ -3433,7 +3429,7 @@ namespace Org.Eclipse.Tahu.Protobuf {
         /// <summary>Field number for the "bytes_value" field.</summary>
         public const int BytesValueFieldNumber = 16;
         /// <summary>
-        ///  Bytes, File
+        /// Bytes, File
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public pb::ByteString BytesValue {
