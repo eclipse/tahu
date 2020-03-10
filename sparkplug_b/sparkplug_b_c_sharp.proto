@@ -10,8 +10,8 @@
 // *   Cirrus Link Solutions - initial implementation
 //
 // To compile:
-// cd client_libraries/java
-// protoc --proto_path=../../ --java_out=src/main/java ../../sparkplug_b.proto
+// cd client_libraries/c_sharp
+// protoc --proto_path=../../ --csharp_out=src --csharp_opt=base_namespace=Org.Eclipse.Tahu.Protobuf ../../sparkplug_b/sparkplug_b_c_sharp.proto
 //
 
 syntax = "proto3";
@@ -23,13 +23,12 @@ package org.eclipse.tahu.protobuf;
 option java_package         = "org.eclipse.tahu.protobuf";
 option java_outer_classname = "SparkplugBProto";
 
+
 message Payload {
     /*
         // Indexes of Data Types
-
         // Unknown placeholder for future expansion.
         Unknown         = 0;
-
         // Basic Types
         Int8            = 1;
         Int16           = 2;
@@ -45,18 +44,15 @@ message Payload {
         String          = 12;
         DateTime        = 13;
         Text            = 14;
-
         // Additional Metric Types
         UUID            = 15;
         DataSet         = 16;
         Bytes           = 17;
         File            = 18;
         Template        = 19;
-
         // Additional PropertyValue Types
         PropertySet     = 20;
         PropertySetList = 21;
-
     */
 
     message Template {
@@ -76,7 +72,7 @@ message Payload {
             }
 
             message ParameterValueExtension {
-		repeated google.protobuf.Any extensions = 1;
+                repeated google.protobuf.Any extensions = 1;
             }
         }
 
@@ -85,7 +81,7 @@ message Payload {
         repeated Parameter parameters        = 3;
         string template_ref                  = 4;          // Reference to a template if this is extending a Template or an instance - must exist if an instance
         bool is_definition                   = 5;
-	repeated google.protobuf.Any details = 6;
+        repeated google.protobuf.Any details = 6;
     }
 
     message DataSet {
@@ -103,7 +99,7 @@ message Payload {
             }
 
             message DataSetValueExtension {
-		repeated google.protobuf.Any details = 1;
+                repeated google.protobuf.Any details = 1;
             }
         }
 
@@ -112,17 +108,17 @@ message Payload {
             repeated google.protobuf.Any details = 2;
         }
 
-        uint64   num_of_columns    = 1;
-        repeated string   columns           = 2;
-        repeated uint32   types             = 3;
-        repeated Row      rows              = 4;
-	repeated google.protobuf.Any details = 5;
+        uint64 num_of_columns                = 1;
+        repeated string   columns            = 2;
+        repeated uint32   types              = 3;
+        repeated Row      rows               = 4;
+        repeated google.protobuf.Any details = 5;
     }
 
     message PropertyValue {
 
         uint32     type                   = 1;
-	bool       is_null                = 2;
+        bool       is_null                = 2;
 
         oneof value {
             uint32          int_value              = 3;
@@ -181,7 +177,7 @@ message Payload {
         bool     is_transient  = 6;        // Tells consuming clients such as MQTT Engine to not store this as a tag
         bool     is_null       = 7;        // If this is null - explicitly say so rather than using -1, false, etc for some datatypes.
         MetaData metadata      = 8;        // Metadata for the payload
-	PropertySet properties = 9;
+        PropertySet properties = 9;
 
         oneof value {
             uint32   int_value                      = 10;
@@ -201,10 +197,10 @@ message Payload {
         }
     }
 
-    uint64   timestamp     = 1;        // Timestamp at message sending time
-    repeated Metric metric = 2;        // Repeated forever - no limit in Google Protobufs
-    uint64   seq           = 3;        // Sequence number
-    string   uuid          = 4;        // UUID to track message type in terms of schema definitions
-    bytes    body          = 5;        // To optionally bypass the whole definition above
+    uint64   timestamp      = 1;        // Timestamp at message sending time
+    repeated Metric metrics = 2;        // Repeated forever - no limit in Google Protobufs
+    uint64   seq            = 3;        // Sequence number
+    string   uuid           = 4;        // UUID to track message type in terms of schema definitions
+    bytes    body           = 5;        // To optionally bypass the whole definition above
     repeated google.protobuf.Any details = 6;
 }
