@@ -16,7 +16,7 @@ var mqtt = require('mqtt'),
   events = require('events'),
   util = require('util'),
   pako = require('pako'),
-  logger = require('winston')
+  logger = require('./logger')
 
 var compressed = 'SPBV1.0_COMPRESSED'
 
