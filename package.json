@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "test": "jest --watchAll",
+    "test:ci": "jest",
     "test:coverage": "jest --coverage",
     "fix": "eslint --ext .js,.vue --fix --ignore-path .gitignore .",
     "coveralls": "jest --coverage --coverageReporters=text-lcov | coveralls"
