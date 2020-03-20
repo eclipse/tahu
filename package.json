@@ -28,6 +28,7 @@
   "homepage": "https://github.com/joyja/tentacle-sparkplug-client",
   "files": [
     "index.js",
+    "logger.js",
     "README.md",
     "LICENSE"
   ],
