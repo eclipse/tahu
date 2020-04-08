@@ -49,7 +49,6 @@ public class MetricDeserializer extends StdDeserializer<Metric> implements Resol
 			throws IOException, JsonProcessingException {
 
 		Metric metric = (Metric) defaultDeserializer.deserialize(parser, ctxt);
-		System.out.println(metric);
 
 		// Check if the data type is a File
 		if (metric.getDataType().equals(MetricDataType.File)) {
