@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2020 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -471,34 +471,56 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 
 		// Set the value
 		DataSetDataType type = value.getType();
+
 		switch (type) {
 			case Int8:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setIntValue((Byte) value.getValue());
 				break;
 			case Int16:
 			case UInt8:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setIntValue((Short) value.getValue());
 				break;
 			case Int32:
 			case UInt16:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setIntValue((Integer) value.getValue());
 				break;
 			case Int64:
 			case UInt32:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setLongValue((Long) value.getValue());
 				break;
 			case UInt64:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setLongValue(((BigInteger) value.getValue()).longValue());
 				break;
 			case Float:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setFloatValue((Float) value.getValue());
 				break;
 			case Double:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setDoubleValue((Double) value.getValue());
 				break;
 			case String:
 			case Text:
-				if (value.getValue() != null) {
+				if (value != null && value.getValue() != null) {
 					protoValueBuilder.setStringValue((String) value.getValue());
 				} else {
 					logger.debug("String value for dataset is null");
@@ -506,6 +528,9 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				}
 				break;
 			case Boolean:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
 				protoValueBuilder.setBooleanValue(toBoolean(value.getValue()));
 				break;
 			case DateTime:

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2020 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -46,6 +46,8 @@ import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.Row.RowBuilder;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
+import org.eclipse.tahu.util.CompressionAlgorithm;
+import org.eclipse.tahu.util.PayloadUtil;
 
 /**
  * An example Sparkplug B application.
@@ -55,50 +57,59 @@ public class SparkplugExample implements MqttCallbackExtended {
 	// HW/SW versions
 	private static final String HW_VERSION = "Emulated Hardware";
 	private static final String SW_VERSION = "v1.0.0";
-	
+
 	private static final String NAMESPACE = "spBv1.0";
 
 	// Configuration
 	private static final boolean USING_REAL_TLS = false;
+	private static final boolean USING_COMPRESSION = false;
+	private static final CompressionAlgorithm compressionAlgorithm = CompressionAlgorithm.GZIP;
 	private String serverUrl = "tcp://localhost:1883";
 	private String groupId = "Sparkplug B Devices";
 	private String edgeNode = "Java Sparkplug B Example";
 	private String deviceId = "SparkplugBExample";
 	private String clientId = null;
-	//private String clientId = "SparkplugBExampleEdgeNode";
+	// private String clientId = "SparkplugBExampleEdgeNode";
 	private String username = "admin";
 	private String password = "changeme";
-	private long PUBLISH_PERIOD = 60000;					// Publish period in milliseconds
+	private long PUBLISH_PERIOD = 60000; // Publish period in milliseconds
 	private ExecutorService executor;
 	private MqttClient client;
-	
+
 	private int bdSeq = 0;
 	private int seq = 0;
-	
+
 	private Object seqLock = new Object();
-	
+
 	public static void main(String[] args) {
 		SparkplugExample example = new SparkplugExample();
 		example.run();
 	}
-	
+
 	public void run() {
 		try {
 			// Random generator and thread pool for outgoing published messages
 			executor = Executors.newFixedThreadPool(1);
-			
+
 			// Build up DEATH payload - note DEATH payloads don't have a regular sequence number
 			SparkplugBPayloadBuilder deathPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date());
 			deathPayload = addBdSeqNum(deathPayload);
-			byte [] deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
-			
+			byte[] deathBytes;
+			if (USING_COMPRESSION) {
+				// Compress payload (optional)
+				deathBytes = new SparkplugBPayloadEncoder()
+						.getBytes(PayloadUtil.compress(deathPayload.createPayload(), compressionAlgorithm));
+			} else {
+				deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
+			}
+
 			MqttConnectOptions options = new MqttConnectOptions();
-			
+
 			if (USING_REAL_TLS) {
 				SocketFactory sf = SSLSocketFactory.getDefault();
 				options.setSocketFactory(sf);
 			}
-			
+
 			// Connect to the MQTT Server
 			options.setAutomaticReconnect(true);
 			options.setCleanSession(true);
@@ -108,44 +119,48 @@ public class SparkplugExample implements MqttCallbackExtended {
 			options.setPassword(password.toCharArray());
 			options.setWill(NAMESPACE + "/" + groupId + "/NDEATH/" + edgeNode, deathBytes, 0, false);
 			client = new MqttClient(serverUrl, clientId);
-			client.setTimeToWait(2000);	
-			client.setCallback(this);					// short timeout on failure to connect
+			client.setTimeToWait(2000);
+			client.setCallback(this); // short timeout on failure to connect
 			client.connect(options);
-			
+
 			// Subscribe to control/command messages for both the edge of network node and the attached devices
 			client.subscribe(NAMESPACE + "/" + groupId + "/NCMD/" + edgeNode + "/#", 0);
-			client.subscribe(NAMESPACE + "/" + groupId + "/DCMD/" + edgeNode + "/#", 0);	
-			client.subscribe(NAMESPACE + "/#", 0);	
-			
+			client.subscribe(NAMESPACE + "/" + groupId + "/DCMD/" + edgeNode + "/#", 0);
+			client.subscribe(NAMESPACE + "/#", 0);
+
 			// Loop forever publishing data every PUBLISH_PERIOD
 			while (true) {
 				Thread.sleep(PUBLISH_PERIOD);
 
 				if (client.isConnected()) {
-					synchronized(seqLock) {
+					synchronized (seqLock) {
 						System.out.println("Connected - publishing new data");
 						// Create the payload and add some metrics
-						SparkplugBPayload payload = new SparkplugBPayload(
-								new Date(), 
-								newMetrics(false), 
-								getSeqNum(),
-								newUUID(), 
-								null);
-						
-						client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, 
-								new SparkplugBPayloadEncoder().getBytes(payload), 0, false);
+						SparkplugBPayload payload =
+								new SparkplugBPayload(new Date(), newMetrics(false), getSeqNum(), newUUID(), null);
+
+						// Compress payload (optional)
+						if (USING_COMPRESSION) {
+							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+									new SparkplugBPayloadEncoder()
+											.getBytes(PayloadUtil.compress(payload, compressionAlgorithm)),
+									0, false);
+						} else {
+							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
+									new SparkplugBPayloadEncoder().getBytes(payload), 0, false);
+						}
 					}
 				} else {
 					System.out.println("Not connected - not publishing data");
 				}
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private byte [] randomBytes(int numOfBytes) {
-		byte [] bytes = new byte[numOfBytes];
+
+	private byte[] randomBytes(int numOfBytes) {
+		byte[] bytes = new byte[numOfBytes];
 		new Random().nextBytes(bytes);
 		return bytes;
 	}
@@ -154,60 +169,49 @@ public class SparkplugExample implements MqttCallbackExtended {
 		publishNodeBirth();
 		publishDeviceBirth();
 	}
-	
+
 	private void publishNodeBirth() {
 		try {
-			synchronized(seqLock) {
+			synchronized (seqLock) {
 				// Reset the sequence number
 				seq = 0;
-				
+
 				// Create the BIRTH payload and set the position and other metrics
-				SparkplugBPayload payload = new SparkplugBPayload(
-						new Date(), 
-						new ArrayList<Metric>(), 
-						getSeqNum(),
-						newUUID(), 
-						null);
-				
-				payload.addMetric(new MetricBuilder("bdSeq", Int64, (long)bdSeq).createMetric());		
-				payload.addMetric(new MetricBuilder("Node Control/Rebirth", Boolean, false)
-						.createMetric());
-				
+				SparkplugBPayload payload =
+						new SparkplugBPayload(new Date(), new ArrayList<Metric>(), getSeqNum(), newUUID(), null);
+
+				payload.addMetric(new MetricBuilder("bdSeq", Int64, (long) bdSeq).createMetric());
+				payload.addMetric(new MetricBuilder("Node Control/Rebirth", Boolean, false).createMetric());
+
 				PropertySet propertySet = new PropertySetBuilder()
 						.addProperty("engUnit", new PropertyValue(PropertyDataType.String, "My Units"))
 						.addProperty("engLow", new PropertyValue(PropertyDataType.Double, 1.0))
 						.addProperty("engHigh", new PropertyValue(PropertyDataType.Double, 10.0))
-/*
-						.addProperty("CustA", new PropertyValue(PropertyDataType.String, "Custom A"))
-						.addProperty("CustB", new PropertyValue(PropertyDataType.Double, 10.0))
-						.addProperty("CustC", new PropertyValue(PropertyDataType.Int32, 100))
-*/
+						/*
+						 * .addProperty("CustA", new PropertyValue(PropertyDataType.String, "Custom A"))
+						 * .addProperty("CustB", new PropertyValue(PropertyDataType.Double, 10.0)) .addProperty("CustC",
+						 * new PropertyValue(PropertyDataType.Int32, 100))
+						 */
 						.createPropertySet();
-				payload.addMetric(new MetricBuilder("MyMetric", String, "My Value")
-						.properties(propertySet)
-						.createMetric());
-				
+				payload.addMetric(
+						new MetricBuilder("MyMetric", String, "My Value").properties(propertySet).createMetric());
+
 				System.out.println("Publishing Edge Node Birth");
 				executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/NBIRTH/" + edgeNode, payload));
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void publishDeviceBirth() {
 		try {
-			synchronized(seqLock) {
+			synchronized (seqLock) {
 				// Create the payload and add some metrics
-				SparkplugBPayload payload = new SparkplugBPayload(
-						new Date(), 
-						newMetrics(true), 
-						getSeqNum(),
-						newUUID(), 
-						null);
-				
-				payload.addMetric(new MetricBuilder("Device Control/Rebirth", Boolean, false)
-						.createMetric());
+				SparkplugBPayload payload =
+						new SparkplugBPayload(new Date(), newMetrics(true), getSeqNum(), newUUID(), null);
+
+				payload.addMetric(new MetricBuilder("Device Control/Rebirth", Boolean, false).createMetric());
 
 				// Only do this once to set up the inputs and outputs
 				payload.addMetric(new MetricBuilder("Inputs/0", Boolean, true).createMetric());
@@ -216,36 +220,36 @@ public class SparkplugExample implements MqttCallbackExtended {
 				payload.addMetric(new MetricBuilder("Outputs/0", Boolean, true).createMetric());
 				payload.addMetric(new MetricBuilder("Outputs/1", Int32, 0).createMetric());
 				payload.addMetric(new MetricBuilder("Outputs/2", Double, 1.23d).createMetric());
-	
-				//payload.addMetric(new MetricBuilder("New_1", Int32, 0).createMetric());
-				//payload.addMetric(new MetricBuilder("New_2", Double, 1.23d).createMetric());
-				
+
+				// payload.addMetric(new MetricBuilder("New_1", Int32, 0).createMetric());
+				// payload.addMetric(new MetricBuilder("New_2", Double, 1.23d).createMetric());
+
 				// Add some properties
 				payload.addMetric(new MetricBuilder("Properties/hw_version", String, HW_VERSION).createMetric());
 				payload.addMetric(new MetricBuilder("Properties/sw_version", String, SW_VERSION).createMetric());
-				
+
 				PropertySet propertySet = new PropertySetBuilder()
 						.addProperty("engUnit", new PropertyValue(PropertyDataType.String, "My Units"))
 						.addProperty("engLow", new PropertyValue(PropertyDataType.Double, 1.0))
 						.addProperty("engHigh", new PropertyValue(PropertyDataType.Double, 10.0))
-/*
-						.addProperty("CustA", new PropertyValue(PropertyDataType.String, "Custom A"))
-						.addProperty("CustB", new PropertyValue(PropertyDataType.Double, 10.0))
-						.addProperty("CustC", new PropertyValue(PropertyDataType.Int32, 100))
-*/
+						/*
+						 * .addProperty("CustA", new PropertyValue(PropertyDataType.String, "Custom A"))
+						 * .addProperty("CustB", new PropertyValue(PropertyDataType.Double, 10.0)) .addProperty("CustC",
+						 * new PropertyValue(PropertyDataType.Int32, 100))
+						 */
 						.createPropertySet();
-				payload.addMetric(new MetricBuilder("MyMetric", String, "My Value")
-						.properties(propertySet)
-						.createMetric());
-	
+				payload.addMetric(
+						new MetricBuilder("MyMetric", String, "My Value").properties(propertySet).createMetric());
+
 				System.out.println("Publishing Device Birth");
-				executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/DBIRTH/" + edgeNode + "/" + deviceId, payload));
+				executor.execute(
+						new Publisher(NAMESPACE + "/" + groupId + "/DBIRTH/" + edgeNode + "/" + deviceId, payload));
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// Used to add the birth/death sequence number
 	private SparkplugBPayloadBuilder addBdSeqNum(SparkplugBPayloadBuilder payload) throws Exception {
 		if (payload == null) {
@@ -254,11 +258,11 @@ public class SparkplugExample implements MqttCallbackExtended {
 		if (bdSeq == 256) {
 			bdSeq = 0;
 		}
-		payload.addMetric(new MetricBuilder("bdSeq", Int64, (long)bdSeq).createMetric());
+		payload.addMetric(new MetricBuilder("bdSeq", Int64, (long) bdSeq).createMetric());
 		bdSeq++;
 		return payload;
 	}
-	
+
 	// Used to add the sequence number
 	private long getSeqNum() throws Exception {
 		System.out.println("seq: " + seq);
@@ -267,7 +271,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 		}
 		return seq++;
 	}
-	
+
 	@Override
 	public void connectComplete(boolean reconnect, String serverURI) {
 		System.out.println("Connected! - publishing birth");
@@ -277,52 +281,44 @@ public class SparkplugExample implements MqttCallbackExtended {
 	public void connectionLost(Throwable cause) {
 		cause.printStackTrace();
 		System.out.println("The MQTT Connection was lost! - will auto-reconnect");
-    }
+	}
 
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		System.out.println("Message Arrived on topic " + topic);
-		
+
 		SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
 		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload());
-		
+
 		// Debug
 		for (Metric metric : inboundPayload.getMetrics()) {
 			System.out.println("Metric " + metric.getName() + "=" + metric.getValue());
 		}
-		
+
 		String[] splitTopic = topic.split("/");
-		if (splitTopic[0].equals(NAMESPACE) && 
-				splitTopic[1].equals(groupId) &&
-				splitTopic[2].equals("NCMD") && 
-				splitTopic[3].equals(edgeNode)) {
+		if (splitTopic[0].equals(NAMESPACE) && splitTopic[1].equals(groupId) && splitTopic[2].equals("NCMD")
+				&& splitTopic[3].equals(edgeNode)) {
 			for (Metric metric : inboundPayload.getMetrics()) {
-				if ("Node Control/Rebirth".equals(metric.getName()) && ((Boolean)metric.getValue())) {
+				if ("Node Control/Rebirth".equals(metric.getName()) && ((Boolean) metric.getValue())) {
 					publishBirth();
 				} else {
 					System.out.println("Unknown Node Command NCMD: " + metric.getName());
 				}
 			}
-		} else if (splitTopic[0].equals(NAMESPACE) && 
-				splitTopic[1].equals(groupId) &&
-				splitTopic[2].equals("DCMD") && 
-				splitTopic[3].equals(edgeNode)) {
+		} else if (splitTopic[0].equals(NAMESPACE) && splitTopic[1].equals(groupId) && splitTopic[2].equals("DCMD")
+				&& splitTopic[3].equals(edgeNode)) {
 			System.out.println("Command recevied for device " + splitTopic[4]);
 
 			// Process the incoming payload and publish any updated/modified metrics
-			// Simulate the following: 
-			//   Outputs/0 is tied to Inputs/0
-			//   Outputs/2 is tied to Inputs/1
-			//   Outputs/2 is tied to Inputs/2
-			SparkplugBPayload outboundPayload = new SparkplugBPayload(
-					new Date(), 
-					new ArrayList<Metric>(), 
-					getSeqNum(),
-					newUUID(), 
-					null);
+			// Simulate the following:
+			// Outputs/0 is tied to Inputs/0
+			// Outputs/2 is tied to Inputs/1
+			// Outputs/2 is tied to Inputs/2
+			SparkplugBPayload outboundPayload =
+					new SparkplugBPayload(new Date(), new ArrayList<Metric>(), getSeqNum(), newUUID(), null);
 			for (Metric metric : inboundPayload.getMetrics()) {
 				String name = metric.getName();
 				Object value = metric.getValue();
-				if ("Device Control/Rebirth".equals(metric.getName()) && ((Boolean)metric.getValue())) {
+				if ("Device Control/Rebirth".equals(metric.getName()) && ((Boolean) metric.getValue())) {
 					publishDeviceBirth();
 				} else if ("Outputs/0".equals(name)) {
 					System.out.println("Outputs/0: " + value);
@@ -343,14 +339,15 @@ public class SparkplugExample implements MqttCallbackExtended {
 			}
 
 			// Publish the message in a new thread
-			executor.execute(new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, outboundPayload));
+			executor.execute(
+					new Publisher(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId, outboundPayload));
 		}
 	}
 
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		System.out.println("Published message: " + token);
 	}
-	
+
 	private String newUUID() {
 		return java.util.UUID.randomUUID().toString();
 	}
@@ -358,11 +355,11 @@ public class SparkplugExample implements MqttCallbackExtended {
 	private List<Metric> newMetrics(boolean isBirth) throws SparkplugException {
 		Random random = new Random();
 		List<Metric> metrics = new ArrayList<Metric>();
-		metrics.add(new MetricBuilder("Int8", Int8, (byte)random.nextInt()).createMetric());
-		metrics.add(new MetricBuilder("Int16", Int16, (short)random.nextInt()).createMetric());
+		metrics.add(new MetricBuilder("Int8", Int8, (byte) random.nextInt()).createMetric());
+		metrics.add(new MetricBuilder("Int16", Int16, (short) random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("Int32", Int32, random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("Int64", Int64, random.nextLong()).createMetric());
-		metrics.add(new MetricBuilder("UInt8", UInt8, (short)random.nextInt()).createMetric());
+		metrics.add(new MetricBuilder("UInt8", UInt8, (short) random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("UInt16", UInt16, random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("UInt32", UInt32, random.nextLong()).createMetric());
 		metrics.add(new MetricBuilder("UInt64", UInt64, BigInteger.valueOf(random.nextLong())).createMetric());
@@ -373,30 +370,29 @@ public class SparkplugExample implements MqttCallbackExtended {
 		metrics.add(new MetricBuilder("DateTime", DateTime, new Date()).createMetric());
 		metrics.add(new MetricBuilder("Text", Text, newUUID()).createMetric());
 		metrics.add(new MetricBuilder("UUID", UUID, newUUID()).createMetric());
-		//metrics.add(new MetricBuilder("Bytes", Bytes, randomBytes(20)).createMetric());
-		//metrics.add(new MetricBuilder("File", File, null).createMetric());
-		
+		// metrics.add(new MetricBuilder("Bytes", Bytes, randomBytes(20)).createMetric());
+		// metrics.add(new MetricBuilder("File", File, null).createMetric());
+
 		// DataSet
 		metrics.add(new MetricBuilder("DataSet", DataSet, newDataSet()).createMetric());
 		if (isBirth) {
 			metrics.add(new MetricBuilder("TemplateDef", Template, newTemplate(true, null)).createMetric());
 		}
-		
+
 		// Template
 		metrics.add(new MetricBuilder("TemplateInst", Template, newTemplate(false, "TemplateDef")).createMetric());
-		
+
 		// Complex Template
 		metrics.addAll(newComplexTemplate(isBirth));
-		
+
 		// Metrics with properties
-		metrics.add(new MetricBuilder("IntWithProps", Int32, random.nextInt())
-				.properties(new PropertySetBuilder()
-						.addProperty("engUnit", new PropertyValue(PropertyDataType.String, "My Units"))
+		metrics.add(new MetricBuilder("IntWithProps", Int32, random.nextInt()).properties(
+				new PropertySetBuilder().addProperty("engUnit", new PropertyValue(PropertyDataType.String, "My Units"))
 						.addProperty("engHigh", new PropertyValue(PropertyDataType.Int32, Integer.MAX_VALUE))
 						.addProperty("engLow", new PropertyValue(PropertyDataType.Int32, Integer.MIN_VALUE))
 						.createPropertySet())
 				.createMetric());
-		
+
 		// Aliased metric
 		// The name and alias will be specified in a NBIRTH/DBIRTH message.
 		// Only the alias will be specified in a NDATA/DDATA message.
@@ -406,24 +402,22 @@ public class SparkplugExample implements MqttCallbackExtended {
 		} else {
 			metrics.add(new MetricBuilder(alias, String, newUUID()).createMetric());
 		}
-		
+
 		return metrics;
 	}
-	
+
 	private PropertySet newPropertySet() throws SparkplugException {
-		return new PropertySetBuilder()
-				.addProperties(newProps(true))
-				.createPropertySet();
+		return new PropertySetBuilder().addProperties(newProps(true)).createPropertySet();
 	}
-	
+
 	private Map<String, PropertyValue> newProps(boolean withPropTypes) throws SparkplugException {
 		Random random = new Random();
 		Map<String, PropertyValue> propMap = new HashMap<String, PropertyValue>();
-		propMap.put("PropInt8", new PropertyValue(PropertyDataType.Int8, (byte)random.nextInt()));
-		propMap.put("PropInt16", new PropertyValue(PropertyDataType.Int16, (short)random.nextInt()));
+		propMap.put("PropInt8", new PropertyValue(PropertyDataType.Int8, (byte) random.nextInt()));
+		propMap.put("PropInt16", new PropertyValue(PropertyDataType.Int16, (short) random.nextInt()));
 		propMap.put("PropInt32", new PropertyValue(PropertyDataType.Int32, random.nextInt()));
 		propMap.put("PropInt64", new PropertyValue(PropertyDataType.Int64, random.nextLong()));
-		propMap.put("PropUInt8", new PropertyValue(PropertyDataType.UInt8, (short)random.nextInt()));
+		propMap.put("PropUInt8", new PropertyValue(PropertyDataType.UInt8, (short) random.nextInt()));
 		propMap.put("PropUInt16", new PropertyValue(PropertyDataType.UInt16, random.nextInt()));
 		propMap.put("PropUInt32", new PropertyValue(PropertyDataType.UInt32, random.nextLong()));
 		propMap.put("PropUInt64", new PropertyValue(PropertyDataType.UInt64, BigInteger.valueOf(random.nextLong())));
@@ -434,18 +428,17 @@ public class SparkplugExample implements MqttCallbackExtended {
 		propMap.put("PropDateTime", new PropertyValue(PropertyDataType.DateTime, new Date()));
 		propMap.put("PropText", new PropertyValue(PropertyDataType.Text, newUUID()));
 		if (withPropTypes) {
-			propMap.put("PropPropertySet", new PropertyValue(PropertyDataType.PropertySet, new PropertySetBuilder()
-					.addProperties(newProps(false))
-					.createPropertySet()));
+			propMap.put("PropPropertySet", new PropertyValue(PropertyDataType.PropertySet,
+					new PropertySetBuilder().addProperties(newProps(false)).createPropertySet()));
 			List<PropertySet> propsList = new ArrayList<PropertySet>();
 			propsList.add(new PropertySetBuilder().addProperties(newProps(false)).createPropertySet());
 			propsList.add(new PropertySetBuilder().addProperties(newProps(false)).createPropertySet());
 			propsList.add(new PropertySetBuilder().addProperties(newProps(false)).createPropertySet());
 			propMap.put("PropPropertySetList", new PropertyValue(PropertyDataType.PropertySetList, propsList));
 		}
-		return propMap;	
+		return propMap;
 	}
-	
+
 	private List<Parameter> newParams() throws SparkplugException {
 		Random random = new Random();
 		List<Parameter> params = new ArrayList<Parameter>();
@@ -456,53 +449,49 @@ public class SparkplugExample implements MqttCallbackExtended {
 		params.add(new Parameter("ParamString", ParameterDataType.String, newUUID()));
 		return params;
 	}
-	
+
 	private List<Metric> newComplexTemplate(boolean withTemplateDefs) throws SparkplugInvalidTypeException {
 		ArrayList<Metric> metrics = new ArrayList<Metric>();
 		if (withTemplateDefs) {
-			
+
 			// Add a new template "subType" definition with two primitive members
-			metrics.add(new MetricBuilder("subType", Template, new TemplateBuilder()
-				.definition(true)
-				.addMetric(new MetricBuilder("StringMember", String, "value").createMetric())
-				.addMetric(new MetricBuilder("IntegerMember", Int32, 0).createMetric())
-				.createTemplate()).createMetric());
+			metrics.add(new MetricBuilder("subType", Template,
+					new TemplateBuilder().definition(true)
+							.addMetric(new MetricBuilder("StringMember", String, "value").createMetric())
+							.addMetric(new MetricBuilder("IntegerMember", Int32, 0).createMetric()).createTemplate())
+									.createMetric());
 			// Add new template "newType" definition that contains an instance of "subType" as a member
-			metrics.add(new MetricBuilder("newType", Template, new TemplateBuilder()
-				.definition(true)
-				.addMetric(new MetricBuilder("mySubType", Template, new TemplateBuilder()
-						.definition(false)
-						.templateRef("subType")
-						.addMetric(new MetricBuilder("StringMember", String, "value").createMetric())
-						.addMetric(new MetricBuilder("IntegerMember", Int32, 0).createMetric())
-						.createTemplate()).createMetric())
-				.createTemplate()).createMetric());
+			metrics.add(new MetricBuilder("newType", Template,
+					new TemplateBuilder().definition(true).addMetric(new MetricBuilder("mySubType", Template,
+							new TemplateBuilder().definition(false).templateRef("subType")
+									.addMetric(new MetricBuilder("StringMember", String, "value").createMetric())
+									.addMetric(new MetricBuilder("IntegerMember", Int32, 0).createMetric())
+									.createTemplate()).createMetric())
+							.createTemplate()).createMetric());
 		}
-		
+
 		// Add an instance of "newType
-		metrics.add(new MetricBuilder("myNewType", Template, new TemplateBuilder()
-				.definition(false)
-				.templateRef("newType")
-				.addMetric(new MetricBuilder("mySubType", Template, new TemplateBuilder()
-						.definition(false)
-						.templateRef("subType")
-						.addMetric(new MetricBuilder("StringMember", String, "myValue").createMetric())
-						.addMetric(new MetricBuilder("IntegerMember", Int32, 1).createMetric())
-						.createTemplate()).createMetric())
-				.createTemplate()).createMetric());
-		
+		metrics.add(new MetricBuilder("myNewType", Template,
+				new TemplateBuilder().definition(false).templateRef("newType")
+						.addMetric(new MetricBuilder("mySubType", Template,
+								new TemplateBuilder().definition(false).templateRef("subType")
+										.addMetric(new MetricBuilder("StringMember", String, "myValue").createMetric())
+										.addMetric(new MetricBuilder("IntegerMember", Int32, 1).createMetric())
+										.createTemplate()).createMetric())
+						.createTemplate()).createMetric());
+
 		return metrics;
-		
+
 	}
 
 	private Template newTemplate(boolean isDef, String templatRef) throws SparkplugException {
 		Random random = new Random();
 		List<Metric> metrics = new ArrayList<Metric>();
-		metrics.add(new MetricBuilder("MyInt8", Int8, (byte)random.nextInt()).createMetric());
-		metrics.add(new MetricBuilder("MyInt16", Int16, (short)random.nextInt()).createMetric());
+		metrics.add(new MetricBuilder("MyInt8", Int8, (byte) random.nextInt()).createMetric());
+		metrics.add(new MetricBuilder("MyInt16", Int16, (short) random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("MyInt32", Int32, random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("MyInt64", Int64, random.nextLong()).createMetric());
-		metrics.add(new MetricBuilder("MyUInt8", UInt8, (short)random.nextInt()).createMetric());
+		metrics.add(new MetricBuilder("MyUInt8", UInt8, (short) random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("MyUInt16", UInt16, random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("MyUInt32", UInt32, random.nextLong()).createMetric());
 		metrics.add(new MetricBuilder("MyUInt64", UInt64, BigInteger.valueOf(random.nextLong())).createMetric());
@@ -513,53 +502,27 @@ public class SparkplugExample implements MqttCallbackExtended {
 		metrics.add(new MetricBuilder("MyDateTime", DateTime, new Date()).createMetric());
 		metrics.add(new MetricBuilder("MyText", Text, newUUID()).createMetric());
 		metrics.add(new MetricBuilder("MyUUID", UUID, newUUID()).createMetric());
-		
-		return new TemplateBuilder()
-				.version("v1.0")
-				.templateRef(templatRef)
-				.definition(isDef)
-				.addParameters(newParams())
-				.addMetrics(metrics)
-				.createTemplate();
+
+		return new TemplateBuilder().version("v1.0").templateRef(templatRef).definition(isDef)
+				.addParameters(newParams()).addMetrics(metrics).createTemplate();
 	}
 
 	private DataSet newDataSet() throws SparkplugException {
-		Random random = new Random();	
-		return new DataSetBuilder(14)
-				.addColumnName("Int8s")
-				.addColumnName("Int16s")
-				.addColumnName("Int32s")
-				.addColumnName("Int64s")
-				.addColumnName("UInt8s")
-				.addColumnName("UInt16s")
-				.addColumnName("UInt32s")
-				.addColumnName("UInt64s")
-				.addColumnName("Floats")
-				.addColumnName("Doubles")
-				.addColumnName("Booleans")
-				.addColumnName("Strings")
-				.addColumnName("Dates")
-				.addColumnName("Texts")
-				.addType(DataSetDataType.Int8)
-				.addType(DataSetDataType.Int16)
-				.addType(DataSetDataType.Int32)
-				.addType(DataSetDataType.Int64)
-				.addType(DataSetDataType.UInt8)
-				.addType(DataSetDataType.UInt16)
-				.addType(DataSetDataType.UInt32)
-				.addType(DataSetDataType.UInt64)
-				.addType(DataSetDataType.Float)
-				.addType(DataSetDataType.Double)
-				.addType(DataSetDataType.Boolean)
-				.addType(DataSetDataType.String)
-				.addType(DataSetDataType.DateTime)
+		Random random = new Random();
+		return new DataSetBuilder(14).addColumnName("Int8s").addColumnName("Int16s").addColumnName("Int32s")
+				.addColumnName("Int64s").addColumnName("UInt8s").addColumnName("UInt16s").addColumnName("UInt32s")
+				.addColumnName("UInt64s").addColumnName("Floats").addColumnName("Doubles").addColumnName("Booleans")
+				.addColumnName("Strings").addColumnName("Dates").addColumnName("Texts").addType(DataSetDataType.Int8)
+				.addType(DataSetDataType.Int16).addType(DataSetDataType.Int32).addType(DataSetDataType.Int64)
+				.addType(DataSetDataType.UInt8).addType(DataSetDataType.UInt16).addType(DataSetDataType.UInt32)
+				.addType(DataSetDataType.UInt64).addType(DataSetDataType.Float).addType(DataSetDataType.Double)
+				.addType(DataSetDataType.Boolean).addType(DataSetDataType.String).addType(DataSetDataType.DateTime)
 				.addType(DataSetDataType.Text)
-				.addRow(new RowBuilder()
-						.addValue(new Value<Byte>(DataSetDataType.Int8, (byte)random.nextInt()))
-						.addValue(new Value<Short>(DataSetDataType.Int16, (short)random.nextInt()))
+				.addRow(new RowBuilder().addValue(new Value<Byte>(DataSetDataType.Int8, (byte) random.nextInt()))
+						.addValue(new Value<Short>(DataSetDataType.Int16, (short) random.nextInt()))
 						.addValue(new Value<Integer>(DataSetDataType.Int32, random.nextInt()))
 						.addValue(new Value<Long>(DataSetDataType.Int64, random.nextLong()))
-						.addValue(new Value<Short>(DataSetDataType.UInt8, (short)random.nextInt()))
+						.addValue(new Value<Short>(DataSetDataType.UInt8, (short) random.nextInt()))
 						.addValue(new Value<Integer>(DataSetDataType.UInt16, random.nextInt()))
 						.addValue(new Value<Long>(DataSetDataType.UInt32, random.nextLong()))
 						.addValue(new Value<BigInteger>(DataSetDataType.UInt64, BigInteger.valueOf(random.nextLong())))
@@ -568,14 +531,12 @@ public class SparkplugExample implements MqttCallbackExtended {
 						.addValue(new Value<Boolean>(DataSetDataType.Boolean, random.nextBoolean()))
 						.addValue(new Value<String>(DataSetDataType.String, newUUID()))
 						.addValue(new Value<Date>(DataSetDataType.DateTime, new Date()))
-						.addValue(new Value<String>(DataSetDataType.Text, newUUID()))
-						.createRow())
-				.addRow(new RowBuilder()
-						.addValue(new Value<Byte>(DataSetDataType.Int8, (byte)random.nextInt()))
-						.addValue(new Value<Short>(DataSetDataType.Int16, (short)random.nextInt()))
+						.addValue(new Value<String>(DataSetDataType.Text, newUUID())).createRow())
+				.addRow(new RowBuilder().addValue(new Value<Byte>(DataSetDataType.Int8, (byte) random.nextInt()))
+						.addValue(new Value<Short>(DataSetDataType.Int16, (short) random.nextInt()))
 						.addValue(new Value<Integer>(DataSetDataType.Int32, random.nextInt()))
 						.addValue(new Value<Long>(DataSetDataType.Int64, random.nextLong()))
-						.addValue(new Value<Short>(DataSetDataType.UInt8, (short)random.nextInt()))
+						.addValue(new Value<Short>(DataSetDataType.UInt8, (short) random.nextInt()))
 						.addValue(new Value<Integer>(DataSetDataType.UInt16, random.nextInt()))
 						.addValue(new Value<Long>(DataSetDataType.UInt32, random.nextLong()))
 						.addValue(new Value<BigInteger>(DataSetDataType.UInt64, BigInteger.valueOf(random.nextLong())))
@@ -584,13 +545,12 @@ public class SparkplugExample implements MqttCallbackExtended {
 						.addValue(new Value<Boolean>(DataSetDataType.Boolean, random.nextBoolean()))
 						.addValue(new Value<String>(DataSetDataType.String, newUUID()))
 						.addValue(new Value<Date>(DataSetDataType.DateTime, new Date()))
-						.addValue(new Value<String>(DataSetDataType.Text, newUUID()))
-						.createRow())
+						.addValue(new Value<String>(DataSetDataType.Text, newUUID())).createRow())
 				.createDataSet();
 	}
-	
+
 	private class Publisher implements Runnable {
-		
+
 		private String topic;
 		private SparkplugBPayload outboundPayload;
 
@@ -598,12 +558,19 @@ public class SparkplugExample implements MqttCallbackExtended {
 			this.topic = topic;
 			this.outboundPayload = outboundPayload;
 		}
-		
+
 		public void run() {
 			try {
 				outboundPayload.setTimestamp(new Date());
 				SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
-				client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+
+				// Compress payload (optional)
+				if (USING_COMPRESSION) {
+					client.publish(topic, encoder.getBytes(PayloadUtil.compress(outboundPayload, compressionAlgorithm)),
+							0, false);
+				} else {
+					client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+				}
 			} catch (MqttPersistenceException e) {
 				e.printStackTrace();
 			} catch (MqttException e) {
@@ -611,6 +578,6 @@ public class SparkplugExample implements MqttCallbackExtended {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}	
+		}
 	}
 }
