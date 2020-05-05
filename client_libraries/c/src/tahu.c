@@ -701,7 +701,7 @@ void free_payload(org_eclipse_tahu_protobuf_Payload *payload) {
 				free(payload->metrics[i].properties.keys[j]);
 				
 				if(payload->metrics[i].properties.values[j].which_value ==
-					com_cirruslink_sparkplug_protobuf_Payload_PropertyValue_string_value_tag) 
+					org_eclipse_tahu_protobuf_Payload_PropertyValue_string_value_tag) 
 				{
 					if(payload->metrics[i].properties.values[j].value.string_value)
 					{	
