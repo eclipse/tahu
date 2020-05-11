@@ -711,8 +711,20 @@ void free_payload(org_eclipse_tahu_protobuf_Payload *payload) {
 			}
 			free(payload->metrics[i].properties.keys);
 			free(payload->metrics[i].properties.values);	
-		}	
+		}
 		
+		if(payload->metrics[i].datatype == METRIC_DATA_TYPE_DATASET)
+		{
+			org_eclipse_tahu_protobuf_Payload_DataSet * dataset = &payload->metrics[i].value.dataset_value;
+			if(dataset)
+			{
+				int j = 0;
+				for(j; j < dataset->num_of_columns;j++){
+					free(dataset->columns[j]);
+				}
+				free(dataset->columns);
+			}
+		}
 	}
 }
 
