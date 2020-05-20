@@ -38,7 +38,7 @@
     <dependency>
       <groupId>org.eclipse.tahu</groupId>
       <artifactId>tahu-java</artifactId>
-      <version>${tahu.version}</version>
+      <version>${project.version}</version>
     </dependency>
    <dependency>
       <groupId>org.eclipse.kura</groupId>
