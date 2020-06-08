@@ -53,7 +53,7 @@
         PropertySet = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertySet'),
         PropertyList = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertyList'),
         MetaData =SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.MetaData'),
-        Metric = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.Metric');
+        Metric = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.Metric'),
 
     /**
      * Sets the value of an object given it's type expressed as an integer
@@ -104,7 +104,7 @@
                 object.propertysetsValue = encodePropertySetList(value);
                 break;
         } 
-    }
+    },
 
     getValue = function(type, object) {
         switch (type) {
@@ -143,7 +143,7 @@
             default:
                 return null;
         } 
-    }
+    },
 
     encodeType = function(typeString) {
         switch (typeString.toUpperCase()) {
@@ -194,7 +194,7 @@
             default:
                 return 0;
         }
-    }
+    },
 
     decodeType = function(typeInt) {
         switch (typeInt) {
@@ -239,7 +239,7 @@
             case 21:
                 return "PropertySetList";
         }
-    }
+    },
 
     encodeTypes = function(typeArray) {
         var types = [];
@@ -247,7 +247,7 @@
             types.push(encodeType(typeArray[i]));
         }
         return types;
-    }
+    },
 
     decodeTypes = function(typeArray) {
         var types = [];
@@ -255,7 +255,7 @@
             types.push(decodeType(typeArray[i]));
         }
         return types;
-    }
+    },
 
     encodeDataSet = function(object) {
         var num = object.numOfColumns,
@@ -284,7 +284,7 @@
         }
         newDataSet.rows = newRows;
         return newDataSet;
-    }
+    },
 
     decodeDataSet = function(protoDataSet) {
         var dataSet = {},
@@ -312,7 +312,7 @@
         dataSet.rows = rows;
 
         return dataSet;
-    }
+    },
 
     encodeMetaData = function(object) {
         var metadata = MetaData.create(),
@@ -358,7 +358,7 @@
         }
 
         return metadata;
-    }
+    },
 
     decodeMetaData = function(protoMetaData) {
         var metadata = {},
@@ -404,7 +404,7 @@
         }
 
         return metadata;
-    }
+    },
 
     encodePropertyValue = function(object) {
         var type = encodeType(object.type),
@@ -419,7 +419,7 @@
         setValue(type, object.value, newPropertyValue);
 
         return newPropertyValue;
-    }
+    },
 
     decodePropertyValue = function(protoValue) {
         var propertyValue = {};
@@ -433,7 +433,7 @@
         propertyValue.type = decodeType(protoValue.type);
 
         return propertyValue;
-    }
+    },
 
     encodePropertySet = function(object) {
         var keys = [],
@@ -450,7 +450,7 @@
             "keys" : keys, 
             "values" : values
         });
-    }
+    },
 
     decodePropertySet = function(protoSet) {
         var propertySet = {},
@@ -462,7 +462,7 @@
         }
 
         return propertySet;
-    }
+    },
 
     encodePropertySetList = function(object) {
         var propertySets = [];
@@ -472,7 +472,7 @@
         return PropertySetList.create({
             "propertySet" : propertySets
         });
-    }
+    },
 
     decodePropertySetList = function(protoSets) {
         var propertySets = [];
@@ -480,7 +480,7 @@
             propertySets.push(decodePropertySet(protoSets[i]));
         }
         return propertySets;
-    }
+    },
 
     encodeParameter = function(object) {
         var type = encodeType(object.type),
@@ -490,7 +490,7 @@
             });
         setValue(type, object.value, newParameter);
         return newParameter;
-    }
+    },
 
     decodeParameter = function(protoParameter) {
         var protoType = protoParameter.type,
@@ -501,7 +501,7 @@
         parameter.value = getValue(protoType, protoParameter);
 
         return parameter;
-    }
+    },
 
     encodeTemplate = function(object) {
         var template = Template.create(),
@@ -545,7 +545,7 @@
         }
 
         return template;
-    }
+    },
 
     decodeTemplate = function(protoTemplate) {
         var template = {},
@@ -588,7 +588,7 @@
         }
 
         return template;
-    }
+    },
 
     encodeMetric = function(metric) {
         var newMetric = Metric.create({
@@ -636,7 +636,7 @@
         }
 
         return newMetric;
-    }
+    },
 
     decodeMetric = function(protoMetric) {
         var metric = {},
@@ -683,7 +683,7 @@
         }
 
         return metric;
-    }
+    };
 
     exports.encodePayload = function(object) {
         var payload = Payload.create({
