@@ -26,4 +26,4 @@ Sparkplug B Specification:
 https://s3.amazonaws.com/cirrus-link-com/Sparkplug+Topic+Namespace+and+State+ManagementV2.1+Apendix++Payload+B+format.pdf
 
 Tutorials showing how to use this reference code can be found here:
-https://docs.chariot.io/display/CLD/Tutorials
+https://docs.chariot.io/display/CLD79/Sparkplug+Developer+Docs
