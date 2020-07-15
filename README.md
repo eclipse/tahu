@@ -26,4 +26,4 @@ Sparkplug B Specification:
 https://www.eclipse.org/tahu/spec/Sparkplug%20Topic%20Namespace%20and%20State%20ManagementV2.2-with%20appendix%20B%20format%20-%20Eclipse.pdf
 
 Tutorials showing how to use this reference code can be found here:
-https://docs.chariot.io/display/CLD/Tutorials
+https://docs.chariot.io/display/CLD79/Sparkplug+Developer+Docs
