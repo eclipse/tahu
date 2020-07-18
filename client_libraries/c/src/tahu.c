@@ -278,18 +278,20 @@ int add_simple_metric(org_eclipse_tahu_protobuf_Payload *payload,
 ssize_t encode_payload(uint8_t *out_buffer,
 					   size_t buffer_length,
 					   const org_eclipse_tahu_protobuf_Payload *payload) {
-	// Create the stream
-	pb_ostream_t node_stream = pb_ostream_from_buffer(out_buffer, buffer_length);
+	// Use a different stream if the user wants a normal encode or just a size check
+	pb_ostream_t sizing_stream = PB_OSTREAM_SIZING;
+	pb_ostream_t buffer_stream = pb_ostream_from_buffer(out_buffer, buffer_length);
+	pb_ostream_t *node_stream = ((out_buffer == NULL) ? &sizing_stream : &buffer_stream);
 
 	// Encode the payload
 	DEBUG_PRINT("Encoding payload...\n");
-	const bool encode_result = pb_encode(&node_stream, org_eclipse_tahu_protobuf_Payload_fields, payload);
-	const size_t message_length = node_stream.bytes_written;
+	const bool encode_result = pb_encode(node_stream, org_eclipse_tahu_protobuf_Payload_fields, payload);
+	const size_t message_length = node_stream->bytes_written;
 	DEBUG_PRINT("Message length: %zd\n", message_length);
 
 	// Error Check
 	if (!encode_result) {
-		fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&node_stream));
+		fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(node_stream));
 		return -1;
 	}
 

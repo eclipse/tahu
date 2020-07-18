@@ -267,12 +267,16 @@ int add_simple_metric(org_eclipse_tahu_protobuf_Payload *payload,
 /**
  * Encode a Payload into an array of bytes
  *
- * @param out_buffer Pointer to destination buffer to received the encoded payload
+ * @param out_buffer Pointer to destination buffer to receive
+ *                   the encoded payload, or NULL if you just
+ *                   want to calculate the size of the encoded
+ *                   payload
  * @param buffer_length
  *                   Size of the destination buffer in bytes
  * @param payload    Pointer to the source payload structure
  *
- * @return Returns the number of bytes used in the destination buffer on success, or -1 on failure
+ * @return Returns the size of the encoded payload in bytes on
+ *         success, or -1 on failure
  */
 ssize_t encode_payload(uint8_t *out_buffer,
 					   size_t buffer_length,
