@@ -27,3 +27,11 @@ https://www.eclipse.org/tahu/spec/Sparkplug%20Topic%20Namespace%20and%20State%20
 
 Tutorials showing how to use this reference code can be found here:
 https://docs.chariot.io/display/CLD79/Sparkplug+Developer+Docs
+
+# Contributing
+Contributing to the Sparkplug Tahu Project is easy and contributions are welcome. In order to submit a pull request (PR) you must follow these steps. Failure to follow these steps will likely lead to the PR being rejected.
+1. Sign the Eclipse Contributor Agreement (ECA): https://accounts.eclipse.org/user/eca
+2. Make sure the email tied to your Github account is the same one you used to sign the ECA.
+3. Submit your PR against the develop branch of the repository. PRs against master will not be accepted: https://github.com/eclipse/sparkplug/tree/develop
+4. Sign off on your PR using the '-s' flag. For example: 'git commit -m"My brief comment" ChangedFile'
+5. Make sure to include any important context or information associated with the PR in the PR submission. Keep your commit comment brief.
