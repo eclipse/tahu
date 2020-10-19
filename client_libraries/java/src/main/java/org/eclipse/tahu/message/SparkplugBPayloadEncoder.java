@@ -15,6 +15,8 @@ package org.eclipse.tahu.message;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -221,7 +223,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						break;
 					case Unknown:
 					default:
-						logger.error("Unknown DataType: " + value.getType());
+						logger.error("Unknown PropertyDataType: " + value.getType());
 						throw new Exception("Failed to convert value " + value.getType());
 				}
 			}
@@ -235,51 +237,51 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 			SparkplugBProto.Payload.Template.Parameter.Builder builder, Parameter parameter) throws Exception {
 		ParameterDataType type = parameter.getType();
 		builder.setType(type.toIntValue());
-		Object value = parameter.getValue();
-		switch (type) {
-			case Boolean:
-				builder.setBooleanValue(toBoolean(value));
-				break;
-			case DateTime:
-				builder.setLongValue(((Date) value).getTime());
-				break;
-			case Double:
-				builder.setDoubleValue((Double) value);
-				break;
-			case Float:
-				builder.setFloatValue((Float) value);
-				break;
-			case Int8:
-				builder.setIntValue((Byte) value);
-				break;
-			case Int16:
-			case UInt8:
-				builder.setIntValue((Short) value);
-				break;
-			case Int32:
-			case UInt16:
-				builder.setIntValue((Integer) value);
-				break;
-			case Int64:
-			case UInt32:
-				builder.setLongValue((Long) value);
-				break;
-			case UInt64:
-				builder.setLongValue(((BigInteger) value).longValue());
-				break;
-			case Text:
-			case String:
-				if (value == null) {
-					builder.setStringValue("");
-				} else {
-					builder.setStringValue((String) value);
-				}
-				break;
-			case Unknown:
-			default:
-				logger.error("Unknown Type: " + type);
-				throw new Exception("Failed to encode");
 
+		Object value = parameter.getValue();
+		value = type == ParameterDataType.String && value == null ? "" : value;
+		if (value != null) {
+			switch (type) {
+				case Boolean:
+					builder.setBooleanValue(toBoolean(value));
+					break;
+				case DateTime:
+					builder.setLongValue(((Date) value).getTime());
+					break;
+				case Double:
+					builder.setDoubleValue((Double) value);
+					break;
+				case Float:
+					builder.setFloatValue((Float) value);
+					break;
+				case Int8:
+					builder.setIntValue((Byte) value);
+					break;
+				case Int16:
+				case UInt8:
+					builder.setIntValue((Short) value);
+					break;
+				case Int32:
+				case UInt16:
+					builder.setIntValue((Integer) value);
+					break;
+				case Int64:
+				case UInt32:
+					builder.setLongValue((Long) value);
+					break;
+				case UInt64:
+					builder.setLongValue(((BigInteger) value).longValue());
+					break;
+				case Text:
+				case String:
+					builder.setStringValue((String) value);
+					break;
+				case Unknown:
+				default:
+					logger.error("Unknown Type: " + type);
+					throw new Exception("Failed to encode");
+
+			}
 		}
 		return builder;
 	}
@@ -420,9 +422,97 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					// Add the template to the metric
 					metricBuilder.setTemplateValue(templateBuilder);
 					break;
+				case Int8Array:
+					Byte[] int8ArrayValue = (Byte[]) metric.getValue();
+					ByteBuffer int8ByteBuffer =
+							ByteBuffer.allocate(int8ArrayValue.length).order(ByteOrder.LITTLE_ENDIAN);
+					for (Byte value : int8ArrayValue) {
+						int8ByteBuffer.put(value);
+					}
+					if (int8ByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(int8ByteBuffer.array()));
+					}
+					break;
+				case Int16Array:
+					Short[] int16ArrayValue = (Short[]) metric.getValue();
+					ByteBuffer int16ByteBuffer =
+							ByteBuffer.allocate(int16ArrayValue.length * 2).order(ByteOrder.LITTLE_ENDIAN);
+					for (Short value : int16ArrayValue) {
+						int16ByteBuffer.putShort(value);
+					}
+					if (int16ByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(int16ByteBuffer.array()));
+					}
+					break;
+				case Int32Array:
+					Integer[] int32ArrayValue = (Integer[]) metric.getValue();
+					ByteBuffer int32ByteBuffer =
+							ByteBuffer.allocate(int32ArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+					for (Integer value : int32ArrayValue) {
+						int32ByteBuffer.putInt(value);
+					}
+					if (int32ByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(int32ByteBuffer.array()));
+					}
+					break;
+				case Int64Array:
+					Long[] int64ArrayValue = (Long[]) metric.getValue();
+					ByteBuffer int64ByteBuffer =
+							ByteBuffer.allocate(int64ArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+					for (Long value : int64ArrayValue) {
+						int64ByteBuffer.putLong(value);
+					}
+					if (int64ByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(int64ByteBuffer.array()));
+					}
+					break;
+				case FloatArray:
+					Float[] floatArrayValue = (Float[]) metric.getValue();
+					ByteBuffer floatByteBuffer =
+							ByteBuffer.allocate(floatArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+					for (Float value : floatArrayValue) {
+						floatByteBuffer.putFloat(value);
+					}
+					if (floatByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(floatByteBuffer.array()));
+					}
+					break;
+				case DoubleArray:
+					Double[] doubleArrayValue = (Double[]) metric.getValue();
+					ByteBuffer doubleByteBuffer =
+							ByteBuffer.allocate(doubleArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+					for (Double value : doubleArrayValue) {
+						doubleByteBuffer.putDouble(value);
+					}
+					if (doubleByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(doubleByteBuffer.array()));
+					}
+					break;
+				case BooleanArray:
+					Boolean[] booleanArrayValue = (Boolean[]) metric.getValue();
+					int numberOfBytes = (int) Math.ceil((double) booleanArrayValue.length / 8);
+					ByteBuffer booleanByteBuffer =
+							ByteBuffer.allocate(4 + numberOfBytes).order(ByteOrder.LITTLE_ENDIAN);
+
+					// The first 4 bytes is the number of booleans in the array
+					booleanByteBuffer.putInt(booleanArrayValue.length);
+
+					// Get the remaining bytes
+					for (int i = 0; i < numberOfBytes; i++) {
+						byte nextByte = 0;
+						for (int bit = 0; bit < 8; bit++) {
+							int index = i * 8 + bit;
+							if (index < booleanArrayValue.length && booleanArrayValue[index]) {
+								nextByte |= (128 >> bit);
+							}
+						}
+						booleanByteBuffer.put(nextByte);
+					}
+					metricBuilder.setBytesValue(ByteString.copyFrom(booleanByteBuffer.array()));
+					break;
 				case Unknown:
 				default:
-					logger.error("Unknown DataType: " + metric.getDataType());
+					logger.error("Unsupported MetricDataType: " + metric.getDataType());
 					throw new Exception("Failed to encode");
 
 			}
@@ -543,7 +633,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				}
 				break;
 			default:
-				logger.error("Unknown DataType: " + value.getType());
+				logger.error("Unknown DataSetDataType DataType: " + value.getType());
 				throw new Exception("Failed to convert value " + value.getType());
 		}
 
