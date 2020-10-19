@@ -432,7 +432,6 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 
 	private SparkplugBProto.Payload.Metric.Builder setMetaData(SparkplugBProto.Payload.Metric.Builder metricBuilder,
 			Metric metric) throws Exception {
-
 		// If the builder has been built already - use it
 		SparkplugBProto.Payload.MetaData.Builder metaDataBuilder = metricBuilder.getMetadataBuilder() != null
 				? metricBuilder.getMetadataBuilder()
@@ -456,6 +455,9 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		}
 		if (metaData.getMd5() != null) {
 			metaDataBuilder.setMd5(metaData.getMd5());
+		}
+		if (metaData.isMultiPart() != null) {
+			metaDataBuilder.setIsMultiPart(metaData.isMultiPart());
 		}
 		if (metaData.getDescription() != null) {
 			metaDataBuilder.setDescription(metaData.getDescription());

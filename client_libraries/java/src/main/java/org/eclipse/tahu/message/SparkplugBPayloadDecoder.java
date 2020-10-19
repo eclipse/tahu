@@ -109,6 +109,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 										.fileName(protoMetric.getMetadata().getFileName())
 										.fileType(protoMetric.getMetadata().getFileType())
 										.md5(protoMetric.getMetadata().getMd5())
+										.multiPart(protoMetric.getMetadata().getIsMultiPart())
 										.description(protoMetric.getMetadata().getDescription()).createMetaData()
 								: null)
 						.properties(protoMetric.hasProperties()
