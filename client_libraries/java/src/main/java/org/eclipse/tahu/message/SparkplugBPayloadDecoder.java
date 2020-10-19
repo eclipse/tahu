@@ -14,6 +14,8 @@
 package org.eclipse.tahu.message;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -24,26 +26,26 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.DataSetDataType;
 import org.eclipse.tahu.message.model.File;
+import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.Parameter;
 import org.eclipse.tahu.message.model.ParameterDataType;
 import org.eclipse.tahu.message.model.PropertyDataType;
 import org.eclipse.tahu.message.model.PropertySet;
+import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.PropertyValue;
 import org.eclipse.tahu.message.model.Row;
-import org.eclipse.tahu.message.model.SparkplugBPayload;
-import org.eclipse.tahu.message.model.Template;
-import org.eclipse.tahu.message.model.Value;
-import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
-import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
-import org.eclipse.tahu.message.model.Metric.MetricBuilder;
-import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.Row.RowBuilder;
+import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
+import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.protobuf.SparkplugBProto;
 
 /**
@@ -174,7 +176,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 				return propertySetList;
 			case Unknown:
 			default:
-				throw new Exception("Failed to decode: Unknown Property Data Type " + type);
+				throw new Exception("Failed to decode: Unknown PropertyDataType " + type);
 		}
 	}
 
@@ -262,9 +264,86 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 				}
 
 				return template;
+			case Int8Array:
+				ByteBuffer int8ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+				List<Byte> int8List = new ArrayList<>();
+				int8ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				while (int8ByteBuffer.hasRemaining()) {
+					byte value = int8ByteBuffer.get();
+					int8List.add(value);
+				}
+				return int8List.toArray(new Byte[0]);
+			case Int16Array:
+				ByteBuffer int16ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+				List<Short> int16List = new ArrayList<>();
+				int16ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				while (int16ByteBuffer.hasRemaining()) {
+					short value = int16ByteBuffer.getShort();
+					int16List.add(value);
+				}
+				return int16List.toArray(new Short[0]);
+			case Int32Array:
+				ByteBuffer int32ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+				List<Integer> int32List = new ArrayList<>();
+				int32ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				while (int32ByteBuffer.hasRemaining()) {
+					int value = int32ByteBuffer.getInt();
+					int32List.add(value);
+				}
+				return int32List.toArray(new Integer[0]);
+			case Int64Array:
+				ByteBuffer int64ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+				List<Long> int64List = new ArrayList<>();
+				int64ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				while (int64ByteBuffer.hasRemaining()) {
+					long value = int64ByteBuffer.getLong();
+					int64List.add(value);
+				}
+				return int64List.toArray(new Long[0]);
+			case FloatArray:
+				ByteBuffer floatByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+				List<Float> floatList = new ArrayList<>();
+				floatByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				while (floatByteBuffer.hasRemaining()) {
+					float value = floatByteBuffer.getFloat();
+					floatList.add(value);
+				}
+				return floatList.toArray(new Float[0]);
+			case DoubleArray:
+				ByteBuffer doubleByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+				List<Double> doubleList = new ArrayList<>();
+				doubleByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				while (doubleByteBuffer.hasRemaining()) {
+					double value = doubleByteBuffer.getDouble();
+					doubleList.add(value);
+				}
+				return doubleList.toArray(new Double[0]);
+			case BooleanArray:
+				ByteBuffer booleanByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+				List<Boolean> booleanList = new ArrayList<>();
+				booleanByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+				// The first 4 bytes is the number of boolean bytes
+				int numberOfBooleans = booleanByteBuffer.getInt();
+				int numberOfBytes = (int) Math.ceil((double) numberOfBooleans / 8);
+
+				// Boolean[] booleanArray = new boolean[booleanBytes.length * 8];
+				for (int i = 0; i < numberOfBytes; i++) {
+					byte nextByte = booleanByteBuffer.get();
+					for (int j = 0; j < 8; j++) {
+						if (i * 8 + j < numberOfBooleans) {
+							if ((nextByte & (1 << (7 - j))) > 0) {
+								booleanList.add(true);
+							} else {
+								booleanList.add(false);
+							}
+						}
+					}
+				}
+				return booleanList.toArray(new Boolean[0]);
 			case Unknown:
 			default:
-				throw new Exception("Failed to decode: Unknown Metric DataType " + metricType);
+				throw new Exception("Failed to decode: Unknown MetricDataType " + metricType);
 
 		}
 	}
@@ -369,7 +448,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 				}
 			case Unknown:
 			default:
-				logger.error("Unknown DataType: " + protoType);
+				logger.error("Unknown DataSetDataType: " + protoType);
 				throw new Exception("Failed to decode");
 		}
 	}

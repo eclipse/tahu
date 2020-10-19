@@ -59,7 +59,9 @@ public class Parameter {
 		this.name = name;
 		this.type = type;
 		this.value = value;
-		this.type.checkType(value);
+		if (value != null) {
+			this.type.checkType(value);
+		}
 	}
 
 	@JsonGetter("name")

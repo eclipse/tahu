@@ -48,6 +48,21 @@ public enum MetricDataType {
 	File(18, File.class),
 	Template(19, Template.class),
 
+	// Array Types
+	Int8Array(20, Byte[].class),
+	Int16Array(21, Short[].class),
+	Int32Array(22, Integer[].class),
+	Int64Array(23, Long[].class),
+	UInt8Array(24, Short[].class),
+	UInt16Array(25, Integer[].class),
+	UInt32Array(26, Long[].class),
+	UInt64Array(27, BigInteger[].class),
+	FloatArray(28, Float[].class),
+	DoubleArray(29, Double[].class),
+	BooleanArray(30, Boolean[].class),
+	StringArray(31, Byte[].class),
+	DateTimeArray(32, Long[].class),
+
 	// Unknown
 	Unknown(0, Object.class);
 
@@ -124,6 +139,32 @@ public enum MetricDataType {
 				return File;
 			case 19:
 				return Template;
+			case 20:
+				return Int8Array;
+			case 21:
+				return Int16Array;
+			case 22:
+				return Int32Array;
+			case 23:
+				return Int64Array;
+			case 24:
+				return UInt8Array;
+			case 25:
+				return UInt16Array;
+			case 26:
+				return UInt32Array;
+			case 27:
+				return UInt64Array;
+			case 28:
+				return FloatArray;
+			case 29:
+				return DoubleArray;
+			case 30:
+				return BooleanArray;
+			case 31:
+				return StringArray;
+			case 32:
+				return DateTimeArray;
 			default:
 				return Unknown;
 		}

@@ -34,27 +34,27 @@ import org.eclipse.tahu.message.PayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.DataSet;
+import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.DataSetDataType;
 import org.eclipse.tahu.message.model.File;
 import org.eclipse.tahu.message.model.MetaData;
+import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.Parameter;
 import org.eclipse.tahu.message.model.ParameterDataType;
 import org.eclipse.tahu.message.model.PropertyDataType;
 import org.eclipse.tahu.message.model.PropertySet;
+import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.PropertyValue;
 import org.eclipse.tahu.message.model.Row;
-import org.eclipse.tahu.message.model.SparkplugBPayload;
-import org.eclipse.tahu.message.model.Template;
-import org.eclipse.tahu.message.model.Value;
-import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
-import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
-import org.eclipse.tahu.message.model.Metric.MetricBuilder;
-import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.Row.RowBuilder;
+import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
+import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.util.PayloadUtil;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -184,7 +184,14 @@ public class SparkplugTest {
 						new Date(1479421234564L), true, true, true },
 				{ new MetricBuilder("metric3", MetricDataType.String, "Test").alias(999999999L)
 						.timestamp(new Date(1479123452194L)).isHistorical(false).isTransient(false).createMetric(),
+						999999999L, new Date(1479123452194L), false, false, false },
+				{ new MetricBuilder("metric4", MetricDataType.BooleanArray,
+						new Boolean[] { false, true, false, true, false, true, false, true, false, true, false, true,
+								false, true, false, true, false, true, false, true, }).alias(999999999L)
+										.timestamp(new Date(1479123452194L)).isHistorical(false).isTransient(false)
+										.createMetric(),
 						999999999L, new Date(1479123452194L), false, false, false }, };
+
 	}
 
 	@DataProvider
@@ -276,25 +283,31 @@ public class SparkplugTest {
 		assertThat("none").isEqualTo(decodedMetaData.getDescription());
 	}
 
-	@Test(dataProvider = "metricData")
+	@Test(
+			dataProvider = "metricData")
 	public void testValidMetricPayload(String name, MetricDataType type, Object value, MetaData metaData)
 			throws SparkplugException {
 		testMetricPayload(name, type, value, metaData);
 	}
 
-	@Test(dataProvider = "invalidMetricDataType", expectedExceptions = SparkplugInvalidTypeException.class)
+	@Test(
+			dataProvider = "invalidMetricDataType",
+			expectedExceptions = SparkplugInvalidTypeException.class)
 	public void testInvalidMetricDataType(String name, MetricDataType type, Object value, MetaData metaData)
 			throws SparkplugException {
 		testMetricPayload(name, type, value, metaData);
 	}
 
-	@Test(dataProvider = "invalidParamterTypeData", expectedExceptions = SparkplugInvalidTypeException.class)
+	@Test(
+			dataProvider = "invalidParamterTypeData",
+			expectedExceptions = SparkplugInvalidTypeException.class)
 	public void testInvalidParameterDataType(String name, ParameterDataType type, Object value)
 			throws SparkplugInvalidTypeException {
 		new Parameter(name, type, value);
 	}
 
-	@Test(dataProvider = "metricFieldsData")
+	@Test(
+			dataProvider = "metricFieldsData")
 	public void testValidMetricPayload(Metric metric, long alias, Date timestamp, boolean isHistorical,
 			boolean isTransient, boolean isNull) throws Exception {
 		// Encode
@@ -312,7 +325,8 @@ public class SparkplugTest {
 		System.out.println("JSON: " + PayloadUtil.toJsonString(payload));
 	}
 
-	@Test(dataProvider = "metricData")
+	@Test(
+			dataProvider = "metricData")
 	public void testJsonValidation(String name, MetricDataType type, Object value, MetaData metaData)
 			throws SparkplugException, Exception {
 		Date currentTime = new Date();
