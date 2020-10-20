@@ -107,7 +107,8 @@ public class SparkplugTest {
 				{ "TestUUID", MetricDataType.UUID, "915cac68-a20e-11e6-80f5-76304dec7eb7", null },
 				{ "TestBytes", MetricDataType.Bytes, new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4 }, null },
 				{ "TestFile", MetricDataType.File, new File("/tmp/.testfile", new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4 }),
-						new MetaDataBuilder().fileType("bin").fileName("/tmp/.testfile").createMetaData() },
+						new MetaDataBuilder().fileType("bin").fileName("/tmp/.testfile").multiPart(false)
+								.createMetaData() },
 				{ "TestDataSet", MetricDataType.DataSet,
 						new DataSetBuilder(5).addColumnName("Booleans").addColumnName("Int32s").addColumnName("Floats")
 								.addColumnName("Dates").addColumnName("Strings").addType(DataSetDataType.Boolean)
@@ -224,7 +225,7 @@ public class SparkplugTest {
 
 		// Create MetaData
 		MetaData metaData = new MetaDataBuilder().contentType("none").size(12L).seq(0L).fileName("none")
-				.fileType("none").md5("none").description("none").createMetaData();
+				.fileType("none").md5("none").multiPart(false).description("none").createMetaData();
 
 		// Create one metric
 		payloadBuilder.addMetric(new MetricBuilder("Name", MetricDataType.Int8, (byte) 65).alias(0L)
