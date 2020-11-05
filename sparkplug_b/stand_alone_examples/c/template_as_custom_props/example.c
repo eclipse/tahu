@@ -14,8 +14,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <sparkplug_b.h>
-#include <sparkplug_b.pb.h>
+#include <tahu.h>
+#include <tahu.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <mosquitto.h>
@@ -125,7 +125,7 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
 		// JPL 04/06/17... Handle ALIAS metrics versus text-name based metrics
 		if( inbound_payload.metrics[i].name == NULL )  // alias 0 to 2
 		{
-			switch( (SINT32) inbound_payload.metrics[i].alias)
+			switch( inbound_payload.metrics[i].alias)
 			{
 			  case 0:  // Next Server
 			  fprintf(stderr,"Using Next Configured MQtt Server\n");
@@ -209,7 +209,6 @@ void my_log_callback(struct mosquitto *mosq, void *userdata, int level, const ch
 void publish_births(struct mosquitto *mosq) {
 	// Initialize the sequence number for Sparkplug MQTT messages
 	// This must be zero on every NBIRTH publish
-	seq = 0;
 
 	// Publish the NBIRTH
 	publish_node_birth(mosq);
@@ -231,18 +230,18 @@ void publish_node_birth(struct mosquitto *mosq) {
 	// Add node control metrics
 	fprintf(stdout, "Adding metric: 'Node Control/Next Server'\n");
 	bool next_server_value = false;
-	add_simple_metric(&nbirth_payload, "Node Control/Next Server", true, 0, METRIC_DATA_TYPE_BOOLEAN, false, false, false, &next_server_value, sizeof(next_server_value));
+	add_simple_metric(&nbirth_payload, "Node Control/Next Server", true, 0, METRIC_DATA_TYPE_BOOLEAN, false, false, &next_server_value, sizeof(next_server_value));
 	fprintf(stdout, "Adding metric: 'Node Control/Rebirth'\n");
 	bool rebirth_value = false;
-	add_simple_metric(&nbirth_payload, "Node Control/Rebirth", true, 1, METRIC_DATA_TYPE_BOOLEAN, false, false, false, &rebirth_value, sizeof(rebirth_value));
+	add_simple_metric(&nbirth_payload, "Node Control/Rebirth", true, 1, METRIC_DATA_TYPE_BOOLEAN, false, false, &rebirth_value, sizeof(rebirth_value));
 	fprintf(stdout, "Adding metric: 'Node Control/Reboot'\n");
 	bool reboot_value = false;
-	add_simple_metric(&nbirth_payload, "Node Control/Reboot", true, 2, METRIC_DATA_TYPE_BOOLEAN, false, false, false, &reboot_value, sizeof(reboot_value));
+	add_simple_metric(&nbirth_payload, "Node Control/Reboot", true, 2, METRIC_DATA_TYPE_BOOLEAN, false, false, &reboot_value, sizeof(reboot_value));
 
 	// Create a metric called 'My Real Metric' which will be a member of the Template definition - note aliases do not apply to Template members
 	org_eclipse_tahu_protobuf_Payload_Metric my_real_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
 	uint32_t my_real_metric_value = 0;		// Default value
-	init_metric(&my_real_metric, "My Real Metric", false, 0, METRIC_DATA_TYPE_INT32, false, false, false, &my_real_metric_value, sizeof(my_real_metric_value));
+	init_metric(&my_real_metric, "My Real Metric", false, 0, METRIC_DATA_TYPE_INT32, false, false, &my_real_metric_value, sizeof(my_real_metric_value));
 
 	// Create some Template Parameters - In this example we're using them as custom properties of a regular metric via a Template
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter_one = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
@@ -286,7 +285,7 @@ void publish_node_birth(struct mosquitto *mosq) {
 
 	// Create the root Template definition and add the Template definition value which includes the Template members and parameters
 	org_eclipse_tahu_protobuf_Payload_Metric metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-	init_metric(&metric, "_types_/My Metric Definition", true, 3, METRIC_DATA_TYPE_TEMPLATE, false, false, false, &udt_template, sizeof(udt_template));
+	init_metric(&metric, "_types_/My Metric Definition", true, 3, METRIC_DATA_TYPE_TEMPLATE, false, false, &udt_template, sizeof(udt_template));
 
 	// Add the Template to the payload
 	add_metric_to_payload(&nbirth_payload, &metric);
@@ -300,14 +299,13 @@ void publish_node_birth(struct mosquitto *mosq) {
 	// The binary_buffer must be large enough to hold the contents of the binary payload
 	size_t buffer_length = 1024;
 	uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-	size_t message_length = encode_payload(&binary_buffer, buffer_length, &nbirth_payload);
+	size_t message_length = encode_payload(binary_buffer, buffer_length, &nbirth_payload);
 
         // Publish the NBIRTH on the appropriate topic
         mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/NBIRTH/C Edge Node 1", message_length, binary_buffer, 0, false);
 
 	// Free the memory
 	free(binary_buffer);
-	free(nbirth_payload.uuid);
 	free_payload(&nbirth_payload);
 }
 
@@ -320,16 +318,16 @@ void publish_device_birth(struct mosquitto *mosq) {
 	fprintf(stdout, "Adding metric: 'Device Metric1'\n");
 	org_eclipse_tahu_protobuf_Payload_Metric prop_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
 	uint32_t nbirth_metric_two_value = 13;
-	init_metric(&prop_metric, "Device Metric1", true, 4, METRIC_DATA_TYPE_INT16, false, false, false, &nbirth_metric_two_value, sizeof(nbirth_metric_two_value));
+	init_metric(&prop_metric, "Device Metric1", true, 4, METRIC_DATA_TYPE_INT16, false, false, &nbirth_metric_two_value, sizeof(nbirth_metric_two_value));
 	org_eclipse_tahu_protobuf_Payload_PropertySet properties = org_eclipse_tahu_protobuf_Payload_PropertySet_init_default;
-	add_property_to_set(&properties, "engUnit", PROPERTY_DATA_TYPE_STRING, false, "MyCustomUnits", sizeof("MyCustomUnits"));
+	add_property_to_set(&properties, "engUnit", PROPERTY_DATA_TYPE_STRING, "MyCustomUnits", sizeof("MyCustomUnits"));
 	add_propertyset_to_metric(&prop_metric, &properties);
 	add_metric_to_payload(&dbirth_payload, &prop_metric);
 
 	// Create a metric called 'My Real Metric' for the Template instance
 	org_eclipse_tahu_protobuf_Payload_Metric my_real_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
 	uint32_t my_real_metric_value = 123;	// Not a default - this is the actual value of the instance
-	init_metric(&my_real_metric, "My Real Metric", false, 0, METRIC_DATA_TYPE_INT32, false, false, false, &my_real_metric_value, sizeof(my_real_metric_value));
+	init_metric(&my_real_metric, "My Real Metric", false, 0, METRIC_DATA_TYPE_INT32, false, false, &my_real_metric_value, sizeof(my_real_metric_value));
 
 	// Create some Template/UDT instance Parameters - in this example they represent custom tag properties
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter_one = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
@@ -368,14 +366,14 @@ void publish_device_birth(struct mosquitto *mosq) {
 	udt_template.parameters[0] = parameter_one;
 	udt_template.parameters[1] = parameter_two;
 	udt_template.parameters[2] = parameter_three;
-	udt_template.template_ref = (char *)malloc((strlen("Custom_Motor")+1)*sizeof(char));;
+	udt_template.template_ref = (char *)malloc((strlen("My Metric Definition")+1)*sizeof(char));;
 	strcpy(udt_template.template_ref, "My Metric Definition");
 	udt_template.has_is_definition = true;
 	udt_template.is_definition = false;
 
 	// Create the root Template instance and add the Template instance value
 	org_eclipse_tahu_protobuf_Payload_Metric metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-	init_metric(&metric, "My Metric Instance 1", true, 5, METRIC_DATA_TYPE_TEMPLATE, false, false, false, &udt_template, sizeof(udt_template));
+	init_metric(&metric, "My Metric Instance 1", true, 5, METRIC_DATA_TYPE_TEMPLATE, false, false, &udt_template, sizeof(udt_template));
 
 	// Add the Template Instance to the payload
 	add_metric_to_payload(&dbirth_payload, &metric);
@@ -389,7 +387,7 @@ void publish_device_birth(struct mosquitto *mosq) {
 	// The binary_buffer must be large enough to hold the contents of the binary payload
 	size_t buffer_length = 1024;
 	uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-	size_t message_length = encode_payload(&binary_buffer, buffer_length, &dbirth_payload);
+	size_t message_length = encode_payload(binary_buffer, buffer_length, &dbirth_payload);
 
         // Publish the DBIRTH on the appropriate topic
         mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DBIRTH/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
@@ -407,7 +405,7 @@ void publish_ddata_message(struct mosquitto *mosq) {
 	// Update the metric called 'My Real Metric' for the Template instance to update the 'real' metric value
 	org_eclipse_tahu_protobuf_Payload_Metric my_real_metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
 	uint32_t my_real_metric_value = rand();	// Not a default - this is the actual value of the metric of instance
-	init_metric(&my_real_metric, "My Real Metric", false, 0, METRIC_DATA_TYPE_INT32, false, false, false, &my_real_metric_value, sizeof(my_real_metric_value));
+	init_metric(&my_real_metric, "My Real Metric", false, 0, METRIC_DATA_TYPE_INT32, false, false, &my_real_metric_value, sizeof(my_real_metric_value));
 
 	// Create the Template instance value which includes the Template members and parameters
 	org_eclipse_tahu_protobuf_Payload_Template udt_template = org_eclipse_tahu_protobuf_Payload_Template_init_default;
@@ -420,7 +418,7 @@ void publish_ddata_message(struct mosquitto *mosq) {
 
 	// Create the root Template instance and add the Template instance value
 	org_eclipse_tahu_protobuf_Payload_Metric metric = org_eclipse_tahu_protobuf_Payload_Metric_init_default;
-	init_metric(&metric, "My Metric Instance 1", true, 5, METRIC_DATA_TYPE_TEMPLATE, false, false, false, &udt_template, sizeof(udt_template));
+	init_metric(&metric, "My Metric Instance 1", true, 5, METRIC_DATA_TYPE_TEMPLATE, false, false, &udt_template, sizeof(udt_template));
 
 	add_metric_to_payload(&ddata_payload, &metric);
 
@@ -433,7 +431,7 @@ void publish_ddata_message(struct mosquitto *mosq) {
 	// The binary_buffer must be large enough to hold the contents of the binary payload
 	size_t buffer_length = 1024;
 	uint8_t *binary_buffer = (uint8_t *)malloc(buffer_length * sizeof(uint8_t));
-	size_t message_length = encode_payload(&binary_buffer, buffer_length, &ddata_payload);
+	size_t message_length = encode_payload(binary_buffer, buffer_length, &ddata_payload);
 
         // Publish the DDATA on the appropriate topic
         mosquitto_publish(mosq, NULL, "spBv1.0/Sparkplug B Devices/DDATA/C Edge Node 1/Emulated Device", message_length, binary_buffer, 0, false);
