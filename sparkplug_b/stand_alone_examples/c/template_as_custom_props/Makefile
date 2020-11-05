@@ -12,7 +12,7 @@
 # ********************************************************************************/
 
 TARGET = example
-LIBS = ../../../../client_libraries/c/lib/libsparkplug_b.a -Llib -L/usr/local/lib -lmosquitto
+LIBS = ../../../../client_libraries/c/lib/libtahu.a -Llib -L/usr/local/lib -lmosquitto
 CC = gcc
 CFLAGS = -g -Wall -I../../../../client_libraries/c/include/
 
