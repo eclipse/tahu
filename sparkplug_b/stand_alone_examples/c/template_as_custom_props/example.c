@@ -225,6 +225,9 @@ void publish_births(struct mosquitto *mosq) {
 void publish_node_birth(struct mosquitto *mosq) {
 	// Create the NBIRTH payload
 	org_eclipse_tahu_protobuf_Payload nbirth_payload;
+	// Initialize the sequence number for Sparkplug MQTT messages
+ 	// This must be zero on every NBIRTH publish
+	reset_sparkplug_sequence();
 	get_next_payload(&nbirth_payload);
 
 	// Add node control metrics
@@ -245,25 +248,22 @@ void publish_node_birth(struct mosquitto *mosq) {
 
 	// Create some Template Parameters - In this example we're using them as custom properties of a regular metric via a Template
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter_one = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-	parameter_one.name = (char *)malloc((strlen("MyPropKey1")+1)*sizeof(char));
-        strcpy(parameter_one.name, "MyPropKey1");
+
+	parameter_one.name = strdup("MyPropKey1");
 	parameter_one.has_type = true;
 	parameter_one.type = PARAMETER_DATA_TYPE_STRING;
 	parameter_one.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_string_value_tag;
-	parameter_one.value.string_value = (char *)malloc((strlen("MyDefaultPropValue1")+1)*sizeof(char));
-	strcpy(parameter_one.value.string_value, "MyDefaultPropValue1");		// Default value
 
+	parameter_one.value.string_value = strdup("MyDefaultPropValue1");
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter_two = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-	parameter_two.name = (char *)malloc((strlen("MyPropKey2")+1)*sizeof(char));
-        strcpy(parameter_two.name, "MyPropKey2");
+	parameter_two.name = strdup("MyPropKey2");
 	parameter_two.has_type = true;
 	parameter_two.type = PARAMETER_DATA_TYPE_INT32;
 	parameter_two.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_int_value_tag;
 	parameter_two.value.int_value = 0;		// Default value
 
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter_three = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-	parameter_three.name = (char *)malloc((strlen("MyPropKey3")+1)*sizeof(char));
-        strcpy(parameter_three.name, "MyPropKey3");
+	parameter_three.name = strdup("MyPropKey3");
 	parameter_three.has_type = true;
 	parameter_three.type = PARAMETER_DATA_TYPE_FLOAT;
 	parameter_three.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_float_value_tag;
@@ -331,25 +331,21 @@ void publish_device_birth(struct mosquitto *mosq) {
 
 	// Create some Template/UDT instance Parameters - in this example they represent custom tag properties
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter_one = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-	parameter_one.name = (char *)malloc((strlen("MyPropKey1")+1)*sizeof(char));
-        strcpy(parameter_one.name, "MyPropKey1");
+	parameter_one.name = strdup("MyPropKey1");
 	parameter_one.has_type = true;
 	parameter_one.type = PARAMETER_DATA_TYPE_STRING;
 	parameter_one.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_string_value_tag;
-	parameter_one.value.string_value = (char *)malloc((strlen("MyInstancePropValue1")+1)*sizeof(char));
-	strcpy(parameter_one.value.string_value, "MyInstancePropValue1");
+	parameter_one.value.string_value = strdup("MyInstancePropValue1");
 
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter_two = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-	parameter_two.name = (char *)malloc((strlen("MyPropKey2")+1)*sizeof(char));
-        strcpy(parameter_two.name, "MyPropKey2");
+	parameter_two.name = strdup("MyPropKey2");
 	parameter_two.has_type = true;
 	parameter_two.type = PARAMETER_DATA_TYPE_INT32;
 	parameter_two.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_int_value_tag;
 	parameter_two.value.int_value = 1089;
 
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter_three = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-	parameter_three.name = (char *)malloc((strlen("MyPropKey3")+1)*sizeof(char));
-        strcpy(parameter_three.name, "MyPropKey3");
+	parameter_three.name = strdup("MyPropKey3");
 	parameter_three.has_type = true;
 	parameter_three.type = PARAMETER_DATA_TYPE_FLOAT;
 	parameter_three.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_float_value_tag;
@@ -366,8 +362,7 @@ void publish_device_birth(struct mosquitto *mosq) {
 	udt_template.parameters[0] = parameter_one;
 	udt_template.parameters[1] = parameter_two;
 	udt_template.parameters[2] = parameter_three;
-	udt_template.template_ref = (char *)malloc((strlen("My Metric Definition")+1)*sizeof(char));;
-	strcpy(udt_template.template_ref, "My Metric Definition");
+	udt_template.template_ref = strdup("My Metric Definition");
 	udt_template.has_is_definition = true;
 	udt_template.is_definition = false;
 

@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 		publish_ddata_message(mosq);
 		int j;
 		for(j=0; j<50; j++) {
-			usleep(100000);
+			usleep(10000);
 			mosquitto_loop(mosq, 0, 1);
 		}
 	}
@@ -360,9 +360,12 @@ void publish_births(struct mosquitto *mosq) {
 void publish_node_birth(struct mosquitto *mosq) {
 	// Create the NBIRTH payload
 	org_eclipse_tahu_protobuf_Payload nbirth_payload;
+	
+	// Initialize the sequence number for Sparkplug MQTT messages
+ 	// This must be zero on every NBIRTH publish
+	reset_sparkplug_sequence();
 	get_next_payload(&nbirth_payload);
-	nbirth_payload.uuid = (char*)malloc((strlen("MyUUID")+1) * sizeof(char));
-	strcpy(nbirth_payload.uuid, "MyUUID");
+	nbirth_payload.uuid = strdup("MyUUID");
 
 	// Add node control metrics
 	fprintf(stdout, "Adding metric: 'Node Control/Next Server'\n");
@@ -441,13 +444,11 @@ void publish_node_birth(struct mosquitto *mosq) {
 
 	// Create a Template/UDT Parameter - this is purely for example of including parameters and is not actually used by UDT instances
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-	parameter.name = (char *)malloc((strlen("Index")+1)*sizeof(char));
-        strcpy(parameter.name, "Index");
+	parameter.name = strdup("Index");
 	parameter.has_type = true;
 	parameter.type = PARAMETER_DATA_TYPE_STRING;
 	parameter.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_string_value_tag;
-	parameter.value.string_value = (char *)malloc((strlen("0")+1)*sizeof(char));
-	strcpy(parameter.value.string_value, "0");
+	parameter.value.string_value = strdup("0");
 
 	// Create the UDT definition value which includes the UDT members and parameters
 	org_eclipse_tahu_protobuf_Payload_Template udt_template = org_eclipse_tahu_protobuf_Payload_Template_init_default;
@@ -523,13 +524,11 @@ void publish_device_birth(struct mosquitto *mosq) {
 
 	// Create a Template/UDT instance Parameter - this is purely for example of including parameters and is not actually used by UDT instances
 	org_eclipse_tahu_protobuf_Payload_Template_Parameter parameter = org_eclipse_tahu_protobuf_Payload_Template_Parameter_init_default;
-	parameter.name = (char *)malloc((strlen("Index")+1)*sizeof(char));
-        strcpy(parameter.name, "Index");
+	parameter.name = strdup("Index");
 	parameter.has_type = true;
 	parameter.type = PARAMETER_DATA_TYPE_STRING;
 	parameter.which_value = org_eclipse_tahu_protobuf_Payload_Template_Parameter_string_value_tag;
-	parameter.value.string_value = (char *)malloc((strlen("1")+1)*sizeof(char));
-	strcpy(parameter.value.string_value, "1");
+	parameter.value.string_value = strdup("1");
 
 	// Create the UDT instance value which includes the UDT members and parameters
 	org_eclipse_tahu_protobuf_Payload_Template udt_template = org_eclipse_tahu_protobuf_Payload_Template_init_default;
@@ -541,8 +540,7 @@ void publish_device_birth(struct mosquitto *mosq) {
 	udt_template.parameters_count = 1;
 	udt_template.parameters = (org_eclipse_tahu_protobuf_Payload_Template_Parameter *) calloc(1, sizeof(org_eclipse_tahu_protobuf_Payload_Template_Parameter));
 	udt_template.parameters[0] = parameter;
-	udt_template.template_ref = (char *)malloc((strlen("Custom_Motor")+1)*sizeof(char));;
-	strcpy(udt_template.template_ref, "Custom_Motor");
+	udt_template.template_ref = strdup("Custom_Motor");
 	udt_template.has_is_definition = true;
 	udt_template.is_definition = false;
 
