@@ -182,7 +182,7 @@ def addMetric(container, name, alias, type, value):
         metric.alias = alias
     metric.timestamp = int(round(time.time() * 1000))
 
-    # print "Type: " + str(type)
+    # print( "Type: " + str(type))
 
     if type == MetricDataType.Int8:
         metric.datatype = MetricDataType.Int8
@@ -239,7 +239,7 @@ def addMetric(container, name, alias, type, value):
         metric.datatype = MetricDataType.Template
         metric.template_value = value
     else:
-        print "Invalid: " + str(type)
+        print( "Invalid: " + str(type))
 
     # Return the metric
     return metric
@@ -258,7 +258,7 @@ def addNullMetric(container, name, alias, type):
     metric.timestamp = int(round(time.time() * 1000))
     metric.is_null = True
 
-    # print "Type: " + str(type)
+    # print( "Type: " + str(type))
 
     if type == MetricDataType.Int8:
         metric.datatype = MetricDataType.Int8
@@ -297,7 +297,7 @@ def addNullMetric(container, name, alias, type):
     elif type == MetricDataType.Template:
         metric.datatype = MetricDataType.Template
     else:
-        print "Invalid: " + str(type)
+        print( "Invalid: " + str(type))
 
     # Return the metric
     return metric
