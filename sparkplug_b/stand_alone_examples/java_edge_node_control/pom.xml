@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.9-SNAPSHOT</version>
+    <version>0.5.9</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
@@ -26,9 +26,7 @@
   <artifactId>sparkplug_edge_node_control</artifactId>
   <version>0.5.9</version>
   <packaging>jar</packaging>
-
-  <name>Maven Quick Start Archetype</name>
-  <url>http://maven.apache.org</url>
+  <name>sparkplug_edge_node_control</name>
 
   <dependencies>
     <dependency>
