@@ -24,7 +24,7 @@
 
   <groupId>org.eclipse.tahu.example</groupId>
   <artifactId>sparkplug_b_udt_example</artifactId>
-  <version>0.5.9-SNAPSHOT</version>
+  <version>0.5.9</version>
   <packaging>jar</packaging>
   <name>Maven Quick Start Archetype</name>
   <url>http://maven.apache.org</url>
