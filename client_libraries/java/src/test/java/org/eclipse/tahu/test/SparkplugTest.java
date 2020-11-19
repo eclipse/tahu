@@ -34,27 +34,27 @@ import org.eclipse.tahu.message.PayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.DataSet;
+import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.DataSetDataType;
 import org.eclipse.tahu.message.model.File;
 import org.eclipse.tahu.message.model.MetaData;
+import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.Parameter;
 import org.eclipse.tahu.message.model.ParameterDataType;
 import org.eclipse.tahu.message.model.PropertyDataType;
 import org.eclipse.tahu.message.model.PropertySet;
+import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.PropertyValue;
 import org.eclipse.tahu.message.model.Row;
-import org.eclipse.tahu.message.model.SparkplugBPayload;
-import org.eclipse.tahu.message.model.Template;
-import org.eclipse.tahu.message.model.Value;
-import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
-import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
-import org.eclipse.tahu.message.model.Metric.MetricBuilder;
-import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.Row.RowBuilder;
+import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
+import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.util.PayloadUtil;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -107,7 +107,8 @@ public class SparkplugTest {
 				{ "TestUUID", MetricDataType.UUID, "915cac68-a20e-11e6-80f5-76304dec7eb7", null },
 				{ "TestBytes", MetricDataType.Bytes, new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4 }, null },
 				{ "TestFile", MetricDataType.File, new File("/tmp/.testfile", new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4 }),
-						new MetaDataBuilder().fileType("bin").fileName("/tmp/.testfile").createMetaData() },
+						new MetaDataBuilder().fileType("bin").fileName("/tmp/.testfile").multiPart(false)
+								.createMetaData() },
 				{ "TestDataSet", MetricDataType.DataSet,
 						new DataSetBuilder(5).addColumnName("Booleans").addColumnName("Int32s").addColumnName("Floats")
 								.addColumnName("Dates").addColumnName("Strings").addType(DataSetDataType.Boolean)
@@ -184,7 +185,14 @@ public class SparkplugTest {
 						new Date(1479421234564L), true, true, true },
 				{ new MetricBuilder("metric3", MetricDataType.String, "Test").alias(999999999L)
 						.timestamp(new Date(1479123452194L)).isHistorical(false).isTransient(false).createMetric(),
+						999999999L, new Date(1479123452194L), false, false, false },
+				{ new MetricBuilder("metric4", MetricDataType.BooleanArray,
+						new Boolean[] { false, true, false, true, false, true, false, true, false, true, false, true,
+								false, true, false, true, false, true, false, true, }).alias(999999999L)
+										.timestamp(new Date(1479123452194L)).isHistorical(false).isTransient(false)
+										.createMetric(),
 						999999999L, new Date(1479123452194L), false, false, false }, };
+
 	}
 
 	@DataProvider
@@ -217,7 +225,7 @@ public class SparkplugTest {
 
 		// Create MetaData
 		MetaData metaData = new MetaDataBuilder().contentType("none").size(12L).seq(0L).fileName("none")
-				.fileType("none").md5("none").description("none").createMetaData();
+				.fileType("none").md5("none").multiPart(false).description("none").createMetaData();
 
 		// Create one metric
 		payloadBuilder.addMetric(new MetricBuilder("Name", MetricDataType.Int8, (byte) 65).alias(0L)
@@ -276,25 +284,31 @@ public class SparkplugTest {
 		assertThat("none").isEqualTo(decodedMetaData.getDescription());
 	}
 
-	@Test(dataProvider = "metricData")
+	@Test(
+			dataProvider = "metricData")
 	public void testValidMetricPayload(String name, MetricDataType type, Object value, MetaData metaData)
 			throws SparkplugException {
 		testMetricPayload(name, type, value, metaData);
 	}
 
-	@Test(dataProvider = "invalidMetricDataType", expectedExceptions = SparkplugInvalidTypeException.class)
+	@Test(
+			dataProvider = "invalidMetricDataType",
+			expectedExceptions = SparkplugInvalidTypeException.class)
 	public void testInvalidMetricDataType(String name, MetricDataType type, Object value, MetaData metaData)
 			throws SparkplugException {
 		testMetricPayload(name, type, value, metaData);
 	}
 
-	@Test(dataProvider = "invalidParamterTypeData", expectedExceptions = SparkplugInvalidTypeException.class)
+	@Test(
+			dataProvider = "invalidParamterTypeData",
+			expectedExceptions = SparkplugInvalidTypeException.class)
 	public void testInvalidParameterDataType(String name, ParameterDataType type, Object value)
 			throws SparkplugInvalidTypeException {
 		new Parameter(name, type, value);
 	}
 
-	@Test(dataProvider = "metricFieldsData")
+	@Test(
+			dataProvider = "metricFieldsData")
 	public void testValidMetricPayload(Metric metric, long alias, Date timestamp, boolean isHistorical,
 			boolean isTransient, boolean isNull) throws Exception {
 		// Encode
@@ -312,7 +326,8 @@ public class SparkplugTest {
 		System.out.println("JSON: " + PayloadUtil.toJsonString(payload));
 	}
 
-	@Test(dataProvider = "metricData")
+	@Test(
+			dataProvider = "metricData")
 	public void testJsonValidation(String name, MetricDataType type, Object value, MetaData metaData)
 			throws SparkplugException, Exception {
 		Date currentTime = new Date();
