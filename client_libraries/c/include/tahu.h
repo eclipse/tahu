@@ -117,7 +117,7 @@
  * @return Returns >= 0 on success, or negative on failure
  */
 int add_metadata_to_metric(org_eclipse_tahu_protobuf_Payload_Metric *metric,
-						   org_eclipse_tahu_protobuf_Payload_MetaData *metadata);
+                           org_eclipse_tahu_protobuf_Payload_MetaData *metadata);
 
 /**
  * Attach a Metric to an existing Payload.
@@ -134,7 +134,7 @@ int add_metadata_to_metric(org_eclipse_tahu_protobuf_Payload_Metric *metric,
  * @return Returns >= 0 on success, or negative on failure
  */
 int add_metric_to_payload(org_eclipse_tahu_protobuf_Payload *payload,
-						  org_eclipse_tahu_protobuf_Payload_Metric *metric);
+                          org_eclipse_tahu_protobuf_Payload_Metric *metric);
 
 /**
  * Helper function to properly cast and push a value into the propertyvalue data structure.
@@ -152,9 +152,9 @@ int add_metric_to_payload(org_eclipse_tahu_protobuf_Payload *payload,
  * @return Returns >= 0 on success, or negative on failure
  */
 int set_propertyvalue(org_eclipse_tahu_protobuf_Payload_PropertyValue *propertyvalue,
-					  uint32_t datatype,
-					  const void *value,
-					  size_t size);
+                      uint32_t datatype,
+                      const void *value,
+                      size_t size);
 
 /**
  * Add a simple Property to an existing PropertySet
@@ -172,10 +172,10 @@ int set_propertyvalue(org_eclipse_tahu_protobuf_Payload_PropertyValue *propertyv
  * @return Returns >= 0 on success, or negative on failure
  */
 int add_property_to_set(org_eclipse_tahu_protobuf_Payload_PropertySet *propertyset,
-						const char *key,
-						uint32_t type,
-						const void *value,
-						size_t size_of_value);
+                        const char *key,
+                        uint32_t type,
+                        const void *value,
+                        size_t size_of_value);
 
 /**
  * Add a PropertySet to an existing Metric
@@ -192,7 +192,7 @@ int add_property_to_set(org_eclipse_tahu_protobuf_Payload_PropertySet *propertys
  * @return Returns >= 0 on success, or negative on failure
  */
 int add_propertyset_to_metric(org_eclipse_tahu_protobuf_Payload_Metric *metric,
-							  org_eclipse_tahu_protobuf_Payload_PropertySet *properties);
+                              org_eclipse_tahu_protobuf_Payload_PropertySet *properties);
 
 /**
  * Helper function to properly cast and push a value into the
@@ -255,14 +255,14 @@ int set_metric_value(org_eclipse_tahu_protobuf_Payload_Metric *metric, uint32_t 
  * @return Returns >= 0 on success, or negative on failure
  */
 int add_simple_metric(org_eclipse_tahu_protobuf_Payload *payload,
-					  const char *name,
-					  bool has_alias,
-					  uint64_t alias,
-					  uint64_t datatype,
-					  bool is_historical,
-					  bool is_transient,
-					  const void *value,
-					  size_t size_of_value);
+                      const char *name,
+                      bool has_alias,
+                      uint64_t alias,
+                      uint64_t datatype,
+                      bool is_historical,
+                      bool is_transient,
+                      const void *value,
+                      size_t size_of_value);
 
 /**
  * Encode a Payload into an array of bytes
@@ -279,8 +279,8 @@ int add_simple_metric(org_eclipse_tahu_protobuf_Payload *payload,
  *         success, or -1 on failure
  */
 ssize_t encode_payload(uint8_t *out_buffer,
-					   size_t buffer_length,
-					   const org_eclipse_tahu_protobuf_Payload *payload);
+                       size_t buffer_length,
+                       const org_eclipse_tahu_protobuf_Payload *payload);
 
 /**
  * Build a payload structure from an encoded buffer
@@ -291,21 +291,21 @@ ssize_t encode_payload(uint8_t *out_buffer,
  * those allocations when done using it.
  *
  * @param payload   Pointer to the destination structure to receive the payload;
- *  				WARNING: any memory allocations referenced
- *  				by the payload structure before it is passed
- *  				into this function will be lost.  They
- *  				should be explicitly freed first if
- *  				necessary.
+ *                  WARNING: any memory allocations referenced
+ *                  by the payload structure before it is passed
+ *                  into this function will be lost.  They
+ *                  should be explicitly freed first if
+ *                  necessary.
  * @param in_buffer Pointer to the buffer holding the encoded payload
  * @param buffer_length
  *                  Size of the incoming buffer
  *
  * @return Returns negative on failure, or number of bytes
- *  	   unused from buffer_length on success
+ *         unused from buffer_length on success
  */
 ssize_t decode_payload(org_eclipse_tahu_protobuf_Payload *payload,
-					   const uint8_t *in_buffer,
-					   size_t buffer_length);
+                       const uint8_t *in_buffer,
+                       size_t buffer_length);
 
 /**
  * Free memory from an existing Payload
@@ -371,19 +371,19 @@ int get_next_payload(org_eclipse_tahu_protobuf_Payload *payload);
  *                  Number of columns in the dataset
  * @param datatypes Array of datatypes, one per column (e.g. DATA_SET_DATA_TYPE_INT8)
  * @param column_keys
- *  				Array of pointers to null-terminated strings
- *  				giving names for each column (these strings
- *  				are copied into new allocations)
+ *                  Array of pointers to null-terminated strings
+ *                  giving names for each column (these strings
+ *                  are copied into new allocations)
  * @param row_data  Array of row value structures
  *
  * @return Returns >= 0 on success, or negative on failure
  */
 int init_dataset(org_eclipse_tahu_protobuf_Payload_DataSet *dataset,
-				 uint64_t num_of_rows,
-				 uint64_t num_of_columns,
-				 const uint32_t datatypes[],
-				 const char *column_keys[],
-				 const org_eclipse_tahu_protobuf_Payload_DataSet_Row row_data[]);
+                 uint64_t num_of_rows,
+                 uint64_t num_of_columns,
+                 const uint32_t datatypes[],
+                 const char *column_keys[],
+                 const org_eclipse_tahu_protobuf_Payload_DataSet_Row row_data[]);
 
 /**
  * Initialize a Metric with the values of the arguments passed in
@@ -424,14 +424,14 @@ int init_dataset(org_eclipse_tahu_protobuf_Payload_DataSet *dataset,
  * @return Returns >= 0 on success, or negative on failure
  */
 int init_metric(org_eclipse_tahu_protobuf_Payload_Metric *metric,
-				const char *name,
-				bool has_alias,
-				uint64_t alias,
-				uint64_t datatype,
-				bool is_historical,
-				bool is_transient,
-				const void *value,
-				size_t size_of_value);
+                const char *name,
+                bool has_alias,
+                uint64_t alias,
+                uint64_t datatype,
+                bool is_historical,
+                bool is_transient,
+                const void *value,
+                size_t size_of_value);
 
 /**
  * Display a full Sparkplug Payload
