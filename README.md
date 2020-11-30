@@ -23,7 +23,7 @@ that were not possible in the original Kura payload definition.  These features 
 * File data
 
 Sparkplug B Specification:
-https://s3.amazonaws.com/cirrus-link-com/Sparkplug+Topic+Namespace+and+State+ManagementV2.1+Apendix++Payload+B+format.pdf
+https://www.eclipse.org/tahu/spec/Sparkplug%20Topic%20Namespace%20and%20State%20ManagementV2.2-with%20appendix%20B%20format%20-%20Eclipse.pdf
 
 Tutorials showing how to use this reference code can be found here:
 https://docs.chariot.io/display/CLD79/Sparkplug+Developer+Docs

@@ -819,5 +819,3 @@ void print_payload(org_eclipse_tahu_protobuf_Payload *payload) {
 	}
 	PP("-----PAYLOAD END-----\n");
 }
-
-
