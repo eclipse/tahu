@@ -146,5 +146,4 @@ public class Topic {
 	public boolean isType(MessageType type) {
 		return this.type != null && this.type.equals(type);
 	}
-
 }
