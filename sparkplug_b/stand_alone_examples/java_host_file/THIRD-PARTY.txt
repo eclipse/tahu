@@ -1,0 +1,7 @@
+
+Lists of 5 third-party dependencies.
+     (New BSD license) Protocol Buffer Java API (com.google.protobuf:protobuf-java:2.6.1 - https://developers.google.com/protocol-buffers/)
+     (The Apache Software License, Version 2.0) Apache Log4j (log4j:log4j:1.2.17 - http://logging.apache.org/log4j/1.2/)
+     (Eclipse Public License - Version 1.0) org.eclipse.paho.client.mqttv3 (org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2 - http://www.eclipse.org/paho/org.eclipse.paho.client.mqttv3)
+     (MIT License) SLF4J API Module (org.slf4j:slf4j-api:1.7.5 - http://www.slf4j.org)
+     (MIT License) SLF4J LOG4J-12 Binding (org.slf4j:slf4j-log4j12:1.7.5 - http://www.slf4j.org)

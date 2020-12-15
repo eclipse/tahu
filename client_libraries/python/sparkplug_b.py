@@ -249,6 +249,18 @@ def addMetric(container, name, alias, type, value):
 # Helper method for adding metrics to a container which can be a
 # payload or a template
 ######################################################################
+def addHistoricalMetric(container, name, alias, type, value):
+    metric = addMetric(container, name, alias, type, value)
+    metric.is_historical = True
+
+    # Return the metric
+    return metric
+######################################################################
+
+######################################################################
+# Helper method for adding metrics to a container which can be a
+# payload or a template
+######################################################################
 def addNullMetric(container, name, alias, type):
     metric = container.metrics.add()
     if name is not None:
