@@ -33,7 +33,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 /**
  * A metric of a Sparkplug Payload.
  */
-@JsonIgnoreProperties(value = { "isNull" })
+@JsonIgnoreProperties(
+		value = { "isNull" })
 @JsonInclude(Include.NON_NULL)
 public class Metric {
 
@@ -215,7 +216,7 @@ public class Metric {
 		builder.append(", alias=");
 		builder.append(alias);
 		builder.append(", timestamp=");
-		builder.append(timestamp);
+		builder.append(timestamp.getTime());
 		builder.append(", dataType=");
 		builder.append(dataType);
 		builder.append(", isHistorical=");
