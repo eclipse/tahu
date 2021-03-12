@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    RED.nodes.registerType('sparkplug-payload',{
+        category: 'function',
+        color: '#C0DEED',
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "hash.svg",
+        label: function() {
+            return this.name||"sparkplug-payload";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="sparkplug-payload">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="sparkplug-payload">
+    <p>A node that converts JSON payloads in Sparkplug structure to protobuf encoded binaries or vice versa.</p>
+</script>
