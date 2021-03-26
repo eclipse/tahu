@@ -18,13 +18,13 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.10-SNAPSHOT</version>
+    <version>0.5.10</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
   <groupId>org.eclipse.tahu.example</groupId>
   <artifactId>host_file_example</artifactId>
-  <version>0.5.10-SNAPSHOT</version>
+  <version>0.5.10</version>
   <packaging>jar</packaging>
   <name>host_file_example</name>
 
