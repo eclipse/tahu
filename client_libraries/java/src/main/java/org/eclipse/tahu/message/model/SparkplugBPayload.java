@@ -115,7 +115,7 @@ public class SparkplugBPayload {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SparkplugBPayload [timestamp=");
-		builder.append(timestamp);
+		builder.append(timestamp.getTime());
 		builder.append(", metrics=");
 		builder.append(metrics);
 		builder.append(", seq=");

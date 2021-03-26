@@ -14,8 +14,10 @@
 package org.eclipse.tahu.util;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.tahu.SparkplugException;
@@ -142,12 +144,26 @@ public class MessageUtil {
 	/**
 	 * Serializes a {@link Message} instance in to a JSON string.
 	 * 
-	 * @param topic a {@link Message} instance
+	 * @param message a {@link Message} instance
 	 * @return a JSON string
 	 * @throws JsonProcessingException
 	 */
 	public static String toJsonString(Message message) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(message);
+	}
+
+	/**
+	 * Serializes a {@link Message} instance in to a JSON string.
+	 * 
+	 * @param message a {@link Message} instance
+	 * @param dateFormat a {@link DateFormat} to use for all {@link Date} Objects
+	 * @return a JSON string
+	 * @throws JsonProcessingException
+	 */
+	public static String toJsonString(Message message, DateFormat dateFormat) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setDateFormat(dateFormat);
 		return mapper.writeValueAsString(message);
 	}
 

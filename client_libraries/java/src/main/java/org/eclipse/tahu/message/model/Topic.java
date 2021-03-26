@@ -25,27 +25,32 @@ public class Topic {
 	/**
 	 * The Sparkplug namespace version.
 	 */
-	private String namespace;
+	private final String namespace;
+
+	/**
+	 * The combination of the Group ID and the Edge Node ID
+	 */
+	private final String edgeNodeDescriptor;
 
 	/**
 	 * The ID of the logical grouping of Edge of Network (EoN) Nodes and devices.
 	 */
-	private String groupId;
+	private final String groupId;
 
 	/**
 	 * The ID of the Edge of Network (EoN) Node.
 	 */
-	private String edgeNodeId;
+	private final String edgeNodeId;
 
 	/**
 	 * The ID of the device.
 	 */
-	private String deviceId;
+	private final String deviceId;
 
 	/**
 	 * The message type.
 	 */
-	private MessageType type;
+	private final MessageType type;
 
 	/**
 	 * A Constructor.
@@ -59,6 +64,7 @@ public class Topic {
 	public Topic(String namespace, String groupId, String edgeNodeId, String deviceId, MessageType type) {
 		super();
 		this.namespace = namespace;
+		this.edgeNodeDescriptor = groupId + "/" + edgeNodeId;
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = deviceId;
@@ -76,6 +82,7 @@ public class Topic {
 	public Topic(String namespace, String groupId, String edgeNodeId, MessageType type) {
 		super();
 		this.namespace = namespace;
+		this.edgeNodeDescriptor = groupId + "/" + edgeNodeId;
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = null;
@@ -89,6 +96,15 @@ public class Topic {
 	 */
 	public String getNamespace() {
 		return namespace;
+	}
+
+	/**
+	 * Returns the Sparkplug EdgeNodeDescriptor
+	 * 
+	 * @return the EdgeNodeDescriptor of the form group_id/edge_node_id
+	 */
+	public String getEdgeNodeDescriptor() {
+		return edgeNodeDescriptor;
 	}
 
 	/**
@@ -146,5 +162,4 @@ public class Topic {
 	public boolean isType(MessageType type) {
 		return this.type != null && this.type.equals(type);
 	}
-
 }

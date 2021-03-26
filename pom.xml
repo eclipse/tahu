@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--/********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2020 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -19,12 +19,12 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.basedir>${project.basedir}</main.basedir>
-    <paho.version>1.1.1</paho.version>
+    <paho.version>1.2.5</paho.version>
   </properties>
 
   <groupId>org.eclipse.tahu</groupId>
   <artifactId>tahu</artifactId>
-  <version>0.5.9</version>
+  <version>0.5.10</version>
   <packaging>pom</packaging>
 
   <distributionManagement>
@@ -46,6 +46,7 @@
     <module>sparkplug_b/stand_alone_examples/java/pom.xml</module>
     <module>sparkplug_b/stand_alone_examples/java_device_timestamp/pom.xml</module>
     <module>sparkplug_b/stand_alone_examples/java_edge_node_control/pom.xml</module>
+    <module>sparkplug_b/stand_alone_examples/java_host_file/pom.xml</module>
     <module>sparkplug_b/stand_alone_examples/java_records/pom.xml</module>
     <module>sparkplug_b/stand_alone_examples/java_udt/pom.xml</module>
     <module>sparkplug_b/tools/java_sparkplug_b_listener/pom.xml</module>

@@ -82,7 +82,7 @@ def on_message(client, userdata, msg):
                 # disconnect from the current MQTT server and connect to the next MQTT server in the
                 # list of available servers.  This is used for clients that have a pool of MQTT servers
                 # to connect to.
-		print "'Node Control/Next Server' is not implemented in this example"
+                print( "'Node Control/Next Server' is not implemented in this example")
             elif metric.name == "Node Control/Rebirth" or metric.alias == AliasMap.Rebirth:
                 # 'Node Control/Rebirth' is an NCMD used to tell the device/client application to resend
                 # its full NBIRTH and DBIRTH again.  MQTT Engine will send this NCMD to a device/client
@@ -104,7 +104,7 @@ def on_message(client, userdata, msg):
 
                 # We know this is an Int16 because of how we declated it in the DBIRTH
                 newValue = metric.int_value
-                print "CMD message for output/Device Metric2 - New Value: {}".format(newValue)
+                print( "CMD message for output/Device Metric2 - New Value: {}".format(newValue))
 
                 # Create the DDATA payload - Use the alias because this isn't the DBIRTH
                 payload = sparkplug.getDdataPayload()
@@ -121,7 +121,7 @@ def on_message(client, userdata, msg):
 
                 # We know this is an Boolean because of how we declated it in the DBIRTH
                 newValue = metric.boolean_value
-                print "CMD message for output/Device Metric3 - New Value: %r" % newValue
+                print( "CMD message for output/Device Metric3 - New Value: %r" % newValue)
 
                 # Create the DDATA payload - use the alias because this isn't the DBIRTH
                 payload = sparkplug.getDdataPayload()
@@ -131,11 +131,11 @@ def on_message(client, userdata, msg):
                 byteArray = bytearray(payload.SerializeToString())
                 client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + myDeviceName, byteArray, 0, False)
             else:
-                print "Unknown command: " + metric.name
+                print( "Unknown command: " + metric.name)
     else:
-        print "Unknown command..."
+        print( "Unknown command...")
 
-    print "Done publishing"
+    print( "Done publishing")
 ######################################################################
 
 ######################################################################
@@ -150,7 +150,7 @@ def publishBirth():
 # Publish the NBIRTH certificate
 ######################################################################
 def publishNodeBirth():
-    print "Publishing Node Birth"
+    print( "Publishing Node Birth")
 
     # Create the node birth payload
     payload = sparkplug.getNodeBirthPayload()
@@ -209,7 +209,7 @@ def publishNodeBirth():
 # Publish the DBIRTH certificate
 ######################################################################
 def publishDeviceBirth():
-    print "Publishing Device Birth"
+    print( "Publishing Device Birth")
 
     # Get the payload
     payload = sparkplug.getDeviceBirthPayload()
@@ -237,7 +237,7 @@ def publishDeviceBirth():
 ######################################################################
 # Main Application
 ######################################################################
-print "Starting main application"
+print("Starting main application")
 
 # Create the node death payload
 deathPayload = sparkplug.getNodeDeathPayload()
@@ -263,7 +263,7 @@ while True:
     payload = sparkplug.getDdataPayload()
 
     # Add some random data to the inputs
-    addMetric(payload, None, AliasMap.Device_Metric0, MetricDataType.String, ''.join(random.choice(string.lowercase) for i in range(12)))
+    addMetric(payload, None, AliasMap.Device_Metric0, MetricDataType.String, ''.join(random.choice(string.ascii_lowercase) for i in range(12)))
 
     # Note this data we're setting to STALE via the propertyset as an example
     metric = addMetric(payload, None, AliasMap.Device_Metric1, MetricDataType.Boolean, random.choice([True, False]))
@@ -277,7 +277,7 @@ while True:
     client.publish("spBv1.0/" + myGroupId + "/DDATA/" + myNodeName + "/" + myDeviceName, byteArray, 0, False)
 
     # Sit and wait for inbound or outbound events
-    for _ in range(50):
+    for _ in range(5):
         time.sleep(.1)
         client.loop()
 ######################################################################
