@@ -48,20 +48,25 @@ public enum MetricDataType {
 	File(18, File.class),
 	Template(19, Template.class),
 
+	// TODO - to be added
+	// Additional PropertyValue Types
+	// PropertySet = 20;
+	// PropertySetList = 21;
+
 	// Array Types
-	Int8Array(20, Byte[].class),
-	Int16Array(21, Short[].class),
-	Int32Array(22, Integer[].class),
-	Int64Array(23, Long[].class),
-	UInt8Array(24, Short[].class),
-	UInt16Array(25, Integer[].class),
-	UInt32Array(26, Long[].class),
-	UInt64Array(27, BigInteger[].class),
-	FloatArray(28, Float[].class),
-	DoubleArray(29, Double[].class),
-	BooleanArray(30, Boolean[].class),
-	StringArray(31, Byte[].class),
-	DateTimeArray(32, Long[].class),
+	Int8Array(22, Byte[].class),
+	Int16Array(23, Short[].class),
+	Int32Array(24, Integer[].class),
+	Int64Array(25, Long[].class),
+	UInt8Array(26, Short[].class),
+	UInt16Array(27, Integer[].class),
+	UInt32Array(28, Long[].class),
+	UInt64Array(29, BigInteger[].class),
+	FloatArray(30, Float[].class),
+	DoubleArray(31, Double[].class),
+	BooleanArray(32, Boolean[].class),
+	StringArray(33, Byte[].class),
+	DateTimeArray(34, Long[].class),
 
 	// Unknown
 	Unknown(0, Object.class);
@@ -139,31 +144,31 @@ public enum MetricDataType {
 				return File;
 			case 19:
 				return Template;
-			case 20:
-				return Int8Array;
-			case 21:
-				return Int16Array;
 			case 22:
-				return Int32Array;
+				return Int8Array;
 			case 23:
-				return Int64Array;
+				return Int16Array;
 			case 24:
-				return UInt8Array;
+				return Int32Array;
 			case 25:
-				return UInt16Array;
+				return Int64Array;
 			case 26:
-				return UInt32Array;
+				return UInt8Array;
 			case 27:
-				return UInt64Array;
+				return UInt16Array;
 			case 28:
-				return FloatArray;
+				return UInt32Array;
 			case 29:
-				return DoubleArray;
+				return UInt64Array;
 			case 30:
-				return BooleanArray;
+				return FloatArray;
 			case 31:
-				return StringArray;
+				return DoubleArray;
 			case 32:
+				return BooleanArray;
+			case 33:
+				return StringArray;
+			case 34:
 				return DateTimeArray;
 			default:
 				return Unknown;
