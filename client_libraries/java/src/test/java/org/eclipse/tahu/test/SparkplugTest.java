@@ -188,7 +188,7 @@ public class SparkplugTest {
 						999999999L, new Date(1479123452194L), false, false, false },
 				{ new MetricBuilder("metric4", MetricDataType.BooleanArray,
 						new Boolean[] { false, true, false, true, false, true, false, true, false, true, false, true,
-								false, true, false, true, false, true, false, true, }).alias(999999999L)
+								false, true, false, true, false, true, false, true }).alias(999999999L)
 										.timestamp(new Date(1479123452194L)).isHistorical(false).isTransient(false)
 										.createMetric(),
 						999999999L, new Date(1479123452194L), false, false, false }, };
