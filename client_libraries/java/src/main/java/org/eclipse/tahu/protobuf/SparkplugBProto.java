@@ -352,8 +352,6 @@ public final class SparkplugBProto {
     }
 
     /**
-     * @param value The numeric wire value of the corresponding enum entry.
-     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -361,10 +359,6 @@ public final class SparkplugBProto {
       return forNumber(value);
     }
 
-    /**
-     * @param value The numeric wire value of the corresponding enum entry.
-     * @return The enum associated with the given numeric wire value.
-     */
     public static DataType forNumber(int value) {
       switch (value) {
         case 0: return Unknown;
@@ -462,7 +456,6 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional uint64 timestamp = 1;</code>
-     * @return Whether the timestamp field is set.
      */
     boolean hasTimestamp();
     /**
@@ -471,7 +464,6 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional uint64 timestamp = 1;</code>
-     * @return The timestamp.
      */
     long getTimestamp();
 
@@ -525,7 +517,6 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional uint64 seq = 3;</code>
-     * @return Whether the seq field is set.
      */
     boolean hasSeq();
     /**
@@ -534,7 +525,6 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional uint64 seq = 3;</code>
-     * @return The seq.
      */
     long getSeq();
 
@@ -544,7 +534,6 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional string uuid = 4;</code>
-     * @return Whether the uuid field is set.
      */
     boolean hasUuid();
     /**
@@ -553,7 +542,6 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional string uuid = 4;</code>
-     * @return The uuid.
      */
     java.lang.String getUuid();
     /**
@@ -562,7 +550,6 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional string uuid = 4;</code>
-     * @return The bytes for uuid.
      */
     com.google.protobuf.ByteString
         getUuidBytes();
@@ -573,7 +560,6 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional bytes body = 5;</code>
-     * @return Whether the body field is set.
      */
     boolean hasBody();
     /**
@@ -582,34 +568,27 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional bytes body = 5;</code>
-     * @return The body.
      */
     com.google.protobuf.ByteString getBody();
   }
   /**
    * Protobuf type {@code org.eclipse.tahu.protobuf.Payload}
    */
-  public static final class Payload extends
+  public  static final class Payload extends
       com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
         Payload> implements
       // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload)
       PayloadOrBuilder {
-  private static final long serialVersionUID = 0L;
     // Use Payload.newBuilder() to construct.
     private Payload(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload, ?> builder) {
       super(builder);
     }
     private Payload() {
+      timestamp_ = 0L;
       metrics_ = java.util.Collections.emptyList();
+      seq_ = 0L;
       uuid_ = "";
       body_ = com.google.protobuf.ByteString.EMPTY;
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new Payload();
     }
 
     @java.lang.Override
@@ -622,9 +601,6 @@ public final class SparkplugBProto {
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -636,13 +612,20 @@ public final class SparkplugBProto {
             case 0:
               done = true;
               break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
             case 8: {
               bitField0_ |= 0x00000001;
               timestamp_ = input.readUInt64();
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                 metrics_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric>();
                 mutable_bitField0_ |= 0x00000002;
               }
@@ -666,13 +649,6 @@ public final class SparkplugBProto {
               body_ = input.readBytes();
               break;
             }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -681,7 +657,7 @@ public final class SparkplugBProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
           metrics_ = java.util.Collections.unmodifiableList(metrics_);
         }
         this.unknownFields = unknownFields.build();
@@ -693,7 +669,6 @@ public final class SparkplugBProto {
       return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_descriptor;
     }
 
-    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_fieldAccessorTable
@@ -712,7 +687,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string version = 1;</code>
-       * @return Whether the version field is set.
        */
       boolean hasVersion();
       /**
@@ -721,7 +695,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string version = 1;</code>
-       * @return The version.
        */
       java.lang.String getVersion();
       /**
@@ -730,7 +703,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string version = 1;</code>
-       * @return The bytes for version.
        */
       com.google.protobuf.ByteString
           getVersionBytes();
@@ -809,7 +781,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string template_ref = 4;</code>
-       * @return Whether the templateRef field is set.
        */
       boolean hasTemplateRef();
       /**
@@ -818,7 +789,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string template_ref = 4;</code>
-       * @return The templateRef.
        */
       java.lang.String getTemplateRef();
       /**
@@ -827,31 +797,27 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string template_ref = 4;</code>
-       * @return The bytes for templateRef.
        */
       com.google.protobuf.ByteString
           getTemplateRefBytes();
 
       /**
        * <code>optional bool is_definition = 5;</code>
-       * @return Whether the isDefinition field is set.
        */
       boolean hasIsDefinition();
       /**
        * <code>optional bool is_definition = 5;</code>
-       * @return The isDefinition.
        */
       boolean getIsDefinition();
     }
     /**
      * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.Template}
      */
-    public static final class Template extends
+    public  static final class Template extends
         com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
           Template> implements
         // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.Template)
         TemplateOrBuilder {
-    private static final long serialVersionUID = 0L;
       // Use Template.newBuilder() to construct.
       private Template(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template, ?> builder) {
         super(builder);
@@ -861,13 +827,7 @@ public final class SparkplugBProto {
         metrics_ = java.util.Collections.emptyList();
         parameters_ = java.util.Collections.emptyList();
         templateRef_ = "";
-      }
-
-      @java.lang.Override
-      @SuppressWarnings({"unused"})
-      protected java.lang.Object newInstance(
-          UnusedPrivateParameter unused) {
-        return new Template();
+        isDefinition_ = false;
       }
 
       @java.lang.Override
@@ -880,9 +840,6 @@ public final class SparkplugBProto {
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
         int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -894,6 +851,13 @@ public final class SparkplugBProto {
               case 0:
                 done = true;
                 break;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
               case 10: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000001;
@@ -901,7 +865,7 @@ public final class SparkplugBProto {
                 break;
               }
               case 18: {
-                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                   metrics_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric>();
                   mutable_bitField0_ |= 0x00000002;
                 }
@@ -910,7 +874,7 @@ public final class SparkplugBProto {
                 break;
               }
               case 26: {
-                if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
                   parameters_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter>();
                   mutable_bitField0_ |= 0x00000004;
                 }
@@ -929,13 +893,6 @@ public final class SparkplugBProto {
                 isDefinition_ = input.readBool();
                 break;
               }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
             }
           }
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -944,10 +901,10 @@ public final class SparkplugBProto {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
             metrics_ = java.util.Collections.unmodifiableList(metrics_);
           }
-          if (((mutable_bitField0_ & 0x00000004) != 0)) {
+          if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
             parameters_ = java.util.Collections.unmodifiableList(parameters_);
           }
           this.unknownFields = unknownFields.build();
@@ -959,7 +916,6 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_descriptor;
       }
 
-      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_fieldAccessorTable
@@ -973,116 +929,96 @@ public final class SparkplugBProto {
 
         /**
          * <code>optional string name = 1;</code>
-         * @return Whether the name field is set.
          */
         boolean hasName();
         /**
          * <code>optional string name = 1;</code>
-         * @return The name.
          */
         java.lang.String getName();
         /**
          * <code>optional string name = 1;</code>
-         * @return The bytes for name.
          */
         com.google.protobuf.ByteString
             getNameBytes();
 
         /**
          * <code>optional uint32 type = 2;</code>
-         * @return Whether the type field is set.
          */
         boolean hasType();
         /**
          * <code>optional uint32 type = 2;</code>
-         * @return The type.
          */
         int getType();
 
         /**
-         * <code>uint32 int_value = 3;</code>
-         * @return Whether the intValue field is set.
+         * <code>optional uint32 int_value = 3;</code>
          */
         boolean hasIntValue();
         /**
-         * <code>uint32 int_value = 3;</code>
-         * @return The intValue.
+         * <code>optional uint32 int_value = 3;</code>
          */
         int getIntValue();
 
         /**
-         * <code>uint64 long_value = 4;</code>
-         * @return Whether the longValue field is set.
+         * <code>optional uint64 long_value = 4;</code>
          */
         boolean hasLongValue();
         /**
-         * <code>uint64 long_value = 4;</code>
-         * @return The longValue.
+         * <code>optional uint64 long_value = 4;</code>
          */
         long getLongValue();
 
         /**
-         * <code>float float_value = 5;</code>
-         * @return Whether the floatValue field is set.
+         * <code>optional float float_value = 5;</code>
          */
         boolean hasFloatValue();
         /**
-         * <code>float float_value = 5;</code>
-         * @return The floatValue.
+         * <code>optional float float_value = 5;</code>
          */
         float getFloatValue();
 
         /**
-         * <code>double double_value = 6;</code>
-         * @return Whether the doubleValue field is set.
+         * <code>optional double double_value = 6;</code>
          */
         boolean hasDoubleValue();
         /**
-         * <code>double double_value = 6;</code>
-         * @return The doubleValue.
+         * <code>optional double double_value = 6;</code>
          */
         double getDoubleValue();
 
         /**
-         * <code>bool boolean_value = 7;</code>
-         * @return Whether the booleanValue field is set.
+         * <code>optional bool boolean_value = 7;</code>
          */
         boolean hasBooleanValue();
         /**
-         * <code>bool boolean_value = 7;</code>
-         * @return The booleanValue.
+         * <code>optional bool boolean_value = 7;</code>
          */
         boolean getBooleanValue();
 
         /**
-         * <code>string string_value = 8;</code>
-         * @return Whether the stringValue field is set.
+         * <code>optional string string_value = 8;</code>
          */
         boolean hasStringValue();
         /**
-         * <code>string string_value = 8;</code>
-         * @return The stringValue.
+         * <code>optional string string_value = 8;</code>
          */
         java.lang.String getStringValue();
         /**
-         * <code>string string_value = 8;</code>
-         * @return The bytes for stringValue.
+         * <code>optional string string_value = 8;</code>
          */
         com.google.protobuf.ByteString
             getStringValueBytes();
 
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
-         * @return Whether the extensionValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
          */
         boolean hasExtensionValue();
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
-         * @return The extensionValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
          */
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension getExtensionValue();
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
          */
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtensionOrBuilder getExtensionValueOrBuilder();
 
@@ -1091,24 +1027,17 @@ public final class SparkplugBProto {
       /**
        * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.Template.Parameter}
        */
-      public static final class Parameter extends
+      public  static final class Parameter extends
           com.google.protobuf.GeneratedMessageV3 implements
           // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.Template.Parameter)
           ParameterOrBuilder {
-      private static final long serialVersionUID = 0L;
         // Use Parameter.newBuilder() to construct.
         private Parameter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
           super(builder);
         }
         private Parameter() {
           name_ = "";
-        }
-
-        @java.lang.Override
-        @SuppressWarnings({"unused"})
-        protected java.lang.Object newInstance(
-            UnusedPrivateParameter unused) {
-          return new Parameter();
+          type_ = 0;
         }
 
         @java.lang.Override
@@ -1121,9 +1050,6 @@ public final class SparkplugBProto {
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           this();
-          if (extensionRegistry == null) {
-            throw new java.lang.NullPointerException();
-          }
           int mutable_bitField0_ = 0;
           com.google.protobuf.UnknownFieldSet.Builder unknownFields =
               com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -1135,6 +1061,13 @@ public final class SparkplugBProto {
                 case 0:
                   done = true;
                   break;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
                 case 10: {
                   com.google.protobuf.ByteString bs = input.readBytes();
                   bitField0_ |= 0x00000001;
@@ -1191,13 +1124,6 @@ public final class SparkplugBProto {
                   valueCase_ = 9;
                   break;
                 }
-                default: {
-                  if (!parseUnknownField(
-                      input, unknownFields, extensionRegistry, tag)) {
-                    done = true;
-                  }
-                  break;
-                }
               }
             }
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -1215,7 +1141,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_fieldAccessorTable
@@ -1231,24 +1156,16 @@ public final class SparkplugBProto {
         /**
          * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension}
          */
-        public static final class ParameterValueExtension extends
+        public  static final class ParameterValueExtension extends
             com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
               ParameterValueExtension> implements
             // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension)
             ParameterValueExtensionOrBuilder {
-        private static final long serialVersionUID = 0L;
           // Use ParameterValueExtension.newBuilder() to construct.
           private ParameterValueExtension(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension, ?> builder) {
             super(builder);
           }
           private ParameterValueExtension() {
-          }
-
-          @java.lang.Override
-          @SuppressWarnings({"unused"})
-          protected java.lang.Object newInstance(
-              UnusedPrivateParameter unused) {
-            return new ParameterValueExtension();
           }
 
           @java.lang.Override
@@ -1261,9 +1178,6 @@ public final class SparkplugBProto {
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
             this();
-            if (extensionRegistry == null) {
-              throw new java.lang.NullPointerException();
-            }
             com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                 com.google.protobuf.UnknownFieldSet.newBuilder();
             try {
@@ -1275,8 +1189,8 @@ public final class SparkplugBProto {
                     done = true;
                     break;
                   default: {
-                    if (!parseUnknownField(
-                        input, unknownFields, extensionRegistry, tag)) {
+                    if (!parseUnknownField(input, unknownFields,
+                                           extensionRegistry, tag)) {
                       done = true;
                     }
                     break;
@@ -1298,7 +1212,6 @@ public final class SparkplugBProto {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_ParameterValueExtension_descriptor;
           }
 
-          @java.lang.Override
           protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
               internalGetFieldAccessorTable() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_ParameterValueExtension_fieldAccessorTable
@@ -1307,7 +1220,6 @@ public final class SparkplugBProto {
           }
 
           private byte memoizedIsInitialized = -1;
-          @java.lang.Override
           public final boolean isInitialized() {
             byte isInitialized = memoizedIsInitialized;
             if (isInitialized == 1) return true;
@@ -1321,7 +1233,6 @@ public final class SparkplugBProto {
             return true;
           }
 
-          @java.lang.Override
           public void writeTo(com.google.protobuf.CodedOutputStream output)
                               throws java.io.IOException {
             com.google.protobuf.GeneratedMessageV3
@@ -1331,7 +1242,6 @@ public final class SparkplugBProto {
             unknownFields.writeTo(output);
           }
 
-          @java.lang.Override
           public int getSerializedSize() {
             int size = memoizedSize;
             if (size != -1) return size;
@@ -1343,6 +1253,7 @@ public final class SparkplugBProto {
             return size;
           }
 
+          private static final long serialVersionUID = 0L;
           @java.lang.Override
           public boolean equals(final java.lang.Object obj) {
             if (obj == this) {
@@ -1353,10 +1264,11 @@ public final class SparkplugBProto {
             }
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension) obj;
 
-            if (!unknownFields.equals(other.unknownFields)) return false;
-            if (!getExtensionFields().equals(other.getExtensionFields()))
-              return false;
-            return true;
+            boolean result = true;
+            result = result && unknownFields.equals(other.unknownFields);
+            result = result &&
+                getExtensionFields().equals(other.getExtensionFields());
+            return result;
           }
 
           @java.lang.Override
@@ -1365,24 +1277,13 @@ public final class SparkplugBProto {
               return memoizedHashCode;
             }
             int hash = 41;
-            hash = (19 * hash) + getDescriptor().hashCode();
+            hash = (19 * hash) + getDescriptorForType().hashCode();
             hash = hashFields(hash, getExtensionFields());
             hash = (29 * hash) + unknownFields.hashCode();
             memoizedHashCode = hash;
             return hash;
           }
 
-          public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension parseFrom(
-              java.nio.ByteBuffer data)
-              throws com.google.protobuf.InvalidProtocolBufferException {
-            return PARSER.parseFrom(data);
-          }
-          public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension parseFrom(
-              java.nio.ByteBuffer data,
-              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-              throws com.google.protobuf.InvalidProtocolBufferException {
-            return PARSER.parseFrom(data, extensionRegistry);
-          }
           public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension parseFrom(
               com.google.protobuf.ByteString data)
               throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1442,7 +1343,6 @@ public final class SparkplugBProto {
                 .parseWithIOException(PARSER, input, extensionRegistry);
           }
 
-          @java.lang.Override
           public Builder newBuilderForType() { return newBuilder(); }
           public static Builder newBuilder() {
             return DEFAULT_INSTANCE.toBuilder();
@@ -1450,7 +1350,6 @@ public final class SparkplugBProto {
           public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension prototype) {
             return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
           }
-          @java.lang.Override
           public Builder toBuilder() {
             return this == DEFAULT_INSTANCE
                 ? new Builder() : new Builder().mergeFrom(this);
@@ -1475,7 +1374,6 @@ public final class SparkplugBProto {
               return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_ParameterValueExtension_descriptor;
             }
 
-            @java.lang.Override
             protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
                 internalGetFieldAccessorTable() {
               return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_ParameterValueExtension_fieldAccessorTable
@@ -1498,24 +1396,20 @@ public final class SparkplugBProto {
                       .alwaysUseFieldBuilders) {
               }
             }
-            @java.lang.Override
             public Builder clear() {
               super.clear();
               return this;
             }
 
-            @java.lang.Override
             public com.google.protobuf.Descriptors.Descriptor
                 getDescriptorForType() {
               return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_ParameterValueExtension_descriptor;
             }
 
-            @java.lang.Override
             public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension getDefaultInstanceForType() {
               return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension.getDefaultInstance();
             }
 
-            @java.lang.Override
             public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension build() {
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension result = buildPartial();
               if (!result.isInitialized()) {
@@ -1524,73 +1418,61 @@ public final class SparkplugBProto {
               return result;
             }
 
-            @java.lang.Override
             public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension buildPartial() {
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension(this);
               onBuilt();
               return result;
             }
 
-            @java.lang.Override
             public Builder clone() {
-              return super.clone();
+              return (Builder) super.clone();
             }
-            @java.lang.Override
             public Builder setField(
                 com.google.protobuf.Descriptors.FieldDescriptor field,
-                java.lang.Object value) {
-              return super.setField(field, value);
+                Object value) {
+              return (Builder) super.setField(field, value);
             }
-            @java.lang.Override
             public Builder clearField(
                 com.google.protobuf.Descriptors.FieldDescriptor field) {
-              return super.clearField(field);
+              return (Builder) super.clearField(field);
             }
-            @java.lang.Override
             public Builder clearOneof(
                 com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-              return super.clearOneof(oneof);
+              return (Builder) super.clearOneof(oneof);
             }
-            @java.lang.Override
             public Builder setRepeatedField(
                 com.google.protobuf.Descriptors.FieldDescriptor field,
-                int index, java.lang.Object value) {
-              return super.setRepeatedField(field, index, value);
+                int index, Object value) {
+              return (Builder) super.setRepeatedField(field, index, value);
             }
-            @java.lang.Override
             public Builder addRepeatedField(
                 com.google.protobuf.Descriptors.FieldDescriptor field,
-                java.lang.Object value) {
-              return super.addRepeatedField(field, value);
+                Object value) {
+              return (Builder) super.addRepeatedField(field, value);
             }
-            @java.lang.Override
             public <Type> Builder setExtension(
                 com.google.protobuf.GeneratedMessage.GeneratedExtension<
                     org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension, Type> extension,
                 Type value) {
-              return super.setExtension(extension, value);
+              return (Builder) super.setExtension(extension, value);
             }
-            @java.lang.Override
             public <Type> Builder setExtension(
                 com.google.protobuf.GeneratedMessage.GeneratedExtension<
                     org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension, java.util.List<Type>> extension,
                 int index, Type value) {
-              return super.setExtension(extension, index, value);
+              return (Builder) super.setExtension(extension, index, value);
             }
-            @java.lang.Override
             public <Type> Builder addExtension(
                 com.google.protobuf.GeneratedMessage.GeneratedExtension<
                     org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension, java.util.List<Type>> extension,
                 Type value) {
-              return super.addExtension(extension, value);
+              return (Builder) super.addExtension(extension, value);
             }
-            @java.lang.Override
             public <Type> Builder clearExtension(
                 com.google.protobuf.GeneratedMessage.GeneratedExtension<
                     org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension, ?> extension) {
-              return super.clearExtension(extension);
+              return (Builder) super.clearExtension(extension);
             }
-            @java.lang.Override
             public Builder mergeFrom(com.google.protobuf.Message other) {
               if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension) {
                 return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension)other);
@@ -1608,7 +1490,6 @@ public final class SparkplugBProto {
               return this;
             }
 
-            @java.lang.Override
             public final boolean isInitialized() {
               if (!extensionsAreInitialized()) {
                 return false;
@@ -1616,7 +1497,6 @@ public final class SparkplugBProto {
               return true;
             }
 
-            @java.lang.Override
             public Builder mergeFrom(
                 com.google.protobuf.CodedInputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1634,13 +1514,11 @@ public final class SparkplugBProto {
               }
               return this;
             }
-            @java.lang.Override
             public final Builder setUnknownFields(
                 final com.google.protobuf.UnknownFieldSet unknownFields) {
               return super.setUnknownFields(unknownFields);
             }
 
-            @java.lang.Override
             public final Builder mergeUnknownFields(
                 final com.google.protobuf.UnknownFieldSet unknownFields) {
               return super.mergeUnknownFields(unknownFields);
@@ -1662,12 +1540,11 @@ public final class SparkplugBProto {
 
           @java.lang.Deprecated public static final com.google.protobuf.Parser<ParameterValueExtension>
               PARSER = new com.google.protobuf.AbstractParser<ParameterValueExtension>() {
-            @java.lang.Override
             public ParameterValueExtension parsePartialFrom(
                 com.google.protobuf.CodedInputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
-              return new ParameterValueExtension(input, extensionRegistry);
+                return new ParameterValueExtension(input, extensionRegistry);
             }
           };
 
@@ -1680,7 +1557,6 @@ public final class SparkplugBProto {
             return PARSER;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension getDefaultInstanceForType() {
             return DEFAULT_INSTANCE;
           }
@@ -1691,8 +1567,7 @@ public final class SparkplugBProto {
         private int valueCase_ = 0;
         private java.lang.Object value_;
         public enum ValueCase
-            implements com.google.protobuf.Internal.EnumLite,
-                com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+            implements com.google.protobuf.Internal.EnumLite {
           INT_VALUE(3),
           LONG_VALUE(4),
           FLOAT_VALUE(5),
@@ -1706,8 +1581,6 @@ public final class SparkplugBProto {
             this.value = value;
           }
           /**
-           * @param value The number of the enum to look for.
-           * @return The enum associated with the given number.
            * @deprecated Use {@link #forNumber(int)} instead.
            */
           @java.lang.Deprecated
@@ -1743,17 +1616,13 @@ public final class SparkplugBProto {
         private volatile java.lang.Object name_;
         /**
          * <code>optional string name = 1;</code>
-         * @return Whether the name field is set.
          */
-        @java.lang.Override
         public boolean hasName() {
-          return ((bitField0_ & 0x00000001) != 0);
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
          * <code>optional string name = 1;</code>
-         * @return The name.
          */
-        @java.lang.Override
         public java.lang.String getName() {
           java.lang.Object ref = name_;
           if (ref instanceof java.lang.String) {
@@ -1770,9 +1639,7 @@ public final class SparkplugBProto {
         }
         /**
          * <code>optional string name = 1;</code>
-         * @return The bytes for name.
          */
-        @java.lang.Override
         public com.google.protobuf.ByteString
             getNameBytes() {
           java.lang.Object ref = name_;
@@ -1791,35 +1658,27 @@ public final class SparkplugBProto {
         private int type_;
         /**
          * <code>optional uint32 type = 2;</code>
-         * @return Whether the type field is set.
          */
-        @java.lang.Override
         public boolean hasType() {
-          return ((bitField0_ & 0x00000002) != 0);
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
          * <code>optional uint32 type = 2;</code>
-         * @return The type.
          */
-        @java.lang.Override
         public int getType() {
           return type_;
         }
 
         public static final int INT_VALUE_FIELD_NUMBER = 3;
         /**
-         * <code>uint32 int_value = 3;</code>
-         * @return Whether the intValue field is set.
+         * <code>optional uint32 int_value = 3;</code>
          */
-        @java.lang.Override
         public boolean hasIntValue() {
           return valueCase_ == 3;
         }
         /**
-         * <code>uint32 int_value = 3;</code>
-         * @return The intValue.
+         * <code>optional uint32 int_value = 3;</code>
          */
-        @java.lang.Override
         public int getIntValue() {
           if (valueCase_ == 3) {
             return (java.lang.Integer) value_;
@@ -1829,18 +1688,14 @@ public final class SparkplugBProto {
 
         public static final int LONG_VALUE_FIELD_NUMBER = 4;
         /**
-         * <code>uint64 long_value = 4;</code>
-         * @return Whether the longValue field is set.
+         * <code>optional uint64 long_value = 4;</code>
          */
-        @java.lang.Override
         public boolean hasLongValue() {
           return valueCase_ == 4;
         }
         /**
-         * <code>uint64 long_value = 4;</code>
-         * @return The longValue.
+         * <code>optional uint64 long_value = 4;</code>
          */
-        @java.lang.Override
         public long getLongValue() {
           if (valueCase_ == 4) {
             return (java.lang.Long) value_;
@@ -1850,18 +1705,14 @@ public final class SparkplugBProto {
 
         public static final int FLOAT_VALUE_FIELD_NUMBER = 5;
         /**
-         * <code>float float_value = 5;</code>
-         * @return Whether the floatValue field is set.
+         * <code>optional float float_value = 5;</code>
          */
-        @java.lang.Override
         public boolean hasFloatValue() {
           return valueCase_ == 5;
         }
         /**
-         * <code>float float_value = 5;</code>
-         * @return The floatValue.
+         * <code>optional float float_value = 5;</code>
          */
-        @java.lang.Override
         public float getFloatValue() {
           if (valueCase_ == 5) {
             return (java.lang.Float) value_;
@@ -1871,18 +1722,14 @@ public final class SparkplugBProto {
 
         public static final int DOUBLE_VALUE_FIELD_NUMBER = 6;
         /**
-         * <code>double double_value = 6;</code>
-         * @return Whether the doubleValue field is set.
+         * <code>optional double double_value = 6;</code>
          */
-        @java.lang.Override
         public boolean hasDoubleValue() {
           return valueCase_ == 6;
         }
         /**
-         * <code>double double_value = 6;</code>
-         * @return The doubleValue.
+         * <code>optional double double_value = 6;</code>
          */
-        @java.lang.Override
         public double getDoubleValue() {
           if (valueCase_ == 6) {
             return (java.lang.Double) value_;
@@ -1892,18 +1739,14 @@ public final class SparkplugBProto {
 
         public static final int BOOLEAN_VALUE_FIELD_NUMBER = 7;
         /**
-         * <code>bool boolean_value = 7;</code>
-         * @return Whether the booleanValue field is set.
+         * <code>optional bool boolean_value = 7;</code>
          */
-        @java.lang.Override
         public boolean hasBooleanValue() {
           return valueCase_ == 7;
         }
         /**
-         * <code>bool boolean_value = 7;</code>
-         * @return The booleanValue.
+         * <code>optional bool boolean_value = 7;</code>
          */
-        @java.lang.Override
         public boolean getBooleanValue() {
           if (valueCase_ == 7) {
             return (java.lang.Boolean) value_;
@@ -1913,15 +1756,13 @@ public final class SparkplugBProto {
 
         public static final int STRING_VALUE_FIELD_NUMBER = 8;
         /**
-         * <code>string string_value = 8;</code>
-         * @return Whether the stringValue field is set.
+         * <code>optional string string_value = 8;</code>
          */
         public boolean hasStringValue() {
           return valueCase_ == 8;
         }
         /**
-         * <code>string string_value = 8;</code>
-         * @return The stringValue.
+         * <code>optional string string_value = 8;</code>
          */
         public java.lang.String getStringValue() {
           java.lang.Object ref = "";
@@ -1941,8 +1782,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>string string_value = 8;</code>
-         * @return The bytes for stringValue.
+         * <code>optional string string_value = 8;</code>
          */
         public com.google.protobuf.ByteString
             getStringValueBytes() {
@@ -1965,18 +1805,14 @@ public final class SparkplugBProto {
 
         public static final int EXTENSION_VALUE_FIELD_NUMBER = 9;
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
-         * @return Whether the extensionValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
          */
-        @java.lang.Override
         public boolean hasExtensionValue() {
           return valueCase_ == 9;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
-         * @return The extensionValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension getExtensionValue() {
           if (valueCase_ == 9) {
              return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension) value_;
@@ -1984,9 +1820,8 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension.getDefaultInstance();
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtensionOrBuilder getExtensionValueOrBuilder() {
           if (valueCase_ == 9) {
              return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension) value_;
@@ -1995,7 +1830,6 @@ public final class SparkplugBProto {
         }
 
         private byte memoizedIsInitialized = -1;
-        @java.lang.Override
         public final boolean isInitialized() {
           byte isInitialized = memoizedIsInitialized;
           if (isInitialized == 1) return true;
@@ -2011,13 +1845,12 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public void writeTo(com.google.protobuf.CodedOutputStream output)
                             throws java.io.IOException {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
             com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
           }
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
             output.writeUInt32(2, type_);
           }
           if (valueCase_ == 3) {
@@ -2049,16 +1882,15 @@ public final class SparkplugBProto {
           unknownFields.writeTo(output);
         }
 
-        @java.lang.Override
         public int getSerializedSize() {
           int size = memoizedSize;
           if (size != -1) return size;
 
           size = 0;
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
             size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
           }
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
             size += com.google.protobuf.CodedOutputStream
               .computeUInt32Size(2, type_);
           }
@@ -2099,6 +1931,7 @@ public final class SparkplugBProto {
           return size;
         }
 
+        private static final long serialVersionUID = 0L;
         @java.lang.Override
         public boolean equals(final java.lang.Object obj) {
           if (obj == this) {
@@ -2109,53 +1942,58 @@ public final class SparkplugBProto {
           }
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter) obj;
 
-          if (hasName() != other.hasName()) return false;
+          boolean result = true;
+          result = result && (hasName() == other.hasName());
           if (hasName()) {
-            if (!getName()
-                .equals(other.getName())) return false;
+            result = result && getName()
+                .equals(other.getName());
           }
-          if (hasType() != other.hasType()) return false;
+          result = result && (hasType() == other.hasType());
           if (hasType()) {
-            if (getType()
-                != other.getType()) return false;
+            result = result && (getType()
+                == other.getType());
           }
-          if (!getValueCase().equals(other.getValueCase())) return false;
+          result = result && getValueCase().equals(
+              other.getValueCase());
+          if (!result) return false;
           switch (valueCase_) {
             case 3:
-              if (getIntValue()
-                  != other.getIntValue()) return false;
+              result = result && (getIntValue()
+                  == other.getIntValue());
               break;
             case 4:
-              if (getLongValue()
-                  != other.getLongValue()) return false;
+              result = result && (getLongValue()
+                  == other.getLongValue());
               break;
             case 5:
-              if (java.lang.Float.floatToIntBits(getFloatValue())
-                  != java.lang.Float.floatToIntBits(
-                      other.getFloatValue())) return false;
+              result = result && (
+                  java.lang.Float.floatToIntBits(getFloatValue())
+                  == java.lang.Float.floatToIntBits(
+                      other.getFloatValue()));
               break;
             case 6:
-              if (java.lang.Double.doubleToLongBits(getDoubleValue())
-                  != java.lang.Double.doubleToLongBits(
-                      other.getDoubleValue())) return false;
+              result = result && (
+                  java.lang.Double.doubleToLongBits(getDoubleValue())
+                  == java.lang.Double.doubleToLongBits(
+                      other.getDoubleValue()));
               break;
             case 7:
-              if (getBooleanValue()
-                  != other.getBooleanValue()) return false;
+              result = result && (getBooleanValue()
+                  == other.getBooleanValue());
               break;
             case 8:
-              if (!getStringValue()
-                  .equals(other.getStringValue())) return false;
+              result = result && getStringValue()
+                  .equals(other.getStringValue());
               break;
             case 9:
-              if (!getExtensionValue()
-                  .equals(other.getExtensionValue())) return false;
+              result = result && getExtensionValue()
+                  .equals(other.getExtensionValue());
               break;
             case 0:
             default:
           }
-          if (!unknownFields.equals(other.unknownFields)) return false;
-          return true;
+          result = result && unknownFields.equals(other.unknownFields);
+          return result;
         }
 
         @java.lang.Override
@@ -2164,7 +2002,7 @@ public final class SparkplugBProto {
             return memoizedHashCode;
           }
           int hash = 41;
-          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (19 * hash) + getDescriptorForType().hashCode();
           if (hasName()) {
             hash = (37 * hash) + NAME_FIELD_NUMBER;
             hash = (53 * hash) + getName().hashCode();
@@ -2214,17 +2052,6 @@ public final class SparkplugBProto {
           return hash;
         }
 
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter parseFrom(
-            java.nio.ByteBuffer data)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data);
-        }
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter parseFrom(
-            java.nio.ByteBuffer data,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data, extensionRegistry);
-        }
         public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter parseFrom(
             com.google.protobuf.ByteString data)
             throws com.google.protobuf.InvalidProtocolBufferException {
@@ -2284,7 +2111,6 @@ public final class SparkplugBProto {
               .parseWithIOException(PARSER, input, extensionRegistry);
         }
 
-        @java.lang.Override
         public Builder newBuilderForType() { return newBuilder(); }
         public static Builder newBuilder() {
           return DEFAULT_INSTANCE.toBuilder();
@@ -2292,7 +2118,6 @@ public final class SparkplugBProto {
         public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter prototype) {
           return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
         }
-        @java.lang.Override
         public Builder toBuilder() {
           return this == DEFAULT_INSTANCE
               ? new Builder() : new Builder().mergeFrom(this);
@@ -2316,7 +2141,6 @@ public final class SparkplugBProto {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_descriptor;
           }
 
-          @java.lang.Override
           protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
               internalGetFieldAccessorTable() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_fieldAccessorTable
@@ -2339,7 +2163,6 @@ public final class SparkplugBProto {
                     .alwaysUseFieldBuilders) {
             }
           }
-          @java.lang.Override
           public Builder clear() {
             super.clear();
             name_ = "";
@@ -2351,18 +2174,15 @@ public final class SparkplugBProto {
             return this;
           }
 
-          @java.lang.Override
           public com.google.protobuf.Descriptors.Descriptor
               getDescriptorForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_Parameter_descriptor;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter getDefaultInstanceForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.getDefaultInstance();
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter build() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter result = buildPartial();
             if (!result.isInitialized()) {
@@ -2371,19 +2191,18 @@ public final class SparkplugBProto {
             return result;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter buildPartial() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter(this);
             int from_bitField0_ = bitField0_;
             int to_bitField0_ = 0;
-            if (((from_bitField0_ & 0x00000001) != 0)) {
+            if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
               to_bitField0_ |= 0x00000001;
             }
             result.name_ = name_;
-            if (((from_bitField0_ & 0x00000002) != 0)) {
-              result.type_ = type_;
+            if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
               to_bitField0_ |= 0x00000002;
             }
+            result.type_ = type_;
             if (valueCase_ == 3) {
               result.value_ = value_;
             }
@@ -2415,39 +2234,32 @@ public final class SparkplugBProto {
             return result;
           }
 
-          @java.lang.Override
           public Builder clone() {
-            return super.clone();
+            return (Builder) super.clone();
           }
-          @java.lang.Override
           public Builder setField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.setField(field, value);
+              Object value) {
+            return (Builder) super.setField(field, value);
           }
-          @java.lang.Override
           public Builder clearField(
               com.google.protobuf.Descriptors.FieldDescriptor field) {
-            return super.clearField(field);
+            return (Builder) super.clearField(field);
           }
-          @java.lang.Override
           public Builder clearOneof(
               com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-            return super.clearOneof(oneof);
+            return (Builder) super.clearOneof(oneof);
           }
-          @java.lang.Override
           public Builder setRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              int index, java.lang.Object value) {
-            return super.setRepeatedField(field, index, value);
+              int index, Object value) {
+            return (Builder) super.setRepeatedField(field, index, value);
           }
-          @java.lang.Override
           public Builder addRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.addRepeatedField(field, value);
+              Object value) {
+            return (Builder) super.addRepeatedField(field, value);
           }
-          @java.lang.Override
           public Builder mergeFrom(com.google.protobuf.Message other) {
             if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter) {
               return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter)other);
@@ -2507,7 +2319,6 @@ public final class SparkplugBProto {
             return this;
           }
 
-          @java.lang.Override
           public final boolean isInitialized() {
             if (hasExtensionValue()) {
               if (!getExtensionValue().isInitialized()) {
@@ -2517,7 +2328,6 @@ public final class SparkplugBProto {
             return true;
           }
 
-          @java.lang.Override
           public Builder mergeFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2555,14 +2365,12 @@ public final class SparkplugBProto {
           private java.lang.Object name_ = "";
           /**
            * <code>optional string name = 1;</code>
-           * @return Whether the name field is set.
            */
           public boolean hasName() {
-            return ((bitField0_ & 0x00000001) != 0);
+            return ((bitField0_ & 0x00000001) == 0x00000001);
           }
           /**
            * <code>optional string name = 1;</code>
-           * @return The name.
            */
           public java.lang.String getName() {
             java.lang.Object ref = name_;
@@ -2580,7 +2388,6 @@ public final class SparkplugBProto {
           }
           /**
            * <code>optional string name = 1;</code>
-           * @return The bytes for name.
            */
           public com.google.protobuf.ByteString
               getNameBytes() {
@@ -2597,8 +2404,6 @@ public final class SparkplugBProto {
           }
           /**
            * <code>optional string name = 1;</code>
-           * @param value The name to set.
-           * @return This builder for chaining.
            */
           public Builder setName(
               java.lang.String value) {
@@ -2612,7 +2417,6 @@ public final class SparkplugBProto {
           }
           /**
            * <code>optional string name = 1;</code>
-           * @return This builder for chaining.
            */
           public Builder clearName() {
             bitField0_ = (bitField0_ & ~0x00000001);
@@ -2622,8 +2426,6 @@ public final class SparkplugBProto {
           }
           /**
            * <code>optional string name = 1;</code>
-           * @param value The bytes for name to set.
-           * @return This builder for chaining.
            */
           public Builder setNameBytes(
               com.google.protobuf.ByteString value) {
@@ -2639,24 +2441,18 @@ public final class SparkplugBProto {
           private int type_ ;
           /**
            * <code>optional uint32 type = 2;</code>
-           * @return Whether the type field is set.
            */
-          @java.lang.Override
           public boolean hasType() {
-            return ((bitField0_ & 0x00000002) != 0);
+            return ((bitField0_ & 0x00000002) == 0x00000002);
           }
           /**
            * <code>optional uint32 type = 2;</code>
-           * @return The type.
            */
-          @java.lang.Override
           public int getType() {
             return type_;
           }
           /**
            * <code>optional uint32 type = 2;</code>
-           * @param value The type to set.
-           * @return This builder for chaining.
            */
           public Builder setType(int value) {
             bitField0_ |= 0x00000002;
@@ -2666,7 +2462,6 @@ public final class SparkplugBProto {
           }
           /**
            * <code>optional uint32 type = 2;</code>
-           * @return This builder for chaining.
            */
           public Builder clearType() {
             bitField0_ = (bitField0_ & ~0x00000002);
@@ -2676,15 +2471,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>uint32 int_value = 3;</code>
-           * @return Whether the intValue field is set.
+           * <code>optional uint32 int_value = 3;</code>
            */
           public boolean hasIntValue() {
             return valueCase_ == 3;
           }
           /**
-           * <code>uint32 int_value = 3;</code>
-           * @return The intValue.
+           * <code>optional uint32 int_value = 3;</code>
            */
           public int getIntValue() {
             if (valueCase_ == 3) {
@@ -2693,9 +2486,7 @@ public final class SparkplugBProto {
             return 0;
           }
           /**
-           * <code>uint32 int_value = 3;</code>
-           * @param value The intValue to set.
-           * @return This builder for chaining.
+           * <code>optional uint32 int_value = 3;</code>
            */
           public Builder setIntValue(int value) {
             valueCase_ = 3;
@@ -2704,8 +2495,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>uint32 int_value = 3;</code>
-           * @return This builder for chaining.
+           * <code>optional uint32 int_value = 3;</code>
            */
           public Builder clearIntValue() {
             if (valueCase_ == 3) {
@@ -2717,15 +2507,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>uint64 long_value = 4;</code>
-           * @return Whether the longValue field is set.
+           * <code>optional uint64 long_value = 4;</code>
            */
           public boolean hasLongValue() {
             return valueCase_ == 4;
           }
           /**
-           * <code>uint64 long_value = 4;</code>
-           * @return The longValue.
+           * <code>optional uint64 long_value = 4;</code>
            */
           public long getLongValue() {
             if (valueCase_ == 4) {
@@ -2734,9 +2522,7 @@ public final class SparkplugBProto {
             return 0L;
           }
           /**
-           * <code>uint64 long_value = 4;</code>
-           * @param value The longValue to set.
-           * @return This builder for chaining.
+           * <code>optional uint64 long_value = 4;</code>
            */
           public Builder setLongValue(long value) {
             valueCase_ = 4;
@@ -2745,8 +2531,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>uint64 long_value = 4;</code>
-           * @return This builder for chaining.
+           * <code>optional uint64 long_value = 4;</code>
            */
           public Builder clearLongValue() {
             if (valueCase_ == 4) {
@@ -2758,15 +2543,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>float float_value = 5;</code>
-           * @return Whether the floatValue field is set.
+           * <code>optional float float_value = 5;</code>
            */
           public boolean hasFloatValue() {
             return valueCase_ == 5;
           }
           /**
-           * <code>float float_value = 5;</code>
-           * @return The floatValue.
+           * <code>optional float float_value = 5;</code>
            */
           public float getFloatValue() {
             if (valueCase_ == 5) {
@@ -2775,9 +2558,7 @@ public final class SparkplugBProto {
             return 0F;
           }
           /**
-           * <code>float float_value = 5;</code>
-           * @param value The floatValue to set.
-           * @return This builder for chaining.
+           * <code>optional float float_value = 5;</code>
            */
           public Builder setFloatValue(float value) {
             valueCase_ = 5;
@@ -2786,8 +2567,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>float float_value = 5;</code>
-           * @return This builder for chaining.
+           * <code>optional float float_value = 5;</code>
            */
           public Builder clearFloatValue() {
             if (valueCase_ == 5) {
@@ -2799,15 +2579,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>double double_value = 6;</code>
-           * @return Whether the doubleValue field is set.
+           * <code>optional double double_value = 6;</code>
            */
           public boolean hasDoubleValue() {
             return valueCase_ == 6;
           }
           /**
-           * <code>double double_value = 6;</code>
-           * @return The doubleValue.
+           * <code>optional double double_value = 6;</code>
            */
           public double getDoubleValue() {
             if (valueCase_ == 6) {
@@ -2816,9 +2594,7 @@ public final class SparkplugBProto {
             return 0D;
           }
           /**
-           * <code>double double_value = 6;</code>
-           * @param value The doubleValue to set.
-           * @return This builder for chaining.
+           * <code>optional double double_value = 6;</code>
            */
           public Builder setDoubleValue(double value) {
             valueCase_ = 6;
@@ -2827,8 +2603,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>double double_value = 6;</code>
-           * @return This builder for chaining.
+           * <code>optional double double_value = 6;</code>
            */
           public Builder clearDoubleValue() {
             if (valueCase_ == 6) {
@@ -2840,15 +2615,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>bool boolean_value = 7;</code>
-           * @return Whether the booleanValue field is set.
+           * <code>optional bool boolean_value = 7;</code>
            */
           public boolean hasBooleanValue() {
             return valueCase_ == 7;
           }
           /**
-           * <code>bool boolean_value = 7;</code>
-           * @return The booleanValue.
+           * <code>optional bool boolean_value = 7;</code>
            */
           public boolean getBooleanValue() {
             if (valueCase_ == 7) {
@@ -2857,9 +2630,7 @@ public final class SparkplugBProto {
             return false;
           }
           /**
-           * <code>bool boolean_value = 7;</code>
-           * @param value The booleanValue to set.
-           * @return This builder for chaining.
+           * <code>optional bool boolean_value = 7;</code>
            */
           public Builder setBooleanValue(boolean value) {
             valueCase_ = 7;
@@ -2868,8 +2639,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>bool boolean_value = 7;</code>
-           * @return This builder for chaining.
+           * <code>optional bool boolean_value = 7;</code>
            */
           public Builder clearBooleanValue() {
             if (valueCase_ == 7) {
@@ -2881,18 +2651,14 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>string string_value = 8;</code>
-           * @return Whether the stringValue field is set.
+           * <code>optional string string_value = 8;</code>
            */
-          @java.lang.Override
           public boolean hasStringValue() {
             return valueCase_ == 8;
           }
           /**
-           * <code>string string_value = 8;</code>
-           * @return The stringValue.
+           * <code>optional string string_value = 8;</code>
            */
-          @java.lang.Override
           public java.lang.String getStringValue() {
             java.lang.Object ref = "";
             if (valueCase_ == 8) {
@@ -2913,10 +2679,8 @@ public final class SparkplugBProto {
             }
           }
           /**
-           * <code>string string_value = 8;</code>
-           * @return The bytes for stringValue.
+           * <code>optional string string_value = 8;</code>
            */
-          @java.lang.Override
           public com.google.protobuf.ByteString
               getStringValueBytes() {
             java.lang.Object ref = "";
@@ -2936,9 +2700,7 @@ public final class SparkplugBProto {
             }
           }
           /**
-           * <code>string string_value = 8;</code>
-           * @param value The stringValue to set.
-           * @return This builder for chaining.
+           * <code>optional string string_value = 8;</code>
            */
           public Builder setStringValue(
               java.lang.String value) {
@@ -2951,8 +2713,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>string string_value = 8;</code>
-           * @return This builder for chaining.
+           * <code>optional string string_value = 8;</code>
            */
           public Builder clearStringValue() {
             if (valueCase_ == 8) {
@@ -2963,9 +2724,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>string string_value = 8;</code>
-           * @param value The bytes for stringValue to set.
-           * @return This builder for chaining.
+           * <code>optional string string_value = 8;</code>
            */
           public Builder setStringValueBytes(
               com.google.protobuf.ByteString value) {
@@ -2981,18 +2740,14 @@ public final class SparkplugBProto {
           private com.google.protobuf.SingleFieldBuilderV3<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtensionOrBuilder> extensionValueBuilder_;
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
-           * @return Whether the extensionValue field is set.
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
-          @java.lang.Override
           public boolean hasExtensionValue() {
             return valueCase_ == 9;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
-           * @return The extensionValue.
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension getExtensionValue() {
             if (extensionValueBuilder_ == null) {
               if (valueCase_ == 9) {
@@ -3007,7 +2762,7 @@ public final class SparkplugBProto {
             }
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
           public Builder setExtensionValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension value) {
             if (extensionValueBuilder_ == null) {
@@ -3023,7 +2778,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
           public Builder setExtensionValue(
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension.Builder builderForValue) {
@@ -3037,7 +2792,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
           public Builder mergeExtensionValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension value) {
             if (extensionValueBuilder_ == null) {
@@ -3059,7 +2814,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
           public Builder clearExtensionValue() {
             if (extensionValueBuilder_ == null) {
@@ -3078,15 +2833,14 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension.Builder getExtensionValueBuilder() {
             return getExtensionValueFieldBuilder().getBuilder();
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtensionOrBuilder getExtensionValueOrBuilder() {
             if ((valueCase_ == 9) && (extensionValueBuilder_ != null)) {
               return extensionValueBuilder_.getMessageOrBuilder();
@@ -3098,7 +2852,7 @@ public final class SparkplugBProto {
             }
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.Template.Parameter.ParameterValueExtension extension_value = 9;</code>
            */
           private com.google.protobuf.SingleFieldBuilderV3<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtension.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.ParameterValueExtensionOrBuilder> 
@@ -3118,13 +2872,11 @@ public final class SparkplugBProto {
             onChanged();;
             return extensionValueBuilder_;
           }
-          @java.lang.Override
           public final Builder setUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.setUnknownFields(unknownFields);
           }
 
-          @java.lang.Override
           public final Builder mergeUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.mergeUnknownFields(unknownFields);
@@ -3146,12 +2898,11 @@ public final class SparkplugBProto {
 
         @java.lang.Deprecated public static final com.google.protobuf.Parser<Parameter>
             PARSER = new com.google.protobuf.AbstractParser<Parameter>() {
-          @java.lang.Override
           public Parameter parsePartialFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
-            return new Parameter(input, extensionRegistry);
+              return new Parameter(input, extensionRegistry);
           }
         };
 
@@ -3164,7 +2915,6 @@ public final class SparkplugBProto {
           return PARSER;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter getDefaultInstanceForType() {
           return DEFAULT_INSTANCE;
         }
@@ -3180,11 +2930,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string version = 1;</code>
-       * @return Whether the version field is set.
        */
-      @java.lang.Override
       public boolean hasVersion() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <pre>
@@ -3192,9 +2940,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string version = 1;</code>
-       * @return The version.
        */
-      @java.lang.Override
       public java.lang.String getVersion() {
         java.lang.Object ref = version_;
         if (ref instanceof java.lang.String) {
@@ -3215,9 +2961,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string version = 1;</code>
-       * @return The bytes for version.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getVersionBytes() {
         java.lang.Object ref = version_;
@@ -3241,7 +2985,6 @@ public final class SparkplugBProto {
        *
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
        */
-      @java.lang.Override
       public java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric> getMetricsList() {
         return metrics_;
       }
@@ -3252,7 +2995,6 @@ public final class SparkplugBProto {
        *
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
        */
-      @java.lang.Override
       public java.util.List<? extends org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetricOrBuilder> 
           getMetricsOrBuilderList() {
         return metrics_;
@@ -3264,7 +3006,6 @@ public final class SparkplugBProto {
        *
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
        */
-      @java.lang.Override
       public int getMetricsCount() {
         return metrics_.size();
       }
@@ -3275,7 +3016,6 @@ public final class SparkplugBProto {
        *
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric getMetrics(int index) {
         return metrics_.get(index);
       }
@@ -3286,7 +3026,6 @@ public final class SparkplugBProto {
        *
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetricOrBuilder getMetricsOrBuilder(
           int index) {
         return metrics_.get(index);
@@ -3297,14 +3036,12 @@ public final class SparkplugBProto {
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Template.Parameter parameters = 3;</code>
        */
-      @java.lang.Override
       public java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter> getParametersList() {
         return parameters_;
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Template.Parameter parameters = 3;</code>
        */
-      @java.lang.Override
       public java.util.List<? extends org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.ParameterOrBuilder> 
           getParametersOrBuilderList() {
         return parameters_;
@@ -3312,21 +3049,18 @@ public final class SparkplugBProto {
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Template.Parameter parameters = 3;</code>
        */
-      @java.lang.Override
       public int getParametersCount() {
         return parameters_.size();
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Template.Parameter parameters = 3;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter getParameters(int index) {
         return parameters_.get(index);
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.Template.Parameter parameters = 3;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.ParameterOrBuilder getParametersOrBuilder(
           int index) {
         return parameters_.get(index);
@@ -3340,11 +3074,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string template_ref = 4;</code>
-       * @return Whether the templateRef field is set.
        */
-      @java.lang.Override
       public boolean hasTemplateRef() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
        * <pre>
@@ -3352,9 +3084,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string template_ref = 4;</code>
-       * @return The templateRef.
        */
-      @java.lang.Override
       public java.lang.String getTemplateRef() {
         java.lang.Object ref = templateRef_;
         if (ref instanceof java.lang.String) {
@@ -3375,9 +3105,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string template_ref = 4;</code>
-       * @return The bytes for templateRef.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getTemplateRefBytes() {
         java.lang.Object ref = templateRef_;
@@ -3396,23 +3124,18 @@ public final class SparkplugBProto {
       private boolean isDefinition_;
       /**
        * <code>optional bool is_definition = 5;</code>
-       * @return Whether the isDefinition field is set.
        */
-      @java.lang.Override
       public boolean hasIsDefinition() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
        * <code>optional bool is_definition = 5;</code>
-       * @return The isDefinition.
        */
-      @java.lang.Override
       public boolean getIsDefinition() {
         return isDefinition_;
       }
 
       private byte memoizedIsInitialized = -1;
-      @java.lang.Override
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized == 1) return true;
@@ -3438,13 +3161,12 @@ public final class SparkplugBProto {
         return true;
       }
 
-      @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         com.google.protobuf.GeneratedMessageV3
           .ExtendableMessage<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template>.ExtensionWriter
             extensionWriter = newExtensionWriter();
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, version_);
         }
         for (int i = 0; i < metrics_.size(); i++) {
@@ -3453,23 +3175,22 @@ public final class SparkplugBProto {
         for (int i = 0; i < parameters_.size(); i++) {
           output.writeMessage(3, parameters_.get(i));
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 4, templateRef_);
         }
-        if (((bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           output.writeBool(5, isDefinition_);
         }
         extensionWriter.writeUntil(536870912, output);
         unknownFields.writeTo(output);
       }
 
-      @java.lang.Override
       public int getSerializedSize() {
         int size = memoizedSize;
         if (size != -1) return size;
 
         size = 0;
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, version_);
         }
         for (int i = 0; i < metrics_.size(); i++) {
@@ -3480,10 +3201,10 @@ public final class SparkplugBProto {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(3, parameters_.get(i));
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, templateRef_);
         }
-        if (((bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(5, isDefinition_);
         }
@@ -3493,6 +3214,7 @@ public final class SparkplugBProto {
         return size;
       }
 
+      private static final long serialVersionUID = 0L;
       @java.lang.Override
       public boolean equals(final java.lang.Object obj) {
         if (obj == this) {
@@ -3503,29 +3225,30 @@ public final class SparkplugBProto {
         }
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template) obj;
 
-        if (hasVersion() != other.hasVersion()) return false;
+        boolean result = true;
+        result = result && (hasVersion() == other.hasVersion());
         if (hasVersion()) {
-          if (!getVersion()
-              .equals(other.getVersion())) return false;
+          result = result && getVersion()
+              .equals(other.getVersion());
         }
-        if (!getMetricsList()
-            .equals(other.getMetricsList())) return false;
-        if (!getParametersList()
-            .equals(other.getParametersList())) return false;
-        if (hasTemplateRef() != other.hasTemplateRef()) return false;
+        result = result && getMetricsList()
+            .equals(other.getMetricsList());
+        result = result && getParametersList()
+            .equals(other.getParametersList());
+        result = result && (hasTemplateRef() == other.hasTemplateRef());
         if (hasTemplateRef()) {
-          if (!getTemplateRef()
-              .equals(other.getTemplateRef())) return false;
+          result = result && getTemplateRef()
+              .equals(other.getTemplateRef());
         }
-        if (hasIsDefinition() != other.hasIsDefinition()) return false;
+        result = result && (hasIsDefinition() == other.hasIsDefinition());
         if (hasIsDefinition()) {
-          if (getIsDefinition()
-              != other.getIsDefinition()) return false;
+          result = result && (getIsDefinition()
+              == other.getIsDefinition());
         }
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        if (!getExtensionFields().equals(other.getExtensionFields()))
-          return false;
-        return true;
+        result = result && unknownFields.equals(other.unknownFields);
+        result = result &&
+            getExtensionFields().equals(other.getExtensionFields());
+        return result;
       }
 
       @java.lang.Override
@@ -3534,7 +3257,7 @@ public final class SparkplugBProto {
           return memoizedHashCode;
         }
         int hash = 41;
-        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (19 * hash) + getDescriptorForType().hashCode();
         if (hasVersion()) {
           hash = (37 * hash) + VERSION_FIELD_NUMBER;
           hash = (53 * hash) + getVersion().hashCode();
@@ -3562,17 +3285,6 @@ public final class SparkplugBProto {
         return hash;
       }
 
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template parseFrom(
-          java.nio.ByteBuffer data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template parseFrom(
-          java.nio.ByteBuffer data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
       public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -3632,7 +3344,6 @@ public final class SparkplugBProto {
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
 
-      @java.lang.Override
       public Builder newBuilderForType() { return newBuilder(); }
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
@@ -3640,7 +3351,6 @@ public final class SparkplugBProto {
       public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
-      @java.lang.Override
       public Builder toBuilder() {
         return this == DEFAULT_INSTANCE
             ? new Builder() : new Builder().mergeFrom(this);
@@ -3665,7 +3375,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_fieldAccessorTable
@@ -3690,7 +3399,6 @@ public final class SparkplugBProto {
             getParametersFieldBuilder();
           }
         }
-        @java.lang.Override
         public Builder clear() {
           super.clear();
           version_ = "";
@@ -3714,18 +3422,15 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Template_descriptor;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template getDefaultInstanceForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.getDefaultInstance();
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template build() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template result = buildPartial();
           if (!result.isInitialized()) {
@@ -3734,17 +3439,16 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template buildPartial() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
-          if (((from_bitField0_ & 0x00000001) != 0)) {
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
             to_bitField0_ |= 0x00000001;
           }
           result.version_ = version_;
           if (metricsBuilder_ == null) {
-            if (((bitField0_ & 0x00000002) != 0)) {
+            if (((bitField0_ & 0x00000002) == 0x00000002)) {
               metrics_ = java.util.Collections.unmodifiableList(metrics_);
               bitField0_ = (bitField0_ & ~0x00000002);
             }
@@ -3753,7 +3457,7 @@ public final class SparkplugBProto {
             result.metrics_ = metricsBuilder_.build();
           }
           if (parametersBuilder_ == null) {
-            if (((bitField0_ & 0x00000004) != 0)) {
+            if (((bitField0_ & 0x00000004) == 0x00000004)) {
               parameters_ = java.util.Collections.unmodifiableList(parameters_);
               bitField0_ = (bitField0_ & ~0x00000004);
             }
@@ -3761,79 +3465,68 @@ public final class SparkplugBProto {
           } else {
             result.parameters_ = parametersBuilder_.build();
           }
-          if (((from_bitField0_ & 0x00000008) != 0)) {
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
             to_bitField0_ |= 0x00000002;
           }
           result.templateRef_ = templateRef_;
-          if (((from_bitField0_ & 0x00000010) != 0)) {
-            result.isDefinition_ = isDefinition_;
+          if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
             to_bitField0_ |= 0x00000004;
           }
+          result.isDefinition_ = isDefinition_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
         }
 
-        @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
-        @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
+            Object value) {
+          return (Builder) super.setField(field, value);
         }
-        @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
-        @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
-        @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+            int index, Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
         }
-        @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+            Object value) {
+          return (Builder) super.addRepeatedField(field, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template, Type> extension,
             Type value) {
-          return super.setExtension(extension, value);
+          return (Builder) super.setExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template, java.util.List<Type>> extension,
             int index, Type value) {
-          return super.setExtension(extension, index, value);
+          return (Builder) super.setExtension(extension, index, value);
         }
-        @java.lang.Override
         public <Type> Builder addExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template, java.util.List<Type>> extension,
             Type value) {
-          return super.addExtension(extension, value);
+          return (Builder) super.addExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder clearExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template, ?> extension) {
-          return super.clearExtension(extension);
+          return (Builder) super.clearExtension(extension);
         }
-        @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template) {
             return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template)other);
@@ -3916,7 +3609,6 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public final boolean isInitialized() {
           for (int i = 0; i < getMetricsCount(); i++) {
             if (!getMetrics(i).isInitialized()) {
@@ -3934,7 +3626,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3961,10 +3652,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string version = 1;</code>
-         * @return Whether the version field is set.
          */
         public boolean hasVersion() {
-          return ((bitField0_ & 0x00000001) != 0);
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
          * <pre>
@@ -3972,7 +3662,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string version = 1;</code>
-         * @return The version.
          */
         public java.lang.String getVersion() {
           java.lang.Object ref = version_;
@@ -3994,7 +3683,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string version = 1;</code>
-         * @return The bytes for version.
          */
         public com.google.protobuf.ByteString
             getVersionBytes() {
@@ -4015,8 +3703,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string version = 1;</code>
-         * @param value The version to set.
-         * @return This builder for chaining.
          */
         public Builder setVersion(
             java.lang.String value) {
@@ -4034,7 +3720,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string version = 1;</code>
-         * @return This builder for chaining.
          */
         public Builder clearVersion() {
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -4048,8 +3733,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string version = 1;</code>
-         * @param value The bytes for version to set.
-         * @return This builder for chaining.
          */
         public Builder setVersionBytes(
             com.google.protobuf.ByteString value) {
@@ -4065,7 +3748,7 @@ public final class SparkplugBProto {
         private java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric> metrics_ =
           java.util.Collections.emptyList();
         private void ensureMetricsIsMutable() {
-          if (!((bitField0_ & 0x00000002) != 0)) {
+          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
             metrics_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric>(metrics_);
             bitField0_ |= 0x00000002;
            }
@@ -4366,7 +4049,7 @@ public final class SparkplugBProto {
             metricsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetricOrBuilder>(
                     metrics_,
-                    ((bitField0_ & 0x00000002) != 0),
+                    ((bitField0_ & 0x00000002) == 0x00000002),
                     getParentForChildren(),
                     isClean());
             metrics_ = null;
@@ -4377,7 +4060,7 @@ public final class SparkplugBProto {
         private java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter> parameters_ =
           java.util.Collections.emptyList();
         private void ensureParametersIsMutable() {
-          if (!((bitField0_ & 0x00000004) != 0)) {
+          if (!((bitField0_ & 0x00000004) == 0x00000004)) {
             parameters_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter>(parameters_);
             bitField0_ |= 0x00000004;
            }
@@ -4606,7 +4289,7 @@ public final class SparkplugBProto {
             parametersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Parameter.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.ParameterOrBuilder>(
                     parameters_,
-                    ((bitField0_ & 0x00000004) != 0),
+                    ((bitField0_ & 0x00000004) == 0x00000004),
                     getParentForChildren(),
                     isClean());
             parameters_ = null;
@@ -4621,10 +4304,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string template_ref = 4;</code>
-         * @return Whether the templateRef field is set.
          */
         public boolean hasTemplateRef() {
-          return ((bitField0_ & 0x00000008) != 0);
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         /**
          * <pre>
@@ -4632,7 +4314,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string template_ref = 4;</code>
-         * @return The templateRef.
          */
         public java.lang.String getTemplateRef() {
           java.lang.Object ref = templateRef_;
@@ -4654,7 +4335,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string template_ref = 4;</code>
-         * @return The bytes for templateRef.
          */
         public com.google.protobuf.ByteString
             getTemplateRefBytes() {
@@ -4675,8 +4355,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string template_ref = 4;</code>
-         * @param value The templateRef to set.
-         * @return This builder for chaining.
          */
         public Builder setTemplateRef(
             java.lang.String value) {
@@ -4694,7 +4372,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string template_ref = 4;</code>
-         * @return This builder for chaining.
          */
         public Builder clearTemplateRef() {
           bitField0_ = (bitField0_ & ~0x00000008);
@@ -4708,8 +4385,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string template_ref = 4;</code>
-         * @param value The bytes for templateRef to set.
-         * @return This builder for chaining.
          */
         public Builder setTemplateRefBytes(
             com.google.protobuf.ByteString value) {
@@ -4725,24 +4400,18 @@ public final class SparkplugBProto {
         private boolean isDefinition_ ;
         /**
          * <code>optional bool is_definition = 5;</code>
-         * @return Whether the isDefinition field is set.
          */
-        @java.lang.Override
         public boolean hasIsDefinition() {
-          return ((bitField0_ & 0x00000010) != 0);
+          return ((bitField0_ & 0x00000010) == 0x00000010);
         }
         /**
          * <code>optional bool is_definition = 5;</code>
-         * @return The isDefinition.
          */
-        @java.lang.Override
         public boolean getIsDefinition() {
           return isDefinition_;
         }
         /**
          * <code>optional bool is_definition = 5;</code>
-         * @param value The isDefinition to set.
-         * @return This builder for chaining.
          */
         public Builder setIsDefinition(boolean value) {
           bitField0_ |= 0x00000010;
@@ -4752,7 +4421,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>optional bool is_definition = 5;</code>
-         * @return This builder for chaining.
          */
         public Builder clearIsDefinition() {
           bitField0_ = (bitField0_ & ~0x00000010);
@@ -4760,13 +4428,11 @@ public final class SparkplugBProto {
           onChanged();
           return this;
         }
-        @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.setUnknownFields(unknownFields);
         }
 
-        @java.lang.Override
         public final Builder mergeUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.mergeUnknownFields(unknownFields);
@@ -4788,12 +4454,11 @@ public final class SparkplugBProto {
 
       @java.lang.Deprecated public static final com.google.protobuf.Parser<Template>
           PARSER = new com.google.protobuf.AbstractParser<Template>() {
-        @java.lang.Override
         public Template parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new Template(input, extensionRegistry);
+            return new Template(input, extensionRegistry);
         }
       };
 
@@ -4806,7 +4471,6 @@ public final class SparkplugBProto {
         return PARSER;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
@@ -4820,54 +4484,42 @@ public final class SparkplugBProto {
 
       /**
        * <code>optional uint64 num_of_columns = 1;</code>
-       * @return Whether the numOfColumns field is set.
        */
       boolean hasNumOfColumns();
       /**
        * <code>optional uint64 num_of_columns = 1;</code>
-       * @return The numOfColumns.
        */
       long getNumOfColumns();
 
       /**
        * <code>repeated string columns = 2;</code>
-       * @return A list containing the columns.
        */
       java.util.List<java.lang.String>
           getColumnsList();
       /**
        * <code>repeated string columns = 2;</code>
-       * @return The count of columns.
        */
       int getColumnsCount();
       /**
        * <code>repeated string columns = 2;</code>
-       * @param index The index of the element to return.
-       * @return The columns at the given index.
        */
       java.lang.String getColumns(int index);
       /**
        * <code>repeated string columns = 2;</code>
-       * @param index The index of the value to return.
-       * @return The bytes of the columns at the given index.
        */
       com.google.protobuf.ByteString
           getColumnsBytes(int index);
 
       /**
        * <code>repeated uint32 types = 3;</code>
-       * @return A list containing the types.
        */
       java.util.List<java.lang.Integer> getTypesList();
       /**
        * <code>repeated uint32 types = 3;</code>
-       * @return The count of types.
        */
       int getTypesCount();
       /**
        * <code>repeated uint32 types = 3;</code>
-       * @param index The index of the element to return.
-       * @return The types at the given index.
        */
       int getTypes(int index);
 
@@ -4898,27 +4550,20 @@ public final class SparkplugBProto {
     /**
      * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.DataSet}
      */
-    public static final class DataSet extends
+    public  static final class DataSet extends
         com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
           DataSet> implements
         // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.DataSet)
         DataSetOrBuilder {
-    private static final long serialVersionUID = 0L;
       // Use DataSet.newBuilder() to construct.
       private DataSet(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet, ?> builder) {
         super(builder);
       }
       private DataSet() {
+        numOfColumns_ = 0L;
         columns_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        types_ = emptyIntList();
+        types_ = java.util.Collections.emptyList();
         rows_ = java.util.Collections.emptyList();
-      }
-
-      @java.lang.Override
-      @SuppressWarnings({"unused"})
-      protected java.lang.Object newInstance(
-          UnusedPrivateParameter unused) {
-        return new DataSet();
       }
 
       @java.lang.Override
@@ -4931,9 +4576,6 @@ public final class SparkplugBProto {
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
         int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -4945,6 +4587,13 @@ public final class SparkplugBProto {
               case 0:
                 done = true;
                 break;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
               case 8: {
                 bitField0_ |= 0x00000001;
                 numOfColumns_ = input.readUInt64();
@@ -4952,7 +4601,7 @@ public final class SparkplugBProto {
               }
               case 18: {
                 com.google.protobuf.ByteString bs = input.readBytes();
-                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                   columns_ = new com.google.protobuf.LazyStringArrayList();
                   mutable_bitField0_ |= 0x00000002;
                 }
@@ -4960,40 +4609,33 @@ public final class SparkplugBProto {
                 break;
               }
               case 24: {
-                if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                  types_ = newIntList();
+                if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                  types_ = new java.util.ArrayList<java.lang.Integer>();
                   mutable_bitField0_ |= 0x00000004;
                 }
-                types_.addInt(input.readUInt32());
+                types_.add(input.readUInt32());
                 break;
               }
               case 26: {
                 int length = input.readRawVarint32();
                 int limit = input.pushLimit(length);
-                if (!((mutable_bitField0_ & 0x00000004) != 0) && input.getBytesUntilLimit() > 0) {
-                  types_ = newIntList();
+                if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
+                  types_ = new java.util.ArrayList<java.lang.Integer>();
                   mutable_bitField0_ |= 0x00000004;
                 }
                 while (input.getBytesUntilLimit() > 0) {
-                  types_.addInt(input.readUInt32());
+                  types_.add(input.readUInt32());
                 }
                 input.popLimit(limit);
                 break;
               }
               case 34: {
-                if (!((mutable_bitField0_ & 0x00000008) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
                   rows_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row>();
                   mutable_bitField0_ |= 0x00000008;
                 }
                 rows_.add(
                     input.readMessage(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row.PARSER, extensionRegistry));
-                break;
-              }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
                 break;
               }
             }
@@ -5004,13 +4646,13 @@ public final class SparkplugBProto {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
             columns_ = columns_.getUnmodifiableView();
           }
-          if (((mutable_bitField0_ & 0x00000004) != 0)) {
-            types_.makeImmutable(); // C
+          if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+            types_ = java.util.Collections.unmodifiableList(types_);
           }
-          if (((mutable_bitField0_ & 0x00000008) != 0)) {
+          if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
             rows_ = java.util.Collections.unmodifiableList(rows_);
           }
           this.unknownFields = unknownFields.build();
@@ -5022,7 +4664,6 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_descriptor;
       }
 
-      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_fieldAccessorTable
@@ -5035,89 +4676,74 @@ public final class SparkplugBProto {
           com.google.protobuf.MessageOrBuilder {
 
         /**
-         * <code>uint32 int_value = 1;</code>
-         * @return Whether the intValue field is set.
+         * <code>optional uint32 int_value = 1;</code>
          */
         boolean hasIntValue();
         /**
-         * <code>uint32 int_value = 1;</code>
-         * @return The intValue.
+         * <code>optional uint32 int_value = 1;</code>
          */
         int getIntValue();
 
         /**
-         * <code>uint64 long_value = 2;</code>
-         * @return Whether the longValue field is set.
+         * <code>optional uint64 long_value = 2;</code>
          */
         boolean hasLongValue();
         /**
-         * <code>uint64 long_value = 2;</code>
-         * @return The longValue.
+         * <code>optional uint64 long_value = 2;</code>
          */
         long getLongValue();
 
         /**
-         * <code>float float_value = 3;</code>
-         * @return Whether the floatValue field is set.
+         * <code>optional float float_value = 3;</code>
          */
         boolean hasFloatValue();
         /**
-         * <code>float float_value = 3;</code>
-         * @return The floatValue.
+         * <code>optional float float_value = 3;</code>
          */
         float getFloatValue();
 
         /**
-         * <code>double double_value = 4;</code>
-         * @return Whether the doubleValue field is set.
+         * <code>optional double double_value = 4;</code>
          */
         boolean hasDoubleValue();
         /**
-         * <code>double double_value = 4;</code>
-         * @return The doubleValue.
+         * <code>optional double double_value = 4;</code>
          */
         double getDoubleValue();
 
         /**
-         * <code>bool boolean_value = 5;</code>
-         * @return Whether the booleanValue field is set.
+         * <code>optional bool boolean_value = 5;</code>
          */
         boolean hasBooleanValue();
         /**
-         * <code>bool boolean_value = 5;</code>
-         * @return The booleanValue.
+         * <code>optional bool boolean_value = 5;</code>
          */
         boolean getBooleanValue();
 
         /**
-         * <code>string string_value = 6;</code>
-         * @return Whether the stringValue field is set.
+         * <code>optional string string_value = 6;</code>
          */
         boolean hasStringValue();
         /**
-         * <code>string string_value = 6;</code>
-         * @return The stringValue.
+         * <code>optional string string_value = 6;</code>
          */
         java.lang.String getStringValue();
         /**
-         * <code>string string_value = 6;</code>
-         * @return The bytes for stringValue.
+         * <code>optional string string_value = 6;</code>
          */
         com.google.protobuf.ByteString
             getStringValueBytes();
 
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
-         * @return Whether the extensionValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
          */
         boolean hasExtensionValue();
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
-         * @return The extensionValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
          */
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension getExtensionValue();
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
          */
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtensionOrBuilder getExtensionValueOrBuilder();
 
@@ -5126,23 +4752,15 @@ public final class SparkplugBProto {
       /**
        * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue}
        */
-      public static final class DataSetValue extends
+      public  static final class DataSetValue extends
           com.google.protobuf.GeneratedMessageV3 implements
           // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue)
           DataSetValueOrBuilder {
-      private static final long serialVersionUID = 0L;
         // Use DataSetValue.newBuilder() to construct.
         private DataSetValue(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
           super(builder);
         }
         private DataSetValue() {
-        }
-
-        @java.lang.Override
-        @SuppressWarnings({"unused"})
-        protected java.lang.Object newInstance(
-            UnusedPrivateParameter unused) {
-          return new DataSetValue();
         }
 
         @java.lang.Override
@@ -5155,9 +4773,6 @@ public final class SparkplugBProto {
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           this();
-          if (extensionRegistry == null) {
-            throw new java.lang.NullPointerException();
-          }
           int mutable_bitField0_ = 0;
           com.google.protobuf.UnknownFieldSet.Builder unknownFields =
               com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -5169,6 +4784,13 @@ public final class SparkplugBProto {
                 case 0:
                   done = true;
                   break;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
                 case 8: {
                   valueCase_ = 1;
                   value_ = input.readUInt32();
@@ -5214,13 +4836,6 @@ public final class SparkplugBProto {
                   valueCase_ = 7;
                   break;
                 }
-                default: {
-                  if (!parseUnknownField(
-                      input, unknownFields, extensionRegistry, tag)) {
-                    done = true;
-                  }
-                  break;
-                }
               }
             }
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -5238,7 +4853,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_fieldAccessorTable
@@ -5254,24 +4868,16 @@ public final class SparkplugBProto {
         /**
          * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension}
          */
-        public static final class DataSetValueExtension extends
+        public  static final class DataSetValueExtension extends
             com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
               DataSetValueExtension> implements
             // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension)
             DataSetValueExtensionOrBuilder {
-        private static final long serialVersionUID = 0L;
           // Use DataSetValueExtension.newBuilder() to construct.
           private DataSetValueExtension(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension, ?> builder) {
             super(builder);
           }
           private DataSetValueExtension() {
-          }
-
-          @java.lang.Override
-          @SuppressWarnings({"unused"})
-          protected java.lang.Object newInstance(
-              UnusedPrivateParameter unused) {
-            return new DataSetValueExtension();
           }
 
           @java.lang.Override
@@ -5284,9 +4890,6 @@ public final class SparkplugBProto {
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
             this();
-            if (extensionRegistry == null) {
-              throw new java.lang.NullPointerException();
-            }
             com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                 com.google.protobuf.UnknownFieldSet.newBuilder();
             try {
@@ -5298,8 +4901,8 @@ public final class SparkplugBProto {
                     done = true;
                     break;
                   default: {
-                    if (!parseUnknownField(
-                        input, unknownFields, extensionRegistry, tag)) {
+                    if (!parseUnknownField(input, unknownFields,
+                                           extensionRegistry, tag)) {
                       done = true;
                     }
                     break;
@@ -5321,7 +4924,6 @@ public final class SparkplugBProto {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_DataSetValueExtension_descriptor;
           }
 
-          @java.lang.Override
           protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
               internalGetFieldAccessorTable() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_DataSetValueExtension_fieldAccessorTable
@@ -5330,7 +4932,6 @@ public final class SparkplugBProto {
           }
 
           private byte memoizedIsInitialized = -1;
-          @java.lang.Override
           public final boolean isInitialized() {
             byte isInitialized = memoizedIsInitialized;
             if (isInitialized == 1) return true;
@@ -5344,7 +4945,6 @@ public final class SparkplugBProto {
             return true;
           }
 
-          @java.lang.Override
           public void writeTo(com.google.protobuf.CodedOutputStream output)
                               throws java.io.IOException {
             com.google.protobuf.GeneratedMessageV3
@@ -5354,7 +4954,6 @@ public final class SparkplugBProto {
             unknownFields.writeTo(output);
           }
 
-          @java.lang.Override
           public int getSerializedSize() {
             int size = memoizedSize;
             if (size != -1) return size;
@@ -5366,6 +4965,7 @@ public final class SparkplugBProto {
             return size;
           }
 
+          private static final long serialVersionUID = 0L;
           @java.lang.Override
           public boolean equals(final java.lang.Object obj) {
             if (obj == this) {
@@ -5376,10 +4976,11 @@ public final class SparkplugBProto {
             }
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension) obj;
 
-            if (!unknownFields.equals(other.unknownFields)) return false;
-            if (!getExtensionFields().equals(other.getExtensionFields()))
-              return false;
-            return true;
+            boolean result = true;
+            result = result && unknownFields.equals(other.unknownFields);
+            result = result &&
+                getExtensionFields().equals(other.getExtensionFields());
+            return result;
           }
 
           @java.lang.Override
@@ -5388,24 +4989,13 @@ public final class SparkplugBProto {
               return memoizedHashCode;
             }
             int hash = 41;
-            hash = (19 * hash) + getDescriptor().hashCode();
+            hash = (19 * hash) + getDescriptorForType().hashCode();
             hash = hashFields(hash, getExtensionFields());
             hash = (29 * hash) + unknownFields.hashCode();
             memoizedHashCode = hash;
             return hash;
           }
 
-          public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension parseFrom(
-              java.nio.ByteBuffer data)
-              throws com.google.protobuf.InvalidProtocolBufferException {
-            return PARSER.parseFrom(data);
-          }
-          public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension parseFrom(
-              java.nio.ByteBuffer data,
-              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-              throws com.google.protobuf.InvalidProtocolBufferException {
-            return PARSER.parseFrom(data, extensionRegistry);
-          }
           public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension parseFrom(
               com.google.protobuf.ByteString data)
               throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5465,7 +5055,6 @@ public final class SparkplugBProto {
                 .parseWithIOException(PARSER, input, extensionRegistry);
           }
 
-          @java.lang.Override
           public Builder newBuilderForType() { return newBuilder(); }
           public static Builder newBuilder() {
             return DEFAULT_INSTANCE.toBuilder();
@@ -5473,7 +5062,6 @@ public final class SparkplugBProto {
           public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension prototype) {
             return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
           }
-          @java.lang.Override
           public Builder toBuilder() {
             return this == DEFAULT_INSTANCE
                 ? new Builder() : new Builder().mergeFrom(this);
@@ -5498,7 +5086,6 @@ public final class SparkplugBProto {
               return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_DataSetValueExtension_descriptor;
             }
 
-            @java.lang.Override
             protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
                 internalGetFieldAccessorTable() {
               return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_DataSetValueExtension_fieldAccessorTable
@@ -5521,24 +5108,20 @@ public final class SparkplugBProto {
                       .alwaysUseFieldBuilders) {
               }
             }
-            @java.lang.Override
             public Builder clear() {
               super.clear();
               return this;
             }
 
-            @java.lang.Override
             public com.google.protobuf.Descriptors.Descriptor
                 getDescriptorForType() {
               return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_DataSetValueExtension_descriptor;
             }
 
-            @java.lang.Override
             public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension getDefaultInstanceForType() {
               return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension.getDefaultInstance();
             }
 
-            @java.lang.Override
             public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension build() {
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension result = buildPartial();
               if (!result.isInitialized()) {
@@ -5547,73 +5130,61 @@ public final class SparkplugBProto {
               return result;
             }
 
-            @java.lang.Override
             public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension buildPartial() {
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension(this);
               onBuilt();
               return result;
             }
 
-            @java.lang.Override
             public Builder clone() {
-              return super.clone();
+              return (Builder) super.clone();
             }
-            @java.lang.Override
             public Builder setField(
                 com.google.protobuf.Descriptors.FieldDescriptor field,
-                java.lang.Object value) {
-              return super.setField(field, value);
+                Object value) {
+              return (Builder) super.setField(field, value);
             }
-            @java.lang.Override
             public Builder clearField(
                 com.google.protobuf.Descriptors.FieldDescriptor field) {
-              return super.clearField(field);
+              return (Builder) super.clearField(field);
             }
-            @java.lang.Override
             public Builder clearOneof(
                 com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-              return super.clearOneof(oneof);
+              return (Builder) super.clearOneof(oneof);
             }
-            @java.lang.Override
             public Builder setRepeatedField(
                 com.google.protobuf.Descriptors.FieldDescriptor field,
-                int index, java.lang.Object value) {
-              return super.setRepeatedField(field, index, value);
+                int index, Object value) {
+              return (Builder) super.setRepeatedField(field, index, value);
             }
-            @java.lang.Override
             public Builder addRepeatedField(
                 com.google.protobuf.Descriptors.FieldDescriptor field,
-                java.lang.Object value) {
-              return super.addRepeatedField(field, value);
+                Object value) {
+              return (Builder) super.addRepeatedField(field, value);
             }
-            @java.lang.Override
             public <Type> Builder setExtension(
                 com.google.protobuf.GeneratedMessage.GeneratedExtension<
                     org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension, Type> extension,
                 Type value) {
-              return super.setExtension(extension, value);
+              return (Builder) super.setExtension(extension, value);
             }
-            @java.lang.Override
             public <Type> Builder setExtension(
                 com.google.protobuf.GeneratedMessage.GeneratedExtension<
                     org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension, java.util.List<Type>> extension,
                 int index, Type value) {
-              return super.setExtension(extension, index, value);
+              return (Builder) super.setExtension(extension, index, value);
             }
-            @java.lang.Override
             public <Type> Builder addExtension(
                 com.google.protobuf.GeneratedMessage.GeneratedExtension<
                     org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension, java.util.List<Type>> extension,
                 Type value) {
-              return super.addExtension(extension, value);
+              return (Builder) super.addExtension(extension, value);
             }
-            @java.lang.Override
             public <Type> Builder clearExtension(
                 com.google.protobuf.GeneratedMessage.GeneratedExtension<
                     org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension, ?> extension) {
-              return super.clearExtension(extension);
+              return (Builder) super.clearExtension(extension);
             }
-            @java.lang.Override
             public Builder mergeFrom(com.google.protobuf.Message other) {
               if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension) {
                 return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension)other);
@@ -5631,7 +5202,6 @@ public final class SparkplugBProto {
               return this;
             }
 
-            @java.lang.Override
             public final boolean isInitialized() {
               if (!extensionsAreInitialized()) {
                 return false;
@@ -5639,7 +5209,6 @@ public final class SparkplugBProto {
               return true;
             }
 
-            @java.lang.Override
             public Builder mergeFrom(
                 com.google.protobuf.CodedInputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5657,13 +5226,11 @@ public final class SparkplugBProto {
               }
               return this;
             }
-            @java.lang.Override
             public final Builder setUnknownFields(
                 final com.google.protobuf.UnknownFieldSet unknownFields) {
               return super.setUnknownFields(unknownFields);
             }
 
-            @java.lang.Override
             public final Builder mergeUnknownFields(
                 final com.google.protobuf.UnknownFieldSet unknownFields) {
               return super.mergeUnknownFields(unknownFields);
@@ -5685,12 +5252,11 @@ public final class SparkplugBProto {
 
           @java.lang.Deprecated public static final com.google.protobuf.Parser<DataSetValueExtension>
               PARSER = new com.google.protobuf.AbstractParser<DataSetValueExtension>() {
-            @java.lang.Override
             public DataSetValueExtension parsePartialFrom(
                 com.google.protobuf.CodedInputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
-              return new DataSetValueExtension(input, extensionRegistry);
+                return new DataSetValueExtension(input, extensionRegistry);
             }
           };
 
@@ -5703,7 +5269,6 @@ public final class SparkplugBProto {
             return PARSER;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension getDefaultInstanceForType() {
             return DEFAULT_INSTANCE;
           }
@@ -5714,8 +5279,7 @@ public final class SparkplugBProto {
         private int valueCase_ = 0;
         private java.lang.Object value_;
         public enum ValueCase
-            implements com.google.protobuf.Internal.EnumLite,
-                com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+            implements com.google.protobuf.Internal.EnumLite {
           INT_VALUE(1),
           LONG_VALUE(2),
           FLOAT_VALUE(3),
@@ -5729,8 +5293,6 @@ public final class SparkplugBProto {
             this.value = value;
           }
           /**
-           * @param value The number of the enum to look for.
-           * @return The enum associated with the given number.
            * @deprecated Use {@link #forNumber(int)} instead.
            */
           @java.lang.Deprecated
@@ -5764,18 +5326,14 @@ public final class SparkplugBProto {
 
         public static final int INT_VALUE_FIELD_NUMBER = 1;
         /**
-         * <code>uint32 int_value = 1;</code>
-         * @return Whether the intValue field is set.
+         * <code>optional uint32 int_value = 1;</code>
          */
-        @java.lang.Override
         public boolean hasIntValue() {
           return valueCase_ == 1;
         }
         /**
-         * <code>uint32 int_value = 1;</code>
-         * @return The intValue.
+         * <code>optional uint32 int_value = 1;</code>
          */
-        @java.lang.Override
         public int getIntValue() {
           if (valueCase_ == 1) {
             return (java.lang.Integer) value_;
@@ -5785,18 +5343,14 @@ public final class SparkplugBProto {
 
         public static final int LONG_VALUE_FIELD_NUMBER = 2;
         /**
-         * <code>uint64 long_value = 2;</code>
-         * @return Whether the longValue field is set.
+         * <code>optional uint64 long_value = 2;</code>
          */
-        @java.lang.Override
         public boolean hasLongValue() {
           return valueCase_ == 2;
         }
         /**
-         * <code>uint64 long_value = 2;</code>
-         * @return The longValue.
+         * <code>optional uint64 long_value = 2;</code>
          */
-        @java.lang.Override
         public long getLongValue() {
           if (valueCase_ == 2) {
             return (java.lang.Long) value_;
@@ -5806,18 +5360,14 @@ public final class SparkplugBProto {
 
         public static final int FLOAT_VALUE_FIELD_NUMBER = 3;
         /**
-         * <code>float float_value = 3;</code>
-         * @return Whether the floatValue field is set.
+         * <code>optional float float_value = 3;</code>
          */
-        @java.lang.Override
         public boolean hasFloatValue() {
           return valueCase_ == 3;
         }
         /**
-         * <code>float float_value = 3;</code>
-         * @return The floatValue.
+         * <code>optional float float_value = 3;</code>
          */
-        @java.lang.Override
         public float getFloatValue() {
           if (valueCase_ == 3) {
             return (java.lang.Float) value_;
@@ -5827,18 +5377,14 @@ public final class SparkplugBProto {
 
         public static final int DOUBLE_VALUE_FIELD_NUMBER = 4;
         /**
-         * <code>double double_value = 4;</code>
-         * @return Whether the doubleValue field is set.
+         * <code>optional double double_value = 4;</code>
          */
-        @java.lang.Override
         public boolean hasDoubleValue() {
           return valueCase_ == 4;
         }
         /**
-         * <code>double double_value = 4;</code>
-         * @return The doubleValue.
+         * <code>optional double double_value = 4;</code>
          */
-        @java.lang.Override
         public double getDoubleValue() {
           if (valueCase_ == 4) {
             return (java.lang.Double) value_;
@@ -5848,18 +5394,14 @@ public final class SparkplugBProto {
 
         public static final int BOOLEAN_VALUE_FIELD_NUMBER = 5;
         /**
-         * <code>bool boolean_value = 5;</code>
-         * @return Whether the booleanValue field is set.
+         * <code>optional bool boolean_value = 5;</code>
          */
-        @java.lang.Override
         public boolean hasBooleanValue() {
           return valueCase_ == 5;
         }
         /**
-         * <code>bool boolean_value = 5;</code>
-         * @return The booleanValue.
+         * <code>optional bool boolean_value = 5;</code>
          */
-        @java.lang.Override
         public boolean getBooleanValue() {
           if (valueCase_ == 5) {
             return (java.lang.Boolean) value_;
@@ -5869,15 +5411,13 @@ public final class SparkplugBProto {
 
         public static final int STRING_VALUE_FIELD_NUMBER = 6;
         /**
-         * <code>string string_value = 6;</code>
-         * @return Whether the stringValue field is set.
+         * <code>optional string string_value = 6;</code>
          */
         public boolean hasStringValue() {
           return valueCase_ == 6;
         }
         /**
-         * <code>string string_value = 6;</code>
-         * @return The stringValue.
+         * <code>optional string string_value = 6;</code>
          */
         public java.lang.String getStringValue() {
           java.lang.Object ref = "";
@@ -5897,8 +5437,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>string string_value = 6;</code>
-         * @return The bytes for stringValue.
+         * <code>optional string string_value = 6;</code>
          */
         public com.google.protobuf.ByteString
             getStringValueBytes() {
@@ -5921,18 +5460,14 @@ public final class SparkplugBProto {
 
         public static final int EXTENSION_VALUE_FIELD_NUMBER = 7;
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
-         * @return Whether the extensionValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
          */
-        @java.lang.Override
         public boolean hasExtensionValue() {
           return valueCase_ == 7;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
-         * @return The extensionValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension getExtensionValue() {
           if (valueCase_ == 7) {
              return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension) value_;
@@ -5940,9 +5475,8 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension.getDefaultInstance();
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtensionOrBuilder getExtensionValueOrBuilder() {
           if (valueCase_ == 7) {
              return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension) value_;
@@ -5951,7 +5485,6 @@ public final class SparkplugBProto {
         }
 
         private byte memoizedIsInitialized = -1;
-        @java.lang.Override
         public final boolean isInitialized() {
           byte isInitialized = memoizedIsInitialized;
           if (isInitialized == 1) return true;
@@ -5967,7 +5500,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public void writeTo(com.google.protobuf.CodedOutputStream output)
                             throws java.io.IOException {
           if (valueCase_ == 1) {
@@ -5999,7 +5531,6 @@ public final class SparkplugBProto {
           unknownFields.writeTo(output);
         }
 
-        @java.lang.Override
         public int getSerializedSize() {
           int size = memoizedSize;
           if (size != -1) return size;
@@ -6042,6 +5573,7 @@ public final class SparkplugBProto {
           return size;
         }
 
+        private static final long serialVersionUID = 0L;
         @java.lang.Override
         public boolean equals(final java.lang.Object obj) {
           if (obj == this) {
@@ -6052,43 +5584,48 @@ public final class SparkplugBProto {
           }
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue) obj;
 
-          if (!getValueCase().equals(other.getValueCase())) return false;
+          boolean result = true;
+          result = result && getValueCase().equals(
+              other.getValueCase());
+          if (!result) return false;
           switch (valueCase_) {
             case 1:
-              if (getIntValue()
-                  != other.getIntValue()) return false;
+              result = result && (getIntValue()
+                  == other.getIntValue());
               break;
             case 2:
-              if (getLongValue()
-                  != other.getLongValue()) return false;
+              result = result && (getLongValue()
+                  == other.getLongValue());
               break;
             case 3:
-              if (java.lang.Float.floatToIntBits(getFloatValue())
-                  != java.lang.Float.floatToIntBits(
-                      other.getFloatValue())) return false;
+              result = result && (
+                  java.lang.Float.floatToIntBits(getFloatValue())
+                  == java.lang.Float.floatToIntBits(
+                      other.getFloatValue()));
               break;
             case 4:
-              if (java.lang.Double.doubleToLongBits(getDoubleValue())
-                  != java.lang.Double.doubleToLongBits(
-                      other.getDoubleValue())) return false;
+              result = result && (
+                  java.lang.Double.doubleToLongBits(getDoubleValue())
+                  == java.lang.Double.doubleToLongBits(
+                      other.getDoubleValue()));
               break;
             case 5:
-              if (getBooleanValue()
-                  != other.getBooleanValue()) return false;
+              result = result && (getBooleanValue()
+                  == other.getBooleanValue());
               break;
             case 6:
-              if (!getStringValue()
-                  .equals(other.getStringValue())) return false;
+              result = result && getStringValue()
+                  .equals(other.getStringValue());
               break;
             case 7:
-              if (!getExtensionValue()
-                  .equals(other.getExtensionValue())) return false;
+              result = result && getExtensionValue()
+                  .equals(other.getExtensionValue());
               break;
             case 0:
             default:
           }
-          if (!unknownFields.equals(other.unknownFields)) return false;
-          return true;
+          result = result && unknownFields.equals(other.unknownFields);
+          return result;
         }
 
         @java.lang.Override
@@ -6097,7 +5634,7 @@ public final class SparkplugBProto {
             return memoizedHashCode;
           }
           int hash = 41;
-          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (19 * hash) + getDescriptorForType().hashCode();
           switch (valueCase_) {
             case 1:
               hash = (37 * hash) + INT_VALUE_FIELD_NUMBER;
@@ -6139,17 +5676,6 @@ public final class SparkplugBProto {
           return hash;
         }
 
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue parseFrom(
-            java.nio.ByteBuffer data)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data);
-        }
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue parseFrom(
-            java.nio.ByteBuffer data,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data, extensionRegistry);
-        }
         public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue parseFrom(
             com.google.protobuf.ByteString data)
             throws com.google.protobuf.InvalidProtocolBufferException {
@@ -6209,7 +5735,6 @@ public final class SparkplugBProto {
               .parseWithIOException(PARSER, input, extensionRegistry);
         }
 
-        @java.lang.Override
         public Builder newBuilderForType() { return newBuilder(); }
         public static Builder newBuilder() {
           return DEFAULT_INSTANCE.toBuilder();
@@ -6217,7 +5742,6 @@ public final class SparkplugBProto {
         public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue prototype) {
           return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
         }
-        @java.lang.Override
         public Builder toBuilder() {
           return this == DEFAULT_INSTANCE
               ? new Builder() : new Builder().mergeFrom(this);
@@ -6241,7 +5765,6 @@ public final class SparkplugBProto {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_descriptor;
           }
 
-          @java.lang.Override
           protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
               internalGetFieldAccessorTable() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_fieldAccessorTable
@@ -6264,7 +5787,6 @@ public final class SparkplugBProto {
                     .alwaysUseFieldBuilders) {
             }
           }
-          @java.lang.Override
           public Builder clear() {
             super.clear();
             valueCase_ = 0;
@@ -6272,18 +5794,15 @@ public final class SparkplugBProto {
             return this;
           }
 
-          @java.lang.Override
           public com.google.protobuf.Descriptors.Descriptor
               getDescriptorForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_descriptor;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue getDefaultInstanceForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.getDefaultInstance();
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue build() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue result = buildPartial();
             if (!result.isInitialized()) {
@@ -6292,7 +5811,6 @@ public final class SparkplugBProto {
             return result;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue buildPartial() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue(this);
             int from_bitField0_ = bitField0_;
@@ -6328,39 +5846,32 @@ public final class SparkplugBProto {
             return result;
           }
 
-          @java.lang.Override
           public Builder clone() {
-            return super.clone();
+            return (Builder) super.clone();
           }
-          @java.lang.Override
           public Builder setField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.setField(field, value);
+              Object value) {
+            return (Builder) super.setField(field, value);
           }
-          @java.lang.Override
           public Builder clearField(
               com.google.protobuf.Descriptors.FieldDescriptor field) {
-            return super.clearField(field);
+            return (Builder) super.clearField(field);
           }
-          @java.lang.Override
           public Builder clearOneof(
               com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-            return super.clearOneof(oneof);
+            return (Builder) super.clearOneof(oneof);
           }
-          @java.lang.Override
           public Builder setRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              int index, java.lang.Object value) {
-            return super.setRepeatedField(field, index, value);
+              int index, Object value) {
+            return (Builder) super.setRepeatedField(field, index, value);
           }
-          @java.lang.Override
           public Builder addRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.addRepeatedField(field, value);
+              Object value) {
+            return (Builder) super.addRepeatedField(field, value);
           }
-          @java.lang.Override
           public Builder mergeFrom(com.google.protobuf.Message other) {
             if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue) {
               return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue)other);
@@ -6412,7 +5923,6 @@ public final class SparkplugBProto {
             return this;
           }
 
-          @java.lang.Override
           public final boolean isInitialized() {
             if (hasExtensionValue()) {
               if (!getExtensionValue().isInitialized()) {
@@ -6422,7 +5932,6 @@ public final class SparkplugBProto {
             return true;
           }
 
-          @java.lang.Override
           public Builder mergeFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6458,15 +5967,13 @@ public final class SparkplugBProto {
           private int bitField0_;
 
           /**
-           * <code>uint32 int_value = 1;</code>
-           * @return Whether the intValue field is set.
+           * <code>optional uint32 int_value = 1;</code>
            */
           public boolean hasIntValue() {
             return valueCase_ == 1;
           }
           /**
-           * <code>uint32 int_value = 1;</code>
-           * @return The intValue.
+           * <code>optional uint32 int_value = 1;</code>
            */
           public int getIntValue() {
             if (valueCase_ == 1) {
@@ -6475,9 +5982,7 @@ public final class SparkplugBProto {
             return 0;
           }
           /**
-           * <code>uint32 int_value = 1;</code>
-           * @param value The intValue to set.
-           * @return This builder for chaining.
+           * <code>optional uint32 int_value = 1;</code>
            */
           public Builder setIntValue(int value) {
             valueCase_ = 1;
@@ -6486,8 +5991,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>uint32 int_value = 1;</code>
-           * @return This builder for chaining.
+           * <code>optional uint32 int_value = 1;</code>
            */
           public Builder clearIntValue() {
             if (valueCase_ == 1) {
@@ -6499,15 +6003,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>uint64 long_value = 2;</code>
-           * @return Whether the longValue field is set.
+           * <code>optional uint64 long_value = 2;</code>
            */
           public boolean hasLongValue() {
             return valueCase_ == 2;
           }
           /**
-           * <code>uint64 long_value = 2;</code>
-           * @return The longValue.
+           * <code>optional uint64 long_value = 2;</code>
            */
           public long getLongValue() {
             if (valueCase_ == 2) {
@@ -6516,9 +6018,7 @@ public final class SparkplugBProto {
             return 0L;
           }
           /**
-           * <code>uint64 long_value = 2;</code>
-           * @param value The longValue to set.
-           * @return This builder for chaining.
+           * <code>optional uint64 long_value = 2;</code>
            */
           public Builder setLongValue(long value) {
             valueCase_ = 2;
@@ -6527,8 +6027,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>uint64 long_value = 2;</code>
-           * @return This builder for chaining.
+           * <code>optional uint64 long_value = 2;</code>
            */
           public Builder clearLongValue() {
             if (valueCase_ == 2) {
@@ -6540,15 +6039,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>float float_value = 3;</code>
-           * @return Whether the floatValue field is set.
+           * <code>optional float float_value = 3;</code>
            */
           public boolean hasFloatValue() {
             return valueCase_ == 3;
           }
           /**
-           * <code>float float_value = 3;</code>
-           * @return The floatValue.
+           * <code>optional float float_value = 3;</code>
            */
           public float getFloatValue() {
             if (valueCase_ == 3) {
@@ -6557,9 +6054,7 @@ public final class SparkplugBProto {
             return 0F;
           }
           /**
-           * <code>float float_value = 3;</code>
-           * @param value The floatValue to set.
-           * @return This builder for chaining.
+           * <code>optional float float_value = 3;</code>
            */
           public Builder setFloatValue(float value) {
             valueCase_ = 3;
@@ -6568,8 +6063,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>float float_value = 3;</code>
-           * @return This builder for chaining.
+           * <code>optional float float_value = 3;</code>
            */
           public Builder clearFloatValue() {
             if (valueCase_ == 3) {
@@ -6581,15 +6075,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>double double_value = 4;</code>
-           * @return Whether the doubleValue field is set.
+           * <code>optional double double_value = 4;</code>
            */
           public boolean hasDoubleValue() {
             return valueCase_ == 4;
           }
           /**
-           * <code>double double_value = 4;</code>
-           * @return The doubleValue.
+           * <code>optional double double_value = 4;</code>
            */
           public double getDoubleValue() {
             if (valueCase_ == 4) {
@@ -6598,9 +6090,7 @@ public final class SparkplugBProto {
             return 0D;
           }
           /**
-           * <code>double double_value = 4;</code>
-           * @param value The doubleValue to set.
-           * @return This builder for chaining.
+           * <code>optional double double_value = 4;</code>
            */
           public Builder setDoubleValue(double value) {
             valueCase_ = 4;
@@ -6609,8 +6099,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>double double_value = 4;</code>
-           * @return This builder for chaining.
+           * <code>optional double double_value = 4;</code>
            */
           public Builder clearDoubleValue() {
             if (valueCase_ == 4) {
@@ -6622,15 +6111,13 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>bool boolean_value = 5;</code>
-           * @return Whether the booleanValue field is set.
+           * <code>optional bool boolean_value = 5;</code>
            */
           public boolean hasBooleanValue() {
             return valueCase_ == 5;
           }
           /**
-           * <code>bool boolean_value = 5;</code>
-           * @return The booleanValue.
+           * <code>optional bool boolean_value = 5;</code>
            */
           public boolean getBooleanValue() {
             if (valueCase_ == 5) {
@@ -6639,9 +6126,7 @@ public final class SparkplugBProto {
             return false;
           }
           /**
-           * <code>bool boolean_value = 5;</code>
-           * @param value The booleanValue to set.
-           * @return This builder for chaining.
+           * <code>optional bool boolean_value = 5;</code>
            */
           public Builder setBooleanValue(boolean value) {
             valueCase_ = 5;
@@ -6650,8 +6135,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>bool boolean_value = 5;</code>
-           * @return This builder for chaining.
+           * <code>optional bool boolean_value = 5;</code>
            */
           public Builder clearBooleanValue() {
             if (valueCase_ == 5) {
@@ -6663,18 +6147,14 @@ public final class SparkplugBProto {
           }
 
           /**
-           * <code>string string_value = 6;</code>
-           * @return Whether the stringValue field is set.
+           * <code>optional string string_value = 6;</code>
            */
-          @java.lang.Override
           public boolean hasStringValue() {
             return valueCase_ == 6;
           }
           /**
-           * <code>string string_value = 6;</code>
-           * @return The stringValue.
+           * <code>optional string string_value = 6;</code>
            */
-          @java.lang.Override
           public java.lang.String getStringValue() {
             java.lang.Object ref = "";
             if (valueCase_ == 6) {
@@ -6695,10 +6175,8 @@ public final class SparkplugBProto {
             }
           }
           /**
-           * <code>string string_value = 6;</code>
-           * @return The bytes for stringValue.
+           * <code>optional string string_value = 6;</code>
            */
-          @java.lang.Override
           public com.google.protobuf.ByteString
               getStringValueBytes() {
             java.lang.Object ref = "";
@@ -6718,9 +6196,7 @@ public final class SparkplugBProto {
             }
           }
           /**
-           * <code>string string_value = 6;</code>
-           * @param value The stringValue to set.
-           * @return This builder for chaining.
+           * <code>optional string string_value = 6;</code>
            */
           public Builder setStringValue(
               java.lang.String value) {
@@ -6733,8 +6209,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>string string_value = 6;</code>
-           * @return This builder for chaining.
+           * <code>optional string string_value = 6;</code>
            */
           public Builder clearStringValue() {
             if (valueCase_ == 6) {
@@ -6745,9 +6220,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>string string_value = 6;</code>
-           * @param value The bytes for stringValue to set.
-           * @return This builder for chaining.
+           * <code>optional string string_value = 6;</code>
            */
           public Builder setStringValueBytes(
               com.google.protobuf.ByteString value) {
@@ -6763,18 +6236,14 @@ public final class SparkplugBProto {
           private com.google.protobuf.SingleFieldBuilderV3<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtensionOrBuilder> extensionValueBuilder_;
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
-           * @return Whether the extensionValue field is set.
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
-          @java.lang.Override
           public boolean hasExtensionValue() {
             return valueCase_ == 7;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
-           * @return The extensionValue.
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension getExtensionValue() {
             if (extensionValueBuilder_ == null) {
               if (valueCase_ == 7) {
@@ -6789,7 +6258,7 @@ public final class SparkplugBProto {
             }
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
           public Builder setExtensionValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension value) {
             if (extensionValueBuilder_ == null) {
@@ -6805,7 +6274,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
           public Builder setExtensionValue(
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension.Builder builderForValue) {
@@ -6819,7 +6288,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
           public Builder mergeExtensionValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension value) {
             if (extensionValueBuilder_ == null) {
@@ -6841,7 +6310,7 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
           public Builder clearExtensionValue() {
             if (extensionValueBuilder_ == null) {
@@ -6860,15 +6329,14 @@ public final class SparkplugBProto {
             return this;
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension.Builder getExtensionValueBuilder() {
             return getExtensionValueFieldBuilder().getBuilder();
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtensionOrBuilder getExtensionValueOrBuilder() {
             if ((valueCase_ == 7) && (extensionValueBuilder_ != null)) {
               return extensionValueBuilder_.getMessageOrBuilder();
@@ -6880,7 +6348,7 @@ public final class SparkplugBProto {
             }
           }
           /**
-           * <code>.org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
+           * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue.DataSetValueExtension extension_value = 7;</code>
            */
           private com.google.protobuf.SingleFieldBuilderV3<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtension.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.DataSetValueExtensionOrBuilder> 
@@ -6900,13 +6368,11 @@ public final class SparkplugBProto {
             onChanged();;
             return extensionValueBuilder_;
           }
-          @java.lang.Override
           public final Builder setUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.setUnknownFields(unknownFields);
           }
 
-          @java.lang.Override
           public final Builder mergeUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.mergeUnknownFields(unknownFields);
@@ -6928,12 +6394,11 @@ public final class SparkplugBProto {
 
         @java.lang.Deprecated public static final com.google.protobuf.Parser<DataSetValue>
             PARSER = new com.google.protobuf.AbstractParser<DataSetValue>() {
-          @java.lang.Override
           public DataSetValue parsePartialFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
-            return new DataSetValue(input, extensionRegistry);
+              return new DataSetValue(input, extensionRegistry);
           }
         };
 
@@ -6946,7 +6411,6 @@ public final class SparkplugBProto {
           return PARSER;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue getDefaultInstanceForType() {
           return DEFAULT_INSTANCE;
         }
@@ -6985,25 +6449,17 @@ public final class SparkplugBProto {
       /**
        * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.DataSet.Row}
        */
-      public static final class Row extends
+      public  static final class Row extends
           com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
             Row> implements
           // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.DataSet.Row)
           RowOrBuilder {
-      private static final long serialVersionUID = 0L;
         // Use Row.newBuilder() to construct.
         private Row(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row, ?> builder) {
           super(builder);
         }
         private Row() {
           elements_ = java.util.Collections.emptyList();
-        }
-
-        @java.lang.Override
-        @SuppressWarnings({"unused"})
-        protected java.lang.Object newInstance(
-            UnusedPrivateParameter unused) {
-          return new Row();
         }
 
         @java.lang.Override
@@ -7016,9 +6472,6 @@ public final class SparkplugBProto {
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           this();
-          if (extensionRegistry == null) {
-            throw new java.lang.NullPointerException();
-          }
           int mutable_bitField0_ = 0;
           com.google.protobuf.UnknownFieldSet.Builder unknownFields =
               com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -7030,20 +6483,20 @@ public final class SparkplugBProto {
                 case 0:
                   done = true;
                   break;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
                 case 10: {
-                  if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                  if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
                     elements_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue>();
                     mutable_bitField0_ |= 0x00000001;
                   }
                   elements_.add(
                       input.readMessage(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.PARSER, extensionRegistry));
-                  break;
-                }
-                default: {
-                  if (!parseUnknownField(
-                      input, unknownFields, extensionRegistry, tag)) {
-                    done = true;
-                  }
                   break;
                 }
               }
@@ -7054,7 +6507,7 @@ public final class SparkplugBProto {
             throw new com.google.protobuf.InvalidProtocolBufferException(
                 e).setUnfinishedMessage(this);
           } finally {
-            if (((mutable_bitField0_ & 0x00000001) != 0)) {
+            if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
               elements_ = java.util.Collections.unmodifiableList(elements_);
             }
             this.unknownFields = unknownFields.build();
@@ -7066,7 +6519,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_Row_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_Row_fieldAccessorTable
@@ -7079,14 +6531,12 @@ public final class SparkplugBProto {
         /**
          * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue elements = 1;</code>
          */
-        @java.lang.Override
         public java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue> getElementsList() {
           return elements_;
         }
         /**
          * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue elements = 1;</code>
          */
-        @java.lang.Override
         public java.util.List<? extends org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValueOrBuilder> 
             getElementsOrBuilderList() {
           return elements_;
@@ -7094,28 +6544,24 @@ public final class SparkplugBProto {
         /**
          * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue elements = 1;</code>
          */
-        @java.lang.Override
         public int getElementsCount() {
           return elements_.size();
         }
         /**
          * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue elements = 1;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue getElements(int index) {
           return elements_.get(index);
         }
         /**
          * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue elements = 1;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValueOrBuilder getElementsOrBuilder(
             int index) {
           return elements_.get(index);
         }
 
         private byte memoizedIsInitialized = -1;
-        @java.lang.Override
         public final boolean isInitialized() {
           byte isInitialized = memoizedIsInitialized;
           if (isInitialized == 1) return true;
@@ -7135,7 +6581,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public void writeTo(com.google.protobuf.CodedOutputStream output)
                             throws java.io.IOException {
           com.google.protobuf.GeneratedMessageV3
@@ -7148,7 +6593,6 @@ public final class SparkplugBProto {
           unknownFields.writeTo(output);
         }
 
-        @java.lang.Override
         public int getSerializedSize() {
           int size = memoizedSize;
           if (size != -1) return size;
@@ -7164,6 +6608,7 @@ public final class SparkplugBProto {
           return size;
         }
 
+        private static final long serialVersionUID = 0L;
         @java.lang.Override
         public boolean equals(final java.lang.Object obj) {
           if (obj == this) {
@@ -7174,12 +6619,13 @@ public final class SparkplugBProto {
           }
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row) obj;
 
-          if (!getElementsList()
-              .equals(other.getElementsList())) return false;
-          if (!unknownFields.equals(other.unknownFields)) return false;
-          if (!getExtensionFields().equals(other.getExtensionFields()))
-            return false;
-          return true;
+          boolean result = true;
+          result = result && getElementsList()
+              .equals(other.getElementsList());
+          result = result && unknownFields.equals(other.unknownFields);
+          result = result &&
+              getExtensionFields().equals(other.getExtensionFields());
+          return result;
         }
 
         @java.lang.Override
@@ -7188,7 +6634,7 @@ public final class SparkplugBProto {
             return memoizedHashCode;
           }
           int hash = 41;
-          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (19 * hash) + getDescriptorForType().hashCode();
           if (getElementsCount() > 0) {
             hash = (37 * hash) + ELEMENTS_FIELD_NUMBER;
             hash = (53 * hash) + getElementsList().hashCode();
@@ -7199,17 +6645,6 @@ public final class SparkplugBProto {
           return hash;
         }
 
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row parseFrom(
-            java.nio.ByteBuffer data)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data);
-        }
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row parseFrom(
-            java.nio.ByteBuffer data,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data, extensionRegistry);
-        }
         public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row parseFrom(
             com.google.protobuf.ByteString data)
             throws com.google.protobuf.InvalidProtocolBufferException {
@@ -7269,7 +6704,6 @@ public final class SparkplugBProto {
               .parseWithIOException(PARSER, input, extensionRegistry);
         }
 
-        @java.lang.Override
         public Builder newBuilderForType() { return newBuilder(); }
         public static Builder newBuilder() {
           return DEFAULT_INSTANCE.toBuilder();
@@ -7277,7 +6711,6 @@ public final class SparkplugBProto {
         public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row prototype) {
           return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
         }
-        @java.lang.Override
         public Builder toBuilder() {
           return this == DEFAULT_INSTANCE
               ? new Builder() : new Builder().mergeFrom(this);
@@ -7302,7 +6735,6 @@ public final class SparkplugBProto {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_Row_descriptor;
           }
 
-          @java.lang.Override
           protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
               internalGetFieldAccessorTable() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_Row_fieldAccessorTable
@@ -7326,7 +6758,6 @@ public final class SparkplugBProto {
               getElementsFieldBuilder();
             }
           }
-          @java.lang.Override
           public Builder clear() {
             super.clear();
             if (elementsBuilder_ == null) {
@@ -7338,18 +6769,15 @@ public final class SparkplugBProto {
             return this;
           }
 
-          @java.lang.Override
           public com.google.protobuf.Descriptors.Descriptor
               getDescriptorForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_Row_descriptor;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row getDefaultInstanceForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row.getDefaultInstance();
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row build() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row result = buildPartial();
             if (!result.isInitialized()) {
@@ -7358,12 +6786,11 @@ public final class SparkplugBProto {
             return result;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row buildPartial() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row(this);
             int from_bitField0_ = bitField0_;
             if (elementsBuilder_ == null) {
-              if (((bitField0_ & 0x00000001) != 0)) {
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
                 elements_ = java.util.Collections.unmodifiableList(elements_);
                 bitField0_ = (bitField0_ & ~0x00000001);
               }
@@ -7375,66 +6802,55 @@ public final class SparkplugBProto {
             return result;
           }
 
-          @java.lang.Override
           public Builder clone() {
-            return super.clone();
+            return (Builder) super.clone();
           }
-          @java.lang.Override
           public Builder setField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.setField(field, value);
+              Object value) {
+            return (Builder) super.setField(field, value);
           }
-          @java.lang.Override
           public Builder clearField(
               com.google.protobuf.Descriptors.FieldDescriptor field) {
-            return super.clearField(field);
+            return (Builder) super.clearField(field);
           }
-          @java.lang.Override
           public Builder clearOneof(
               com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-            return super.clearOneof(oneof);
+            return (Builder) super.clearOneof(oneof);
           }
-          @java.lang.Override
           public Builder setRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              int index, java.lang.Object value) {
-            return super.setRepeatedField(field, index, value);
+              int index, Object value) {
+            return (Builder) super.setRepeatedField(field, index, value);
           }
-          @java.lang.Override
           public Builder addRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.addRepeatedField(field, value);
+              Object value) {
+            return (Builder) super.addRepeatedField(field, value);
           }
-          @java.lang.Override
           public <Type> Builder setExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row, Type> extension,
               Type value) {
-            return super.setExtension(extension, value);
+            return (Builder) super.setExtension(extension, value);
           }
-          @java.lang.Override
           public <Type> Builder setExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row, java.util.List<Type>> extension,
               int index, Type value) {
-            return super.setExtension(extension, index, value);
+            return (Builder) super.setExtension(extension, index, value);
           }
-          @java.lang.Override
           public <Type> Builder addExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row, java.util.List<Type>> extension,
               Type value) {
-            return super.addExtension(extension, value);
+            return (Builder) super.addExtension(extension, value);
           }
-          @java.lang.Override
           public <Type> Builder clearExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row, ?> extension) {
-            return super.clearExtension(extension);
+            return (Builder) super.clearExtension(extension);
           }
-          @java.lang.Override
           public Builder mergeFrom(com.google.protobuf.Message other) {
             if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row) {
               return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row)other);
@@ -7478,7 +6894,6 @@ public final class SparkplugBProto {
             return this;
           }
 
-          @java.lang.Override
           public final boolean isInitialized() {
             for (int i = 0; i < getElementsCount(); i++) {
               if (!getElements(i).isInitialized()) {
@@ -7491,7 +6906,6 @@ public final class SparkplugBProto {
             return true;
           }
 
-          @java.lang.Override
           public Builder mergeFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7514,7 +6928,7 @@ public final class SparkplugBProto {
           private java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue> elements_ =
             java.util.Collections.emptyList();
           private void ensureElementsIsMutable() {
-            if (!((bitField0_ & 0x00000001) != 0)) {
+            if (!((bitField0_ & 0x00000001) == 0x00000001)) {
               elements_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue>(elements_);
               bitField0_ |= 0x00000001;
              }
@@ -7743,20 +7157,18 @@ public final class SparkplugBProto {
               elementsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValue.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.DataSetValueOrBuilder>(
                       elements_,
-                      ((bitField0_ & 0x00000001) != 0),
+                      ((bitField0_ & 0x00000001) == 0x00000001),
                       getParentForChildren(),
                       isClean());
               elements_ = null;
             }
             return elementsBuilder_;
           }
-          @java.lang.Override
           public final Builder setUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.setUnknownFields(unknownFields);
           }
 
-          @java.lang.Override
           public final Builder mergeUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.mergeUnknownFields(unknownFields);
@@ -7778,12 +7190,11 @@ public final class SparkplugBProto {
 
         @java.lang.Deprecated public static final com.google.protobuf.Parser<Row>
             PARSER = new com.google.protobuf.AbstractParser<Row>() {
-          @java.lang.Override
           public Row parsePartialFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
-            return new Row(input, extensionRegistry);
+              return new Row(input, extensionRegistry);
           }
         };
 
@@ -7796,7 +7207,6 @@ public final class SparkplugBProto {
           return PARSER;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row getDefaultInstanceForType() {
           return DEFAULT_INSTANCE;
         }
@@ -7808,17 +7218,13 @@ public final class SparkplugBProto {
       private long numOfColumns_;
       /**
        * <code>optional uint64 num_of_columns = 1;</code>
-       * @return Whether the numOfColumns field is set.
        */
-      @java.lang.Override
       public boolean hasNumOfColumns() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <code>optional uint64 num_of_columns = 1;</code>
-       * @return The numOfColumns.
        */
-      @java.lang.Override
       public long getNumOfColumns() {
         return numOfColumns_;
       }
@@ -7827,7 +7233,6 @@ public final class SparkplugBProto {
       private com.google.protobuf.LazyStringList columns_;
       /**
        * <code>repeated string columns = 2;</code>
-       * @return A list containing the columns.
        */
       public com.google.protobuf.ProtocolStringList
           getColumnsList() {
@@ -7835,23 +7240,18 @@ public final class SparkplugBProto {
       }
       /**
        * <code>repeated string columns = 2;</code>
-       * @return The count of columns.
        */
       public int getColumnsCount() {
         return columns_.size();
       }
       /**
        * <code>repeated string columns = 2;</code>
-       * @param index The index of the element to return.
-       * @return The columns at the given index.
        */
       public java.lang.String getColumns(int index) {
         return columns_.get(index);
       }
       /**
        * <code>repeated string columns = 2;</code>
-       * @param index The index of the value to return.
-       * @return The bytes of the columns at the given index.
        */
       public com.google.protobuf.ByteString
           getColumnsBytes(int index) {
@@ -7859,30 +7259,25 @@ public final class SparkplugBProto {
       }
 
       public static final int TYPES_FIELD_NUMBER = 3;
-      private com.google.protobuf.Internal.IntList types_;
+      private java.util.List<java.lang.Integer> types_;
       /**
        * <code>repeated uint32 types = 3;</code>
-       * @return A list containing the types.
        */
-      @java.lang.Override
       public java.util.List<java.lang.Integer>
           getTypesList() {
         return types_;
       }
       /**
        * <code>repeated uint32 types = 3;</code>
-       * @return The count of types.
        */
       public int getTypesCount() {
         return types_.size();
       }
       /**
        * <code>repeated uint32 types = 3;</code>
-       * @param index The index of the element to return.
-       * @return The types at the given index.
        */
       public int getTypes(int index) {
-        return types_.getInt(index);
+        return types_.get(index);
       }
 
       public static final int ROWS_FIELD_NUMBER = 4;
@@ -7890,14 +7285,12 @@ public final class SparkplugBProto {
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.Row rows = 4;</code>
        */
-      @java.lang.Override
       public java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row> getRowsList() {
         return rows_;
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.Row rows = 4;</code>
        */
-      @java.lang.Override
       public java.util.List<? extends org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.RowOrBuilder> 
           getRowsOrBuilderList() {
         return rows_;
@@ -7905,28 +7298,24 @@ public final class SparkplugBProto {
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.Row rows = 4;</code>
        */
-      @java.lang.Override
       public int getRowsCount() {
         return rows_.size();
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.Row rows = 4;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row getRows(int index) {
         return rows_.get(index);
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.DataSet.Row rows = 4;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.RowOrBuilder getRowsOrBuilder(
           int index) {
         return rows_.get(index);
       }
 
       private byte memoizedIsInitialized = -1;
-      @java.lang.Override
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized == 1) return true;
@@ -7946,20 +7335,19 @@ public final class SparkplugBProto {
         return true;
       }
 
-      @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         com.google.protobuf.GeneratedMessageV3
           .ExtendableMessage<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet>.ExtensionWriter
             extensionWriter = newExtensionWriter();
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           output.writeUInt64(1, numOfColumns_);
         }
         for (int i = 0; i < columns_.size(); i++) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 2, columns_.getRaw(i));
         }
         for (int i = 0; i < types_.size(); i++) {
-          output.writeUInt32(3, types_.getInt(i));
+          output.writeUInt32(3, types_.get(i));
         }
         for (int i = 0; i < rows_.size(); i++) {
           output.writeMessage(4, rows_.get(i));
@@ -7968,13 +7356,12 @@ public final class SparkplugBProto {
         unknownFields.writeTo(output);
       }
 
-      @java.lang.Override
       public int getSerializedSize() {
         int size = memoizedSize;
         if (size != -1) return size;
 
         size = 0;
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
             .computeUInt64Size(1, numOfColumns_);
         }
@@ -7990,7 +7377,7 @@ public final class SparkplugBProto {
           int dataSize = 0;
           for (int i = 0; i < types_.size(); i++) {
             dataSize += com.google.protobuf.CodedOutputStream
-              .computeUInt32SizeNoTag(types_.getInt(i));
+              .computeUInt32SizeNoTag(types_.get(i));
           }
           size += dataSize;
           size += 1 * getTypesList().size();
@@ -8005,6 +7392,7 @@ public final class SparkplugBProto {
         return size;
       }
 
+      private static final long serialVersionUID = 0L;
       @java.lang.Override
       public boolean equals(final java.lang.Object obj) {
         if (obj == this) {
@@ -8015,21 +7403,22 @@ public final class SparkplugBProto {
         }
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet) obj;
 
-        if (hasNumOfColumns() != other.hasNumOfColumns()) return false;
+        boolean result = true;
+        result = result && (hasNumOfColumns() == other.hasNumOfColumns());
         if (hasNumOfColumns()) {
-          if (getNumOfColumns()
-              != other.getNumOfColumns()) return false;
+          result = result && (getNumOfColumns()
+              == other.getNumOfColumns());
         }
-        if (!getColumnsList()
-            .equals(other.getColumnsList())) return false;
-        if (!getTypesList()
-            .equals(other.getTypesList())) return false;
-        if (!getRowsList()
-            .equals(other.getRowsList())) return false;
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        if (!getExtensionFields().equals(other.getExtensionFields()))
-          return false;
-        return true;
+        result = result && getColumnsList()
+            .equals(other.getColumnsList());
+        result = result && getTypesList()
+            .equals(other.getTypesList());
+        result = result && getRowsList()
+            .equals(other.getRowsList());
+        result = result && unknownFields.equals(other.unknownFields);
+        result = result &&
+            getExtensionFields().equals(other.getExtensionFields());
+        return result;
       }
 
       @java.lang.Override
@@ -8038,7 +7427,7 @@ public final class SparkplugBProto {
           return memoizedHashCode;
         }
         int hash = 41;
-        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (19 * hash) + getDescriptorForType().hashCode();
         if (hasNumOfColumns()) {
           hash = (37 * hash) + NUM_OF_COLUMNS_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
@@ -8062,17 +7451,6 @@ public final class SparkplugBProto {
         return hash;
       }
 
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet parseFrom(
-          java.nio.ByteBuffer data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet parseFrom(
-          java.nio.ByteBuffer data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
       public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -8132,7 +7510,6 @@ public final class SparkplugBProto {
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
 
-      @java.lang.Override
       public Builder newBuilderForType() { return newBuilder(); }
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
@@ -8140,7 +7517,6 @@ public final class SparkplugBProto {
       public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
-      @java.lang.Override
       public Builder toBuilder() {
         return this == DEFAULT_INSTANCE
             ? new Builder() : new Builder().mergeFrom(this);
@@ -8165,7 +7541,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_fieldAccessorTable
@@ -8189,14 +7564,13 @@ public final class SparkplugBProto {
             getRowsFieldBuilder();
           }
         }
-        @java.lang.Override
         public Builder clear() {
           super.clear();
           numOfColumns_ = 0L;
           bitField0_ = (bitField0_ & ~0x00000001);
           columns_ = com.google.protobuf.LazyStringArrayList.EMPTY;
           bitField0_ = (bitField0_ & ~0x00000002);
-          types_ = emptyIntList();
+          types_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000004);
           if (rowsBuilder_ == null) {
             rows_ = java.util.Collections.emptyList();
@@ -8207,18 +7581,15 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_DataSet_descriptor;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet getDefaultInstanceForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.getDefaultInstance();
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet build() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet result = buildPartial();
           if (!result.isInitialized()) {
@@ -8227,27 +7598,26 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet buildPartial() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
-          if (((from_bitField0_ & 0x00000001) != 0)) {
-            result.numOfColumns_ = numOfColumns_;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
             to_bitField0_ |= 0x00000001;
           }
-          if (((bitField0_ & 0x00000002) != 0)) {
+          result.numOfColumns_ = numOfColumns_;
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
             columns_ = columns_.getUnmodifiableView();
             bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.columns_ = columns_;
-          if (((bitField0_ & 0x00000004) != 0)) {
-            types_.makeImmutable();
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            types_ = java.util.Collections.unmodifiableList(types_);
             bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.types_ = types_;
           if (rowsBuilder_ == null) {
-            if (((bitField0_ & 0x00000008) != 0)) {
+            if (((bitField0_ & 0x00000008) == 0x00000008)) {
               rows_ = java.util.Collections.unmodifiableList(rows_);
               bitField0_ = (bitField0_ & ~0x00000008);
             }
@@ -8260,66 +7630,55 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
-        @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
+            Object value) {
+          return (Builder) super.setField(field, value);
         }
-        @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
-        @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
-        @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+            int index, Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
         }
-        @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+            Object value) {
+          return (Builder) super.addRepeatedField(field, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet, Type> extension,
             Type value) {
-          return super.setExtension(extension, value);
+          return (Builder) super.setExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet, java.util.List<Type>> extension,
             int index, Type value) {
-          return super.setExtension(extension, index, value);
+          return (Builder) super.setExtension(extension, index, value);
         }
-        @java.lang.Override
         public <Type> Builder addExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet, java.util.List<Type>> extension,
             Type value) {
-          return super.addExtension(extension, value);
+          return (Builder) super.addExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder clearExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet, ?> extension) {
-          return super.clearExtension(extension);
+          return (Builder) super.clearExtension(extension);
         }
-        @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet) {
             return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet)other);
@@ -8386,7 +7745,6 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public final boolean isInitialized() {
           for (int i = 0; i < getRowsCount(); i++) {
             if (!getRows(i).isInitialized()) {
@@ -8399,7 +7757,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8422,24 +7779,18 @@ public final class SparkplugBProto {
         private long numOfColumns_ ;
         /**
          * <code>optional uint64 num_of_columns = 1;</code>
-         * @return Whether the numOfColumns field is set.
          */
-        @java.lang.Override
         public boolean hasNumOfColumns() {
-          return ((bitField0_ & 0x00000001) != 0);
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
          * <code>optional uint64 num_of_columns = 1;</code>
-         * @return The numOfColumns.
          */
-        @java.lang.Override
         public long getNumOfColumns() {
           return numOfColumns_;
         }
         /**
          * <code>optional uint64 num_of_columns = 1;</code>
-         * @param value The numOfColumns to set.
-         * @return This builder for chaining.
          */
         public Builder setNumOfColumns(long value) {
           bitField0_ |= 0x00000001;
@@ -8449,7 +7800,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>optional uint64 num_of_columns = 1;</code>
-         * @return This builder for chaining.
          */
         public Builder clearNumOfColumns() {
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -8460,14 +7810,13 @@ public final class SparkplugBProto {
 
         private com.google.protobuf.LazyStringList columns_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         private void ensureColumnsIsMutable() {
-          if (!((bitField0_ & 0x00000002) != 0)) {
+          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
             columns_ = new com.google.protobuf.LazyStringArrayList(columns_);
             bitField0_ |= 0x00000002;
            }
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @return A list containing the columns.
          */
         public com.google.protobuf.ProtocolStringList
             getColumnsList() {
@@ -8475,23 +7824,18 @@ public final class SparkplugBProto {
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @return The count of columns.
          */
         public int getColumnsCount() {
           return columns_.size();
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @param index The index of the element to return.
-         * @return The columns at the given index.
          */
         public java.lang.String getColumns(int index) {
           return columns_.get(index);
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @param index The index of the value to return.
-         * @return The bytes of the columns at the given index.
          */
         public com.google.protobuf.ByteString
             getColumnsBytes(int index) {
@@ -8499,9 +7843,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @param index The index to set the value at.
-         * @param value The columns to set.
-         * @return This builder for chaining.
          */
         public Builder setColumns(
             int index, java.lang.String value) {
@@ -8515,8 +7856,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @param value The columns to add.
-         * @return This builder for chaining.
          */
         public Builder addColumns(
             java.lang.String value) {
@@ -8530,8 +7869,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @param values The columns to add.
-         * @return This builder for chaining.
          */
         public Builder addAllColumns(
             java.lang.Iterable<java.lang.String> values) {
@@ -8543,7 +7880,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @return This builder for chaining.
          */
         public Builder clearColumns() {
           columns_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -8553,8 +7889,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>repeated string columns = 2;</code>
-         * @param value The bytes of the columns to add.
-         * @return This builder for chaining.
          */
         public Builder addColumnsBytes(
             com.google.protobuf.ByteString value) {
@@ -8567,65 +7901,53 @@ public final class SparkplugBProto {
           return this;
         }
 
-        private com.google.protobuf.Internal.IntList types_ = emptyIntList();
+        private java.util.List<java.lang.Integer> types_ = java.util.Collections.emptyList();
         private void ensureTypesIsMutable() {
-          if (!((bitField0_ & 0x00000004) != 0)) {
-            types_ = mutableCopy(types_);
+          if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+            types_ = new java.util.ArrayList<java.lang.Integer>(types_);
             bitField0_ |= 0x00000004;
            }
         }
         /**
          * <code>repeated uint32 types = 3;</code>
-         * @return A list containing the types.
          */
         public java.util.List<java.lang.Integer>
             getTypesList() {
-          return ((bitField0_ & 0x00000004) != 0) ?
-                   java.util.Collections.unmodifiableList(types_) : types_;
+          return java.util.Collections.unmodifiableList(types_);
         }
         /**
          * <code>repeated uint32 types = 3;</code>
-         * @return The count of types.
          */
         public int getTypesCount() {
           return types_.size();
         }
         /**
          * <code>repeated uint32 types = 3;</code>
-         * @param index The index of the element to return.
-         * @return The types at the given index.
          */
         public int getTypes(int index) {
-          return types_.getInt(index);
+          return types_.get(index);
         }
         /**
          * <code>repeated uint32 types = 3;</code>
-         * @param index The index to set the value at.
-         * @param value The types to set.
-         * @return This builder for chaining.
          */
         public Builder setTypes(
             int index, int value) {
           ensureTypesIsMutable();
-          types_.setInt(index, value);
+          types_.set(index, value);
           onChanged();
           return this;
         }
         /**
          * <code>repeated uint32 types = 3;</code>
-         * @param value The types to add.
-         * @return This builder for chaining.
          */
         public Builder addTypes(int value) {
           ensureTypesIsMutable();
-          types_.addInt(value);
+          types_.add(value);
           onChanged();
           return this;
         }
         /**
          * <code>repeated uint32 types = 3;</code>
-         * @param values The types to add.
-         * @return This builder for chaining.
          */
         public Builder addAllTypes(
             java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -8637,10 +7959,9 @@ public final class SparkplugBProto {
         }
         /**
          * <code>repeated uint32 types = 3;</code>
-         * @return This builder for chaining.
          */
         public Builder clearTypes() {
-          types_ = emptyIntList();
+          types_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
           return this;
@@ -8649,7 +7970,7 @@ public final class SparkplugBProto {
         private java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row> rows_ =
           java.util.Collections.emptyList();
         private void ensureRowsIsMutable() {
-          if (!((bitField0_ & 0x00000008) != 0)) {
+          if (!((bitField0_ & 0x00000008) == 0x00000008)) {
             rows_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row>(rows_);
             bitField0_ |= 0x00000008;
            }
@@ -8878,20 +8199,18 @@ public final class SparkplugBProto {
             rowsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Row.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.RowOrBuilder>(
                     rows_,
-                    ((bitField0_ & 0x00000008) != 0),
+                    ((bitField0_ & 0x00000008) == 0x00000008),
                     getParentForChildren(),
                     isClean());
             rows_ = null;
           }
           return rowsBuilder_;
         }
-        @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.setUnknownFields(unknownFields);
         }
 
-        @java.lang.Override
         public final Builder mergeUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.mergeUnknownFields(unknownFields);
@@ -8913,12 +8232,11 @@ public final class SparkplugBProto {
 
       @java.lang.Deprecated public static final com.google.protobuf.Parser<DataSet>
           PARSER = new com.google.protobuf.AbstractParser<DataSet>() {
-        @java.lang.Override
         public DataSet parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new DataSet(input, extensionRegistry);
+            return new DataSet(input, extensionRegistry);
         }
       };
 
@@ -8931,7 +8249,6 @@ public final class SparkplugBProto {
         return PARSER;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
@@ -8944,110 +8261,91 @@ public final class SparkplugBProto {
 
       /**
        * <code>optional uint32 type = 1;</code>
-       * @return Whether the type field is set.
        */
       boolean hasType();
       /**
        * <code>optional uint32 type = 1;</code>
-       * @return The type.
        */
       int getType();
 
       /**
        * <code>optional bool is_null = 2;</code>
-       * @return Whether the isNull field is set.
        */
       boolean hasIsNull();
       /**
        * <code>optional bool is_null = 2;</code>
-       * @return The isNull.
        */
       boolean getIsNull();
 
       /**
-       * <code>uint32 int_value = 3;</code>
-       * @return Whether the intValue field is set.
+       * <code>optional uint32 int_value = 3;</code>
        */
       boolean hasIntValue();
       /**
-       * <code>uint32 int_value = 3;</code>
-       * @return The intValue.
+       * <code>optional uint32 int_value = 3;</code>
        */
       int getIntValue();
 
       /**
-       * <code>uint64 long_value = 4;</code>
-       * @return Whether the longValue field is set.
+       * <code>optional uint64 long_value = 4;</code>
        */
       boolean hasLongValue();
       /**
-       * <code>uint64 long_value = 4;</code>
-       * @return The longValue.
+       * <code>optional uint64 long_value = 4;</code>
        */
       long getLongValue();
 
       /**
-       * <code>float float_value = 5;</code>
-       * @return Whether the floatValue field is set.
+       * <code>optional float float_value = 5;</code>
        */
       boolean hasFloatValue();
       /**
-       * <code>float float_value = 5;</code>
-       * @return The floatValue.
+       * <code>optional float float_value = 5;</code>
        */
       float getFloatValue();
 
       /**
-       * <code>double double_value = 6;</code>
-       * @return Whether the doubleValue field is set.
+       * <code>optional double double_value = 6;</code>
        */
       boolean hasDoubleValue();
       /**
-       * <code>double double_value = 6;</code>
-       * @return The doubleValue.
+       * <code>optional double double_value = 6;</code>
        */
       double getDoubleValue();
 
       /**
-       * <code>bool boolean_value = 7;</code>
-       * @return Whether the booleanValue field is set.
+       * <code>optional bool boolean_value = 7;</code>
        */
       boolean hasBooleanValue();
       /**
-       * <code>bool boolean_value = 7;</code>
-       * @return The booleanValue.
+       * <code>optional bool boolean_value = 7;</code>
        */
       boolean getBooleanValue();
 
       /**
-       * <code>string string_value = 8;</code>
-       * @return Whether the stringValue field is set.
+       * <code>optional string string_value = 8;</code>
        */
       boolean hasStringValue();
       /**
-       * <code>string string_value = 8;</code>
-       * @return The stringValue.
+       * <code>optional string string_value = 8;</code>
        */
       java.lang.String getStringValue();
       /**
-       * <code>string string_value = 8;</code>
-       * @return The bytes for stringValue.
+       * <code>optional string string_value = 8;</code>
        */
       com.google.protobuf.ByteString
           getStringValueBytes();
 
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
-       * @return Whether the propertysetValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
        */
       boolean hasPropertysetValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
-       * @return The propertysetValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getPropertysetValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder getPropertysetValueOrBuilder();
 
@@ -9056,8 +8354,7 @@ public final class SparkplugBProto {
        * List of Property Values
        * </pre>
        *
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
-       * @return Whether the propertysetsValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
        */
       boolean hasPropertysetsValue();
       /**
@@ -9065,8 +8362,7 @@ public final class SparkplugBProto {
        * List of Property Values
        * </pre>
        *
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
-       * @return The propertysetsValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList getPropertysetsValue();
       /**
@@ -9074,22 +8370,20 @@ public final class SparkplugBProto {
        * List of Property Values
        * </pre>
        *
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetListOrBuilder getPropertysetsValueOrBuilder();
 
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
-       * @return Whether the extensionValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
        */
       boolean hasExtensionValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
-       * @return The extensionValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension getExtensionValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtensionOrBuilder getExtensionValueOrBuilder();
 
@@ -9098,23 +8392,17 @@ public final class SparkplugBProto {
     /**
      * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.PropertyValue}
      */
-    public static final class PropertyValue extends
+    public  static final class PropertyValue extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.PropertyValue)
         PropertyValueOrBuilder {
-    private static final long serialVersionUID = 0L;
       // Use PropertyValue.newBuilder() to construct.
       private PropertyValue(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
         super(builder);
       }
       private PropertyValue() {
-      }
-
-      @java.lang.Override
-      @SuppressWarnings({"unused"})
-      protected java.lang.Object newInstance(
-          UnusedPrivateParameter unused) {
-        return new PropertyValue();
+        type_ = 0;
+        isNull_ = false;
       }
 
       @java.lang.Override
@@ -9127,9 +8415,6 @@ public final class SparkplugBProto {
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
         int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -9141,6 +8426,13 @@ public final class SparkplugBProto {
               case 0:
                 done = true;
                 break;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
               case 8: {
                 bitField0_ |= 0x00000001;
                 type_ = input.readUInt32();
@@ -9224,13 +8516,6 @@ public final class SparkplugBProto {
                 valueCase_ = 11;
                 break;
               }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
             }
           }
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -9248,7 +8533,6 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_descriptor;
       }
 
-      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_fieldAccessorTable
@@ -9264,24 +8548,16 @@ public final class SparkplugBProto {
       /**
        * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension}
        */
-      public static final class PropertyValueExtension extends
+      public  static final class PropertyValueExtension extends
           com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
             PropertyValueExtension> implements
           // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension)
           PropertyValueExtensionOrBuilder {
-      private static final long serialVersionUID = 0L;
         // Use PropertyValueExtension.newBuilder() to construct.
         private PropertyValueExtension(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension, ?> builder) {
           super(builder);
         }
         private PropertyValueExtension() {
-        }
-
-        @java.lang.Override
-        @SuppressWarnings({"unused"})
-        protected java.lang.Object newInstance(
-            UnusedPrivateParameter unused) {
-          return new PropertyValueExtension();
         }
 
         @java.lang.Override
@@ -9294,9 +8570,6 @@ public final class SparkplugBProto {
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           this();
-          if (extensionRegistry == null) {
-            throw new java.lang.NullPointerException();
-          }
           com.google.protobuf.UnknownFieldSet.Builder unknownFields =
               com.google.protobuf.UnknownFieldSet.newBuilder();
           try {
@@ -9308,8 +8581,8 @@ public final class SparkplugBProto {
                   done = true;
                   break;
                 default: {
-                  if (!parseUnknownField(
-                      input, unknownFields, extensionRegistry, tag)) {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
                     done = true;
                   }
                   break;
@@ -9331,7 +8604,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_PropertyValueExtension_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_PropertyValueExtension_fieldAccessorTable
@@ -9340,7 +8612,6 @@ public final class SparkplugBProto {
         }
 
         private byte memoizedIsInitialized = -1;
-        @java.lang.Override
         public final boolean isInitialized() {
           byte isInitialized = memoizedIsInitialized;
           if (isInitialized == 1) return true;
@@ -9354,7 +8625,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public void writeTo(com.google.protobuf.CodedOutputStream output)
                             throws java.io.IOException {
           com.google.protobuf.GeneratedMessageV3
@@ -9364,7 +8634,6 @@ public final class SparkplugBProto {
           unknownFields.writeTo(output);
         }
 
-        @java.lang.Override
         public int getSerializedSize() {
           int size = memoizedSize;
           if (size != -1) return size;
@@ -9376,6 +8645,7 @@ public final class SparkplugBProto {
           return size;
         }
 
+        private static final long serialVersionUID = 0L;
         @java.lang.Override
         public boolean equals(final java.lang.Object obj) {
           if (obj == this) {
@@ -9386,10 +8656,11 @@ public final class SparkplugBProto {
           }
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension) obj;
 
-          if (!unknownFields.equals(other.unknownFields)) return false;
-          if (!getExtensionFields().equals(other.getExtensionFields()))
-            return false;
-          return true;
+          boolean result = true;
+          result = result && unknownFields.equals(other.unknownFields);
+          result = result &&
+              getExtensionFields().equals(other.getExtensionFields());
+          return result;
         }
 
         @java.lang.Override
@@ -9398,24 +8669,13 @@ public final class SparkplugBProto {
             return memoizedHashCode;
           }
           int hash = 41;
-          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (19 * hash) + getDescriptorForType().hashCode();
           hash = hashFields(hash, getExtensionFields());
           hash = (29 * hash) + unknownFields.hashCode();
           memoizedHashCode = hash;
           return hash;
         }
 
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension parseFrom(
-            java.nio.ByteBuffer data)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data);
-        }
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension parseFrom(
-            java.nio.ByteBuffer data,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data, extensionRegistry);
-        }
         public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension parseFrom(
             com.google.protobuf.ByteString data)
             throws com.google.protobuf.InvalidProtocolBufferException {
@@ -9475,7 +8735,6 @@ public final class SparkplugBProto {
               .parseWithIOException(PARSER, input, extensionRegistry);
         }
 
-        @java.lang.Override
         public Builder newBuilderForType() { return newBuilder(); }
         public static Builder newBuilder() {
           return DEFAULT_INSTANCE.toBuilder();
@@ -9483,7 +8742,6 @@ public final class SparkplugBProto {
         public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension prototype) {
           return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
         }
-        @java.lang.Override
         public Builder toBuilder() {
           return this == DEFAULT_INSTANCE
               ? new Builder() : new Builder().mergeFrom(this);
@@ -9508,7 +8766,6 @@ public final class SparkplugBProto {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_PropertyValueExtension_descriptor;
           }
 
-          @java.lang.Override
           protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
               internalGetFieldAccessorTable() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_PropertyValueExtension_fieldAccessorTable
@@ -9531,24 +8788,20 @@ public final class SparkplugBProto {
                     .alwaysUseFieldBuilders) {
             }
           }
-          @java.lang.Override
           public Builder clear() {
             super.clear();
             return this;
           }
 
-          @java.lang.Override
           public com.google.protobuf.Descriptors.Descriptor
               getDescriptorForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_PropertyValueExtension_descriptor;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension getDefaultInstanceForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension.getDefaultInstance();
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension build() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension result = buildPartial();
             if (!result.isInitialized()) {
@@ -9557,73 +8810,61 @@ public final class SparkplugBProto {
             return result;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension buildPartial() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension(this);
             onBuilt();
             return result;
           }
 
-          @java.lang.Override
           public Builder clone() {
-            return super.clone();
+            return (Builder) super.clone();
           }
-          @java.lang.Override
           public Builder setField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.setField(field, value);
+              Object value) {
+            return (Builder) super.setField(field, value);
           }
-          @java.lang.Override
           public Builder clearField(
               com.google.protobuf.Descriptors.FieldDescriptor field) {
-            return super.clearField(field);
+            return (Builder) super.clearField(field);
           }
-          @java.lang.Override
           public Builder clearOneof(
               com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-            return super.clearOneof(oneof);
+            return (Builder) super.clearOneof(oneof);
           }
-          @java.lang.Override
           public Builder setRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              int index, java.lang.Object value) {
-            return super.setRepeatedField(field, index, value);
+              int index, Object value) {
+            return (Builder) super.setRepeatedField(field, index, value);
           }
-          @java.lang.Override
           public Builder addRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.addRepeatedField(field, value);
+              Object value) {
+            return (Builder) super.addRepeatedField(field, value);
           }
-          @java.lang.Override
           public <Type> Builder setExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension, Type> extension,
               Type value) {
-            return super.setExtension(extension, value);
+            return (Builder) super.setExtension(extension, value);
           }
-          @java.lang.Override
           public <Type> Builder setExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension, java.util.List<Type>> extension,
               int index, Type value) {
-            return super.setExtension(extension, index, value);
+            return (Builder) super.setExtension(extension, index, value);
           }
-          @java.lang.Override
           public <Type> Builder addExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension, java.util.List<Type>> extension,
               Type value) {
-            return super.addExtension(extension, value);
+            return (Builder) super.addExtension(extension, value);
           }
-          @java.lang.Override
           public <Type> Builder clearExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension, ?> extension) {
-            return super.clearExtension(extension);
+            return (Builder) super.clearExtension(extension);
           }
-          @java.lang.Override
           public Builder mergeFrom(com.google.protobuf.Message other) {
             if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension) {
               return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension)other);
@@ -9641,7 +8882,6 @@ public final class SparkplugBProto {
             return this;
           }
 
-          @java.lang.Override
           public final boolean isInitialized() {
             if (!extensionsAreInitialized()) {
               return false;
@@ -9649,7 +8889,6 @@ public final class SparkplugBProto {
             return true;
           }
 
-          @java.lang.Override
           public Builder mergeFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -9667,13 +8906,11 @@ public final class SparkplugBProto {
             }
             return this;
           }
-          @java.lang.Override
           public final Builder setUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.setUnknownFields(unknownFields);
           }
 
-          @java.lang.Override
           public final Builder mergeUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.mergeUnknownFields(unknownFields);
@@ -9695,12 +8932,11 @@ public final class SparkplugBProto {
 
         @java.lang.Deprecated public static final com.google.protobuf.Parser<PropertyValueExtension>
             PARSER = new com.google.protobuf.AbstractParser<PropertyValueExtension>() {
-          @java.lang.Override
           public PropertyValueExtension parsePartialFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
-            return new PropertyValueExtension(input, extensionRegistry);
+              return new PropertyValueExtension(input, extensionRegistry);
           }
         };
 
@@ -9713,7 +8949,6 @@ public final class SparkplugBProto {
           return PARSER;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension getDefaultInstanceForType() {
           return DEFAULT_INSTANCE;
         }
@@ -9724,8 +8959,7 @@ public final class SparkplugBProto {
       private int valueCase_ = 0;
       private java.lang.Object value_;
       public enum ValueCase
-          implements com.google.protobuf.Internal.EnumLite,
-              com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+          implements com.google.protobuf.Internal.EnumLite {
         INT_VALUE(3),
         LONG_VALUE(4),
         FLOAT_VALUE(5),
@@ -9741,8 +8975,6 @@ public final class SparkplugBProto {
           this.value = value;
         }
         /**
-         * @param value The number of the enum to look for.
-         * @return The enum associated with the given number.
          * @deprecated Use {@link #forNumber(int)} instead.
          */
         @java.lang.Deprecated
@@ -9780,17 +9012,13 @@ public final class SparkplugBProto {
       private int type_;
       /**
        * <code>optional uint32 type = 1;</code>
-       * @return Whether the type field is set.
        */
-      @java.lang.Override
       public boolean hasType() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <code>optional uint32 type = 1;</code>
-       * @return The type.
        */
-      @java.lang.Override
       public int getType() {
         return type_;
       }
@@ -9799,35 +9027,27 @@ public final class SparkplugBProto {
       private boolean isNull_;
       /**
        * <code>optional bool is_null = 2;</code>
-       * @return Whether the isNull field is set.
        */
-      @java.lang.Override
       public boolean hasIsNull() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
        * <code>optional bool is_null = 2;</code>
-       * @return The isNull.
        */
-      @java.lang.Override
       public boolean getIsNull() {
         return isNull_;
       }
 
       public static final int INT_VALUE_FIELD_NUMBER = 3;
       /**
-       * <code>uint32 int_value = 3;</code>
-       * @return Whether the intValue field is set.
+       * <code>optional uint32 int_value = 3;</code>
        */
-      @java.lang.Override
       public boolean hasIntValue() {
         return valueCase_ == 3;
       }
       /**
-       * <code>uint32 int_value = 3;</code>
-       * @return The intValue.
+       * <code>optional uint32 int_value = 3;</code>
        */
-      @java.lang.Override
       public int getIntValue() {
         if (valueCase_ == 3) {
           return (java.lang.Integer) value_;
@@ -9837,18 +9057,14 @@ public final class SparkplugBProto {
 
       public static final int LONG_VALUE_FIELD_NUMBER = 4;
       /**
-       * <code>uint64 long_value = 4;</code>
-       * @return Whether the longValue field is set.
+       * <code>optional uint64 long_value = 4;</code>
        */
-      @java.lang.Override
       public boolean hasLongValue() {
         return valueCase_ == 4;
       }
       /**
-       * <code>uint64 long_value = 4;</code>
-       * @return The longValue.
+       * <code>optional uint64 long_value = 4;</code>
        */
-      @java.lang.Override
       public long getLongValue() {
         if (valueCase_ == 4) {
           return (java.lang.Long) value_;
@@ -9858,18 +9074,14 @@ public final class SparkplugBProto {
 
       public static final int FLOAT_VALUE_FIELD_NUMBER = 5;
       /**
-       * <code>float float_value = 5;</code>
-       * @return Whether the floatValue field is set.
+       * <code>optional float float_value = 5;</code>
        */
-      @java.lang.Override
       public boolean hasFloatValue() {
         return valueCase_ == 5;
       }
       /**
-       * <code>float float_value = 5;</code>
-       * @return The floatValue.
+       * <code>optional float float_value = 5;</code>
        */
-      @java.lang.Override
       public float getFloatValue() {
         if (valueCase_ == 5) {
           return (java.lang.Float) value_;
@@ -9879,18 +9091,14 @@ public final class SparkplugBProto {
 
       public static final int DOUBLE_VALUE_FIELD_NUMBER = 6;
       /**
-       * <code>double double_value = 6;</code>
-       * @return Whether the doubleValue field is set.
+       * <code>optional double double_value = 6;</code>
        */
-      @java.lang.Override
       public boolean hasDoubleValue() {
         return valueCase_ == 6;
       }
       /**
-       * <code>double double_value = 6;</code>
-       * @return The doubleValue.
+       * <code>optional double double_value = 6;</code>
        */
-      @java.lang.Override
       public double getDoubleValue() {
         if (valueCase_ == 6) {
           return (java.lang.Double) value_;
@@ -9900,18 +9108,14 @@ public final class SparkplugBProto {
 
       public static final int BOOLEAN_VALUE_FIELD_NUMBER = 7;
       /**
-       * <code>bool boolean_value = 7;</code>
-       * @return Whether the booleanValue field is set.
+       * <code>optional bool boolean_value = 7;</code>
        */
-      @java.lang.Override
       public boolean hasBooleanValue() {
         return valueCase_ == 7;
       }
       /**
-       * <code>bool boolean_value = 7;</code>
-       * @return The booleanValue.
+       * <code>optional bool boolean_value = 7;</code>
        */
-      @java.lang.Override
       public boolean getBooleanValue() {
         if (valueCase_ == 7) {
           return (java.lang.Boolean) value_;
@@ -9921,15 +9125,13 @@ public final class SparkplugBProto {
 
       public static final int STRING_VALUE_FIELD_NUMBER = 8;
       /**
-       * <code>string string_value = 8;</code>
-       * @return Whether the stringValue field is set.
+       * <code>optional string string_value = 8;</code>
        */
       public boolean hasStringValue() {
         return valueCase_ == 8;
       }
       /**
-       * <code>string string_value = 8;</code>
-       * @return The stringValue.
+       * <code>optional string string_value = 8;</code>
        */
       public java.lang.String getStringValue() {
         java.lang.Object ref = "";
@@ -9949,8 +9151,7 @@ public final class SparkplugBProto {
         }
       }
       /**
-       * <code>string string_value = 8;</code>
-       * @return The bytes for stringValue.
+       * <code>optional string string_value = 8;</code>
        */
       public com.google.protobuf.ByteString
           getStringValueBytes() {
@@ -9973,18 +9174,14 @@ public final class SparkplugBProto {
 
       public static final int PROPERTYSET_VALUE_FIELD_NUMBER = 9;
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
-       * @return Whether the propertysetValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
        */
-      @java.lang.Override
       public boolean hasPropertysetValue() {
         return valueCase_ == 9;
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
-       * @return The propertysetValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getPropertysetValue() {
         if (valueCase_ == 9) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet) value_;
@@ -9992,9 +9189,8 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.getDefaultInstance();
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder getPropertysetValueOrBuilder() {
         if (valueCase_ == 9) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet) value_;
@@ -10008,10 +9204,8 @@ public final class SparkplugBProto {
        * List of Property Values
        * </pre>
        *
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
-       * @return Whether the propertysetsValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
        */
-      @java.lang.Override
       public boolean hasPropertysetsValue() {
         return valueCase_ == 10;
       }
@@ -10020,10 +9214,8 @@ public final class SparkplugBProto {
        * List of Property Values
        * </pre>
        *
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
-       * @return The propertysetsValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList getPropertysetsValue() {
         if (valueCase_ == 10) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList) value_;
@@ -10035,9 +9227,8 @@ public final class SparkplugBProto {
        * List of Property Values
        * </pre>
        *
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetListOrBuilder getPropertysetsValueOrBuilder() {
         if (valueCase_ == 10) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList) value_;
@@ -10047,18 +9238,14 @@ public final class SparkplugBProto {
 
       public static final int EXTENSION_VALUE_FIELD_NUMBER = 11;
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
-       * @return Whether the extensionValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
        */
-      @java.lang.Override
       public boolean hasExtensionValue() {
         return valueCase_ == 11;
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
-       * @return The extensionValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension getExtensionValue() {
         if (valueCase_ == 11) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension) value_;
@@ -10066,9 +9253,8 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension.getDefaultInstance();
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtensionOrBuilder getExtensionValueOrBuilder() {
         if (valueCase_ == 11) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension) value_;
@@ -10077,7 +9263,6 @@ public final class SparkplugBProto {
       }
 
       private byte memoizedIsInitialized = -1;
-      @java.lang.Override
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized == 1) return true;
@@ -10105,13 +9290,12 @@ public final class SparkplugBProto {
         return true;
       }
 
-      @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           output.writeUInt32(1, type_);
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           output.writeBool(2, isNull_);
         }
         if (valueCase_ == 3) {
@@ -10149,17 +9333,16 @@ public final class SparkplugBProto {
         unknownFields.writeTo(output);
       }
 
-      @java.lang.Override
       public int getSerializedSize() {
         int size = memoizedSize;
         if (size != -1) return size;
 
         size = 0;
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
             .computeUInt32Size(1, type_);
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(2, isNull_);
         }
@@ -10208,6 +9391,7 @@ public final class SparkplugBProto {
         return size;
       }
 
+      private static final long serialVersionUID = 0L;
       @java.lang.Override
       public boolean equals(final java.lang.Object obj) {
         if (obj == this) {
@@ -10218,61 +9402,66 @@ public final class SparkplugBProto {
         }
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue) obj;
 
-        if (hasType() != other.hasType()) return false;
+        boolean result = true;
+        result = result && (hasType() == other.hasType());
         if (hasType()) {
-          if (getType()
-              != other.getType()) return false;
+          result = result && (getType()
+              == other.getType());
         }
-        if (hasIsNull() != other.hasIsNull()) return false;
+        result = result && (hasIsNull() == other.hasIsNull());
         if (hasIsNull()) {
-          if (getIsNull()
-              != other.getIsNull()) return false;
+          result = result && (getIsNull()
+              == other.getIsNull());
         }
-        if (!getValueCase().equals(other.getValueCase())) return false;
+        result = result && getValueCase().equals(
+            other.getValueCase());
+        if (!result) return false;
         switch (valueCase_) {
           case 3:
-            if (getIntValue()
-                != other.getIntValue()) return false;
+            result = result && (getIntValue()
+                == other.getIntValue());
             break;
           case 4:
-            if (getLongValue()
-                != other.getLongValue()) return false;
+            result = result && (getLongValue()
+                == other.getLongValue());
             break;
           case 5:
-            if (java.lang.Float.floatToIntBits(getFloatValue())
-                != java.lang.Float.floatToIntBits(
-                    other.getFloatValue())) return false;
+            result = result && (
+                java.lang.Float.floatToIntBits(getFloatValue())
+                == java.lang.Float.floatToIntBits(
+                    other.getFloatValue()));
             break;
           case 6:
-            if (java.lang.Double.doubleToLongBits(getDoubleValue())
-                != java.lang.Double.doubleToLongBits(
-                    other.getDoubleValue())) return false;
+            result = result && (
+                java.lang.Double.doubleToLongBits(getDoubleValue())
+                == java.lang.Double.doubleToLongBits(
+                    other.getDoubleValue()));
             break;
           case 7:
-            if (getBooleanValue()
-                != other.getBooleanValue()) return false;
+            result = result && (getBooleanValue()
+                == other.getBooleanValue());
             break;
           case 8:
-            if (!getStringValue()
-                .equals(other.getStringValue())) return false;
+            result = result && getStringValue()
+                .equals(other.getStringValue());
             break;
           case 9:
-            if (!getPropertysetValue()
-                .equals(other.getPropertysetValue())) return false;
+            result = result && getPropertysetValue()
+                .equals(other.getPropertysetValue());
             break;
           case 10:
-            if (!getPropertysetsValue()
-                .equals(other.getPropertysetsValue())) return false;
+            result = result && getPropertysetsValue()
+                .equals(other.getPropertysetsValue());
             break;
           case 11:
-            if (!getExtensionValue()
-                .equals(other.getExtensionValue())) return false;
+            result = result && getExtensionValue()
+                .equals(other.getExtensionValue());
             break;
           case 0:
           default:
         }
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        return true;
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
       }
 
       @java.lang.Override
@@ -10281,7 +9470,7 @@ public final class SparkplugBProto {
           return memoizedHashCode;
         }
         int hash = 41;
-        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (19 * hash) + getDescriptorForType().hashCode();
         if (hasType()) {
           hash = (37 * hash) + TYPE_FIELD_NUMBER;
           hash = (53 * hash) + getType();
@@ -10341,17 +9530,6 @@ public final class SparkplugBProto {
       }
 
       public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue parseFrom(
-          java.nio.ByteBuffer data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue parseFrom(
-          java.nio.ByteBuffer data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
@@ -10410,7 +9588,6 @@ public final class SparkplugBProto {
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
 
-      @java.lang.Override
       public Builder newBuilderForType() { return newBuilder(); }
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
@@ -10418,7 +9595,6 @@ public final class SparkplugBProto {
       public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
-      @java.lang.Override
       public Builder toBuilder() {
         return this == DEFAULT_INSTANCE
             ? new Builder() : new Builder().mergeFrom(this);
@@ -10442,7 +9618,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_fieldAccessorTable
@@ -10465,7 +9640,6 @@ public final class SparkplugBProto {
                   .alwaysUseFieldBuilders) {
           }
         }
-        @java.lang.Override
         public Builder clear() {
           super.clear();
           type_ = 0;
@@ -10477,18 +9651,15 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertyValue_descriptor;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue getDefaultInstanceForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.getDefaultInstance();
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue build() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue result = buildPartial();
           if (!result.isInitialized()) {
@@ -10497,19 +9668,18 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue buildPartial() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
-          if (((from_bitField0_ & 0x00000001) != 0)) {
-            result.type_ = type_;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
             to_bitField0_ |= 0x00000001;
           }
-          if (((from_bitField0_ & 0x00000002) != 0)) {
-            result.isNull_ = isNull_;
+          result.type_ = type_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
             to_bitField0_ |= 0x00000002;
           }
+          result.isNull_ = isNull_;
           if (valueCase_ == 3) {
             result.value_ = value_;
           }
@@ -10555,39 +9725,32 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
-        @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
+            Object value) {
+          return (Builder) super.setField(field, value);
         }
-        @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
-        @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
-        @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+            int index, Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
         }
-        @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+            Object value) {
+          return (Builder) super.addRepeatedField(field, value);
         }
-        @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue) {
             return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue)other);
@@ -10653,7 +9816,6 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public final boolean isInitialized() {
           if (hasPropertysetValue()) {
             if (!getPropertysetValue().isInitialized()) {
@@ -10673,7 +9835,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -10711,24 +9872,18 @@ public final class SparkplugBProto {
         private int type_ ;
         /**
          * <code>optional uint32 type = 1;</code>
-         * @return Whether the type field is set.
          */
-        @java.lang.Override
         public boolean hasType() {
-          return ((bitField0_ & 0x00000001) != 0);
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
          * <code>optional uint32 type = 1;</code>
-         * @return The type.
          */
-        @java.lang.Override
         public int getType() {
           return type_;
         }
         /**
          * <code>optional uint32 type = 1;</code>
-         * @param value The type to set.
-         * @return This builder for chaining.
          */
         public Builder setType(int value) {
           bitField0_ |= 0x00000001;
@@ -10738,7 +9893,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>optional uint32 type = 1;</code>
-         * @return This builder for chaining.
          */
         public Builder clearType() {
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -10750,24 +9904,18 @@ public final class SparkplugBProto {
         private boolean isNull_ ;
         /**
          * <code>optional bool is_null = 2;</code>
-         * @return Whether the isNull field is set.
          */
-        @java.lang.Override
         public boolean hasIsNull() {
-          return ((bitField0_ & 0x00000002) != 0);
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
          * <code>optional bool is_null = 2;</code>
-         * @return The isNull.
          */
-        @java.lang.Override
         public boolean getIsNull() {
           return isNull_;
         }
         /**
          * <code>optional bool is_null = 2;</code>
-         * @param value The isNull to set.
-         * @return This builder for chaining.
          */
         public Builder setIsNull(boolean value) {
           bitField0_ |= 0x00000002;
@@ -10777,7 +9925,6 @@ public final class SparkplugBProto {
         }
         /**
          * <code>optional bool is_null = 2;</code>
-         * @return This builder for chaining.
          */
         public Builder clearIsNull() {
           bitField0_ = (bitField0_ & ~0x00000002);
@@ -10787,15 +9934,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>uint32 int_value = 3;</code>
-         * @return Whether the intValue field is set.
+         * <code>optional uint32 int_value = 3;</code>
          */
         public boolean hasIntValue() {
           return valueCase_ == 3;
         }
         /**
-         * <code>uint32 int_value = 3;</code>
-         * @return The intValue.
+         * <code>optional uint32 int_value = 3;</code>
          */
         public int getIntValue() {
           if (valueCase_ == 3) {
@@ -10804,9 +9949,7 @@ public final class SparkplugBProto {
           return 0;
         }
         /**
-         * <code>uint32 int_value = 3;</code>
-         * @param value The intValue to set.
-         * @return This builder for chaining.
+         * <code>optional uint32 int_value = 3;</code>
          */
         public Builder setIntValue(int value) {
           valueCase_ = 3;
@@ -10815,8 +9958,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>uint32 int_value = 3;</code>
-         * @return This builder for chaining.
+         * <code>optional uint32 int_value = 3;</code>
          */
         public Builder clearIntValue() {
           if (valueCase_ == 3) {
@@ -10828,15 +9970,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>uint64 long_value = 4;</code>
-         * @return Whether the longValue field is set.
+         * <code>optional uint64 long_value = 4;</code>
          */
         public boolean hasLongValue() {
           return valueCase_ == 4;
         }
         /**
-         * <code>uint64 long_value = 4;</code>
-         * @return The longValue.
+         * <code>optional uint64 long_value = 4;</code>
          */
         public long getLongValue() {
           if (valueCase_ == 4) {
@@ -10845,9 +9985,7 @@ public final class SparkplugBProto {
           return 0L;
         }
         /**
-         * <code>uint64 long_value = 4;</code>
-         * @param value The longValue to set.
-         * @return This builder for chaining.
+         * <code>optional uint64 long_value = 4;</code>
          */
         public Builder setLongValue(long value) {
           valueCase_ = 4;
@@ -10856,8 +9994,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>uint64 long_value = 4;</code>
-         * @return This builder for chaining.
+         * <code>optional uint64 long_value = 4;</code>
          */
         public Builder clearLongValue() {
           if (valueCase_ == 4) {
@@ -10869,15 +10006,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>float float_value = 5;</code>
-         * @return Whether the floatValue field is set.
+         * <code>optional float float_value = 5;</code>
          */
         public boolean hasFloatValue() {
           return valueCase_ == 5;
         }
         /**
-         * <code>float float_value = 5;</code>
-         * @return The floatValue.
+         * <code>optional float float_value = 5;</code>
          */
         public float getFloatValue() {
           if (valueCase_ == 5) {
@@ -10886,9 +10021,7 @@ public final class SparkplugBProto {
           return 0F;
         }
         /**
-         * <code>float float_value = 5;</code>
-         * @param value The floatValue to set.
-         * @return This builder for chaining.
+         * <code>optional float float_value = 5;</code>
          */
         public Builder setFloatValue(float value) {
           valueCase_ = 5;
@@ -10897,8 +10030,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>float float_value = 5;</code>
-         * @return This builder for chaining.
+         * <code>optional float float_value = 5;</code>
          */
         public Builder clearFloatValue() {
           if (valueCase_ == 5) {
@@ -10910,15 +10042,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>double double_value = 6;</code>
-         * @return Whether the doubleValue field is set.
+         * <code>optional double double_value = 6;</code>
          */
         public boolean hasDoubleValue() {
           return valueCase_ == 6;
         }
         /**
-         * <code>double double_value = 6;</code>
-         * @return The doubleValue.
+         * <code>optional double double_value = 6;</code>
          */
         public double getDoubleValue() {
           if (valueCase_ == 6) {
@@ -10927,9 +10057,7 @@ public final class SparkplugBProto {
           return 0D;
         }
         /**
-         * <code>double double_value = 6;</code>
-         * @param value The doubleValue to set.
-         * @return This builder for chaining.
+         * <code>optional double double_value = 6;</code>
          */
         public Builder setDoubleValue(double value) {
           valueCase_ = 6;
@@ -10938,8 +10066,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>double double_value = 6;</code>
-         * @return This builder for chaining.
+         * <code>optional double double_value = 6;</code>
          */
         public Builder clearDoubleValue() {
           if (valueCase_ == 6) {
@@ -10951,15 +10078,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>bool boolean_value = 7;</code>
-         * @return Whether the booleanValue field is set.
+         * <code>optional bool boolean_value = 7;</code>
          */
         public boolean hasBooleanValue() {
           return valueCase_ == 7;
         }
         /**
-         * <code>bool boolean_value = 7;</code>
-         * @return The booleanValue.
+         * <code>optional bool boolean_value = 7;</code>
          */
         public boolean getBooleanValue() {
           if (valueCase_ == 7) {
@@ -10968,9 +10093,7 @@ public final class SparkplugBProto {
           return false;
         }
         /**
-         * <code>bool boolean_value = 7;</code>
-         * @param value The booleanValue to set.
-         * @return This builder for chaining.
+         * <code>optional bool boolean_value = 7;</code>
          */
         public Builder setBooleanValue(boolean value) {
           valueCase_ = 7;
@@ -10979,8 +10102,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>bool boolean_value = 7;</code>
-         * @return This builder for chaining.
+         * <code>optional bool boolean_value = 7;</code>
          */
         public Builder clearBooleanValue() {
           if (valueCase_ == 7) {
@@ -10992,18 +10114,14 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>string string_value = 8;</code>
-         * @return Whether the stringValue field is set.
+         * <code>optional string string_value = 8;</code>
          */
-        @java.lang.Override
         public boolean hasStringValue() {
           return valueCase_ == 8;
         }
         /**
-         * <code>string string_value = 8;</code>
-         * @return The stringValue.
+         * <code>optional string string_value = 8;</code>
          */
-        @java.lang.Override
         public java.lang.String getStringValue() {
           java.lang.Object ref = "";
           if (valueCase_ == 8) {
@@ -11024,10 +10142,8 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>string string_value = 8;</code>
-         * @return The bytes for stringValue.
+         * <code>optional string string_value = 8;</code>
          */
-        @java.lang.Override
         public com.google.protobuf.ByteString
             getStringValueBytes() {
           java.lang.Object ref = "";
@@ -11047,9 +10163,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>string string_value = 8;</code>
-         * @param value The stringValue to set.
-         * @return This builder for chaining.
+         * <code>optional string string_value = 8;</code>
          */
         public Builder setStringValue(
             java.lang.String value) {
@@ -11062,8 +10176,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>string string_value = 8;</code>
-         * @return This builder for chaining.
+         * <code>optional string string_value = 8;</code>
          */
         public Builder clearStringValue() {
           if (valueCase_ == 8) {
@@ -11074,9 +10187,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>string string_value = 8;</code>
-         * @param value The bytes for stringValue to set.
-         * @return This builder for chaining.
+         * <code>optional string string_value = 8;</code>
          */
         public Builder setStringValueBytes(
             com.google.protobuf.ByteString value) {
@@ -11092,18 +10203,14 @@ public final class SparkplugBProto {
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder> propertysetValueBuilder_;
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
-         * @return Whether the propertysetValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
-        @java.lang.Override
         public boolean hasPropertysetValue() {
           return valueCase_ == 9;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
-         * @return The propertysetValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getPropertysetValue() {
           if (propertysetValueBuilder_ == null) {
             if (valueCase_ == 9) {
@@ -11118,7 +10225,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
         public Builder setPropertysetValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet value) {
           if (propertysetValueBuilder_ == null) {
@@ -11134,7 +10241,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
         public Builder setPropertysetValue(
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.Builder builderForValue) {
@@ -11148,7 +10255,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
         public Builder mergePropertysetValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet value) {
           if (propertysetValueBuilder_ == null) {
@@ -11170,7 +10277,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
         public Builder clearPropertysetValue() {
           if (propertysetValueBuilder_ == null) {
@@ -11189,15 +10296,14 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.Builder getPropertysetValueBuilder() {
           return getPropertysetValueFieldBuilder().getBuilder();
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder getPropertysetValueOrBuilder() {
           if ((valueCase_ == 9) && (propertysetValueBuilder_ != null)) {
             return propertysetValueBuilder_.getMessageOrBuilder();
@@ -11209,7 +10315,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset_value = 9;</code>
          */
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder> 
@@ -11237,10 +10343,8 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
-         * @return Whether the propertysetsValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
-        @java.lang.Override
         public boolean hasPropertysetsValue() {
           return valueCase_ == 10;
         }
@@ -11249,10 +10353,8 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
-         * @return The propertysetsValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList getPropertysetsValue() {
           if (propertysetsValueBuilder_ == null) {
             if (valueCase_ == 10) {
@@ -11271,7 +10373,7 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
         public Builder setPropertysetsValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList value) {
           if (propertysetsValueBuilder_ == null) {
@@ -11291,7 +10393,7 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
         public Builder setPropertysetsValue(
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList.Builder builderForValue) {
@@ -11309,7 +10411,7 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
         public Builder mergePropertysetsValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList value) {
           if (propertysetsValueBuilder_ == null) {
@@ -11335,7 +10437,7 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
         public Builder clearPropertysetsValue() {
           if (propertysetsValueBuilder_ == null) {
@@ -11358,7 +10460,7 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList.Builder getPropertysetsValueBuilder() {
           return getPropertysetsValueFieldBuilder().getBuilder();
@@ -11368,9 +10470,8 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetListOrBuilder getPropertysetsValueOrBuilder() {
           if ((valueCase_ == 10) && (propertysetsValueBuilder_ != null)) {
             return propertysetsValueBuilder_.getMessageOrBuilder();
@@ -11386,7 +10487,7 @@ public final class SparkplugBProto {
          * List of Property Values
          * </pre>
          *
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySetList propertysets_value = 10;</code>
          */
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetListOrBuilder> 
@@ -11410,18 +10511,14 @@ public final class SparkplugBProto {
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtensionOrBuilder> extensionValueBuilder_;
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
-         * @return Whether the extensionValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
-        @java.lang.Override
         public boolean hasExtensionValue() {
           return valueCase_ == 11;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
-         * @return The extensionValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension getExtensionValue() {
           if (extensionValueBuilder_ == null) {
             if (valueCase_ == 11) {
@@ -11436,7 +10533,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
         public Builder setExtensionValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension value) {
           if (extensionValueBuilder_ == null) {
@@ -11452,7 +10549,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
         public Builder setExtensionValue(
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension.Builder builderForValue) {
@@ -11466,7 +10563,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
         public Builder mergeExtensionValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension value) {
           if (extensionValueBuilder_ == null) {
@@ -11488,7 +10585,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
         public Builder clearExtensionValue() {
           if (extensionValueBuilder_ == null) {
@@ -11507,15 +10604,14 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension.Builder getExtensionValueBuilder() {
           return getExtensionValueFieldBuilder().getBuilder();
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtensionOrBuilder getExtensionValueOrBuilder() {
           if ((valueCase_ == 11) && (extensionValueBuilder_ != null)) {
             return extensionValueBuilder_.getMessageOrBuilder();
@@ -11527,7 +10623,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertyValue.PropertyValueExtension extension_value = 11;</code>
          */
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtension.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PropertyValueExtensionOrBuilder> 
@@ -11547,13 +10643,11 @@ public final class SparkplugBProto {
           onChanged();;
           return extensionValueBuilder_;
         }
-        @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.setUnknownFields(unknownFields);
         }
 
-        @java.lang.Override
         public final Builder mergeUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.mergeUnknownFields(unknownFields);
@@ -11575,12 +10669,11 @@ public final class SparkplugBProto {
 
       @java.lang.Deprecated public static final com.google.protobuf.Parser<PropertyValue>
           PARSER = new com.google.protobuf.AbstractParser<PropertyValue>() {
-        @java.lang.Override
         public PropertyValue parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new PropertyValue(input, extensionRegistry);
+            return new PropertyValue(input, extensionRegistry);
         }
       };
 
@@ -11593,7 +10686,6 @@ public final class SparkplugBProto {
         return PARSER;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
@@ -11611,7 +10703,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>repeated string keys = 1;</code>
-       * @return A list containing the keys.
        */
       java.util.List<java.lang.String>
           getKeysList();
@@ -11621,7 +10712,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>repeated string keys = 1;</code>
-       * @return The count of keys.
        */
       int getKeysCount();
       /**
@@ -11630,8 +10720,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>repeated string keys = 1;</code>
-       * @param index The index of the element to return.
-       * @return The keys at the given index.
        */
       java.lang.String getKeys(int index);
       /**
@@ -11640,8 +10728,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>repeated string keys = 1;</code>
-       * @param index The index of the value to return.
-       * @return The bytes of the keys at the given index.
        */
       com.google.protobuf.ByteString
           getKeysBytes(int index);
@@ -11673,12 +10759,11 @@ public final class SparkplugBProto {
     /**
      * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.PropertySet}
      */
-    public static final class PropertySet extends
+    public  static final class PropertySet extends
         com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
           PropertySet> implements
         // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.PropertySet)
         PropertySetOrBuilder {
-    private static final long serialVersionUID = 0L;
       // Use PropertySet.newBuilder() to construct.
       private PropertySet(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, ?> builder) {
         super(builder);
@@ -11686,13 +10771,6 @@ public final class SparkplugBProto {
       private PropertySet() {
         keys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         values_ = java.util.Collections.emptyList();
-      }
-
-      @java.lang.Override
-      @SuppressWarnings({"unused"})
-      protected java.lang.Object newInstance(
-          UnusedPrivateParameter unused) {
-        return new PropertySet();
       }
 
       @java.lang.Override
@@ -11705,9 +10783,6 @@ public final class SparkplugBProto {
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
         int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -11719,9 +10794,16 @@ public final class SparkplugBProto {
               case 0:
                 done = true;
                 break;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
               case 10: {
                 com.google.protobuf.ByteString bs = input.readBytes();
-                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
                   keys_ = new com.google.protobuf.LazyStringArrayList();
                   mutable_bitField0_ |= 0x00000001;
                 }
@@ -11729,19 +10811,12 @@ public final class SparkplugBProto {
                 break;
               }
               case 18: {
-                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                   values_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue>();
                   mutable_bitField0_ |= 0x00000002;
                 }
                 values_.add(
                     input.readMessage(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.PARSER, extensionRegistry));
-                break;
-              }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
                 break;
               }
             }
@@ -11752,10 +10827,10 @@ public final class SparkplugBProto {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
             keys_ = keys_.getUnmodifiableView();
           }
-          if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
             values_ = java.util.Collections.unmodifiableList(values_);
           }
           this.unknownFields = unknownFields.build();
@@ -11767,7 +10842,6 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySet_descriptor;
       }
 
-      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySet_fieldAccessorTable
@@ -11783,7 +10857,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>repeated string keys = 1;</code>
-       * @return A list containing the keys.
        */
       public com.google.protobuf.ProtocolStringList
           getKeysList() {
@@ -11795,7 +10868,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>repeated string keys = 1;</code>
-       * @return The count of keys.
        */
       public int getKeysCount() {
         return keys_.size();
@@ -11806,8 +10878,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>repeated string keys = 1;</code>
-       * @param index The index of the element to return.
-       * @return The keys at the given index.
        */
       public java.lang.String getKeys(int index) {
         return keys_.get(index);
@@ -11818,8 +10888,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>repeated string keys = 1;</code>
-       * @param index The index of the value to return.
-       * @return The bytes of the keys at the given index.
        */
       public com.google.protobuf.ByteString
           getKeysBytes(int index) {
@@ -11831,14 +10899,12 @@ public final class SparkplugBProto {
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertyValue values = 2;</code>
        */
-      @java.lang.Override
       public java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue> getValuesList() {
         return values_;
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertyValue values = 2;</code>
        */
-      @java.lang.Override
       public java.util.List<? extends org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValueOrBuilder> 
           getValuesOrBuilderList() {
         return values_;
@@ -11846,28 +10912,24 @@ public final class SparkplugBProto {
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertyValue values = 2;</code>
        */
-      @java.lang.Override
       public int getValuesCount() {
         return values_.size();
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertyValue values = 2;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue getValues(int index) {
         return values_.get(index);
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertyValue values = 2;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValueOrBuilder getValuesOrBuilder(
           int index) {
         return values_.get(index);
       }
 
       private byte memoizedIsInitialized = -1;
-      @java.lang.Override
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized == 1) return true;
@@ -11887,7 +10949,6 @@ public final class SparkplugBProto {
         return true;
       }
 
-      @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         com.google.protobuf.GeneratedMessageV3
@@ -11903,7 +10964,6 @@ public final class SparkplugBProto {
         unknownFields.writeTo(output);
       }
 
-      @java.lang.Override
       public int getSerializedSize() {
         int size = memoizedSize;
         if (size != -1) return size;
@@ -11927,6 +10987,7 @@ public final class SparkplugBProto {
         return size;
       }
 
+      private static final long serialVersionUID = 0L;
       @java.lang.Override
       public boolean equals(final java.lang.Object obj) {
         if (obj == this) {
@@ -11937,14 +10998,15 @@ public final class SparkplugBProto {
         }
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet) obj;
 
-        if (!getKeysList()
-            .equals(other.getKeysList())) return false;
-        if (!getValuesList()
-            .equals(other.getValuesList())) return false;
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        if (!getExtensionFields().equals(other.getExtensionFields()))
-          return false;
-        return true;
+        boolean result = true;
+        result = result && getKeysList()
+            .equals(other.getKeysList());
+        result = result && getValuesList()
+            .equals(other.getValuesList());
+        result = result && unknownFields.equals(other.unknownFields);
+        result = result &&
+            getExtensionFields().equals(other.getExtensionFields());
+        return result;
       }
 
       @java.lang.Override
@@ -11953,7 +11015,7 @@ public final class SparkplugBProto {
           return memoizedHashCode;
         }
         int hash = 41;
-        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (19 * hash) + getDescriptorForType().hashCode();
         if (getKeysCount() > 0) {
           hash = (37 * hash) + KEYS_FIELD_NUMBER;
           hash = (53 * hash) + getKeysList().hashCode();
@@ -11968,17 +11030,6 @@ public final class SparkplugBProto {
         return hash;
       }
 
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet parseFrom(
-          java.nio.ByteBuffer data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet parseFrom(
-          java.nio.ByteBuffer data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
       public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -12038,7 +11089,6 @@ public final class SparkplugBProto {
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
 
-      @java.lang.Override
       public Builder newBuilderForType() { return newBuilder(); }
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
@@ -12046,7 +11096,6 @@ public final class SparkplugBProto {
       public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
-      @java.lang.Override
       public Builder toBuilder() {
         return this == DEFAULT_INSTANCE
             ? new Builder() : new Builder().mergeFrom(this);
@@ -12071,7 +11120,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySet_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySet_fieldAccessorTable
@@ -12095,7 +11143,6 @@ public final class SparkplugBProto {
             getValuesFieldBuilder();
           }
         }
-        @java.lang.Override
         public Builder clear() {
           super.clear();
           keys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -12109,18 +11156,15 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySet_descriptor;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getDefaultInstanceForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.getDefaultInstance();
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet build() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet result = buildPartial();
           if (!result.isInitialized()) {
@@ -12129,17 +11173,16 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet buildPartial() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet(this);
           int from_bitField0_ = bitField0_;
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
             keys_ = keys_.getUnmodifiableView();
             bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.keys_ = keys_;
           if (valuesBuilder_ == null) {
-            if (((bitField0_ & 0x00000002) != 0)) {
+            if (((bitField0_ & 0x00000002) == 0x00000002)) {
               values_ = java.util.Collections.unmodifiableList(values_);
               bitField0_ = (bitField0_ & ~0x00000002);
             }
@@ -12151,66 +11194,55 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
-        @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
+            Object value) {
+          return (Builder) super.setField(field, value);
         }
-        @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
-        @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
-        @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+            int index, Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
         }
-        @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+            Object value) {
+          return (Builder) super.addRepeatedField(field, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, Type> extension,
             Type value) {
-          return super.setExtension(extension, value);
+          return (Builder) super.setExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, java.util.List<Type>> extension,
             int index, Type value) {
-          return super.setExtension(extension, index, value);
+          return (Builder) super.setExtension(extension, index, value);
         }
-        @java.lang.Override
         public <Type> Builder addExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, java.util.List<Type>> extension,
             Type value) {
-          return super.addExtension(extension, value);
+          return (Builder) super.addExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder clearExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, ?> extension) {
-          return super.clearExtension(extension);
+          return (Builder) super.clearExtension(extension);
         }
-        @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet) {
             return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet)other);
@@ -12264,7 +11296,6 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public final boolean isInitialized() {
           for (int i = 0; i < getValuesCount(); i++) {
             if (!getValues(i).isInitialized()) {
@@ -12277,7 +11308,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -12299,7 +11329,7 @@ public final class SparkplugBProto {
 
         private com.google.protobuf.LazyStringList keys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         private void ensureKeysIsMutable() {
-          if (!((bitField0_ & 0x00000001) != 0)) {
+          if (!((bitField0_ & 0x00000001) == 0x00000001)) {
             keys_ = new com.google.protobuf.LazyStringArrayList(keys_);
             bitField0_ |= 0x00000001;
            }
@@ -12310,7 +11340,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @return A list containing the keys.
          */
         public com.google.protobuf.ProtocolStringList
             getKeysList() {
@@ -12322,7 +11351,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @return The count of keys.
          */
         public int getKeysCount() {
           return keys_.size();
@@ -12333,8 +11361,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @param index The index of the element to return.
-         * @return The keys at the given index.
          */
         public java.lang.String getKeys(int index) {
           return keys_.get(index);
@@ -12345,8 +11371,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @param index The index of the value to return.
-         * @return The bytes of the keys at the given index.
          */
         public com.google.protobuf.ByteString
             getKeysBytes(int index) {
@@ -12358,9 +11382,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @param index The index to set the value at.
-         * @param value The keys to set.
-         * @return This builder for chaining.
          */
         public Builder setKeys(
             int index, java.lang.String value) {
@@ -12378,8 +11399,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @param value The keys to add.
-         * @return This builder for chaining.
          */
         public Builder addKeys(
             java.lang.String value) {
@@ -12397,8 +11416,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @param values The keys to add.
-         * @return This builder for chaining.
          */
         public Builder addAllKeys(
             java.lang.Iterable<java.lang.String> values) {
@@ -12414,7 +11431,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @return This builder for chaining.
          */
         public Builder clearKeys() {
           keys_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -12428,8 +11444,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>repeated string keys = 1;</code>
-         * @param value The bytes of the keys to add.
-         * @return This builder for chaining.
          */
         public Builder addKeysBytes(
             com.google.protobuf.ByteString value) {
@@ -12445,7 +11459,7 @@ public final class SparkplugBProto {
         private java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue> values_ =
           java.util.Collections.emptyList();
         private void ensureValuesIsMutable() {
-          if (!((bitField0_ & 0x00000002) != 0)) {
+          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
             values_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue>(values_);
             bitField0_ |= 0x00000002;
            }
@@ -12674,20 +11688,18 @@ public final class SparkplugBProto {
             valuesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValue.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertyValueOrBuilder>(
                     values_,
-                    ((bitField0_ & 0x00000002) != 0),
+                    ((bitField0_ & 0x00000002) == 0x00000002),
                     getParentForChildren(),
                     isClean());
             values_ = null;
           }
           return valuesBuilder_;
         }
-        @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.setUnknownFields(unknownFields);
         }
 
-        @java.lang.Override
         public final Builder mergeUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.mergeUnknownFields(unknownFields);
@@ -12709,12 +11721,11 @@ public final class SparkplugBProto {
 
       @java.lang.Deprecated public static final com.google.protobuf.Parser<PropertySet>
           PARSER = new com.google.protobuf.AbstractParser<PropertySet>() {
-        @java.lang.Override
         public PropertySet parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new PropertySet(input, extensionRegistry);
+            return new PropertySet(input, extensionRegistry);
         }
       };
 
@@ -12727,7 +11738,6 @@ public final class SparkplugBProto {
         return PARSER;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
@@ -12766,25 +11776,17 @@ public final class SparkplugBProto {
     /**
      * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.PropertySetList}
      */
-    public static final class PropertySetList extends
+    public  static final class PropertySetList extends
         com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
           PropertySetList> implements
         // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.PropertySetList)
         PropertySetListOrBuilder {
-    private static final long serialVersionUID = 0L;
       // Use PropertySetList.newBuilder() to construct.
       private PropertySetList(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList, ?> builder) {
         super(builder);
       }
       private PropertySetList() {
         propertyset_ = java.util.Collections.emptyList();
-      }
-
-      @java.lang.Override
-      @SuppressWarnings({"unused"})
-      protected java.lang.Object newInstance(
-          UnusedPrivateParameter unused) {
-        return new PropertySetList();
       }
 
       @java.lang.Override
@@ -12797,9 +11799,6 @@ public final class SparkplugBProto {
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
         int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -12811,20 +11810,20 @@ public final class SparkplugBProto {
               case 0:
                 done = true;
                 break;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
               case 10: {
-                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
                   propertyset_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet>();
                   mutable_bitField0_ |= 0x00000001;
                 }
                 propertyset_.add(
                     input.readMessage(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.PARSER, extensionRegistry));
-                break;
-              }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
                 break;
               }
             }
@@ -12835,7 +11834,7 @@ public final class SparkplugBProto {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
             propertyset_ = java.util.Collections.unmodifiableList(propertyset_);
           }
           this.unknownFields = unknownFields.build();
@@ -12847,7 +11846,6 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySetList_descriptor;
       }
 
-      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySetList_fieldAccessorTable
@@ -12860,14 +11858,12 @@ public final class SparkplugBProto {
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset = 1;</code>
        */
-      @java.lang.Override
       public java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet> getPropertysetList() {
         return propertyset_;
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset = 1;</code>
        */
-      @java.lang.Override
       public java.util.List<? extends org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder> 
           getPropertysetOrBuilderList() {
         return propertyset_;
@@ -12875,28 +11871,24 @@ public final class SparkplugBProto {
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset = 1;</code>
        */
-      @java.lang.Override
       public int getPropertysetCount() {
         return propertyset_.size();
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset = 1;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getPropertyset(int index) {
         return propertyset_.get(index);
       }
       /**
        * <code>repeated .org.eclipse.tahu.protobuf.Payload.PropertySet propertyset = 1;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder getPropertysetOrBuilder(
           int index) {
         return propertyset_.get(index);
       }
 
       private byte memoizedIsInitialized = -1;
-      @java.lang.Override
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized == 1) return true;
@@ -12916,7 +11908,6 @@ public final class SparkplugBProto {
         return true;
       }
 
-      @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         com.google.protobuf.GeneratedMessageV3
@@ -12929,7 +11920,6 @@ public final class SparkplugBProto {
         unknownFields.writeTo(output);
       }
 
-      @java.lang.Override
       public int getSerializedSize() {
         int size = memoizedSize;
         if (size != -1) return size;
@@ -12945,6 +11935,7 @@ public final class SparkplugBProto {
         return size;
       }
 
+      private static final long serialVersionUID = 0L;
       @java.lang.Override
       public boolean equals(final java.lang.Object obj) {
         if (obj == this) {
@@ -12955,12 +11946,13 @@ public final class SparkplugBProto {
         }
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList) obj;
 
-        if (!getPropertysetList()
-            .equals(other.getPropertysetList())) return false;
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        if (!getExtensionFields().equals(other.getExtensionFields()))
-          return false;
-        return true;
+        boolean result = true;
+        result = result && getPropertysetList()
+            .equals(other.getPropertysetList());
+        result = result && unknownFields.equals(other.unknownFields);
+        result = result &&
+            getExtensionFields().equals(other.getExtensionFields());
+        return result;
       }
 
       @java.lang.Override
@@ -12969,7 +11961,7 @@ public final class SparkplugBProto {
           return memoizedHashCode;
         }
         int hash = 41;
-        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (19 * hash) + getDescriptorForType().hashCode();
         if (getPropertysetCount() > 0) {
           hash = (37 * hash) + PROPERTYSET_FIELD_NUMBER;
           hash = (53 * hash) + getPropertysetList().hashCode();
@@ -12980,17 +11972,6 @@ public final class SparkplugBProto {
         return hash;
       }
 
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList parseFrom(
-          java.nio.ByteBuffer data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList parseFrom(
-          java.nio.ByteBuffer data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
       public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -13050,7 +12031,6 @@ public final class SparkplugBProto {
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
 
-      @java.lang.Override
       public Builder newBuilderForType() { return newBuilder(); }
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
@@ -13058,7 +12038,6 @@ public final class SparkplugBProto {
       public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
-      @java.lang.Override
       public Builder toBuilder() {
         return this == DEFAULT_INSTANCE
             ? new Builder() : new Builder().mergeFrom(this);
@@ -13083,7 +12062,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySetList_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySetList_fieldAccessorTable
@@ -13107,7 +12085,6 @@ public final class SparkplugBProto {
             getPropertysetFieldBuilder();
           }
         }
-        @java.lang.Override
         public Builder clear() {
           super.clear();
           if (propertysetBuilder_ == null) {
@@ -13119,18 +12096,15 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_PropertySetList_descriptor;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList getDefaultInstanceForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList.getDefaultInstance();
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList build() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList result = buildPartial();
           if (!result.isInitialized()) {
@@ -13139,12 +12113,11 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList buildPartial() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList(this);
           int from_bitField0_ = bitField0_;
           if (propertysetBuilder_ == null) {
-            if (((bitField0_ & 0x00000001) != 0)) {
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
               propertyset_ = java.util.Collections.unmodifiableList(propertyset_);
               bitField0_ = (bitField0_ & ~0x00000001);
             }
@@ -13156,66 +12129,55 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
-        @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
+            Object value) {
+          return (Builder) super.setField(field, value);
         }
-        @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
-        @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
-        @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+            int index, Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
         }
-        @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+            Object value) {
+          return (Builder) super.addRepeatedField(field, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList, Type> extension,
             Type value) {
-          return super.setExtension(extension, value);
+          return (Builder) super.setExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList, java.util.List<Type>> extension,
             int index, Type value) {
-          return super.setExtension(extension, index, value);
+          return (Builder) super.setExtension(extension, index, value);
         }
-        @java.lang.Override
         public <Type> Builder addExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList, java.util.List<Type>> extension,
             Type value) {
-          return super.addExtension(extension, value);
+          return (Builder) super.addExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder clearExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList, ?> extension) {
-          return super.clearExtension(extension);
+          return (Builder) super.clearExtension(extension);
         }
-        @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList) {
             return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList)other);
@@ -13259,7 +12221,6 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public final boolean isInitialized() {
           for (int i = 0; i < getPropertysetCount(); i++) {
             if (!getPropertyset(i).isInitialized()) {
@@ -13272,7 +12233,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -13295,7 +12255,7 @@ public final class SparkplugBProto {
         private java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet> propertyset_ =
           java.util.Collections.emptyList();
         private void ensurePropertysetIsMutable() {
-          if (!((bitField0_ & 0x00000001) != 0)) {
+          if (!((bitField0_ & 0x00000001) == 0x00000001)) {
             propertyset_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet>(propertyset_);
             bitField0_ |= 0x00000001;
            }
@@ -13524,20 +12484,18 @@ public final class SparkplugBProto {
             propertysetBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder>(
                     propertyset_,
-                    ((bitField0_ & 0x00000001) != 0),
+                    ((bitField0_ & 0x00000001) == 0x00000001),
                     getParentForChildren(),
                     isClean());
             propertyset_ = null;
           }
           return propertysetBuilder_;
         }
-        @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.setUnknownFields(unknownFields);
         }
 
-        @java.lang.Override
         public final Builder mergeUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.mergeUnknownFields(unknownFields);
@@ -13559,12 +12517,11 @@ public final class SparkplugBProto {
 
       @java.lang.Deprecated public static final com.google.protobuf.Parser<PropertySetList>
           PARSER = new com.google.protobuf.AbstractParser<PropertySetList>() {
-        @java.lang.Override
         public PropertySetList parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new PropertySetList(input, extensionRegistry);
+            return new PropertySetList(input, extensionRegistry);
         }
       };
 
@@ -13577,7 +12534,6 @@ public final class SparkplugBProto {
         return PARSER;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetList getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
@@ -13595,7 +12551,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_multi_part = 1;</code>
-       * @return Whether the isMultiPart field is set.
        */
       boolean hasIsMultiPart();
       /**
@@ -13604,7 +12559,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_multi_part = 1;</code>
-       * @return The isMultiPart.
        */
       boolean getIsMultiPart();
 
@@ -13614,7 +12568,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string content_type = 2;</code>
-       * @return Whether the contentType field is set.
        */
       boolean hasContentType();
       /**
@@ -13623,7 +12576,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string content_type = 2;</code>
-       * @return The contentType.
        */
       java.lang.String getContentType();
       /**
@@ -13632,7 +12584,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string content_type = 2;</code>
-       * @return The bytes for contentType.
        */
       com.google.protobuf.ByteString
           getContentTypeBytes();
@@ -13643,7 +12594,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 size = 3;</code>
-       * @return Whether the size field is set.
        */
       boolean hasSize();
       /**
@@ -13652,7 +12602,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 size = 3;</code>
-       * @return The size.
        */
       long getSize();
 
@@ -13662,7 +12611,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 seq = 4;</code>
-       * @return Whether the seq field is set.
        */
       boolean hasSeq();
       /**
@@ -13671,7 +12619,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 seq = 4;</code>
-       * @return The seq.
        */
       long getSeq();
 
@@ -13681,7 +12628,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_name = 5;</code>
-       * @return Whether the fileName field is set.
        */
       boolean hasFileName();
       /**
@@ -13690,7 +12636,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_name = 5;</code>
-       * @return The fileName.
        */
       java.lang.String getFileName();
       /**
@@ -13699,7 +12644,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_name = 5;</code>
-       * @return The bytes for fileName.
        */
       com.google.protobuf.ByteString
           getFileNameBytes();
@@ -13710,7 +12654,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_type = 6;</code>
-       * @return Whether the fileType field is set.
        */
       boolean hasFileType();
       /**
@@ -13719,7 +12662,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_type = 6;</code>
-       * @return The fileType.
        */
       java.lang.String getFileType();
       /**
@@ -13728,7 +12670,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_type = 6;</code>
-       * @return The bytes for fileType.
        */
       com.google.protobuf.ByteString
           getFileTypeBytes();
@@ -13739,7 +12680,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string md5 = 7;</code>
-       * @return Whether the md5 field is set.
        */
       boolean hasMd5();
       /**
@@ -13748,7 +12688,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string md5 = 7;</code>
-       * @return The md5.
        */
       java.lang.String getMd5();
       /**
@@ -13757,7 +12696,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string md5 = 7;</code>
-       * @return The bytes for md5.
        */
       com.google.protobuf.ByteString
           getMd5Bytes();
@@ -13768,7 +12706,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string description = 8;</code>
-       * @return Whether the description field is set.
        */
       boolean hasDescription();
       /**
@@ -13777,7 +12714,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string description = 8;</code>
-       * @return The description.
        */
       java.lang.String getDescription();
       /**
@@ -13786,7 +12722,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string description = 8;</code>
-       * @return The bytes for description.
        */
       com.google.protobuf.ByteString
           getDescriptionBytes();
@@ -13794,29 +12729,24 @@ public final class SparkplugBProto {
     /**
      * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.MetaData}
      */
-    public static final class MetaData extends
+    public  static final class MetaData extends
         com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
           MetaData> implements
         // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.MetaData)
         MetaDataOrBuilder {
-    private static final long serialVersionUID = 0L;
       // Use MetaData.newBuilder() to construct.
       private MetaData(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData, ?> builder) {
         super(builder);
       }
       private MetaData() {
+        isMultiPart_ = false;
         contentType_ = "";
+        size_ = 0L;
+        seq_ = 0L;
         fileName_ = "";
         fileType_ = "";
         md5_ = "";
         description_ = "";
-      }
-
-      @java.lang.Override
-      @SuppressWarnings({"unused"})
-      protected java.lang.Object newInstance(
-          UnusedPrivateParameter unused) {
-        return new MetaData();
       }
 
       @java.lang.Override
@@ -13829,9 +12759,6 @@ public final class SparkplugBProto {
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
         int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -13843,6 +12770,13 @@ public final class SparkplugBProto {
               case 0:
                 done = true;
                 break;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
               case 8: {
                 bitField0_ |= 0x00000001;
                 isMultiPart_ = input.readBool();
@@ -13888,13 +12822,6 @@ public final class SparkplugBProto {
                 description_ = bs;
                 break;
               }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
             }
           }
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -13912,7 +12839,6 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_MetaData_descriptor;
       }
 
-      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_MetaData_fieldAccessorTable
@@ -13929,11 +12855,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_multi_part = 1;</code>
-       * @return Whether the isMultiPart field is set.
        */
-      @java.lang.Override
       public boolean hasIsMultiPart() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <pre>
@@ -13941,9 +12865,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_multi_part = 1;</code>
-       * @return The isMultiPart.
        */
-      @java.lang.Override
       public boolean getIsMultiPart() {
         return isMultiPart_;
       }
@@ -13956,11 +12878,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string content_type = 2;</code>
-       * @return Whether the contentType field is set.
        */
-      @java.lang.Override
       public boolean hasContentType() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
        * <pre>
@@ -13968,9 +12888,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string content_type = 2;</code>
-       * @return The contentType.
        */
-      @java.lang.Override
       public java.lang.String getContentType() {
         java.lang.Object ref = contentType_;
         if (ref instanceof java.lang.String) {
@@ -13991,9 +12909,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string content_type = 2;</code>
-       * @return The bytes for contentType.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getContentTypeBytes() {
         java.lang.Object ref = contentType_;
@@ -14016,11 +12932,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 size = 3;</code>
-       * @return Whether the size field is set.
        */
-      @java.lang.Override
       public boolean hasSize() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
        * <pre>
@@ -14028,9 +12942,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 size = 3;</code>
-       * @return The size.
        */
-      @java.lang.Override
       public long getSize() {
         return size_;
       }
@@ -14043,11 +12955,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 seq = 4;</code>
-       * @return Whether the seq field is set.
        */
-      @java.lang.Override
       public boolean hasSeq() {
-        return ((bitField0_ & 0x00000008) != 0);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
        * <pre>
@@ -14055,9 +12965,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 seq = 4;</code>
-       * @return The seq.
        */
-      @java.lang.Override
       public long getSeq() {
         return seq_;
       }
@@ -14070,11 +12978,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_name = 5;</code>
-       * @return Whether the fileName field is set.
        */
-      @java.lang.Override
       public boolean hasFileName() {
-        return ((bitField0_ & 0x00000010) != 0);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <pre>
@@ -14082,9 +12988,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_name = 5;</code>
-       * @return The fileName.
        */
-      @java.lang.Override
       public java.lang.String getFileName() {
         java.lang.Object ref = fileName_;
         if (ref instanceof java.lang.String) {
@@ -14105,9 +13009,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_name = 5;</code>
-       * @return The bytes for fileName.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getFileNameBytes() {
         java.lang.Object ref = fileName_;
@@ -14130,11 +13032,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_type = 6;</code>
-       * @return Whether the fileType field is set.
        */
-      @java.lang.Override
       public boolean hasFileType() {
-        return ((bitField0_ & 0x00000020) != 0);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
        * <pre>
@@ -14142,9 +13042,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_type = 6;</code>
-       * @return The fileType.
        */
-      @java.lang.Override
       public java.lang.String getFileType() {
         java.lang.Object ref = fileType_;
         if (ref instanceof java.lang.String) {
@@ -14165,9 +13063,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string file_type = 6;</code>
-       * @return The bytes for fileType.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getFileTypeBytes() {
         java.lang.Object ref = fileType_;
@@ -14190,11 +13086,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string md5 = 7;</code>
-       * @return Whether the md5 field is set.
        */
-      @java.lang.Override
       public boolean hasMd5() {
-        return ((bitField0_ & 0x00000040) != 0);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
        * <pre>
@@ -14202,9 +13096,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string md5 = 7;</code>
-       * @return The md5.
        */
-      @java.lang.Override
       public java.lang.String getMd5() {
         java.lang.Object ref = md5_;
         if (ref instanceof java.lang.String) {
@@ -14225,9 +13117,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string md5 = 7;</code>
-       * @return The bytes for md5.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getMd5Bytes() {
         java.lang.Object ref = md5_;
@@ -14250,11 +13140,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string description = 8;</code>
-       * @return Whether the description field is set.
        */
-      @java.lang.Override
       public boolean hasDescription() {
-        return ((bitField0_ & 0x00000080) != 0);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
        * <pre>
@@ -14262,9 +13150,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string description = 8;</code>
-       * @return The description.
        */
-      @java.lang.Override
       public java.lang.String getDescription() {
         java.lang.Object ref = description_;
         if (ref instanceof java.lang.String) {
@@ -14285,9 +13171,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string description = 8;</code>
-       * @return The bytes for description.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getDescriptionBytes() {
         java.lang.Object ref = description_;
@@ -14303,7 +13187,6 @@ public final class SparkplugBProto {
       }
 
       private byte memoizedIsInitialized = -1;
-      @java.lang.Override
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized == 1) return true;
@@ -14317,71 +13200,69 @@ public final class SparkplugBProto {
         return true;
       }
 
-      @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         com.google.protobuf.GeneratedMessageV3
           .ExtendableMessage<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData>.ExtensionWriter
             extensionWriter = newExtensionWriter();
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           output.writeBool(1, isMultiPart_);
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 2, contentType_);
         }
-        if (((bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           output.writeUInt64(3, size_);
         }
-        if (((bitField0_ & 0x00000008) != 0)) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           output.writeUInt64(4, seq_);
         }
-        if (((bitField0_ & 0x00000010) != 0)) {
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 5, fileName_);
         }
-        if (((bitField0_ & 0x00000020) != 0)) {
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 6, fileType_);
         }
-        if (((bitField0_ & 0x00000040) != 0)) {
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 7, md5_);
         }
-        if (((bitField0_ & 0x00000080) != 0)) {
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 8, description_);
         }
         extensionWriter.writeUntil(536870912, output);
         unknownFields.writeTo(output);
       }
 
-      @java.lang.Override
       public int getSerializedSize() {
         int size = memoizedSize;
         if (size != -1) return size;
 
         size = 0;
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(1, isMultiPart_);
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, contentType_);
         }
-        if (((bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
             .computeUInt64Size(3, size_);
         }
-        if (((bitField0_ & 0x00000008) != 0)) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
             .computeUInt64Size(4, seq_);
         }
-        if (((bitField0_ & 0x00000010) != 0)) {
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, fileName_);
         }
-        if (((bitField0_ & 0x00000020) != 0)) {
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, fileType_);
         }
-        if (((bitField0_ & 0x00000040) != 0)) {
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, md5_);
         }
-        if (((bitField0_ & 0x00000080) != 0)) {
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, description_);
         }
         size += extensionsSerializedSize();
@@ -14390,6 +13271,7 @@ public final class SparkplugBProto {
         return size;
       }
 
+      private static final long serialVersionUID = 0L;
       @java.lang.Override
       public boolean equals(final java.lang.Object obj) {
         if (obj == this) {
@@ -14400,50 +13282,51 @@ public final class SparkplugBProto {
         }
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData) obj;
 
-        if (hasIsMultiPart() != other.hasIsMultiPart()) return false;
+        boolean result = true;
+        result = result && (hasIsMultiPart() == other.hasIsMultiPart());
         if (hasIsMultiPart()) {
-          if (getIsMultiPart()
-              != other.getIsMultiPart()) return false;
+          result = result && (getIsMultiPart()
+              == other.getIsMultiPart());
         }
-        if (hasContentType() != other.hasContentType()) return false;
+        result = result && (hasContentType() == other.hasContentType());
         if (hasContentType()) {
-          if (!getContentType()
-              .equals(other.getContentType())) return false;
+          result = result && getContentType()
+              .equals(other.getContentType());
         }
-        if (hasSize() != other.hasSize()) return false;
+        result = result && (hasSize() == other.hasSize());
         if (hasSize()) {
-          if (getSize()
-              != other.getSize()) return false;
+          result = result && (getSize()
+              == other.getSize());
         }
-        if (hasSeq() != other.hasSeq()) return false;
+        result = result && (hasSeq() == other.hasSeq());
         if (hasSeq()) {
-          if (getSeq()
-              != other.getSeq()) return false;
+          result = result && (getSeq()
+              == other.getSeq());
         }
-        if (hasFileName() != other.hasFileName()) return false;
+        result = result && (hasFileName() == other.hasFileName());
         if (hasFileName()) {
-          if (!getFileName()
-              .equals(other.getFileName())) return false;
+          result = result && getFileName()
+              .equals(other.getFileName());
         }
-        if (hasFileType() != other.hasFileType()) return false;
+        result = result && (hasFileType() == other.hasFileType());
         if (hasFileType()) {
-          if (!getFileType()
-              .equals(other.getFileType())) return false;
+          result = result && getFileType()
+              .equals(other.getFileType());
         }
-        if (hasMd5() != other.hasMd5()) return false;
+        result = result && (hasMd5() == other.hasMd5());
         if (hasMd5()) {
-          if (!getMd5()
-              .equals(other.getMd5())) return false;
+          result = result && getMd5()
+              .equals(other.getMd5());
         }
-        if (hasDescription() != other.hasDescription()) return false;
+        result = result && (hasDescription() == other.hasDescription());
         if (hasDescription()) {
-          if (!getDescription()
-              .equals(other.getDescription())) return false;
+          result = result && getDescription()
+              .equals(other.getDescription());
         }
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        if (!getExtensionFields().equals(other.getExtensionFields()))
-          return false;
-        return true;
+        result = result && unknownFields.equals(other.unknownFields);
+        result = result &&
+            getExtensionFields().equals(other.getExtensionFields());
+        return result;
       }
 
       @java.lang.Override
@@ -14452,7 +13335,7 @@ public final class SparkplugBProto {
           return memoizedHashCode;
         }
         int hash = 41;
-        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (19 * hash) + getDescriptorForType().hashCode();
         if (hasIsMultiPart()) {
           hash = (37 * hash) + IS_MULTI_PART_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
@@ -14494,17 +13377,6 @@ public final class SparkplugBProto {
         return hash;
       }
 
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData parseFrom(
-          java.nio.ByteBuffer data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData parseFrom(
-          java.nio.ByteBuffer data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
       public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -14564,7 +13436,6 @@ public final class SparkplugBProto {
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
 
-      @java.lang.Override
       public Builder newBuilderForType() { return newBuilder(); }
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
@@ -14572,7 +13443,6 @@ public final class SparkplugBProto {
       public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
-      @java.lang.Override
       public Builder toBuilder() {
         return this == DEFAULT_INSTANCE
             ? new Builder() : new Builder().mergeFrom(this);
@@ -14597,7 +13467,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_MetaData_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_MetaData_fieldAccessorTable
@@ -14620,7 +13489,6 @@ public final class SparkplugBProto {
                   .alwaysUseFieldBuilders) {
           }
         }
-        @java.lang.Override
         public Builder clear() {
           super.clear();
           isMultiPart_ = false;
@@ -14642,18 +13510,15 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_MetaData_descriptor;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData getDefaultInstanceForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData.getDefaultInstance();
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData build() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData result = buildPartial();
           if (!result.isInitialized()) {
@@ -14662,40 +13527,39 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData buildPartial() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
-          if (((from_bitField0_ & 0x00000001) != 0)) {
-            result.isMultiPart_ = isMultiPart_;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
             to_bitField0_ |= 0x00000001;
           }
-          if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.isMultiPart_ = isMultiPart_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
             to_bitField0_ |= 0x00000002;
           }
           result.contentType_ = contentType_;
-          if (((from_bitField0_ & 0x00000004) != 0)) {
-            result.size_ = size_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
             to_bitField0_ |= 0x00000004;
           }
-          if (((from_bitField0_ & 0x00000008) != 0)) {
-            result.seq_ = seq_;
+          result.size_ = size_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
             to_bitField0_ |= 0x00000008;
           }
-          if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.seq_ = seq_;
+          if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
             to_bitField0_ |= 0x00000010;
           }
           result.fileName_ = fileName_;
-          if (((from_bitField0_ & 0x00000020) != 0)) {
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
             to_bitField0_ |= 0x00000020;
           }
           result.fileType_ = fileType_;
-          if (((from_bitField0_ & 0x00000040) != 0)) {
+          if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
             to_bitField0_ |= 0x00000040;
           }
           result.md5_ = md5_;
-          if (((from_bitField0_ & 0x00000080) != 0)) {
+          if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
             to_bitField0_ |= 0x00000080;
           }
           result.description_ = description_;
@@ -14704,66 +13568,55 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
-        @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
+            Object value) {
+          return (Builder) super.setField(field, value);
         }
-        @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
-        @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
-        @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+            int index, Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
         }
-        @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+            Object value) {
+          return (Builder) super.addRepeatedField(field, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData, Type> extension,
             Type value) {
-          return super.setExtension(extension, value);
+          return (Builder) super.setExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder setExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData, java.util.List<Type>> extension,
             int index, Type value) {
-          return super.setExtension(extension, index, value);
+          return (Builder) super.setExtension(extension, index, value);
         }
-        @java.lang.Override
         public <Type> Builder addExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData, java.util.List<Type>> extension,
             Type value) {
-          return super.addExtension(extension, value);
+          return (Builder) super.addExtension(extension, value);
         }
-        @java.lang.Override
         public <Type> Builder clearExtension(
             com.google.protobuf.GeneratedMessage.GeneratedExtension<
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData, ?> extension) {
-          return super.clearExtension(extension);
+          return (Builder) super.clearExtension(extension);
         }
-        @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData) {
             return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData)other);
@@ -14815,7 +13668,6 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public final boolean isInitialized() {
           if (!extensionsAreInitialized()) {
             return false;
@@ -14823,7 +13675,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -14850,11 +13701,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_multi_part = 1;</code>
-         * @return Whether the isMultiPart field is set.
          */
-        @java.lang.Override
         public boolean hasIsMultiPart() {
-          return ((bitField0_ & 0x00000001) != 0);
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
          * <pre>
@@ -14862,9 +13711,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_multi_part = 1;</code>
-         * @return The isMultiPart.
          */
-        @java.lang.Override
         public boolean getIsMultiPart() {
           return isMultiPart_;
         }
@@ -14874,8 +13721,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_multi_part = 1;</code>
-         * @param value The isMultiPart to set.
-         * @return This builder for chaining.
          */
         public Builder setIsMultiPart(boolean value) {
           bitField0_ |= 0x00000001;
@@ -14889,7 +13734,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_multi_part = 1;</code>
-         * @return This builder for chaining.
          */
         public Builder clearIsMultiPart() {
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -14905,10 +13749,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string content_type = 2;</code>
-         * @return Whether the contentType field is set.
          */
         public boolean hasContentType() {
-          return ((bitField0_ & 0x00000002) != 0);
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
          * <pre>
@@ -14916,7 +13759,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string content_type = 2;</code>
-         * @return The contentType.
          */
         public java.lang.String getContentType() {
           java.lang.Object ref = contentType_;
@@ -14938,7 +13780,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string content_type = 2;</code>
-         * @return The bytes for contentType.
          */
         public com.google.protobuf.ByteString
             getContentTypeBytes() {
@@ -14959,8 +13800,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string content_type = 2;</code>
-         * @param value The contentType to set.
-         * @return This builder for chaining.
          */
         public Builder setContentType(
             java.lang.String value) {
@@ -14978,7 +13817,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string content_type = 2;</code>
-         * @return This builder for chaining.
          */
         public Builder clearContentType() {
           bitField0_ = (bitField0_ & ~0x00000002);
@@ -14992,8 +13830,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string content_type = 2;</code>
-         * @param value The bytes for contentType to set.
-         * @return This builder for chaining.
          */
         public Builder setContentTypeBytes(
             com.google.protobuf.ByteString value) {
@@ -15013,11 +13849,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 size = 3;</code>
-         * @return Whether the size field is set.
          */
-        @java.lang.Override
         public boolean hasSize() {
-          return ((bitField0_ & 0x00000004) != 0);
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         /**
          * <pre>
@@ -15025,9 +13859,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 size = 3;</code>
-         * @return The size.
          */
-        @java.lang.Override
         public long getSize() {
           return size_;
         }
@@ -15037,8 +13869,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 size = 3;</code>
-         * @param value The size to set.
-         * @return This builder for chaining.
          */
         public Builder setSize(long value) {
           bitField0_ |= 0x00000004;
@@ -15052,7 +13882,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 size = 3;</code>
-         * @return This builder for chaining.
          */
         public Builder clearSize() {
           bitField0_ = (bitField0_ & ~0x00000004);
@@ -15068,11 +13897,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 seq = 4;</code>
-         * @return Whether the seq field is set.
          */
-        @java.lang.Override
         public boolean hasSeq() {
-          return ((bitField0_ & 0x00000008) != 0);
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         /**
          * <pre>
@@ -15080,9 +13907,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 seq = 4;</code>
-         * @return The seq.
          */
-        @java.lang.Override
         public long getSeq() {
           return seq_;
         }
@@ -15092,8 +13917,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 seq = 4;</code>
-         * @param value The seq to set.
-         * @return This builder for chaining.
          */
         public Builder setSeq(long value) {
           bitField0_ |= 0x00000008;
@@ -15107,7 +13930,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 seq = 4;</code>
-         * @return This builder for chaining.
          */
         public Builder clearSeq() {
           bitField0_ = (bitField0_ & ~0x00000008);
@@ -15123,10 +13945,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_name = 5;</code>
-         * @return Whether the fileName field is set.
          */
         public boolean hasFileName() {
-          return ((bitField0_ & 0x00000010) != 0);
+          return ((bitField0_ & 0x00000010) == 0x00000010);
         }
         /**
          * <pre>
@@ -15134,7 +13955,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_name = 5;</code>
-         * @return The fileName.
          */
         public java.lang.String getFileName() {
           java.lang.Object ref = fileName_;
@@ -15156,7 +13976,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_name = 5;</code>
-         * @return The bytes for fileName.
          */
         public com.google.protobuf.ByteString
             getFileNameBytes() {
@@ -15177,8 +13996,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_name = 5;</code>
-         * @param value The fileName to set.
-         * @return This builder for chaining.
          */
         public Builder setFileName(
             java.lang.String value) {
@@ -15196,7 +14013,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_name = 5;</code>
-         * @return This builder for chaining.
          */
         public Builder clearFileName() {
           bitField0_ = (bitField0_ & ~0x00000010);
@@ -15210,8 +14026,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_name = 5;</code>
-         * @param value The bytes for fileName to set.
-         * @return This builder for chaining.
          */
         public Builder setFileNameBytes(
             com.google.protobuf.ByteString value) {
@@ -15231,10 +14045,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_type = 6;</code>
-         * @return Whether the fileType field is set.
          */
         public boolean hasFileType() {
-          return ((bitField0_ & 0x00000020) != 0);
+          return ((bitField0_ & 0x00000020) == 0x00000020);
         }
         /**
          * <pre>
@@ -15242,7 +14055,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_type = 6;</code>
-         * @return The fileType.
          */
         public java.lang.String getFileType() {
           java.lang.Object ref = fileType_;
@@ -15264,7 +14076,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_type = 6;</code>
-         * @return The bytes for fileType.
          */
         public com.google.protobuf.ByteString
             getFileTypeBytes() {
@@ -15285,8 +14096,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_type = 6;</code>
-         * @param value The fileType to set.
-         * @return This builder for chaining.
          */
         public Builder setFileType(
             java.lang.String value) {
@@ -15304,7 +14113,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_type = 6;</code>
-         * @return This builder for chaining.
          */
         public Builder clearFileType() {
           bitField0_ = (bitField0_ & ~0x00000020);
@@ -15318,8 +14126,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string file_type = 6;</code>
-         * @param value The bytes for fileType to set.
-         * @return This builder for chaining.
          */
         public Builder setFileTypeBytes(
             com.google.protobuf.ByteString value) {
@@ -15339,10 +14145,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string md5 = 7;</code>
-         * @return Whether the md5 field is set.
          */
         public boolean hasMd5() {
-          return ((bitField0_ & 0x00000040) != 0);
+          return ((bitField0_ & 0x00000040) == 0x00000040);
         }
         /**
          * <pre>
@@ -15350,7 +14155,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string md5 = 7;</code>
-         * @return The md5.
          */
         public java.lang.String getMd5() {
           java.lang.Object ref = md5_;
@@ -15372,7 +14176,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string md5 = 7;</code>
-         * @return The bytes for md5.
          */
         public com.google.protobuf.ByteString
             getMd5Bytes() {
@@ -15393,8 +14196,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string md5 = 7;</code>
-         * @param value The md5 to set.
-         * @return This builder for chaining.
          */
         public Builder setMd5(
             java.lang.String value) {
@@ -15412,7 +14213,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string md5 = 7;</code>
-         * @return This builder for chaining.
          */
         public Builder clearMd5() {
           bitField0_ = (bitField0_ & ~0x00000040);
@@ -15426,8 +14226,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string md5 = 7;</code>
-         * @param value The bytes for md5 to set.
-         * @return This builder for chaining.
          */
         public Builder setMd5Bytes(
             com.google.protobuf.ByteString value) {
@@ -15447,10 +14245,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string description = 8;</code>
-         * @return Whether the description field is set.
          */
         public boolean hasDescription() {
-          return ((bitField0_ & 0x00000080) != 0);
+          return ((bitField0_ & 0x00000080) == 0x00000080);
         }
         /**
          * <pre>
@@ -15458,7 +14255,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string description = 8;</code>
-         * @return The description.
          */
         public java.lang.String getDescription() {
           java.lang.Object ref = description_;
@@ -15480,7 +14276,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string description = 8;</code>
-         * @return The bytes for description.
          */
         public com.google.protobuf.ByteString
             getDescriptionBytes() {
@@ -15501,8 +14296,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string description = 8;</code>
-         * @param value The description to set.
-         * @return This builder for chaining.
          */
         public Builder setDescription(
             java.lang.String value) {
@@ -15520,7 +14313,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string description = 8;</code>
-         * @return This builder for chaining.
          */
         public Builder clearDescription() {
           bitField0_ = (bitField0_ & ~0x00000080);
@@ -15534,8 +14326,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string description = 8;</code>
-         * @param value The bytes for description to set.
-         * @return This builder for chaining.
          */
         public Builder setDescriptionBytes(
             com.google.protobuf.ByteString value) {
@@ -15547,13 +14337,11 @@ public final class SparkplugBProto {
           onChanged();
           return this;
         }
-        @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.setUnknownFields(unknownFields);
         }
 
-        @java.lang.Override
         public final Builder mergeUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.mergeUnknownFields(unknownFields);
@@ -15575,12 +14363,11 @@ public final class SparkplugBProto {
 
       @java.lang.Deprecated public static final com.google.protobuf.Parser<MetaData>
           PARSER = new com.google.protobuf.AbstractParser<MetaData>() {
-        @java.lang.Override
         public MetaData parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new MetaData(input, extensionRegistry);
+            return new MetaData(input, extensionRegistry);
         }
       };
 
@@ -15593,7 +14380,6 @@ public final class SparkplugBProto {
         return PARSER;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
@@ -15610,7 +14396,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string name = 1;</code>
-       * @return Whether the name field is set.
        */
       boolean hasName();
       /**
@@ -15619,7 +14404,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string name = 1;</code>
-       * @return The name.
        */
       java.lang.String getName();
       /**
@@ -15628,7 +14412,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string name = 1;</code>
-       * @return The bytes for name.
        */
       com.google.protobuf.ByteString
           getNameBytes();
@@ -15639,7 +14422,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 alias = 2;</code>
-       * @return Whether the alias field is set.
        */
       boolean hasAlias();
       /**
@@ -15648,7 +14430,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 alias = 2;</code>
-       * @return The alias.
        */
       long getAlias();
 
@@ -15658,7 +14439,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 timestamp = 3;</code>
-       * @return Whether the timestamp field is set.
        */
       boolean hasTimestamp();
       /**
@@ -15667,7 +14447,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 timestamp = 3;</code>
-       * @return The timestamp.
        */
       long getTimestamp();
 
@@ -15677,7 +14456,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint32 datatype = 4;</code>
-       * @return Whether the datatype field is set.
        */
       boolean hasDatatype();
       /**
@@ -15686,7 +14464,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint32 datatype = 4;</code>
-       * @return The datatype.
        */
       int getDatatype();
 
@@ -15696,7 +14473,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_historical = 5;</code>
-       * @return Whether the isHistorical field is set.
        */
       boolean hasIsHistorical();
       /**
@@ -15705,7 +14481,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_historical = 5;</code>
-       * @return The isHistorical.
        */
       boolean getIsHistorical();
 
@@ -15715,7 +14490,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_transient = 6;</code>
-       * @return Whether the isTransient field is set.
        */
       boolean hasIsTransient();
       /**
@@ -15724,7 +14498,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_transient = 6;</code>
-       * @return The isTransient.
        */
       boolean getIsTransient();
 
@@ -15734,7 +14507,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_null = 7;</code>
-       * @return Whether the isNull field is set.
        */
       boolean hasIsNull();
       /**
@@ -15743,7 +14515,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_null = 7;</code>
-       * @return The isNull.
        */
       boolean getIsNull();
 
@@ -15753,7 +14524,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional .org.eclipse.tahu.protobuf.Payload.MetaData metadata = 8;</code>
-       * @return Whether the metadata field is set.
        */
       boolean hasMetadata();
       /**
@@ -15762,7 +14532,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional .org.eclipse.tahu.protobuf.Payload.MetaData metadata = 8;</code>
-       * @return The metadata.
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData getMetadata();
       /**
@@ -15776,12 +14545,10 @@ public final class SparkplugBProto {
 
       /**
        * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet properties = 9;</code>
-       * @return Whether the properties field is set.
        */
       boolean hasProperties();
       /**
        * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet properties = 9;</code>
-       * @return The properties.
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getProperties();
       /**
@@ -15790,73 +14557,60 @@ public final class SparkplugBProto {
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder getPropertiesOrBuilder();
 
       /**
-       * <code>uint32 int_value = 10;</code>
-       * @return Whether the intValue field is set.
+       * <code>optional uint32 int_value = 10;</code>
        */
       boolean hasIntValue();
       /**
-       * <code>uint32 int_value = 10;</code>
-       * @return The intValue.
+       * <code>optional uint32 int_value = 10;</code>
        */
       int getIntValue();
 
       /**
-       * <code>uint64 long_value = 11;</code>
-       * @return Whether the longValue field is set.
+       * <code>optional uint64 long_value = 11;</code>
        */
       boolean hasLongValue();
       /**
-       * <code>uint64 long_value = 11;</code>
-       * @return The longValue.
+       * <code>optional uint64 long_value = 11;</code>
        */
       long getLongValue();
 
       /**
-       * <code>float float_value = 12;</code>
-       * @return Whether the floatValue field is set.
+       * <code>optional float float_value = 12;</code>
        */
       boolean hasFloatValue();
       /**
-       * <code>float float_value = 12;</code>
-       * @return The floatValue.
+       * <code>optional float float_value = 12;</code>
        */
       float getFloatValue();
 
       /**
-       * <code>double double_value = 13;</code>
-       * @return Whether the doubleValue field is set.
+       * <code>optional double double_value = 13;</code>
        */
       boolean hasDoubleValue();
       /**
-       * <code>double double_value = 13;</code>
-       * @return The doubleValue.
+       * <code>optional double double_value = 13;</code>
        */
       double getDoubleValue();
 
       /**
-       * <code>bool boolean_value = 14;</code>
-       * @return Whether the booleanValue field is set.
+       * <code>optional bool boolean_value = 14;</code>
        */
       boolean hasBooleanValue();
       /**
-       * <code>bool boolean_value = 14;</code>
-       * @return The booleanValue.
+       * <code>optional bool boolean_value = 14;</code>
        */
       boolean getBooleanValue();
 
       /**
-       * <code>string string_value = 15;</code>
-       * @return Whether the stringValue field is set.
+       * <code>optional string string_value = 15;</code>
        */
       boolean hasStringValue();
       /**
-       * <code>string string_value = 15;</code>
-       * @return The stringValue.
+       * <code>optional string string_value = 15;</code>
        */
       java.lang.String getStringValue();
       /**
-       * <code>string string_value = 15;</code>
-       * @return The bytes for stringValue.
+       * <code>optional string string_value = 15;</code>
        */
       com.google.protobuf.ByteString
           getStringValueBytes();
@@ -15866,8 +14620,7 @@ public final class SparkplugBProto {
        * Bytes, File
        * </pre>
        *
-       * <code>bytes bytes_value = 16;</code>
-       * @return Whether the bytesValue field is set.
+       * <code>optional bytes bytes_value = 16;</code>
        */
       boolean hasBytesValue();
       /**
@@ -15875,53 +14628,46 @@ public final class SparkplugBProto {
        * Bytes, File
        * </pre>
        *
-       * <code>bytes bytes_value = 16;</code>
-       * @return The bytesValue.
+       * <code>optional bytes bytes_value = 16;</code>
        */
       com.google.protobuf.ByteString getBytesValue();
 
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
-       * @return Whether the datasetValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
        */
       boolean hasDatasetValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
-       * @return The datasetValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet getDatasetValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSetOrBuilder getDatasetValueOrBuilder();
 
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
-       * @return Whether the templateValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
        */
       boolean hasTemplateValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
-       * @return The templateValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template getTemplateValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.TemplateOrBuilder getTemplateValueOrBuilder();
 
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
-       * @return Whether the extensionValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
        */
       boolean hasExtensionValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
-       * @return The extensionValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension getExtensionValue();
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
        */
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtensionOrBuilder getExtensionValueOrBuilder();
 
@@ -15930,24 +14676,22 @@ public final class SparkplugBProto {
     /**
      * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.Metric}
      */
-    public static final class Metric extends
+    public  static final class Metric extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.Metric)
         MetricOrBuilder {
-    private static final long serialVersionUID = 0L;
       // Use Metric.newBuilder() to construct.
       private Metric(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
         super(builder);
       }
       private Metric() {
         name_ = "";
-      }
-
-      @java.lang.Override
-      @SuppressWarnings({"unused"})
-      protected java.lang.Object newInstance(
-          UnusedPrivateParameter unused) {
-        return new Metric();
+        alias_ = 0L;
+        timestamp_ = 0L;
+        datatype_ = 0;
+        isHistorical_ = false;
+        isTransient_ = false;
+        isNull_ = false;
       }
 
       @java.lang.Override
@@ -15960,9 +14704,6 @@ public final class SparkplugBProto {
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
         int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -15974,6 +14715,13 @@ public final class SparkplugBProto {
               case 0:
                 done = true;
                 break;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
               case 10: {
                 com.google.protobuf.ByteString bs = input.readBytes();
                 bitField0_ |= 0x00000001;
@@ -16012,7 +14760,7 @@ public final class SparkplugBProto {
               }
               case 66: {
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData.Builder subBuilder = null;
-                if (((bitField0_ & 0x00000080) != 0)) {
+                if (((bitField0_ & 0x00000080) == 0x00000080)) {
                   subBuilder = metadata_.toBuilder();
                 }
                 metadata_ = input.readMessage(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData.PARSER, extensionRegistry);
@@ -16025,7 +14773,7 @@ public final class SparkplugBProto {
               }
               case 74: {
                 org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.Builder subBuilder = null;
-                if (((bitField0_ & 0x00000100) != 0)) {
+                if (((bitField0_ & 0x00000100) == 0x00000100)) {
                   subBuilder = properties_.toBuilder();
                 }
                 properties_ = input.readMessage(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.PARSER, extensionRegistry);
@@ -16114,13 +14862,6 @@ public final class SparkplugBProto {
                 valueCase_ = 19;
                 break;
               }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
             }
           }
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -16138,7 +14879,6 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_descriptor;
       }
 
-      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_fieldAccessorTable
@@ -16154,24 +14894,16 @@ public final class SparkplugBProto {
       /**
        * Protobuf type {@code org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension}
        */
-      public static final class MetricValueExtension extends
+      public  static final class MetricValueExtension extends
           com.google.protobuf.GeneratedMessageV3.ExtendableMessage<
             MetricValueExtension> implements
           // @@protoc_insertion_point(message_implements:org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension)
           MetricValueExtensionOrBuilder {
-      private static final long serialVersionUID = 0L;
         // Use MetricValueExtension.newBuilder() to construct.
         private MetricValueExtension(com.google.protobuf.GeneratedMessageV3.ExtendableBuilder<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension, ?> builder) {
           super(builder);
         }
         private MetricValueExtension() {
-        }
-
-        @java.lang.Override
-        @SuppressWarnings({"unused"})
-        protected java.lang.Object newInstance(
-            UnusedPrivateParameter unused) {
-          return new MetricValueExtension();
         }
 
         @java.lang.Override
@@ -16184,9 +14916,6 @@ public final class SparkplugBProto {
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           this();
-          if (extensionRegistry == null) {
-            throw new java.lang.NullPointerException();
-          }
           com.google.protobuf.UnknownFieldSet.Builder unknownFields =
               com.google.protobuf.UnknownFieldSet.newBuilder();
           try {
@@ -16198,8 +14927,8 @@ public final class SparkplugBProto {
                   done = true;
                   break;
                 default: {
-                  if (!parseUnknownField(
-                      input, unknownFields, extensionRegistry, tag)) {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
                     done = true;
                   }
                   break;
@@ -16221,7 +14950,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_MetricValueExtension_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_MetricValueExtension_fieldAccessorTable
@@ -16230,7 +14958,6 @@ public final class SparkplugBProto {
         }
 
         private byte memoizedIsInitialized = -1;
-        @java.lang.Override
         public final boolean isInitialized() {
           byte isInitialized = memoizedIsInitialized;
           if (isInitialized == 1) return true;
@@ -16244,7 +14971,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public void writeTo(com.google.protobuf.CodedOutputStream output)
                             throws java.io.IOException {
           com.google.protobuf.GeneratedMessageV3
@@ -16254,7 +14980,6 @@ public final class SparkplugBProto {
           unknownFields.writeTo(output);
         }
 
-        @java.lang.Override
         public int getSerializedSize() {
           int size = memoizedSize;
           if (size != -1) return size;
@@ -16266,6 +14991,7 @@ public final class SparkplugBProto {
           return size;
         }
 
+        private static final long serialVersionUID = 0L;
         @java.lang.Override
         public boolean equals(final java.lang.Object obj) {
           if (obj == this) {
@@ -16276,10 +15002,11 @@ public final class SparkplugBProto {
           }
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension) obj;
 
-          if (!unknownFields.equals(other.unknownFields)) return false;
-          if (!getExtensionFields().equals(other.getExtensionFields()))
-            return false;
-          return true;
+          boolean result = true;
+          result = result && unknownFields.equals(other.unknownFields);
+          result = result &&
+              getExtensionFields().equals(other.getExtensionFields());
+          return result;
         }
 
         @java.lang.Override
@@ -16288,24 +15015,13 @@ public final class SparkplugBProto {
             return memoizedHashCode;
           }
           int hash = 41;
-          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (19 * hash) + getDescriptorForType().hashCode();
           hash = hashFields(hash, getExtensionFields());
           hash = (29 * hash) + unknownFields.hashCode();
           memoizedHashCode = hash;
           return hash;
         }
 
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension parseFrom(
-            java.nio.ByteBuffer data)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data);
-        }
-        public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension parseFrom(
-            java.nio.ByteBuffer data,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return PARSER.parseFrom(data, extensionRegistry);
-        }
         public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension parseFrom(
             com.google.protobuf.ByteString data)
             throws com.google.protobuf.InvalidProtocolBufferException {
@@ -16365,7 +15081,6 @@ public final class SparkplugBProto {
               .parseWithIOException(PARSER, input, extensionRegistry);
         }
 
-        @java.lang.Override
         public Builder newBuilderForType() { return newBuilder(); }
         public static Builder newBuilder() {
           return DEFAULT_INSTANCE.toBuilder();
@@ -16373,7 +15088,6 @@ public final class SparkplugBProto {
         public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension prototype) {
           return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
         }
-        @java.lang.Override
         public Builder toBuilder() {
           return this == DEFAULT_INSTANCE
               ? new Builder() : new Builder().mergeFrom(this);
@@ -16398,7 +15112,6 @@ public final class SparkplugBProto {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_MetricValueExtension_descriptor;
           }
 
-          @java.lang.Override
           protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
               internalGetFieldAccessorTable() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_MetricValueExtension_fieldAccessorTable
@@ -16421,24 +15134,20 @@ public final class SparkplugBProto {
                     .alwaysUseFieldBuilders) {
             }
           }
-          @java.lang.Override
           public Builder clear() {
             super.clear();
             return this;
           }
 
-          @java.lang.Override
           public com.google.protobuf.Descriptors.Descriptor
               getDescriptorForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_MetricValueExtension_descriptor;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension getDefaultInstanceForType() {
             return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension.getDefaultInstance();
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension build() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension result = buildPartial();
             if (!result.isInitialized()) {
@@ -16447,73 +15156,61 @@ public final class SparkplugBProto {
             return result;
           }
 
-          @java.lang.Override
           public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension buildPartial() {
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension(this);
             onBuilt();
             return result;
           }
 
-          @java.lang.Override
           public Builder clone() {
-            return super.clone();
+            return (Builder) super.clone();
           }
-          @java.lang.Override
           public Builder setField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.setField(field, value);
+              Object value) {
+            return (Builder) super.setField(field, value);
           }
-          @java.lang.Override
           public Builder clearField(
               com.google.protobuf.Descriptors.FieldDescriptor field) {
-            return super.clearField(field);
+            return (Builder) super.clearField(field);
           }
-          @java.lang.Override
           public Builder clearOneof(
               com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-            return super.clearOneof(oneof);
+            return (Builder) super.clearOneof(oneof);
           }
-          @java.lang.Override
           public Builder setRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              int index, java.lang.Object value) {
-            return super.setRepeatedField(field, index, value);
+              int index, Object value) {
+            return (Builder) super.setRepeatedField(field, index, value);
           }
-          @java.lang.Override
           public Builder addRepeatedField(
               com.google.protobuf.Descriptors.FieldDescriptor field,
-              java.lang.Object value) {
-            return super.addRepeatedField(field, value);
+              Object value) {
+            return (Builder) super.addRepeatedField(field, value);
           }
-          @java.lang.Override
           public <Type> Builder setExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension, Type> extension,
               Type value) {
-            return super.setExtension(extension, value);
+            return (Builder) super.setExtension(extension, value);
           }
-          @java.lang.Override
           public <Type> Builder setExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension, java.util.List<Type>> extension,
               int index, Type value) {
-            return super.setExtension(extension, index, value);
+            return (Builder) super.setExtension(extension, index, value);
           }
-          @java.lang.Override
           public <Type> Builder addExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension, java.util.List<Type>> extension,
               Type value) {
-            return super.addExtension(extension, value);
+            return (Builder) super.addExtension(extension, value);
           }
-          @java.lang.Override
           public <Type> Builder clearExtension(
               com.google.protobuf.GeneratedMessage.GeneratedExtension<
                   org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension, ?> extension) {
-            return super.clearExtension(extension);
+            return (Builder) super.clearExtension(extension);
           }
-          @java.lang.Override
           public Builder mergeFrom(com.google.protobuf.Message other) {
             if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension) {
               return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension)other);
@@ -16531,7 +15228,6 @@ public final class SparkplugBProto {
             return this;
           }
 
-          @java.lang.Override
           public final boolean isInitialized() {
             if (!extensionsAreInitialized()) {
               return false;
@@ -16539,7 +15235,6 @@ public final class SparkplugBProto {
             return true;
           }
 
-          @java.lang.Override
           public Builder mergeFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -16557,13 +15252,11 @@ public final class SparkplugBProto {
             }
             return this;
           }
-          @java.lang.Override
           public final Builder setUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.setUnknownFields(unknownFields);
           }
 
-          @java.lang.Override
           public final Builder mergeUnknownFields(
               final com.google.protobuf.UnknownFieldSet unknownFields) {
             return super.mergeUnknownFields(unknownFields);
@@ -16585,12 +15278,11 @@ public final class SparkplugBProto {
 
         @java.lang.Deprecated public static final com.google.protobuf.Parser<MetricValueExtension>
             PARSER = new com.google.protobuf.AbstractParser<MetricValueExtension>() {
-          @java.lang.Override
           public MetricValueExtension parsePartialFrom(
               com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
-            return new MetricValueExtension(input, extensionRegistry);
+              return new MetricValueExtension(input, extensionRegistry);
           }
         };
 
@@ -16603,7 +15295,6 @@ public final class SparkplugBProto {
           return PARSER;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension getDefaultInstanceForType() {
           return DEFAULT_INSTANCE;
         }
@@ -16614,8 +15305,7 @@ public final class SparkplugBProto {
       private int valueCase_ = 0;
       private java.lang.Object value_;
       public enum ValueCase
-          implements com.google.protobuf.Internal.EnumLite,
-              com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+          implements com.google.protobuf.Internal.EnumLite {
         INT_VALUE(10),
         LONG_VALUE(11),
         FLOAT_VALUE(12),
@@ -16632,8 +15322,6 @@ public final class SparkplugBProto {
           this.value = value;
         }
         /**
-         * @param value The number of the enum to look for.
-         * @return The enum associated with the given number.
          * @deprecated Use {@link #forNumber(int)} instead.
          */
         @java.lang.Deprecated
@@ -16676,11 +15364,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string name = 1;</code>
-       * @return Whether the name field is set.
        */
-      @java.lang.Override
       public boolean hasName() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <pre>
@@ -16688,9 +15374,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string name = 1;</code>
-       * @return The name.
        */
-      @java.lang.Override
       public java.lang.String getName() {
         java.lang.Object ref = name_;
         if (ref instanceof java.lang.String) {
@@ -16711,9 +15395,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string name = 1;</code>
-       * @return The bytes for name.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getNameBytes() {
         java.lang.Object ref = name_;
@@ -16736,11 +15418,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 alias = 2;</code>
-       * @return Whether the alias field is set.
        */
-      @java.lang.Override
       public boolean hasAlias() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
        * <pre>
@@ -16748,9 +15428,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 alias = 2;</code>
-       * @return The alias.
        */
-      @java.lang.Override
       public long getAlias() {
         return alias_;
       }
@@ -16763,11 +15441,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 timestamp = 3;</code>
-       * @return Whether the timestamp field is set.
        */
-      @java.lang.Override
       public boolean hasTimestamp() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
        * <pre>
@@ -16775,9 +15451,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 timestamp = 3;</code>
-       * @return The timestamp.
        */
-      @java.lang.Override
       public long getTimestamp() {
         return timestamp_;
       }
@@ -16790,11 +15464,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint32 datatype = 4;</code>
-       * @return Whether the datatype field is set.
        */
-      @java.lang.Override
       public boolean hasDatatype() {
-        return ((bitField0_ & 0x00000008) != 0);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
        * <pre>
@@ -16802,9 +15474,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint32 datatype = 4;</code>
-       * @return The datatype.
        */
-      @java.lang.Override
       public int getDatatype() {
         return datatype_;
       }
@@ -16817,11 +15487,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_historical = 5;</code>
-       * @return Whether the isHistorical field is set.
        */
-      @java.lang.Override
       public boolean hasIsHistorical() {
-        return ((bitField0_ & 0x00000010) != 0);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <pre>
@@ -16829,9 +15497,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_historical = 5;</code>
-       * @return The isHistorical.
        */
-      @java.lang.Override
       public boolean getIsHistorical() {
         return isHistorical_;
       }
@@ -16844,11 +15510,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_transient = 6;</code>
-       * @return Whether the isTransient field is set.
        */
-      @java.lang.Override
       public boolean hasIsTransient() {
-        return ((bitField0_ & 0x00000020) != 0);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
        * <pre>
@@ -16856,9 +15520,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_transient = 6;</code>
-       * @return The isTransient.
        */
-      @java.lang.Override
       public boolean getIsTransient() {
         return isTransient_;
       }
@@ -16871,11 +15533,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_null = 7;</code>
-       * @return Whether the isNull field is set.
        */
-      @java.lang.Override
       public boolean hasIsNull() {
-        return ((bitField0_ & 0x00000040) != 0);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
        * <pre>
@@ -16883,9 +15543,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bool is_null = 7;</code>
-       * @return The isNull.
        */
-      @java.lang.Override
       public boolean getIsNull() {
         return isNull_;
       }
@@ -16898,11 +15556,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional .org.eclipse.tahu.protobuf.Payload.MetaData metadata = 8;</code>
-       * @return Whether the metadata field is set.
        */
-      @java.lang.Override
       public boolean hasMetadata() {
-        return ((bitField0_ & 0x00000080) != 0);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
        * <pre>
@@ -16910,9 +15566,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional .org.eclipse.tahu.protobuf.Payload.MetaData metadata = 8;</code>
-       * @return The metadata.
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData getMetadata() {
         return metadata_ == null ? org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData.getDefaultInstance() : metadata_;
       }
@@ -16923,7 +15577,6 @@ public final class SparkplugBProto {
        *
        * <code>optional .org.eclipse.tahu.protobuf.Payload.MetaData metadata = 8;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaDataOrBuilder getMetadataOrBuilder() {
         return metadata_ == null ? org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData.getDefaultInstance() : metadata_;
       }
@@ -16932,42 +15585,33 @@ public final class SparkplugBProto {
       private org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet properties_;
       /**
        * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet properties = 9;</code>
-       * @return Whether the properties field is set.
        */
-      @java.lang.Override
       public boolean hasProperties() {
-        return ((bitField0_ & 0x00000100) != 0);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
        * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet properties = 9;</code>
-       * @return The properties.
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getProperties() {
         return properties_ == null ? org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.getDefaultInstance() : properties_;
       }
       /**
        * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet properties = 9;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder getPropertiesOrBuilder() {
         return properties_ == null ? org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.getDefaultInstance() : properties_;
       }
 
       public static final int INT_VALUE_FIELD_NUMBER = 10;
       /**
-       * <code>uint32 int_value = 10;</code>
-       * @return Whether the intValue field is set.
+       * <code>optional uint32 int_value = 10;</code>
        */
-      @java.lang.Override
       public boolean hasIntValue() {
         return valueCase_ == 10;
       }
       /**
-       * <code>uint32 int_value = 10;</code>
-       * @return The intValue.
+       * <code>optional uint32 int_value = 10;</code>
        */
-      @java.lang.Override
       public int getIntValue() {
         if (valueCase_ == 10) {
           return (java.lang.Integer) value_;
@@ -16977,18 +15621,14 @@ public final class SparkplugBProto {
 
       public static final int LONG_VALUE_FIELD_NUMBER = 11;
       /**
-       * <code>uint64 long_value = 11;</code>
-       * @return Whether the longValue field is set.
+       * <code>optional uint64 long_value = 11;</code>
        */
-      @java.lang.Override
       public boolean hasLongValue() {
         return valueCase_ == 11;
       }
       /**
-       * <code>uint64 long_value = 11;</code>
-       * @return The longValue.
+       * <code>optional uint64 long_value = 11;</code>
        */
-      @java.lang.Override
       public long getLongValue() {
         if (valueCase_ == 11) {
           return (java.lang.Long) value_;
@@ -16998,18 +15638,14 @@ public final class SparkplugBProto {
 
       public static final int FLOAT_VALUE_FIELD_NUMBER = 12;
       /**
-       * <code>float float_value = 12;</code>
-       * @return Whether the floatValue field is set.
+       * <code>optional float float_value = 12;</code>
        */
-      @java.lang.Override
       public boolean hasFloatValue() {
         return valueCase_ == 12;
       }
       /**
-       * <code>float float_value = 12;</code>
-       * @return The floatValue.
+       * <code>optional float float_value = 12;</code>
        */
-      @java.lang.Override
       public float getFloatValue() {
         if (valueCase_ == 12) {
           return (java.lang.Float) value_;
@@ -17019,18 +15655,14 @@ public final class SparkplugBProto {
 
       public static final int DOUBLE_VALUE_FIELD_NUMBER = 13;
       /**
-       * <code>double double_value = 13;</code>
-       * @return Whether the doubleValue field is set.
+       * <code>optional double double_value = 13;</code>
        */
-      @java.lang.Override
       public boolean hasDoubleValue() {
         return valueCase_ == 13;
       }
       /**
-       * <code>double double_value = 13;</code>
-       * @return The doubleValue.
+       * <code>optional double double_value = 13;</code>
        */
-      @java.lang.Override
       public double getDoubleValue() {
         if (valueCase_ == 13) {
           return (java.lang.Double) value_;
@@ -17040,18 +15672,14 @@ public final class SparkplugBProto {
 
       public static final int BOOLEAN_VALUE_FIELD_NUMBER = 14;
       /**
-       * <code>bool boolean_value = 14;</code>
-       * @return Whether the booleanValue field is set.
+       * <code>optional bool boolean_value = 14;</code>
        */
-      @java.lang.Override
       public boolean hasBooleanValue() {
         return valueCase_ == 14;
       }
       /**
-       * <code>bool boolean_value = 14;</code>
-       * @return The booleanValue.
+       * <code>optional bool boolean_value = 14;</code>
        */
-      @java.lang.Override
       public boolean getBooleanValue() {
         if (valueCase_ == 14) {
           return (java.lang.Boolean) value_;
@@ -17061,15 +15689,13 @@ public final class SparkplugBProto {
 
       public static final int STRING_VALUE_FIELD_NUMBER = 15;
       /**
-       * <code>string string_value = 15;</code>
-       * @return Whether the stringValue field is set.
+       * <code>optional string string_value = 15;</code>
        */
       public boolean hasStringValue() {
         return valueCase_ == 15;
       }
       /**
-       * <code>string string_value = 15;</code>
-       * @return The stringValue.
+       * <code>optional string string_value = 15;</code>
        */
       public java.lang.String getStringValue() {
         java.lang.Object ref = "";
@@ -17089,8 +15715,7 @@ public final class SparkplugBProto {
         }
       }
       /**
-       * <code>string string_value = 15;</code>
-       * @return The bytes for stringValue.
+       * <code>optional string string_value = 15;</code>
        */
       public com.google.protobuf.ByteString
           getStringValueBytes() {
@@ -17117,10 +15742,8 @@ public final class SparkplugBProto {
        * Bytes, File
        * </pre>
        *
-       * <code>bytes bytes_value = 16;</code>
-       * @return Whether the bytesValue field is set.
+       * <code>optional bytes bytes_value = 16;</code>
        */
-      @java.lang.Override
       public boolean hasBytesValue() {
         return valueCase_ == 16;
       }
@@ -17129,10 +15752,8 @@ public final class SparkplugBProto {
        * Bytes, File
        * </pre>
        *
-       * <code>bytes bytes_value = 16;</code>
-       * @return The bytesValue.
+       * <code>optional bytes bytes_value = 16;</code>
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString getBytesValue() {
         if (valueCase_ == 16) {
           return (com.google.protobuf.ByteString) value_;
@@ -17142,18 +15763,14 @@ public final class SparkplugBProto {
 
       public static final int DATASET_VALUE_FIELD_NUMBER = 17;
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
-       * @return Whether the datasetValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
        */
-      @java.lang.Override
       public boolean hasDatasetValue() {
         return valueCase_ == 17;
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
-       * @return The datasetValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet getDatasetValue() {
         if (valueCase_ == 17) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet) value_;
@@ -17161,9 +15778,8 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.getDefaultInstance();
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSetOrBuilder getDatasetValueOrBuilder() {
         if (valueCase_ == 17) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet) value_;
@@ -17173,18 +15789,14 @@ public final class SparkplugBProto {
 
       public static final int TEMPLATE_VALUE_FIELD_NUMBER = 18;
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
-       * @return Whether the templateValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
        */
-      @java.lang.Override
       public boolean hasTemplateValue() {
         return valueCase_ == 18;
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
-       * @return The templateValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template getTemplateValue() {
         if (valueCase_ == 18) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template) value_;
@@ -17192,9 +15804,8 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.getDefaultInstance();
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.TemplateOrBuilder getTemplateValueOrBuilder() {
         if (valueCase_ == 18) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template) value_;
@@ -17204,18 +15815,14 @@ public final class SparkplugBProto {
 
       public static final int EXTENSION_VALUE_FIELD_NUMBER = 19;
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
-       * @return Whether the extensionValue field is set.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
        */
-      @java.lang.Override
       public boolean hasExtensionValue() {
         return valueCase_ == 19;
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
-       * @return The extensionValue.
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension getExtensionValue() {
         if (valueCase_ == 19) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension) value_;
@@ -17223,9 +15830,8 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension.getDefaultInstance();
       }
       /**
-       * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+       * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
        */
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtensionOrBuilder getExtensionValueOrBuilder() {
         if (valueCase_ == 19) {
            return (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension) value_;
@@ -17234,7 +15840,6 @@ public final class SparkplugBProto {
       }
 
       private byte memoizedIsInitialized = -1;
-      @java.lang.Override
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized == 1) return true;
@@ -17274,34 +15879,33 @@ public final class SparkplugBProto {
         return true;
       }
 
-      @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           output.writeUInt64(2, alias_);
         }
-        if (((bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           output.writeUInt64(3, timestamp_);
         }
-        if (((bitField0_ & 0x00000008) != 0)) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           output.writeUInt32(4, datatype_);
         }
-        if (((bitField0_ & 0x00000010) != 0)) {
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
           output.writeBool(5, isHistorical_);
         }
-        if (((bitField0_ & 0x00000020) != 0)) {
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
           output.writeBool(6, isTransient_);
         }
-        if (((bitField0_ & 0x00000040) != 0)) {
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
           output.writeBool(7, isNull_);
         }
-        if (((bitField0_ & 0x00000080) != 0)) {
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
           output.writeMessage(8, getMetadata());
         }
-        if (((bitField0_ & 0x00000100) != 0)) {
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
           output.writeMessage(9, getProperties());
         }
         if (valueCase_ == 10) {
@@ -17329,7 +15933,7 @@ public final class SparkplugBProto {
         }
         if (valueCase_ == 16) {
           output.writeBytes(
-              16, (com.google.protobuf.ByteString) value_);
+              16, (com.google.protobuf.ByteString)((com.google.protobuf.ByteString) value_));
         }
         if (valueCase_ == 17) {
           output.writeMessage(17, (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet) value_);
@@ -17343,44 +15947,43 @@ public final class SparkplugBProto {
         unknownFields.writeTo(output);
       }
 
-      @java.lang.Override
       public int getSerializedSize() {
         int size = memoizedSize;
         if (size != -1) return size;
 
         size = 0;
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
             .computeUInt64Size(2, alias_);
         }
-        if (((bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
             .computeUInt64Size(3, timestamp_);
         }
-        if (((bitField0_ & 0x00000008) != 0)) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
             .computeUInt32Size(4, datatype_);
         }
-        if (((bitField0_ & 0x00000010) != 0)) {
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(5, isHistorical_);
         }
-        if (((bitField0_ & 0x00000020) != 0)) {
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(6, isTransient_);
         }
-        if (((bitField0_ & 0x00000040) != 0)) {
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(7, isNull_);
         }
-        if (((bitField0_ & 0x00000080) != 0)) {
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(8, getMetadata());
         }
-        if (((bitField0_ & 0x00000100) != 0)) {
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(9, getProperties());
         }
@@ -17415,7 +16018,7 @@ public final class SparkplugBProto {
         if (valueCase_ == 16) {
           size += com.google.protobuf.CodedOutputStream
             .computeBytesSize(
-                16, (com.google.protobuf.ByteString) value_);
+                16, (com.google.protobuf.ByteString)((com.google.protobuf.ByteString) value_));
         }
         if (valueCase_ == 17) {
           size += com.google.protobuf.CodedOutputStream
@@ -17434,6 +16037,7 @@ public final class SparkplugBProto {
         return size;
       }
 
+      private static final long serialVersionUID = 0L;
       @java.lang.Override
       public boolean equals(final java.lang.Object obj) {
         if (obj == this) {
@@ -17444,100 +16048,105 @@ public final class SparkplugBProto {
         }
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric) obj;
 
-        if (hasName() != other.hasName()) return false;
+        boolean result = true;
+        result = result && (hasName() == other.hasName());
         if (hasName()) {
-          if (!getName()
-              .equals(other.getName())) return false;
+          result = result && getName()
+              .equals(other.getName());
         }
-        if (hasAlias() != other.hasAlias()) return false;
+        result = result && (hasAlias() == other.hasAlias());
         if (hasAlias()) {
-          if (getAlias()
-              != other.getAlias()) return false;
+          result = result && (getAlias()
+              == other.getAlias());
         }
-        if (hasTimestamp() != other.hasTimestamp()) return false;
+        result = result && (hasTimestamp() == other.hasTimestamp());
         if (hasTimestamp()) {
-          if (getTimestamp()
-              != other.getTimestamp()) return false;
+          result = result && (getTimestamp()
+              == other.getTimestamp());
         }
-        if (hasDatatype() != other.hasDatatype()) return false;
+        result = result && (hasDatatype() == other.hasDatatype());
         if (hasDatatype()) {
-          if (getDatatype()
-              != other.getDatatype()) return false;
+          result = result && (getDatatype()
+              == other.getDatatype());
         }
-        if (hasIsHistorical() != other.hasIsHistorical()) return false;
+        result = result && (hasIsHistorical() == other.hasIsHistorical());
         if (hasIsHistorical()) {
-          if (getIsHistorical()
-              != other.getIsHistorical()) return false;
+          result = result && (getIsHistorical()
+              == other.getIsHistorical());
         }
-        if (hasIsTransient() != other.hasIsTransient()) return false;
+        result = result && (hasIsTransient() == other.hasIsTransient());
         if (hasIsTransient()) {
-          if (getIsTransient()
-              != other.getIsTransient()) return false;
+          result = result && (getIsTransient()
+              == other.getIsTransient());
         }
-        if (hasIsNull() != other.hasIsNull()) return false;
+        result = result && (hasIsNull() == other.hasIsNull());
         if (hasIsNull()) {
-          if (getIsNull()
-              != other.getIsNull()) return false;
+          result = result && (getIsNull()
+              == other.getIsNull());
         }
-        if (hasMetadata() != other.hasMetadata()) return false;
+        result = result && (hasMetadata() == other.hasMetadata());
         if (hasMetadata()) {
-          if (!getMetadata()
-              .equals(other.getMetadata())) return false;
+          result = result && getMetadata()
+              .equals(other.getMetadata());
         }
-        if (hasProperties() != other.hasProperties()) return false;
+        result = result && (hasProperties() == other.hasProperties());
         if (hasProperties()) {
-          if (!getProperties()
-              .equals(other.getProperties())) return false;
+          result = result && getProperties()
+              .equals(other.getProperties());
         }
-        if (!getValueCase().equals(other.getValueCase())) return false;
+        result = result && getValueCase().equals(
+            other.getValueCase());
+        if (!result) return false;
         switch (valueCase_) {
           case 10:
-            if (getIntValue()
-                != other.getIntValue()) return false;
+            result = result && (getIntValue()
+                == other.getIntValue());
             break;
           case 11:
-            if (getLongValue()
-                != other.getLongValue()) return false;
+            result = result && (getLongValue()
+                == other.getLongValue());
             break;
           case 12:
-            if (java.lang.Float.floatToIntBits(getFloatValue())
-                != java.lang.Float.floatToIntBits(
-                    other.getFloatValue())) return false;
+            result = result && (
+                java.lang.Float.floatToIntBits(getFloatValue())
+                == java.lang.Float.floatToIntBits(
+                    other.getFloatValue()));
             break;
           case 13:
-            if (java.lang.Double.doubleToLongBits(getDoubleValue())
-                != java.lang.Double.doubleToLongBits(
-                    other.getDoubleValue())) return false;
+            result = result && (
+                java.lang.Double.doubleToLongBits(getDoubleValue())
+                == java.lang.Double.doubleToLongBits(
+                    other.getDoubleValue()));
             break;
           case 14:
-            if (getBooleanValue()
-                != other.getBooleanValue()) return false;
+            result = result && (getBooleanValue()
+                == other.getBooleanValue());
             break;
           case 15:
-            if (!getStringValue()
-                .equals(other.getStringValue())) return false;
+            result = result && getStringValue()
+                .equals(other.getStringValue());
             break;
           case 16:
-            if (!getBytesValue()
-                .equals(other.getBytesValue())) return false;
+            result = result && getBytesValue()
+                .equals(other.getBytesValue());
             break;
           case 17:
-            if (!getDatasetValue()
-                .equals(other.getDatasetValue())) return false;
+            result = result && getDatasetValue()
+                .equals(other.getDatasetValue());
             break;
           case 18:
-            if (!getTemplateValue()
-                .equals(other.getTemplateValue())) return false;
+            result = result && getTemplateValue()
+                .equals(other.getTemplateValue());
             break;
           case 19:
-            if (!getExtensionValue()
-                .equals(other.getExtensionValue())) return false;
+            result = result && getExtensionValue()
+                .equals(other.getExtensionValue());
             break;
           case 0:
           default:
         }
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        return true;
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
       }
 
       @java.lang.Override
@@ -17546,7 +16155,7 @@ public final class SparkplugBProto {
           return memoizedHashCode;
         }
         int hash = 41;
-        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (19 * hash) + getDescriptorForType().hashCode();
         if (hasName()) {
           hash = (37 * hash) + NAME_FIELD_NUMBER;
           hash = (53 * hash) + getName().hashCode();
@@ -17642,17 +16251,6 @@ public final class SparkplugBProto {
       }
 
       public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric parseFrom(
-          java.nio.ByteBuffer data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric parseFrom(
-          java.nio.ByteBuffer data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
@@ -17711,7 +16309,6 @@ public final class SparkplugBProto {
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
 
-      @java.lang.Override
       public Builder newBuilderForType() { return newBuilder(); }
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
@@ -17719,7 +16316,6 @@ public final class SparkplugBProto {
       public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
-      @java.lang.Override
       public Builder toBuilder() {
         return this == DEFAULT_INSTANCE
             ? new Builder() : new Builder().mergeFrom(this);
@@ -17743,7 +16339,6 @@ public final class SparkplugBProto {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_descriptor;
         }
 
-        @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_fieldAccessorTable
@@ -17768,7 +16363,6 @@ public final class SparkplugBProto {
             getPropertiesFieldBuilder();
           }
         }
-        @java.lang.Override
         public Builder clear() {
           super.clear();
           name_ = "";
@@ -17802,18 +16396,15 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_Metric_descriptor;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric getDefaultInstanceForType() {
           return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.getDefaultInstance();
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric build() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric result = buildPartial();
           if (!result.isInitialized()) {
@@ -17822,54 +16413,53 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric buildPartial() {
           org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
-          if (((from_bitField0_ & 0x00000001) != 0)) {
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
             to_bitField0_ |= 0x00000001;
           }
           result.name_ = name_;
-          if (((from_bitField0_ & 0x00000002) != 0)) {
-            result.alias_ = alias_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
             to_bitField0_ |= 0x00000002;
           }
-          if (((from_bitField0_ & 0x00000004) != 0)) {
-            result.timestamp_ = timestamp_;
+          result.alias_ = alias_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
             to_bitField0_ |= 0x00000004;
           }
-          if (((from_bitField0_ & 0x00000008) != 0)) {
-            result.datatype_ = datatype_;
+          result.timestamp_ = timestamp_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
             to_bitField0_ |= 0x00000008;
           }
-          if (((from_bitField0_ & 0x00000010) != 0)) {
-            result.isHistorical_ = isHistorical_;
+          result.datatype_ = datatype_;
+          if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
             to_bitField0_ |= 0x00000010;
           }
-          if (((from_bitField0_ & 0x00000020) != 0)) {
-            result.isTransient_ = isTransient_;
+          result.isHistorical_ = isHistorical_;
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
             to_bitField0_ |= 0x00000020;
           }
-          if (((from_bitField0_ & 0x00000040) != 0)) {
-            result.isNull_ = isNull_;
+          result.isTransient_ = isTransient_;
+          if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
             to_bitField0_ |= 0x00000040;
           }
-          if (((from_bitField0_ & 0x00000080) != 0)) {
-            if (metadataBuilder_ == null) {
-              result.metadata_ = metadata_;
-            } else {
-              result.metadata_ = metadataBuilder_.build();
-            }
+          result.isNull_ = isNull_;
+          if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
             to_bitField0_ |= 0x00000080;
           }
-          if (((from_bitField0_ & 0x00000100) != 0)) {
-            if (propertiesBuilder_ == null) {
-              result.properties_ = properties_;
-            } else {
-              result.properties_ = propertiesBuilder_.build();
-            }
+          if (metadataBuilder_ == null) {
+            result.metadata_ = metadata_;
+          } else {
+            result.metadata_ = metadataBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
             to_bitField0_ |= 0x00000100;
+          }
+          if (propertiesBuilder_ == null) {
+            result.properties_ = properties_;
+          } else {
+            result.properties_ = propertiesBuilder_.build();
           }
           if (valueCase_ == 10) {
             result.value_ = value_;
@@ -17919,39 +16509,32 @@ public final class SparkplugBProto {
           return result;
         }
 
-        @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
-        @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
+            Object value) {
+          return (Builder) super.setField(field, value);
         }
-        @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
-        @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
-        @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+            int index, Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
         }
-        @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+            Object value) {
+          return (Builder) super.addRepeatedField(field, value);
         }
-        @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric) {
             return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric)other);
@@ -18044,7 +16627,6 @@ public final class SparkplugBProto {
           return this;
         }
 
-        @java.lang.Override
         public final boolean isInitialized() {
           if (hasMetadata()) {
             if (!getMetadata().isInitialized()) {
@@ -18074,7 +16656,6 @@ public final class SparkplugBProto {
           return true;
         }
 
-        @java.lang.Override
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -18116,10 +16697,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string name = 1;</code>
-         * @return Whether the name field is set.
          */
         public boolean hasName() {
-          return ((bitField0_ & 0x00000001) != 0);
+          return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
          * <pre>
@@ -18127,7 +16707,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string name = 1;</code>
-         * @return The name.
          */
         public java.lang.String getName() {
           java.lang.Object ref = name_;
@@ -18149,7 +16728,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string name = 1;</code>
-         * @return The bytes for name.
          */
         public com.google.protobuf.ByteString
             getNameBytes() {
@@ -18170,8 +16748,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string name = 1;</code>
-         * @param value The name to set.
-         * @return This builder for chaining.
          */
         public Builder setName(
             java.lang.String value) {
@@ -18189,7 +16765,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string name = 1;</code>
-         * @return This builder for chaining.
          */
         public Builder clearName() {
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -18203,8 +16778,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional string name = 1;</code>
-         * @param value The bytes for name to set.
-         * @return This builder for chaining.
          */
         public Builder setNameBytes(
             com.google.protobuf.ByteString value) {
@@ -18224,11 +16797,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 alias = 2;</code>
-         * @return Whether the alias field is set.
          */
-        @java.lang.Override
         public boolean hasAlias() {
-          return ((bitField0_ & 0x00000002) != 0);
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
          * <pre>
@@ -18236,9 +16807,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 alias = 2;</code>
-         * @return The alias.
          */
-        @java.lang.Override
         public long getAlias() {
           return alias_;
         }
@@ -18248,8 +16817,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 alias = 2;</code>
-         * @param value The alias to set.
-         * @return This builder for chaining.
          */
         public Builder setAlias(long value) {
           bitField0_ |= 0x00000002;
@@ -18263,7 +16830,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 alias = 2;</code>
-         * @return This builder for chaining.
          */
         public Builder clearAlias() {
           bitField0_ = (bitField0_ & ~0x00000002);
@@ -18279,11 +16845,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 timestamp = 3;</code>
-         * @return Whether the timestamp field is set.
          */
-        @java.lang.Override
         public boolean hasTimestamp() {
-          return ((bitField0_ & 0x00000004) != 0);
+          return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         /**
          * <pre>
@@ -18291,9 +16855,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 timestamp = 3;</code>
-         * @return The timestamp.
          */
-        @java.lang.Override
         public long getTimestamp() {
           return timestamp_;
         }
@@ -18303,8 +16865,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 timestamp = 3;</code>
-         * @param value The timestamp to set.
-         * @return This builder for chaining.
          */
         public Builder setTimestamp(long value) {
           bitField0_ |= 0x00000004;
@@ -18318,7 +16878,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint64 timestamp = 3;</code>
-         * @return This builder for chaining.
          */
         public Builder clearTimestamp() {
           bitField0_ = (bitField0_ & ~0x00000004);
@@ -18334,11 +16893,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint32 datatype = 4;</code>
-         * @return Whether the datatype field is set.
          */
-        @java.lang.Override
         public boolean hasDatatype() {
-          return ((bitField0_ & 0x00000008) != 0);
+          return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         /**
          * <pre>
@@ -18346,9 +16903,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint32 datatype = 4;</code>
-         * @return The datatype.
          */
-        @java.lang.Override
         public int getDatatype() {
           return datatype_;
         }
@@ -18358,8 +16913,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint32 datatype = 4;</code>
-         * @param value The datatype to set.
-         * @return This builder for chaining.
          */
         public Builder setDatatype(int value) {
           bitField0_ |= 0x00000008;
@@ -18373,7 +16926,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional uint32 datatype = 4;</code>
-         * @return This builder for chaining.
          */
         public Builder clearDatatype() {
           bitField0_ = (bitField0_ & ~0x00000008);
@@ -18389,11 +16941,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_historical = 5;</code>
-         * @return Whether the isHistorical field is set.
          */
-        @java.lang.Override
         public boolean hasIsHistorical() {
-          return ((bitField0_ & 0x00000010) != 0);
+          return ((bitField0_ & 0x00000010) == 0x00000010);
         }
         /**
          * <pre>
@@ -18401,9 +16951,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_historical = 5;</code>
-         * @return The isHistorical.
          */
-        @java.lang.Override
         public boolean getIsHistorical() {
           return isHistorical_;
         }
@@ -18413,8 +16961,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_historical = 5;</code>
-         * @param value The isHistorical to set.
-         * @return This builder for chaining.
          */
         public Builder setIsHistorical(boolean value) {
           bitField0_ |= 0x00000010;
@@ -18428,7 +16974,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_historical = 5;</code>
-         * @return This builder for chaining.
          */
         public Builder clearIsHistorical() {
           bitField0_ = (bitField0_ & ~0x00000010);
@@ -18444,11 +16989,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_transient = 6;</code>
-         * @return Whether the isTransient field is set.
          */
-        @java.lang.Override
         public boolean hasIsTransient() {
-          return ((bitField0_ & 0x00000020) != 0);
+          return ((bitField0_ & 0x00000020) == 0x00000020);
         }
         /**
          * <pre>
@@ -18456,9 +16999,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_transient = 6;</code>
-         * @return The isTransient.
          */
-        @java.lang.Override
         public boolean getIsTransient() {
           return isTransient_;
         }
@@ -18468,8 +17009,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_transient = 6;</code>
-         * @param value The isTransient to set.
-         * @return This builder for chaining.
          */
         public Builder setIsTransient(boolean value) {
           bitField0_ |= 0x00000020;
@@ -18483,7 +17022,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_transient = 6;</code>
-         * @return This builder for chaining.
          */
         public Builder clearIsTransient() {
           bitField0_ = (bitField0_ & ~0x00000020);
@@ -18499,11 +17037,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_null = 7;</code>
-         * @return Whether the isNull field is set.
          */
-        @java.lang.Override
         public boolean hasIsNull() {
-          return ((bitField0_ & 0x00000040) != 0);
+          return ((bitField0_ & 0x00000040) == 0x00000040);
         }
         /**
          * <pre>
@@ -18511,9 +17047,7 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_null = 7;</code>
-         * @return The isNull.
          */
-        @java.lang.Override
         public boolean getIsNull() {
           return isNull_;
         }
@@ -18523,8 +17057,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_null = 7;</code>
-         * @param value The isNull to set.
-         * @return This builder for chaining.
          */
         public Builder setIsNull(boolean value) {
           bitField0_ |= 0x00000040;
@@ -18538,7 +17070,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional bool is_null = 7;</code>
-         * @return This builder for chaining.
          */
         public Builder clearIsNull() {
           bitField0_ = (bitField0_ & ~0x00000040);
@@ -18547,7 +17078,7 @@ public final class SparkplugBProto {
           return this;
         }
 
-        private org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData metadata_;
+        private org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData metadata_ = null;
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaDataOrBuilder> metadataBuilder_;
         /**
@@ -18556,10 +17087,9 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional .org.eclipse.tahu.protobuf.Payload.MetaData metadata = 8;</code>
-         * @return Whether the metadata field is set.
          */
         public boolean hasMetadata() {
-          return ((bitField0_ & 0x00000080) != 0);
+          return ((bitField0_ & 0x00000080) == 0x00000080);
         }
         /**
          * <pre>
@@ -18567,7 +17097,6 @@ public final class SparkplugBProto {
          * </pre>
          *
          * <code>optional .org.eclipse.tahu.protobuf.Payload.MetaData metadata = 8;</code>
-         * @return The metadata.
          */
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData getMetadata() {
           if (metadataBuilder_ == null) {
@@ -18623,7 +17152,7 @@ public final class SparkplugBProto {
          */
         public Builder mergeMetadata(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData value) {
           if (metadataBuilder_ == null) {
-            if (((bitField0_ & 0x00000080) != 0) &&
+            if (((bitField0_ & 0x00000080) == 0x00000080) &&
                 metadata_ != null &&
                 metadata_ != org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetaData.getDefaultInstance()) {
               metadata_ =
@@ -18703,19 +17232,17 @@ public final class SparkplugBProto {
           return metadataBuilder_;
         }
 
-        private org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet properties_;
+        private org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet properties_ = null;
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySetOrBuilder> propertiesBuilder_;
         /**
          * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet properties = 9;</code>
-         * @return Whether the properties field is set.
          */
         public boolean hasProperties() {
-          return ((bitField0_ & 0x00000100) != 0);
+          return ((bitField0_ & 0x00000100) == 0x00000100);
         }
         /**
          * <code>optional .org.eclipse.tahu.protobuf.Payload.PropertySet properties = 9;</code>
-         * @return The properties.
          */
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet getProperties() {
           if (propertiesBuilder_ == null) {
@@ -18759,7 +17286,7 @@ public final class SparkplugBProto {
          */
         public Builder mergeProperties(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet value) {
           if (propertiesBuilder_ == null) {
-            if (((bitField0_ & 0x00000100) != 0) &&
+            if (((bitField0_ & 0x00000100) == 0x00000100) &&
                 properties_ != null &&
                 properties_ != org.eclipse.tahu.protobuf.SparkplugBProto.Payload.PropertySet.getDefaultInstance()) {
               properties_ =
@@ -18824,15 +17351,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>uint32 int_value = 10;</code>
-         * @return Whether the intValue field is set.
+         * <code>optional uint32 int_value = 10;</code>
          */
         public boolean hasIntValue() {
           return valueCase_ == 10;
         }
         /**
-         * <code>uint32 int_value = 10;</code>
-         * @return The intValue.
+         * <code>optional uint32 int_value = 10;</code>
          */
         public int getIntValue() {
           if (valueCase_ == 10) {
@@ -18841,9 +17366,7 @@ public final class SparkplugBProto {
           return 0;
         }
         /**
-         * <code>uint32 int_value = 10;</code>
-         * @param value The intValue to set.
-         * @return This builder for chaining.
+         * <code>optional uint32 int_value = 10;</code>
          */
         public Builder setIntValue(int value) {
           valueCase_ = 10;
@@ -18852,8 +17375,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>uint32 int_value = 10;</code>
-         * @return This builder for chaining.
+         * <code>optional uint32 int_value = 10;</code>
          */
         public Builder clearIntValue() {
           if (valueCase_ == 10) {
@@ -18865,15 +17387,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>uint64 long_value = 11;</code>
-         * @return Whether the longValue field is set.
+         * <code>optional uint64 long_value = 11;</code>
          */
         public boolean hasLongValue() {
           return valueCase_ == 11;
         }
         /**
-         * <code>uint64 long_value = 11;</code>
-         * @return The longValue.
+         * <code>optional uint64 long_value = 11;</code>
          */
         public long getLongValue() {
           if (valueCase_ == 11) {
@@ -18882,9 +17402,7 @@ public final class SparkplugBProto {
           return 0L;
         }
         /**
-         * <code>uint64 long_value = 11;</code>
-         * @param value The longValue to set.
-         * @return This builder for chaining.
+         * <code>optional uint64 long_value = 11;</code>
          */
         public Builder setLongValue(long value) {
           valueCase_ = 11;
@@ -18893,8 +17411,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>uint64 long_value = 11;</code>
-         * @return This builder for chaining.
+         * <code>optional uint64 long_value = 11;</code>
          */
         public Builder clearLongValue() {
           if (valueCase_ == 11) {
@@ -18906,15 +17423,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>float float_value = 12;</code>
-         * @return Whether the floatValue field is set.
+         * <code>optional float float_value = 12;</code>
          */
         public boolean hasFloatValue() {
           return valueCase_ == 12;
         }
         /**
-         * <code>float float_value = 12;</code>
-         * @return The floatValue.
+         * <code>optional float float_value = 12;</code>
          */
         public float getFloatValue() {
           if (valueCase_ == 12) {
@@ -18923,9 +17438,7 @@ public final class SparkplugBProto {
           return 0F;
         }
         /**
-         * <code>float float_value = 12;</code>
-         * @param value The floatValue to set.
-         * @return This builder for chaining.
+         * <code>optional float float_value = 12;</code>
          */
         public Builder setFloatValue(float value) {
           valueCase_ = 12;
@@ -18934,8 +17447,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>float float_value = 12;</code>
-         * @return This builder for chaining.
+         * <code>optional float float_value = 12;</code>
          */
         public Builder clearFloatValue() {
           if (valueCase_ == 12) {
@@ -18947,15 +17459,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>double double_value = 13;</code>
-         * @return Whether the doubleValue field is set.
+         * <code>optional double double_value = 13;</code>
          */
         public boolean hasDoubleValue() {
           return valueCase_ == 13;
         }
         /**
-         * <code>double double_value = 13;</code>
-         * @return The doubleValue.
+         * <code>optional double double_value = 13;</code>
          */
         public double getDoubleValue() {
           if (valueCase_ == 13) {
@@ -18964,9 +17474,7 @@ public final class SparkplugBProto {
           return 0D;
         }
         /**
-         * <code>double double_value = 13;</code>
-         * @param value The doubleValue to set.
-         * @return This builder for chaining.
+         * <code>optional double double_value = 13;</code>
          */
         public Builder setDoubleValue(double value) {
           valueCase_ = 13;
@@ -18975,8 +17483,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>double double_value = 13;</code>
-         * @return This builder for chaining.
+         * <code>optional double double_value = 13;</code>
          */
         public Builder clearDoubleValue() {
           if (valueCase_ == 13) {
@@ -18988,15 +17495,13 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>bool boolean_value = 14;</code>
-         * @return Whether the booleanValue field is set.
+         * <code>optional bool boolean_value = 14;</code>
          */
         public boolean hasBooleanValue() {
           return valueCase_ == 14;
         }
         /**
-         * <code>bool boolean_value = 14;</code>
-         * @return The booleanValue.
+         * <code>optional bool boolean_value = 14;</code>
          */
         public boolean getBooleanValue() {
           if (valueCase_ == 14) {
@@ -19005,9 +17510,7 @@ public final class SparkplugBProto {
           return false;
         }
         /**
-         * <code>bool boolean_value = 14;</code>
-         * @param value The booleanValue to set.
-         * @return This builder for chaining.
+         * <code>optional bool boolean_value = 14;</code>
          */
         public Builder setBooleanValue(boolean value) {
           valueCase_ = 14;
@@ -19016,8 +17519,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>bool boolean_value = 14;</code>
-         * @return This builder for chaining.
+         * <code>optional bool boolean_value = 14;</code>
          */
         public Builder clearBooleanValue() {
           if (valueCase_ == 14) {
@@ -19029,18 +17531,14 @@ public final class SparkplugBProto {
         }
 
         /**
-         * <code>string string_value = 15;</code>
-         * @return Whether the stringValue field is set.
+         * <code>optional string string_value = 15;</code>
          */
-        @java.lang.Override
         public boolean hasStringValue() {
           return valueCase_ == 15;
         }
         /**
-         * <code>string string_value = 15;</code>
-         * @return The stringValue.
+         * <code>optional string string_value = 15;</code>
          */
-        @java.lang.Override
         public java.lang.String getStringValue() {
           java.lang.Object ref = "";
           if (valueCase_ == 15) {
@@ -19061,10 +17559,8 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>string string_value = 15;</code>
-         * @return The bytes for stringValue.
+         * <code>optional string string_value = 15;</code>
          */
-        @java.lang.Override
         public com.google.protobuf.ByteString
             getStringValueBytes() {
           java.lang.Object ref = "";
@@ -19084,9 +17580,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>string string_value = 15;</code>
-         * @param value The stringValue to set.
-         * @return This builder for chaining.
+         * <code>optional string string_value = 15;</code>
          */
         public Builder setStringValue(
             java.lang.String value) {
@@ -19099,8 +17593,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>string string_value = 15;</code>
-         * @return This builder for chaining.
+         * <code>optional string string_value = 15;</code>
          */
         public Builder clearStringValue() {
           if (valueCase_ == 15) {
@@ -19111,9 +17604,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>string string_value = 15;</code>
-         * @param value The bytes for stringValue to set.
-         * @return This builder for chaining.
+         * <code>optional string string_value = 15;</code>
          */
         public Builder setStringValueBytes(
             com.google.protobuf.ByteString value) {
@@ -19131,8 +17622,7 @@ public final class SparkplugBProto {
          * Bytes, File
          * </pre>
          *
-         * <code>bytes bytes_value = 16;</code>
-         * @return Whether the bytesValue field is set.
+         * <code>optional bytes bytes_value = 16;</code>
          */
         public boolean hasBytesValue() {
           return valueCase_ == 16;
@@ -19142,8 +17632,7 @@ public final class SparkplugBProto {
          * Bytes, File
          * </pre>
          *
-         * <code>bytes bytes_value = 16;</code>
-         * @return The bytesValue.
+         * <code>optional bytes bytes_value = 16;</code>
          */
         public com.google.protobuf.ByteString getBytesValue() {
           if (valueCase_ == 16) {
@@ -19156,9 +17645,7 @@ public final class SparkplugBProto {
          * Bytes, File
          * </pre>
          *
-         * <code>bytes bytes_value = 16;</code>
-         * @param value The bytesValue to set.
-         * @return This builder for chaining.
+         * <code>optional bytes bytes_value = 16;</code>
          */
         public Builder setBytesValue(com.google.protobuf.ByteString value) {
           if (value == null) {
@@ -19174,8 +17661,7 @@ public final class SparkplugBProto {
          * Bytes, File
          * </pre>
          *
-         * <code>bytes bytes_value = 16;</code>
-         * @return This builder for chaining.
+         * <code>optional bytes bytes_value = 16;</code>
          */
         public Builder clearBytesValue() {
           if (valueCase_ == 16) {
@@ -19189,18 +17675,14 @@ public final class SparkplugBProto {
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSetOrBuilder> datasetValueBuilder_;
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
-         * @return Whether the datasetValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
-        @java.lang.Override
         public boolean hasDatasetValue() {
           return valueCase_ == 17;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
-         * @return The datasetValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet getDatasetValue() {
           if (datasetValueBuilder_ == null) {
             if (valueCase_ == 17) {
@@ -19215,7 +17697,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
         public Builder setDatasetValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet value) {
           if (datasetValueBuilder_ == null) {
@@ -19231,7 +17713,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
         public Builder setDatasetValue(
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Builder builderForValue) {
@@ -19245,7 +17727,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
         public Builder mergeDatasetValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet value) {
           if (datasetValueBuilder_ == null) {
@@ -19267,7 +17749,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
         public Builder clearDatasetValue() {
           if (datasetValueBuilder_ == null) {
@@ -19286,15 +17768,14 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Builder getDatasetValueBuilder() {
           return getDatasetValueFieldBuilder().getBuilder();
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSetOrBuilder getDatasetValueOrBuilder() {
           if ((valueCase_ == 17) && (datasetValueBuilder_ != null)) {
             return datasetValueBuilder_.getMessageOrBuilder();
@@ -19306,7 +17787,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.DataSet dataset_value = 17;</code>
          */
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSet.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.DataSetOrBuilder> 
@@ -19330,18 +17811,14 @@ public final class SparkplugBProto {
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.TemplateOrBuilder> templateValueBuilder_;
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
-         * @return Whether the templateValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
-        @java.lang.Override
         public boolean hasTemplateValue() {
           return valueCase_ == 18;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
-         * @return The templateValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template getTemplateValue() {
           if (templateValueBuilder_ == null) {
             if (valueCase_ == 18) {
@@ -19356,7 +17833,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
         public Builder setTemplateValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template value) {
           if (templateValueBuilder_ == null) {
@@ -19372,7 +17849,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
         public Builder setTemplateValue(
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Builder builderForValue) {
@@ -19386,7 +17863,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
         public Builder mergeTemplateValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template value) {
           if (templateValueBuilder_ == null) {
@@ -19408,7 +17885,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
         public Builder clearTemplateValue() {
           if (templateValueBuilder_ == null) {
@@ -19427,15 +17904,14 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Builder getTemplateValueBuilder() {
           return getTemplateValueFieldBuilder().getBuilder();
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.TemplateOrBuilder getTemplateValueOrBuilder() {
           if ((valueCase_ == 18) && (templateValueBuilder_ != null)) {
             return templateValueBuilder_.getMessageOrBuilder();
@@ -19447,7 +17923,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Template template_value = 18;</code>
          */
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Template.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.TemplateOrBuilder> 
@@ -19471,18 +17947,14 @@ public final class SparkplugBProto {
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtensionOrBuilder> extensionValueBuilder_;
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
-         * @return Whether the extensionValue field is set.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
-        @java.lang.Override
         public boolean hasExtensionValue() {
           return valueCase_ == 19;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
-         * @return The extensionValue.
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension getExtensionValue() {
           if (extensionValueBuilder_ == null) {
             if (valueCase_ == 19) {
@@ -19497,7 +17969,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
         public Builder setExtensionValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension value) {
           if (extensionValueBuilder_ == null) {
@@ -19513,7 +17985,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
         public Builder setExtensionValue(
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension.Builder builderForValue) {
@@ -19527,7 +17999,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
         public Builder mergeExtensionValue(org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension value) {
           if (extensionValueBuilder_ == null) {
@@ -19549,7 +18021,7 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
         public Builder clearExtensionValue() {
           if (extensionValueBuilder_ == null) {
@@ -19568,15 +18040,14 @@ public final class SparkplugBProto {
           return this;
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension.Builder getExtensionValueBuilder() {
           return getExtensionValueFieldBuilder().getBuilder();
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
-        @java.lang.Override
         public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtensionOrBuilder getExtensionValueOrBuilder() {
           if ((valueCase_ == 19) && (extensionValueBuilder_ != null)) {
             return extensionValueBuilder_.getMessageOrBuilder();
@@ -19588,7 +18059,7 @@ public final class SparkplugBProto {
           }
         }
         /**
-         * <code>.org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
+         * <code>optional .org.eclipse.tahu.protobuf.Payload.Metric.MetricValueExtension extension_value = 19;</code>
          */
         private com.google.protobuf.SingleFieldBuilderV3<
             org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtension.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.MetricValueExtensionOrBuilder> 
@@ -19608,13 +18079,11 @@ public final class SparkplugBProto {
           onChanged();;
           return extensionValueBuilder_;
         }
-        @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.setUnknownFields(unknownFields);
         }
 
-        @java.lang.Override
         public final Builder mergeUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.mergeUnknownFields(unknownFields);
@@ -19636,12 +18105,11 @@ public final class SparkplugBProto {
 
       @java.lang.Deprecated public static final com.google.protobuf.Parser<Metric>
           PARSER = new com.google.protobuf.AbstractParser<Metric>() {
-        @java.lang.Override
         public Metric parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new Metric(input, extensionRegistry);
+            return new Metric(input, extensionRegistry);
         }
       };
 
@@ -19654,7 +18122,6 @@ public final class SparkplugBProto {
         return PARSER;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
@@ -19670,11 +18137,9 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional uint64 timestamp = 1;</code>
-     * @return Whether the timestamp field is set.
      */
-    @java.lang.Override
     public boolean hasTimestamp() {
-      return ((bitField0_ & 0x00000001) != 0);
+      return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
      * <pre>
@@ -19682,9 +18147,7 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional uint64 timestamp = 1;</code>
-     * @return The timestamp.
      */
-    @java.lang.Override
     public long getTimestamp() {
       return timestamp_;
     }
@@ -19698,7 +18161,6 @@ public final class SparkplugBProto {
      *
      * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
      */
-    @java.lang.Override
     public java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric> getMetricsList() {
       return metrics_;
     }
@@ -19709,7 +18171,6 @@ public final class SparkplugBProto {
      *
      * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
      */
-    @java.lang.Override
     public java.util.List<? extends org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetricOrBuilder> 
         getMetricsOrBuilderList() {
       return metrics_;
@@ -19721,7 +18182,6 @@ public final class SparkplugBProto {
      *
      * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
      */
-    @java.lang.Override
     public int getMetricsCount() {
       return metrics_.size();
     }
@@ -19732,7 +18192,6 @@ public final class SparkplugBProto {
      *
      * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
      */
-    @java.lang.Override
     public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric getMetrics(int index) {
       return metrics_.get(index);
     }
@@ -19743,7 +18202,6 @@ public final class SparkplugBProto {
      *
      * <code>repeated .org.eclipse.tahu.protobuf.Payload.Metric metrics = 2;</code>
      */
-    @java.lang.Override
     public org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetricOrBuilder getMetricsOrBuilder(
         int index) {
       return metrics_.get(index);
@@ -19757,11 +18215,9 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional uint64 seq = 3;</code>
-     * @return Whether the seq field is set.
      */
-    @java.lang.Override
     public boolean hasSeq() {
-      return ((bitField0_ & 0x00000002) != 0);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
      * <pre>
@@ -19769,9 +18225,7 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional uint64 seq = 3;</code>
-     * @return The seq.
      */
-    @java.lang.Override
     public long getSeq() {
       return seq_;
     }
@@ -19784,11 +18238,9 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional string uuid = 4;</code>
-     * @return Whether the uuid field is set.
      */
-    @java.lang.Override
     public boolean hasUuid() {
-      return ((bitField0_ & 0x00000004) != 0);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
      * <pre>
@@ -19796,9 +18248,7 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional string uuid = 4;</code>
-     * @return The uuid.
      */
-    @java.lang.Override
     public java.lang.String getUuid() {
       java.lang.Object ref = uuid_;
       if (ref instanceof java.lang.String) {
@@ -19819,9 +18269,7 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional string uuid = 4;</code>
-     * @return The bytes for uuid.
      */
-    @java.lang.Override
     public com.google.protobuf.ByteString
         getUuidBytes() {
       java.lang.Object ref = uuid_;
@@ -19844,11 +18292,9 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional bytes body = 5;</code>
-     * @return Whether the body field is set.
      */
-    @java.lang.Override
     public boolean hasBody() {
-      return ((bitField0_ & 0x00000008) != 0);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
      * <pre>
@@ -19856,15 +18302,12 @@ public final class SparkplugBProto {
      * </pre>
      *
      * <code>optional bytes body = 5;</code>
-     * @return The body.
      */
-    @java.lang.Override
     public com.google.protobuf.ByteString getBody() {
       return body_;
     }
 
     private byte memoizedIsInitialized = -1;
-    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -19884,38 +18327,36 @@ public final class SparkplugBProto {
       return true;
     }
 
-    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       com.google.protobuf.GeneratedMessageV3
         .ExtendableMessage<org.eclipse.tahu.protobuf.SparkplugBProto.Payload>.ExtensionWriter
           extensionWriter = newExtensionWriter();
-      if (((bitField0_ & 0x00000001) != 0)) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeUInt64(1, timestamp_);
       }
       for (int i = 0; i < metrics_.size(); i++) {
         output.writeMessage(2, metrics_.get(i));
       }
-      if (((bitField0_ & 0x00000002) != 0)) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeUInt64(3, seq_);
       }
-      if (((bitField0_ & 0x00000004) != 0)) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, uuid_);
       }
-      if (((bitField0_ & 0x00000008) != 0)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(5, body_);
       }
       extensionWriter.writeUntil(536870912, output);
       unknownFields.writeTo(output);
     }
 
-    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) != 0)) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(1, timestamp_);
       }
@@ -19923,14 +18364,14 @@ public final class SparkplugBProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, metrics_.get(i));
       }
-      if (((bitField0_ & 0x00000002) != 0)) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(3, seq_);
       }
-      if (((bitField0_ & 0x00000004) != 0)) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, uuid_);
       }
-      if (((bitField0_ & 0x00000008) != 0)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(5, body_);
       }
@@ -19940,6 +18381,7 @@ public final class SparkplugBProto {
       return size;
     }
 
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
@@ -19950,32 +18392,33 @@ public final class SparkplugBProto {
       }
       org.eclipse.tahu.protobuf.SparkplugBProto.Payload other = (org.eclipse.tahu.protobuf.SparkplugBProto.Payload) obj;
 
-      if (hasTimestamp() != other.hasTimestamp()) return false;
+      boolean result = true;
+      result = result && (hasTimestamp() == other.hasTimestamp());
       if (hasTimestamp()) {
-        if (getTimestamp()
-            != other.getTimestamp()) return false;
+        result = result && (getTimestamp()
+            == other.getTimestamp());
       }
-      if (!getMetricsList()
-          .equals(other.getMetricsList())) return false;
-      if (hasSeq() != other.hasSeq()) return false;
+      result = result && getMetricsList()
+          .equals(other.getMetricsList());
+      result = result && (hasSeq() == other.hasSeq());
       if (hasSeq()) {
-        if (getSeq()
-            != other.getSeq()) return false;
+        result = result && (getSeq()
+            == other.getSeq());
       }
-      if (hasUuid() != other.hasUuid()) return false;
+      result = result && (hasUuid() == other.hasUuid());
       if (hasUuid()) {
-        if (!getUuid()
-            .equals(other.getUuid())) return false;
+        result = result && getUuid()
+            .equals(other.getUuid());
       }
-      if (hasBody() != other.hasBody()) return false;
+      result = result && (hasBody() == other.hasBody());
       if (hasBody()) {
-        if (!getBody()
-            .equals(other.getBody())) return false;
+        result = result && getBody()
+            .equals(other.getBody());
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      if (!getExtensionFields().equals(other.getExtensionFields()))
-        return false;
-      return true;
+      result = result && unknownFields.equals(other.unknownFields);
+      result = result &&
+          getExtensionFields().equals(other.getExtensionFields());
+      return result;
     }
 
     @java.lang.Override
@@ -19984,7 +18427,7 @@ public final class SparkplugBProto {
         return memoizedHashCode;
       }
       int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (19 * hash) + getDescriptorForType().hashCode();
       if (hasTimestamp()) {
         hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
@@ -20013,17 +18456,6 @@ public final class SparkplugBProto {
       return hash;
     }
 
-    public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
     public static org.eclipse.tahu.protobuf.SparkplugBProto.Payload parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -20083,7 +18515,6 @@ public final class SparkplugBProto {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -20091,7 +18522,6 @@ public final class SparkplugBProto {
     public static Builder newBuilder(org.eclipse.tahu.protobuf.SparkplugBProto.Payload prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -20116,7 +18546,6 @@ public final class SparkplugBProto {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_descriptor;
       }
 
-      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_fieldAccessorTable
@@ -20140,7 +18569,6 @@ public final class SparkplugBProto {
           getMetricsFieldBuilder();
         }
       }
-      @java.lang.Override
       public Builder clear() {
         super.clear();
         timestamp_ = 0L;
@@ -20160,18 +18588,15 @@ public final class SparkplugBProto {
         return this;
       }
 
-      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.internal_static_org_eclipse_tahu_protobuf_Payload_descriptor;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload getDefaultInstanceForType() {
         return org.eclipse.tahu.protobuf.SparkplugBProto.Payload.getDefaultInstance();
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload build() {
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload result = buildPartial();
         if (!result.isInitialized()) {
@@ -20180,17 +18605,16 @@ public final class SparkplugBProto {
         return result;
       }
 
-      @java.lang.Override
       public org.eclipse.tahu.protobuf.SparkplugBProto.Payload buildPartial() {
         org.eclipse.tahu.protobuf.SparkplugBProto.Payload result = new org.eclipse.tahu.protobuf.SparkplugBProto.Payload(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.timestamp_ = timestamp_;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
+        result.timestamp_ = timestamp_;
         if (metricsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
             metrics_ = java.util.Collections.unmodifiableList(metrics_);
             bitField0_ = (bitField0_ & ~0x00000002);
           }
@@ -20198,15 +18622,15 @@ public final class SparkplugBProto {
         } else {
           result.metrics_ = metricsBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.seq_ = seq_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000002;
         }
-        if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.seq_ = seq_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000004;
         }
         result.uuid_ = uuid_;
-        if (((from_bitField0_ & 0x00000010) != 0)) {
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000008;
         }
         result.body_ = body_;
@@ -20215,66 +18639,55 @@ public final class SparkplugBProto {
         return result;
       }
 
-      @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
-      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
+          Object value) {
+        return (Builder) super.setField(field, value);
       }
-      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
-      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
-      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
       }
-      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
       }
-      @java.lang.Override
       public <Type> Builder setExtension(
           com.google.protobuf.GeneratedMessage.GeneratedExtension<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload, Type> extension,
           Type value) {
-        return super.setExtension(extension, value);
+        return (Builder) super.setExtension(extension, value);
       }
-      @java.lang.Override
       public <Type> Builder setExtension(
           com.google.protobuf.GeneratedMessage.GeneratedExtension<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload, java.util.List<Type>> extension,
           int index, Type value) {
-        return super.setExtension(extension, index, value);
+        return (Builder) super.setExtension(extension, index, value);
       }
-      @java.lang.Override
       public <Type> Builder addExtension(
           com.google.protobuf.GeneratedMessage.GeneratedExtension<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload, java.util.List<Type>> extension,
           Type value) {
-        return super.addExtension(extension, value);
+        return (Builder) super.addExtension(extension, value);
       }
-      @java.lang.Override
       public <Type> Builder clearExtension(
           com.google.protobuf.GeneratedMessage.GeneratedExtension<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload, ?> extension) {
-        return super.clearExtension(extension);
+        return (Builder) super.clearExtension(extension);
       }
-      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.eclipse.tahu.protobuf.SparkplugBProto.Payload) {
           return mergeFrom((org.eclipse.tahu.protobuf.SparkplugBProto.Payload)other);
@@ -20332,7 +18745,6 @@ public final class SparkplugBProto {
         return this;
       }
 
-      @java.lang.Override
       public final boolean isInitialized() {
         for (int i = 0; i < getMetricsCount(); i++) {
           if (!getMetrics(i).isInitialized()) {
@@ -20345,7 +18757,6 @@ public final class SparkplugBProto {
         return true;
       }
 
-      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -20372,11 +18783,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 timestamp = 1;</code>
-       * @return Whether the timestamp field is set.
        */
-      @java.lang.Override
       public boolean hasTimestamp() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <pre>
@@ -20384,9 +18793,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 timestamp = 1;</code>
-       * @return The timestamp.
        */
-      @java.lang.Override
       public long getTimestamp() {
         return timestamp_;
       }
@@ -20396,8 +18803,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 timestamp = 1;</code>
-       * @param value The timestamp to set.
-       * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
         bitField0_ |= 0x00000001;
@@ -20411,7 +18816,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 timestamp = 1;</code>
-       * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -20423,7 +18827,7 @@ public final class SparkplugBProto {
       private java.util.List<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric> metrics_ =
         java.util.Collections.emptyList();
       private void ensureMetricsIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
           metrics_ = new java.util.ArrayList<org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric>(metrics_);
           bitField0_ |= 0x00000002;
          }
@@ -20724,7 +19128,7 @@ public final class SparkplugBProto {
           metricsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.Metric.Builder, org.eclipse.tahu.protobuf.SparkplugBProto.Payload.MetricOrBuilder>(
                   metrics_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000002) == 0x00000002),
                   getParentForChildren(),
                   isClean());
           metrics_ = null;
@@ -20739,11 +19143,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 seq = 3;</code>
-       * @return Whether the seq field is set.
        */
-      @java.lang.Override
       public boolean hasSeq() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
        * <pre>
@@ -20751,9 +19153,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 seq = 3;</code>
-       * @return The seq.
        */
-      @java.lang.Override
       public long getSeq() {
         return seq_;
       }
@@ -20763,8 +19163,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 seq = 3;</code>
-       * @param value The seq to set.
-       * @return This builder for chaining.
        */
       public Builder setSeq(long value) {
         bitField0_ |= 0x00000004;
@@ -20778,7 +19176,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional uint64 seq = 3;</code>
-       * @return This builder for chaining.
        */
       public Builder clearSeq() {
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -20794,10 +19191,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string uuid = 4;</code>
-       * @return Whether the uuid field is set.
        */
       public boolean hasUuid() {
-        return ((bitField0_ & 0x00000008) != 0);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
        * <pre>
@@ -20805,7 +19201,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string uuid = 4;</code>
-       * @return The uuid.
        */
       public java.lang.String getUuid() {
         java.lang.Object ref = uuid_;
@@ -20827,7 +19222,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string uuid = 4;</code>
-       * @return The bytes for uuid.
        */
       public com.google.protobuf.ByteString
           getUuidBytes() {
@@ -20848,8 +19242,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string uuid = 4;</code>
-       * @param value The uuid to set.
-       * @return This builder for chaining.
        */
       public Builder setUuid(
           java.lang.String value) {
@@ -20867,7 +19259,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string uuid = 4;</code>
-       * @return This builder for chaining.
        */
       public Builder clearUuid() {
         bitField0_ = (bitField0_ & ~0x00000008);
@@ -20881,8 +19272,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional string uuid = 4;</code>
-       * @param value The bytes for uuid to set.
-       * @return This builder for chaining.
        */
       public Builder setUuidBytes(
           com.google.protobuf.ByteString value) {
@@ -20902,11 +19291,9 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bytes body = 5;</code>
-       * @return Whether the body field is set.
        */
-      @java.lang.Override
       public boolean hasBody() {
-        return ((bitField0_ & 0x00000010) != 0);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <pre>
@@ -20914,9 +19301,7 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bytes body = 5;</code>
-       * @return The body.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString getBody() {
         return body_;
       }
@@ -20926,8 +19311,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bytes body = 5;</code>
-       * @param value The body to set.
-       * @return This builder for chaining.
        */
       public Builder setBody(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -20944,7 +19327,6 @@ public final class SparkplugBProto {
        * </pre>
        *
        * <code>optional bytes body = 5;</code>
-       * @return This builder for chaining.
        */
       public Builder clearBody() {
         bitField0_ = (bitField0_ & ~0x00000010);
@@ -20952,13 +19334,11 @@ public final class SparkplugBProto {
         onChanged();
         return this;
       }
-      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -20980,12 +19360,11 @@ public final class SparkplugBProto {
 
     @java.lang.Deprecated public static final com.google.protobuf.Parser<Payload>
         PARSER = new com.google.protobuf.AbstractParser<Payload>() {
-      @java.lang.Override
       public Payload parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Payload(input, extensionRegistry);
+          return new Payload(input, extensionRegistry);
       }
     };
 
@@ -20998,7 +19377,6 @@ public final class SparkplugBProto {
       return PARSER;
     }
 
-    @java.lang.Override
     public org.eclipse.tahu.protobuf.SparkplugBProto.Payload getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -21098,7 +19476,7 @@ public final class SparkplugBProto {
       "org.eclipse.tahu.protobuf.Payload.Metric" +
       "\022I\n\nparameters\030\003 \003(\01325.org.eclipse.tahu." +
       "protobuf.Payload.Template.Parameter\022\024\n\014t" +
-      "emplate_ref\030\004 \001(\t\022\025\n\ris_definition\030\005 \001(\010" +
+      "emplate_ref\030\004 \001(\t\022\025\n\ris_definition\030\005 \001(\010",
       "\032\312\002\n\tParameter\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001" +
       "(\r\022\023\n\tint_value\030\003 \001(\rH\000\022\024\n\nlong_value\030\004 " +
       "\001(\004H\000\022\025\n\013float_value\030\005 \001(\002H\000\022\026\n\014double_v" +
@@ -21108,7 +19486,7 @@ public final class SparkplugBProto {
       "ad.Template.Parameter.ParameterValueExte" +
       "nsionH\000\032#\n\027ParameterValueExtension*\010\010\001\020\200" +
       "\200\200\200\002B\007\n\005value*\010\010\006\020\200\200\200\200\002\032\227\004\n\007DataSet\022\026\n\016n" +
-      "um_of_columns\030\001 \001(\004\022\017\n\007columns\030\002 \003(\t\022\r\n\005" +
+      "um_of_columns\030\001 \001(\004\022\017\n\007columns\030\002 \003(\t\022\r\n\005",
       "types\030\003 \003(\r\022<\n\004rows\030\004 \003(\0132..org.eclipse." +
       "tahu.protobuf.Payload.DataSet.Row\032\257\002\n\014Da" +
       "taSetValue\022\023\n\tint_value\030\001 \001(\rH\000\022\024\n\nlong_" +
@@ -21118,7 +19496,7 @@ public final class SparkplugBProto {
       "on_value\030\007 \001(\0132M.org.eclipse.tahu.protob" +
       "uf.Payload.DataSet.DataSetValue.DataSetV" +
       "alueExtensionH\000\032!\n\025DataSetValueExtension" +
-      "*\010\010\001\020\200\200\200\200\002B\007\n\005value\032Z\n\003Row\022I\n\010elements\030\001" +
+      "*\010\010\001\020\200\200\200\200\002B\007\n\005value\032Z\n\003Row\022I\n\010elements\030\001",
       " \003(\01327.org.eclipse.tahu.protobuf.Payload" +
       ".DataSet.DataSetValue*\010\010\002\020\200\200\200\200\002*\010\010\005\020\200\200\200\200" +
       "\002\032\351\003\n\rPropertyValue\022\014\n\004type\030\001 \001(\r\022\017\n\007is_" +
@@ -21128,7 +19506,7 @@ public final class SparkplugBProto {
       "\001(\010H\000\022\026\n\014string_value\030\010 \001(\tH\000\022K\n\021propert" +
       "yset_value\030\t \001(\0132..org.eclipse.tahu.prot" +
       "obuf.Payload.PropertySetH\000\022P\n\022propertyse" +
-      "ts_value\030\n \001(\01322.org.eclipse.tahu.protob" +
+      "ts_value\030\n \001(\01322.org.eclipse.tahu.protob",
       "uf.Payload.PropertySetListH\000\022b\n\017extensio" +
       "n_value\030\013 \001(\0132G.org.eclipse.tahu.protobu" +
       "f.Payload.PropertyValue.PropertyValueExt" +
@@ -21138,7 +19516,7 @@ public final class SparkplugBProto {
       "otobuf.Payload.PropertyValue*\010\010\003\020\200\200\200\200\002\032`" +
       "\n\017PropertySetList\022C\n\013propertyset\030\001 \003(\0132." +
       ".org.eclipse.tahu.protobuf.Payload.Prope" +
-      "rtySet*\010\010\002\020\200\200\200\200\002\032\244\001\n\010MetaData\022\025\n\ris_mult" +
+      "rtySet*\010\010\002\020\200\200\200\200\002\032\244\001\n\010MetaData\022\025\n\ris_mult",
       "i_part\030\001 \001(\010\022\024\n\014content_type\030\002 \001(\t\022\014\n\004si" +
       "ze\030\003 \001(\004\022\013\n\003seq\030\004 \001(\004\022\021\n\tfile_name\030\005 \001(\t" +
       "\022\021\n\tfile_type\030\006 \001(\t\022\013\n\003md5\030\007 \001(\t\022\023\n\013desc" +
@@ -21148,7 +19526,7 @@ public final class SparkplugBProto {
       "\001(\010\022\024\n\014is_transient\030\006 \001(\010\022\017\n\007is_null\030\007 \001" +
       "(\010\022=\n\010metadata\030\010 \001(\0132+.org.eclipse.tahu." +
       "protobuf.Payload.MetaData\022B\n\nproperties\030" +
-      "\t \001(\0132..org.eclipse.tahu.protobuf.Payloa" +
+      "\t \001(\0132..org.eclipse.tahu.protobuf.Payloa",
       "d.PropertySet\022\023\n\tint_value\030\n \001(\rH\000\022\024\n\nlo" +
       "ng_value\030\013 \001(\004H\000\022\025\n\013float_value\030\014 \001(\002H\000\022" +
       "\026\n\014double_value\030\r \001(\001H\000\022\027\n\rboolean_value" +
@@ -21158,7 +19536,7 @@ public final class SparkplugBProto {
       "etH\000\022E\n\016template_value\030\022 \001(\0132+.org.eclip" +
       "se.tahu.protobuf.Payload.TemplateH\000\022Y\n\017e" +
       "xtension_value\030\023 \001(\0132>.org.eclipse.tahu." +
-      "protobuf.Payload.Metric.MetricValueExten" +
+      "protobuf.Payload.Metric.MetricValueExten",
       "sionH\000\032 \n\024MetricValueExtension*\010\010\001\020\200\200\200\200\002" +
       "B\007\n\005value*\010\010\006\020\200\200\200\200\002*\362\003\n\010DataType\022\013\n\007Unkn" +
       "own\020\000\022\010\n\004Int8\020\001\022\t\n\005Int16\020\002\022\t\n\005Int32\020\003\022\t\n" +
@@ -21168,7 +19546,7 @@ public final class SparkplugBProto {
       "\004Text\020\016\022\010\n\004UUID\020\017\022\013\n\007DataSet\020\020\022\t\n\005Bytes\020" +
       "\021\022\010\n\004File\020\022\022\014\n\010Template\020\023\022\017\n\013PropertySet" +
       "\020\024\022\023\n\017PropertySetList\020\025\022\r\n\tInt8Array\020\026\022\016" +
-      "\n\nInt16Array\020\027\022\016\n\nInt32Array\020\030\022\016\n\nInt64A" +
+      "\n\nInt16Array\020\027\022\016\n\nInt32Array\020\030\022\016\n\nInt64A",
       "rray\020\031\022\016\n\nUInt8Array\020\032\022\017\n\013UInt16Array\020\033\022" +
       "\017\n\013UInt32Array\020\034\022\017\n\013UInt64Array\020\035\022\016\n\nFlo" +
       "atArray\020\036\022\017\n\013DoubleArray\020\037\022\020\n\014BooleanArr" +
@@ -21176,10 +19554,18 @@ public final class SparkplugBProto {
       "B,\n\031org.eclipse.tahu.protobufB\017Sparkplug" +
       "BProto"
     };
-    descriptor = com.google.protobuf.Descriptors.FileDescriptor
+    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+          public com.google.protobuf.ExtensionRegistry assignDescriptors(
+              com.google.protobuf.Descriptors.FileDescriptor root) {
+            descriptor = root;
+            return null;
+          }
+        };
+    com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        });
+        }, assigner);
     internal_static_org_eclipse_tahu_protobuf_Payload_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_org_eclipse_tahu_protobuf_Payload_fieldAccessorTable = new
