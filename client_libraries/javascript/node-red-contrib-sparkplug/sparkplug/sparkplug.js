@@ -23,8 +23,8 @@ module.exports = function(RED) {
             cacheEnabled = config.enablecache == "true",
             sparkPlugConfig = {
                 'serverUrl' : config.broker + ":" + config.port,
-                'username' : username,
-                'password' : password,
+                'username' : username ?? '',
+                'password' : password ?? '',
                 'groupId' : config.groupid,
                 'edgeNode' : config.edgenode,
                 'clientId' : config.clientid,
