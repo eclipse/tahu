@@ -663,7 +663,7 @@
         }
 
         if (protoMetric.hasOwnProperty("alias")) {
-            metric.alias = protoMetric.alias;
+            metric.alias = protoMetric.alias.toNumber();
         }
 
         if (protoMetric.hasOwnProperty("isHistorical")) {
