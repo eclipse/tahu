@@ -1,0 +1,36 @@
+{
+  "name": "node-red-contrib-sparkplug-payload",
+  "version": "1.0.0",
+  "description": "A node that provides tools for encoding and decoding payload objects and strings using the Sparkplug Google Protocol Buffer Schema",
+  "main": "sparkplug-payload.js",
+  "author": "Rikki Coles <r.coles@amrc.co.uk> (https://www.amrc.co.uk)",
+  "license": "EPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eclipse/tahu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eclipse/tahu/issues"
+  },
+  "homepage": "https://github.com/eclipse/tahu",
+  "dependencies": {
+    "sparkplug-payload": "^1.0.1"
+  },
+  "keywords": [
+    "tahu",
+    "mqtt",
+    "sparkplug",
+    "node-red"
+  ],
+  "node-red": {
+    "nodes": {
+      "sparkplug-payload": "sparkplug-payload.js"
+    }
+  },
+  "files":[
+    "package.json",
+    "README.md",
+    "sparkplug-payload.html",
+    "sparkplug-payload.js"
+  ]
+}
