@@ -206,6 +206,15 @@ var SparkplugClient = /** @class */ (function (_super) {
             return payload;
         }
     };
+    SparkplugClient.prototype.subscribeTopic = function (topic, options, callback) {
+        if (options === void 0) { options = { "qos": 0 }; }
+        logger.info("Subscribing to topic:", topic);
+        this.client.subscribe(topic, options, callback);
+    };
+    SparkplugClient.prototype.unsubscribeTopic = function (topic, options, callback) {
+        logger.info("Unsubscribing topic:", topic);
+        this.client.unsubscribe(topic, options, callback);
+    };
     // Publishes Node BIRTH certificates for the edge node
     SparkplugClient.prototype.publishNodeBirth = function (payload, options) {
         var topic = this.version + "/" + this.groupId + "/NBIRTH/" + this.edgeNode;

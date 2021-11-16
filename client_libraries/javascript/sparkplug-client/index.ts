@@ -235,6 +235,16 @@ class SparkplugClient extends events.EventEmitter {
         }
     }
 
+    subscribeTopic(topic: string, options = { "qos": 0 }, callback?) {
+        logger.info("Subscribing to topic:", topic);
+        this.client.subscribe(topic, options, callback);
+    }
+
+    unsubscribeTopic(topic: string, options?, callback?) {
+        logger.info("Unsubscribing topic:", topic);
+        this.client.unsubscribe(topic, options, callback);
+    }
+
     // Publishes Node BIRTH certificates for the edge node
     publishNodeBirth(payload, options) {
         let topic = this.version + "/" + this.groupId + "/NBIRTH/" + this.edgeNode;
