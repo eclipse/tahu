@@ -443,7 +443,7 @@ class SparkplugClient extends events.EventEmitter {
                 // Emit the "command" event for the given deviceId
                 this.emit("dcmd", splitTopic[4], payload);
             } else {
-                logger.info("Message received on unknown topic " + topic);
+                this.emit("message", topic, payload);
             }
         });
     }
