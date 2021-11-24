@@ -216,7 +216,7 @@ public class Metric {
 		builder.append(", alias=");
 		builder.append(alias);
 		builder.append(", timestamp=");
-		builder.append(timestamp.getTime());
+		builder.append(timestamp != null ? timestamp.getTime() : "null");
 		builder.append(", dataType=");
 		builder.append(dataType);
 		builder.append(", isHistorical=");
