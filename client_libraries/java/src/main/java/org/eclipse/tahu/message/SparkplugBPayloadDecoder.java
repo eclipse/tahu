@@ -61,7 +61,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 
 	public SparkplugBPayload buildFromByteArray(byte[] bytes) throws Exception {
 		SparkplugBProto.Payload protoPayload = SparkplugBProto.Payload.parseFrom(bytes);
-		SparkplugBPayloadBuilder builder = new SparkplugBPayloadBuilder(protoPayload.getSeq());
+		SparkplugBPayloadBuilder builder = new SparkplugBPayloadBuilder();
 
 		// Set the timestamp
 		if (protoPayload.hasTimestamp()) {
