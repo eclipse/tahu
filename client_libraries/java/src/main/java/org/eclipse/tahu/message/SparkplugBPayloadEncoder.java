@@ -62,7 +62,9 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		}
 
 		// Set the sequence number
-		protoMsg.setSeq(payload.getSeq());
+		if (payload.getSeq() != null) {
+			protoMsg.setSeq(payload.getSeq());
+		}
 
 		// Set the UUID if defined
 		if (payload.getUuid() != null) {

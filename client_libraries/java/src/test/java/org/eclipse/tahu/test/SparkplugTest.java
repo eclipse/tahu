@@ -15,6 +15,7 @@ package org.eclipse.tahu.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -220,7 +221,7 @@ public class SparkplugTest {
 	@Test
 	public void testEnDeCode() throws SparkplugInvalidTypeException {
 		Date currentTime = new Date();
-		SparkplugBPayloadBuilder payloadBuilder = new SparkplugBPayloadBuilder().setTimestamp(currentTime).setSeq(0)
+		SparkplugBPayloadBuilder payloadBuilder = new SparkplugBPayloadBuilder().setTimestamp(currentTime).setSeq(0L)
 				.setUuid("123456789").setBody("Hello".getBytes());
 
 		// Create MetaData
@@ -361,7 +362,7 @@ public class SparkplugTest {
 
 			// SparkplugBPayload checks
 			assertThat(currentTime).isEqualTo(decodedPayload.getTimestamp());
-			assertThat(-1L).isEqualTo(decodedPayload.getSeq());
+			assertNull(decodedPayload.getSeq());
 			assertThat(decodedPayload.getBody()).isNull();
 
 			// Metric checks
