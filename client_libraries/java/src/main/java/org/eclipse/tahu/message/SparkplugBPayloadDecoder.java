@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.DataSetDataType;
@@ -47,13 +45,15 @@ import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
 import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.protobuf.SparkplugBProto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link PayloadDecode} implementation for decoding Sparkplug B payloads.
  */
 public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayload> {
 
-	private static Logger logger = LogManager.getLogger(SparkplugBPayloadDecoder.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadDecoder.class.getName());
 
 	public SparkplugBPayloadDecoder() {
 		super();

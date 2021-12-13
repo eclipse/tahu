@@ -16,9 +16,9 @@ package org.eclipse.tahu.message.model;
 import java.math.BigInteger;
 import java.util.Date;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An enumeration of data types for the value of a {@link Parameter} for a {@link Template}
@@ -44,7 +44,7 @@ public enum ParameterDataType {
 	// Unknown
 	Unknown(0, Object.class);
 
-	private static Logger logger = LogManager.getLogger(ParameterDataType.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(ParameterDataType.class.getName());
 
 	private Class<?> clazz = null;
 	private int intValue = 0;

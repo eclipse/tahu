@@ -21,8 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.message.model.DataSet;
 import org.eclipse.tahu.message.model.DataSetDataType;
 import org.eclipse.tahu.message.model.File;
@@ -38,6 +36,8 @@ import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.protobuf.SparkplugBProto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 
@@ -46,7 +46,7 @@ import com.google.protobuf.ByteString;
  */
 public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayload> {
 
-	private static Logger logger = LogManager.getLogger(SparkplugBPayloadEncoder.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadEncoder.class.getName());
 
 	public SparkplugBPayloadEncoder() {
 		super();

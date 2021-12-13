@@ -20,8 +20,6 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.SparkplugException;
 import org.eclipse.tahu.json.DeserializerModifier;
 import org.eclipse.tahu.json.DeserializerModule;
@@ -32,6 +30,8 @@ import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class PayloadUtil {
 
-	private static Logger logger = LogManager.getLogger(PayloadUtil.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(PayloadUtil.class.getName());
 
 	public static final String UUID_COMPRESSED = "SPBV1.0_COMPRESSED";
 

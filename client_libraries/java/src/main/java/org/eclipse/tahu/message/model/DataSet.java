@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.SparkplugException;
 import org.eclipse.tahu.json.DataSetDeserializer;
 import org.eclipse.tahu.message.model.Row.RowBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(using = DataSetDeserializer.class)
 public class DataSet {
 
-	private static Logger logger = LogManager.getLogger(DataSet.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(DataSet.class.getName());
 
 	/**
 	 * The number of columns
