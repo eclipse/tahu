@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.apache.log4j.BasicConfigurator;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -76,7 +75,6 @@ public class SparkplugExample implements MqttCallbackExtended {
 	}
 
 	public SparkplugExample() {
-		BasicConfigurator.configure();
 		edgeNodeMap = new ConcurrentHashMap<>();
 		rebirthTimers = new ConcurrentHashMap<>();
 		fileAssemblers = new ConcurrentHashMap<>();

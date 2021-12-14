@@ -17,9 +17,9 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An enumeration of data types for values of a {@link PropertySet}
@@ -49,7 +49,7 @@ public enum PropertyDataType {
 	// Unknown
 	Unknown(0, Object.class);
 
-	private static Logger logger = LogManager.getLogger(PropertyDataType.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(PropertyDataType.class.getName());
 
 	private Class<?> clazz = null;
 	private int intValue = 0;

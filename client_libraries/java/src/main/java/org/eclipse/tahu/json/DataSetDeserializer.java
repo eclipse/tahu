@@ -19,14 +19,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.SparkplugException;
 import org.eclipse.tahu.message.model.DataSet;
 import org.eclipse.tahu.message.model.DataSetDataType;
 import org.eclipse.tahu.message.model.Row;
 import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,7 +40,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  */
 public class DataSetDeserializer extends StdDeserializer<DataSet> {
 
-	private static Logger logger = LogManager.getLogger(DataSetDeserializer.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(DataSetDeserializer.class.getName());
 
 	private static final String FIELD_SIZE = "numberOfColumns";
 	private static final String FIELD_TYPES = "types";
