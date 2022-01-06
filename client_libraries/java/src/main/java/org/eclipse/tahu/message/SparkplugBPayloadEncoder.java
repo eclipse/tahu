@@ -614,12 +614,10 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				break;
 			case String:
 			case Text:
-				if (value != null && value.getValue() != null) {
-					protoValueBuilder.setStringValue((String) value.getValue());
-				} else {
-					logger.debug("String value for dataset is null");
-					protoValueBuilder.setStringValue("null");
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
 				}
+				protoValueBuilder.setStringValue((String) value.getValue());
 				break;
 			case Boolean:
 				if (value == null || value.getValue() == null) {
@@ -628,13 +626,10 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				protoValueBuilder.setBooleanValue(toBoolean(value.getValue()));
 				break;
 			case DateTime:
-				try {
-					protoValueBuilder.setLongValue(((Date) value.getValue()).getTime());
-				} catch (NullPointerException npe) {
-					// FIXME - remove after is_null is supported for dataset values
-					logger.debug("Date in dataset was null - leaving it -9223372036854775808L");
-					protoValueBuilder.setLongValue(-9223372036854775808L);
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
 				}
+				protoValueBuilder.setLongValue(((Date) value.getValue()).getTime());
 				break;
 			default:
 				logger.error("Unknown DataSetDataType DataType: " + value.getType());

@@ -131,6 +131,16 @@ public class SparkplugTest {
 										.addValue(new Value<String>(DataSetDataType.String, null)).createRow())
 								.createDataSet(),
 						null },
+				{ "NullDataSet", MetricDataType.DataSet, new DataSetBuilder(5).addColumnName("Booleans")
+						.addColumnName("Int32s").addColumnName("Floats").addColumnName("Dates").addColumnName("Strings")
+						.addType(DataSetDataType.Boolean).addType(DataSetDataType.Int32).addType(DataSetDataType.Float)
+						.addType(DataSetDataType.DateTime).addType(DataSetDataType.String)
+						.addRow(new RowBuilder().addValue(new Value<Boolean>(DataSetDataType.Boolean, null))
+								.addValue(new Value<Integer>(DataSetDataType.Int32, null))
+								.addValue(new Value<Float>(DataSetDataType.Float, null))
+								.addValue(new Value<Date>(DataSetDataType.DateTime, null))
+								.addValue(new Value<String>(DataSetDataType.String, null)).createRow())
+						.createDataSet(), null },
 				{ "TestTemplateDef", MetricDataType.Template, new TemplateBuilder().version("v1.0").templateRef(null)
 						.definition(true).addParameter(new Parameter("BoolParam", ParameterDataType.Boolean, true))
 						.addParameter(new Parameter("IntParam", ParameterDataType.Int32, 12345678))
