@@ -31,14 +31,14 @@ public class SparkplugBPayload {
 
 	private Date timestamp;
 	private List<Metric> metrics;
-	private long seq = -1;
+	private Long seq = null;
 	private String uuid;
 	private byte[] body;
 
 	public SparkplugBPayload() {
 	}
 
-	public SparkplugBPayload(Date timestamp, List<Metric> metrics, long seq, String uuid, byte[] body) {
+	public SparkplugBPayload(Date timestamp, List<Metric> metrics, Long seq, String uuid, byte[] body) {
 		this.timestamp = timestamp;
 		this.metrics = metrics;
 		this.seq = seq;
@@ -87,11 +87,11 @@ public class SparkplugBPayload {
 		this.metrics = metrics;
 	}
 
-	public long getSeq() {
+	public Long getSeq() {
 		return seq;
 	}
 
-	public void setSeq(long seq) {
+	public void setSeq(Long seq) {
 		this.seq = seq;
 	}
 
@@ -115,11 +115,11 @@ public class SparkplugBPayload {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SparkplugBPayload [timestamp=");
-		builder.append(timestamp.getTime());
+		builder.append(timestamp != null ? timestamp.getTime() : "null");
 		builder.append(", metrics=");
 		builder.append(metrics);
 		builder.append(", seq=");
-		builder.append(seq);
+		builder.append(seq != null ? seq : "null");
 		builder.append(", uuid=");
 		builder.append(uuid);
 		builder.append(", body=");
@@ -135,11 +135,11 @@ public class SparkplugBPayload {
 
 		private Date timestamp;
 		private List<Metric> metrics;
-		private long seq = -1;
+		private Long seq = null;
 		private String uuid;
 		private byte[] body;
 
-		public SparkplugBPayloadBuilder(long sequenceNumber) {
+		public SparkplugBPayloadBuilder(Long sequenceNumber) {
 			this.seq = sequenceNumber;
 			metrics = new ArrayList<Metric>();
 		}
@@ -163,7 +163,7 @@ public class SparkplugBPayload {
 			return this;
 		}
 
-		public SparkplugBPayloadBuilder setSeq(long seq) {
+		public SparkplugBPayloadBuilder setSeq(Long seq) {
 			this.seq = seq;
 			return this;
 		}

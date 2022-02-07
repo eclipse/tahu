@@ -19,20 +19,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
-import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
-import org.eclipse.tahu.util.CompressionAlgorithm;
-import org.eclipse.tahu.util.PayloadUtil;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  * Unit tests for PayloadUtil.
@@ -47,29 +45,29 @@ public class PayloadUtilTest {
 
 	@BeforeClass
 	public void beforeClass() {
-		Logger rootLogger = Logger.getRootLogger();
+		Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		rootLogger.setLevel(Level.ALL);
-		rootLogger.addAppender(new ConsoleAppender(new PatternLayout("%-6r [%p] %c - %m%n")));
 	}
 
 	@DataProvider
 	public Object[][] compressionData() throws Exception {
 		return new Object[][] {
 				{ CompressionAlgorithm.DEFLATE,
-						new SparkplugBPayloadBuilder().setTimestamp(testTime).setSeq(0).setUuid("123456789")
+						new SparkplugBPayloadBuilder().setTimestamp(testTime).setSeq(0L).setUuid("123456789")
 								.setBody("Hello".getBytes())
 								.addMetric(
 										new MetricBuilder("TestInt", MetricDataType.Int32, 1234567890).createMetric())
 								.createPayload() },
 				{ CompressionAlgorithm.GZIP,
-						new SparkplugBPayloadBuilder().setTimestamp(testTime).setSeq(0).setUuid("123456789")
+						new SparkplugBPayloadBuilder().setTimestamp(testTime).setSeq(0L).setUuid("123456789")
 								.setBody("Hello".getBytes())
 								.addMetric(
 										new MetricBuilder("TestInt", MetricDataType.Int32, 1234567890).createMetric())
 								.createPayload() } };
 	}
 
-	@Test(dataProvider = "compressionData")
+	@Test(
+			dataProvider = "compressionData")
 	public void testCompression(CompressionAlgorithm algorithm, SparkplugBPayload payload) throws Exception {
 
 		// Compress the payload

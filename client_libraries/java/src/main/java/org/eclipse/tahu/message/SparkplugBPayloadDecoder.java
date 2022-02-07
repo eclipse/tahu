@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.DataSetDataType;
@@ -47,13 +45,15 @@ import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
 import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.protobuf.SparkplugBProto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link PayloadDecode} implementation for decoding Sparkplug B payloads.
  */
 public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayload> {
 
-	private static Logger logger = LogManager.getLogger(SparkplugBPayloadDecoder.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadDecoder.class.getName());
 
 	public SparkplugBPayloadDecoder() {
 		super();
@@ -61,7 +61,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 
 	public SparkplugBPayload buildFromByteArray(byte[] bytes) throws Exception {
 		SparkplugBProto.Payload protoPayload = SparkplugBProto.Payload.parseFrom(bytes);
-		SparkplugBPayloadBuilder builder = new SparkplugBPayloadBuilder(protoPayload.getSeq());
+		SparkplugBPayloadBuilder builder = new SparkplugBPayloadBuilder();
 
 		// Set the timestamp
 		if (protoPayload.hasTimestamp()) {
@@ -415,37 +415,76 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		DataSetDataType type = DataSetDataType.fromInteger(protoType);
 		switch (type) {
 			case Boolean:
-				return new Value<Boolean>(type, protoValue.getBooleanValue());
-			case DateTime:
-				// FIXME - remove after is_null is supported for dataset values
-				if (protoValue.getLongValue() == -9223372036854775808L) {
-					return new Value<Date>(type, null);
+				if (protoValue.hasBooleanValue()) {
+					return new Value<Boolean>(type, protoValue.getBooleanValue());
 				} else {
-					return new Value<Date>(type, new Date(protoValue.getLongValue()));
+					return new Value<Boolean>(type, null);
+				}
+			case DateTime:
+				if (protoValue.hasLongValue()) {
+					if (protoValue.getLongValue() == -9223372036854775808L) {
+						return new Value<Date>(type, null);
+					} else {
+						return new Value<Date>(type, new Date(protoValue.getLongValue()));
+					}
+				} else {
+					return new Value<Date>(type, null);
 				}
 			case Float:
-				return new Value<Float>(type, protoValue.getFloatValue());
+				if (protoValue.hasFloatValue()) {
+					return new Value<Float>(type, protoValue.getFloatValue());
+				} else {
+					return new Value<Float>(type, null);
+				}
 			case Double:
-				return new Value<Double>(type, protoValue.getDoubleValue());
+				if (protoValue.hasDoubleValue()) {
+					return new Value<Double>(type, protoValue.getDoubleValue());
+				} else {
+					return new Value<Double>(type, null);
+				}
 			case Int8:
-				return new Value<Byte>(type, (byte) protoValue.getIntValue());
+				if (protoValue.hasIntValue()) {
+					return new Value<Byte>(type, (byte) protoValue.getIntValue());
+				} else {
+					return new Value<Byte>(type, null);
+				}
 			case UInt8:
 			case Int16:
-				return new Value<Short>(type, (short) protoValue.getIntValue());
+				if (protoValue.hasIntValue()) {
+					return new Value<Short>(type, (short) protoValue.getIntValue());
+				} else {
+					return new Value<Short>(type, null);
+				}
 			case UInt16:
 			case Int32:
-				return new Value<Integer>(type, protoValue.getIntValue());
+				if (protoValue.hasIntValue()) {
+					return new Value<Integer>(type, protoValue.getIntValue());
+				} else {
+					return new Value<Integer>(type, null);
+				}
 			case UInt32:
 			case Int64:
-				return new Value<Long>(type, protoValue.getLongValue());
+				if (protoValue.hasLongValue()) {
+					return new Value<Long>(type, protoValue.getLongValue());
+				} else {
+					return new Value<Long>(type, null);
+				}
 			case UInt64:
-				return new Value<BigInteger>(type, BigInteger.valueOf(protoValue.getLongValue()));
+				if (protoValue.hasLongValue()) {
+					return new Value<BigInteger>(type, BigInteger.valueOf(protoValue.getLongValue()));
+				} else {
+					return new Value<BigInteger>(type, null);
+				}
 			case String:
 			case Text:
-				if (protoValue.getStringValue().equals("null")) {
-					return new Value<String>(type, null);
+				if (protoValue.hasStringValue()) {
+					if (protoValue.getStringValue().equals("null")) {
+						return new Value<String>(type, null);
+					} else {
+						return new Value<String>(type, protoValue.getStringValue());
+					}
 				} else {
-					return new Value<String>(type, protoValue.getStringValue());
+					return new Value<String>(type, null);
 				}
 			case Unknown:
 			default:

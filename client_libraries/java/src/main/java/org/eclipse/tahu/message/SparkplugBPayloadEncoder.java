@@ -21,8 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.tahu.message.model.DataSet;
 import org.eclipse.tahu.message.model.DataSetDataType;
 import org.eclipse.tahu.message.model.File;
@@ -38,6 +36,8 @@ import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.protobuf.SparkplugBProto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 
@@ -46,7 +46,7 @@ import com.google.protobuf.ByteString;
  */
 public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayload> {
 
-	private static Logger logger = LogManager.getLogger(SparkplugBPayloadEncoder.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadEncoder.class.getName());
 
 	public SparkplugBPayloadEncoder() {
 		super();
@@ -62,7 +62,9 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		}
 
 		// Set the sequence number
-		protoMsg.setSeq(payload.getSeq());
+		if (payload.getSeq() != null) {
+			protoMsg.setSeq(payload.getSeq());
+		}
 
 		// Set the UUID if defined
 		if (payload.getUuid() != null) {
@@ -612,12 +614,10 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				break;
 			case String:
 			case Text:
-				if (value != null && value.getValue() != null) {
-					protoValueBuilder.setStringValue((String) value.getValue());
-				} else {
-					logger.debug("String value for dataset is null");
-					protoValueBuilder.setStringValue("null");
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
 				}
+				protoValueBuilder.setStringValue((String) value.getValue());
 				break;
 			case Boolean:
 				if (value == null || value.getValue() == null) {
@@ -626,13 +626,10 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				protoValueBuilder.setBooleanValue(toBoolean(value.getValue()));
 				break;
 			case DateTime:
-				try {
-					protoValueBuilder.setLongValue(((Date) value.getValue()).getTime());
-				} catch (NullPointerException npe) {
-					// FIXME - remove after is_null is supported for dataset values
-					logger.debug("Date in dataset was null - leaving it -9223372036854775808L");
-					protoValueBuilder.setLongValue(-9223372036854775808L);
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
 				}
+				protoValueBuilder.setLongValue(((Date) value.getValue()).getTime());
 				break;
 			default:
 				logger.error("Unknown DataSetDataType DataType: " + value.getType());
