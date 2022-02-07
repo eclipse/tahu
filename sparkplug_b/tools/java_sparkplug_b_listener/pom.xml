@@ -18,13 +18,13 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.13</version>
+    <version>0.5.14-SNAPSHOT</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
   <groupId>org.eclipse.tahu.example</groupId>
   <artifactId>sparkplug_b_listener</artifactId>
-  <version>0.5.13</version>
+  <version>0.5.14-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>sparkplug_b_listener</name>
   <url>http://maven.apache.org</url>
