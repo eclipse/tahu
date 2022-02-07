@@ -18,13 +18,13 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.13-SNAPSHOT</version>
+    <version>0.5.13</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
   <groupId>org.eclipse.tahu.example</groupId>
   <artifactId>sparkplug_b_udt_example</artifactId>
-  <version>0.5.13-SNAPSHOT</version>
+  <version>0.5.13</version>
   <packaging>jar</packaging>
   <name>sparkplug_b_udt_example</name>
 
