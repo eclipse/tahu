@@ -19,19 +19,18 @@
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
     <version>0.5.14-SNAPSHOT</version>
-    <relativePath>../../../pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.eclipse.tahu.example</groupId>
-  <artifactId>sparkplug_b_device_timestamp_example</artifactId>
+  <artifactId>sparkplug_b_udt_example</artifactId>
   <version>0.5.14-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>sparkplug_b_device_timestamp_example</name>
+  <name>Sparkplug B UDT Example</name>
 
   <dependencies>
     <dependency>
       <groupId>org.eclipse.tahu</groupId>
-      <artifactId>tahu-java</artifactId>
+      <artifactId>tahu-core</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

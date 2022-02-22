@@ -12,7 +12,7 @@
 # *   Cirrus Link Solutions - initial implementation
 # ********************************************************************************/
 import sys
-sys.path.insert(0, "../../../client_libraries/python/")
+sys.path.insert(0, "../core/")
 #print(sys.path)
 
 import paho.mqtt.client as mqtt
