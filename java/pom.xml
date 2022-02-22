@@ -42,15 +42,15 @@
   </distributionManagement>
 
   <modules>
-    <module>client_libraries/java/pom.xml</module>
-    <module>sparkplug_b/raspberry_pi_examples/java/pom.xml</module>
-    <module>sparkplug_b/stand_alone_examples/java/pom.xml</module>
-    <module>sparkplug_b/stand_alone_examples/java_device_timestamp/pom.xml</module>
-    <module>sparkplug_b/stand_alone_examples/java_edge_node_control/pom.xml</module>
-    <module>sparkplug_b/stand_alone_examples/java_host_file/pom.xml</module>
-    <module>sparkplug_b/stand_alone_examples/java_records/pom.xml</module>
-    <module>sparkplug_b/stand_alone_examples/java_udt/pom.xml</module>
-    <module>sparkplug_b/tools/java_sparkplug_b_listener/pom.xml</module>
+    <module>core/pom.xml</module>
+    <module>examples/records/pom.xml</module>
+    <module>examples/listener/pom.xml</module>
+    <module>examples/edge_node_control/pom.xml</module>
+    <module>examples/simple/pom.xml</module>
+    <module>examples/device_timestamp/pom.xml</module>
+    <module>examples/udt/pom.xml</module>
+    <module>examples/raspberry_pi/pom.xml</module>
+    <module>examples/host_file/pom.xml</module>
   </modules>
 
   <dependencies>
