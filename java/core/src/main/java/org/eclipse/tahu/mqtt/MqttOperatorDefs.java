@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2020-2022 Cirrus Link Solutions and others
+ * Copyright (c) 2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -11,9 +11,14 @@
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
 
-package org.eclipse.tahu.message.model;
+package org.eclipse.tahu.mqtt;
 
-public interface SparkplugId {
+public class MqttOperatorDefs {
 
-	public String getIdString();
+	// Convenience for use with MQTT
+	public static final int QOS0 = 0;
+	public static final int QOS1 = 1;
+	public static final int QOS2 = 2;
+	public static final boolean RETAINEDMESGTRUE = true;
+	public static final boolean RETAINEDMESGFALSE = false;
 }
