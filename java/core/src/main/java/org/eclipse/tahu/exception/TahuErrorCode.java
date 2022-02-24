@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2020-2022 Cirrus Link Solutions and others
+ * Copyright (c) 2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -11,9 +11,20 @@
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
 
-package org.eclipse.tahu.message.model;
+package org.eclipse.tahu.exception;
 
-public interface SparkplugId {
+public enum TahuErrorCode {
 
-	public String getIdString();
+	ALREADY_EXISTS,
+	FORBIDDEN,
+	INITIALIZATION_ERROR,
+	INTERNAL_ERROR,
+	INVALID_ARGUMENT,
+	MISSING_FIELDS,
+	NOT_AUTHORIZED,
+	NOT_FOUND,
+	NOT_SUPPORTED,
+	NOT_SUPPORTED_TYPE,
+	NULL_FIELD,
+	PARSE_ERROR
 }
