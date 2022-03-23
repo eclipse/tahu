@@ -246,9 +246,8 @@ public class SparkplugExample implements MqttCallbackExtended {
 				}
 
 				// Request a device rebirth
-				String rebirthTopic =
-						new Topic(NAMESPACE, edgeNodeDescriptor.getGroupName(), edgeNodeDescriptor.getEdgeNodeName(), MessageType.NCMD)
-								.toString();
+				String rebirthTopic = new Topic(NAMESPACE, edgeNodeDescriptor.getGroupId(),
+						edgeNodeDescriptor.getEdgeNodeId(), MessageType.NCMD).toString();
 				SparkplugBPayload rebirthPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date())
 						.addMetric(
 								new MetricBuilder("Node Control/Rebirth", MetricDataType.Boolean, true).createMetric())
@@ -283,10 +282,10 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 		String fileAssemblerName = null;
 		if (deviceName == null || deviceName.trim().isEmpty()) {
-			fileAssemblerName = new StringBuilder().append(edgeNode.getEdgeNodeId().getEdgeNodeIdString()).append("/")
+			fileAssemblerName = new StringBuilder().append(edgeNode.getEdgeNodeId().getDescriptorString()).append("/")
 					.append(metric.getName()).toString();
 		} else {
-			fileAssemblerName = new StringBuilder().append(edgeNode.getEdgeNodeId().getEdgeNodeIdString()).append("/")
+			fileAssemblerName = new StringBuilder().append(edgeNode.getEdgeNodeId().getDescriptorString()).append("/")
 					.append(deviceName).append("/").append(metric.getName()).toString();
 		}
 		FileAssembler fileAssembler = fileAssemblers.containsKey(fileAssemblerName)
