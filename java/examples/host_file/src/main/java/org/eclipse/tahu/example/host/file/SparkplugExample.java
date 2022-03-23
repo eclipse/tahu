@@ -33,7 +33,7 @@ import org.eclipse.tahu.SparkplugParsingException;
 import org.eclipse.tahu.example.host.file.model.EdgeNode;
 import org.eclipse.tahu.example.host.file.model.FilePublishStatus;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
-import org.eclipse.tahu.message.model.EdgeNodeId;
+import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.MessageType;
 import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.Metric.MetricBuilder;
@@ -65,8 +65,8 @@ public class SparkplugExample implements MqttCallbackExtended {
 	private ExecutorService executor;
 	private MqttClient client;
 
-	private final Map<EdgeNodeId, EdgeNode> edgeNodeMap;
-	private final Map<EdgeNodeId, Timer> rebirthTimers;
+	private final Map<EdgeNodeDescriptor, EdgeNode> edgeNodeMap;
+	private final Map<EdgeNodeDescriptor, Timer> rebirthTimers;
 	private final Map<String, FileAssembler> fileAssemblers;
 
 	public static void main(String[] args) {
@@ -166,20 +166,20 @@ public class SparkplugExample implements MqttCallbackExtended {
 			SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
 			SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload());
 
-			// Get the EdgeNodeId
-			EdgeNodeId edgeNodeId = new EdgeNodeId(topic.getGroupId(), topic.getEdgeNodeId());
+			// Get the EdgeNodeDescriptor
+			EdgeNodeDescriptor edgeNodeDescriptor = new EdgeNodeDescriptor(topic.getGroupId(), topic.getEdgeNodeId());
 
 			// Special case for NBIRTH
-			EdgeNode edgeNode = edgeNodeMap.get(edgeNodeId);
+			EdgeNode edgeNode = edgeNodeMap.get(edgeNodeDescriptor);
 			if (topic.getType().equals(MessageType.NBIRTH)) {
 				edgeNode = new EdgeNode(topic.getGroupId(), topic.getEdgeNodeId());
-				edgeNodeMap.put(edgeNodeId, edgeNode);
+				edgeNodeMap.put(edgeNodeDescriptor, edgeNode);
 			}
 
 			// Failed to handle the message
 			if (edgeNode == null) {
 				logger.warn("Unexpected message on topic {} - requesting Rebirth", topic);
-				requestRebirth(edgeNodeId);
+				requestRebirth(edgeNodeDescriptor);
 				return;
 			}
 
@@ -230,16 +230,16 @@ public class SparkplugExample implements MqttCallbackExtended {
 		}
 	}
 
-	private void requestRebirth(EdgeNodeId edgeNodeId) {
+	private void requestRebirth(EdgeNodeDescriptor edgeNodeDescriptor) {
 		try {
-			Timer rebirthDelayTimer = rebirthTimers.get(edgeNodeId);
+			Timer rebirthDelayTimer = rebirthTimers.get(edgeNodeDescriptor);
 			if (rebirthDelayTimer == null) {
-				logger.info("Requesting Rebirth from {}", edgeNodeId);
+				logger.info("Requesting Rebirth from {}", edgeNodeDescriptor);
 				rebirthDelayTimer = new Timer();
-				rebirthTimers.put(edgeNodeId, rebirthDelayTimer);
-				rebirthDelayTimer.schedule(new RebirthDelayTask(edgeNodeId), 5000);
+				rebirthTimers.put(edgeNodeDescriptor, rebirthDelayTimer);
+				rebirthDelayTimer.schedule(new RebirthDelayTask(edgeNodeDescriptor), 5000);
 
-				EdgeNode edgeNode = edgeNodeMap.get(edgeNodeId);
+				EdgeNode edgeNode = edgeNodeMap.get(edgeNodeDescriptor);
 				if (edgeNode != null) {
 					// Set the Edge Node offline
 					edgeNode.setOnline(false);
@@ -247,7 +247,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 				// Request a device rebirth
 				String rebirthTopic =
-						new Topic(NAMESPACE, edgeNodeId.getGroupName(), edgeNodeId.getEdgeNodeName(), MessageType.NCMD)
+						new Topic(NAMESPACE, edgeNodeDescriptor.getGroupName(), edgeNodeDescriptor.getEdgeNodeName(), MessageType.NCMD)
 								.toString();
 				SparkplugBPayload rebirthPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date())
 						.addMetric(
@@ -265,16 +265,16 @@ public class SparkplugExample implements MqttCallbackExtended {
 	}
 
 	private class RebirthDelayTask extends TimerTask {
-		private EdgeNodeId edgeNodeId;
+		private EdgeNodeDescriptor edgeNodeDescriptor;
 
-		public RebirthDelayTask(EdgeNodeId edgeNodeId) {
-			this.edgeNodeId = edgeNodeId;
+		public RebirthDelayTask(EdgeNodeDescriptor edgeNodeDescriptor) {
+			this.edgeNodeDescriptor = edgeNodeDescriptor;
 		}
 
 		public void run() {
-			if (rebirthTimers.get(edgeNodeId) != null) {
-				rebirthTimers.get(edgeNodeId).cancel();
-				rebirthTimers.remove(edgeNodeId);
+			if (rebirthTimers.get(edgeNodeDescriptor) != null) {
+				rebirthTimers.get(edgeNodeDescriptor).cancel();
+				rebirthTimers.remove(edgeNodeDescriptor);
 			}
 		}
 	}

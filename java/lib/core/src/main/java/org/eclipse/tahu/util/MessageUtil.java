@@ -211,7 +211,14 @@ public class MessageUtil {
 
 		// Check if the message can be divided
 		if (metricCount <= 1) {
-			throw new SparkplugException("Cannot divide SparkplugBPayload with only " + metricCount + " metric(s)");
+			String errorMessage = null;
+			if (metricCount == 1) {
+				errorMessage = "Cannot divide SparkplugBPayload with one metric: "
+						+ message.getPayload().getMetrics().get(0).getName();
+			} else {
+				errorMessage = "Cannot divide SparkplugBPayload with " + metricCount + " metrics";
+			}
+			throw new SparkplugException(errorMessage);
 		}
 
 		int newMessageCount = size / maxBytes + ((size % maxBytes > 0) ? 1 : 0);

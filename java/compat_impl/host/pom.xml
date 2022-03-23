@@ -19,23 +19,23 @@
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
     <version>0.5.14-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>tahu-core</artifactId>
+  <artifactId>tahu-host-compat</artifactId>
   <packaging>bundle</packaging>
-  <name>tahu-core</name>
+  <name>Tahu Host Compatible Implementation</name>
 
   <dependencies>
     <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-      <version>${protobuf.version}</version>
+      <groupId>org.eclipse.tahu</groupId>
+      <artifactId>tahu-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
-      <version>1.21</version>
+      <groupId>org.eclipse.tahu</groupId>
+      <artifactId>tahu-host</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

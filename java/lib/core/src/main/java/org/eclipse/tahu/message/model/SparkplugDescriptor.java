@@ -13,7 +13,7 @@
 
 package org.eclipse.tahu.message.model;
 
-public interface SparkplugId {
+public interface SparkplugDescriptor {
 
-	public String getIdString();
+	public String getDescriptorString();
 }
