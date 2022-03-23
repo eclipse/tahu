@@ -6,13 +6,13 @@
  */
 package org.eclipse.tahu.example.host.file.model;
 
-import org.eclipse.tahu.message.model.EdgeNodeId;
+import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 
 public class EdgeNode {
 
 	private final String groupName;
 	private final String edgeNodeName;
-	private final EdgeNodeId edgeNodeId;
+	private final EdgeNodeDescriptor edgeNodeDescriptor;
 
 	private boolean online;
 	private long lastSeqNumber;
@@ -20,7 +20,7 @@ public class EdgeNode {
 	public EdgeNode(String groupName, String edgeNodeName) {
 		this.groupName = groupName;
 		this.edgeNodeName = edgeNodeName;
-		this.edgeNodeId = new EdgeNodeId(groupName, edgeNodeName);
+		this.edgeNodeDescriptor = new EdgeNodeDescriptor(groupName, edgeNodeName);
 		this.online = false;
 		this.lastSeqNumber = 255;
 	}
@@ -33,8 +33,8 @@ public class EdgeNode {
 		return edgeNodeName;
 	}
 
-	public EdgeNodeId getEdgeNodeId() {
-		return edgeNodeId;
+	public EdgeNodeDescriptor getEdgeNodeId() {
+		return edgeNodeDescriptor;
 	}
 
 	public boolean isOnline() {
@@ -57,7 +57,7 @@ public class EdgeNode {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((edgeNodeId == null) ? 0 : edgeNodeId.hashCode());
+		result = prime * result + ((edgeNodeDescriptor == null) ? 0 : edgeNodeDescriptor.hashCode());
 		return result;
 	}
 
@@ -70,10 +70,10 @@ public class EdgeNode {
 		if (getClass() != obj.getClass())
 			return false;
 		EdgeNode other = (EdgeNode) obj;
-		if (edgeNodeId == null) {
-			if (other.edgeNodeId != null)
+		if (edgeNodeDescriptor == null) {
+			if (other.edgeNodeDescriptor != null)
 				return false;
-		} else if (!edgeNodeId.equals(other.edgeNodeId))
+		} else if (!edgeNodeDescriptor.equals(other.edgeNodeDescriptor))
 			return false;
 		return true;
 	}

@@ -42,7 +42,11 @@
   </distributionManagement>
 
   <modules>
-    <module>core/pom.xml</module>
+    <module>lib/core/pom.xml</module>
+    <module>lib/edge/pom.xml</module>
+    <module>lib/host/pom.xml</module>
+    <module>compat_impl/edge/pom.xml</module>
+    <module>compat_impl/host/pom.xml</module>
     <module>examples/records/pom.xml</module>
     <module>examples/listener/pom.xml</module>
     <module>examples/edge_node_control/pom.xml</module>
