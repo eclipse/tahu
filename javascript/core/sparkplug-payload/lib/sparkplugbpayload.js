@@ -111,6 +111,7 @@
             case 1: // Int8
             case 2: // Int16
             case 3: // Int32
+                return new Int32Array([object.intValue])[0];
             case 5: // UInt8
             case 6: // UInt16
                 return object.intValue;
