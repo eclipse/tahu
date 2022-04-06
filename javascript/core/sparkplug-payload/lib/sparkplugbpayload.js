@@ -64,13 +64,13 @@
             case 2: // Int16
             case 3: // Int32
             case 5: // UInt8
-            case 6: // UInt32
+            case 6: // UInt16
                 object.intValue = value;
                 break;
             case 4: // Int64
             case 7: // UInt32
             case 8: // UInt64
-            case 13: // DataTime
+            case 13: // DateTime
                 object.longValue = value;
                 break;
             case 9: // Float
@@ -112,12 +112,12 @@
             case 2: // Int16
             case 3: // Int32
             case 5: // UInt8
-            case 6: // UInt32
+            case 6: // UInt16
                 return object.intValue;
             case 4: // Int64
             case 7: // UInt32
             case 8: // UInt64
-            case 13: // DataTime
+            case 13: // DateTime
                 return object.longValue;
             case 9: // Float
                 return object.floatValue;
