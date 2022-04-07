@@ -116,7 +116,9 @@
             case 6: // UInt16
                 return object.intValue;
             case 4: // Int64
+                return object.longValue.toSigned();
             case 7: // UInt32
+                return object.longValue.toInt();
             case 8: // UInt64
             case 13: // DateTime
                 return object.longValue;
