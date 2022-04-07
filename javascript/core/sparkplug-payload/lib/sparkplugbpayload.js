@@ -225,6 +225,8 @@
                 return "Boolean";
             case 12:
                 return "String";
+            case 13:
+                return "DateTime";
             case 14:
                 return "Text";
             case 15:
