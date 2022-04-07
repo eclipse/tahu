@@ -51,7 +51,7 @@
         Row = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.DataSet.Row'),
         PropertyValue = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertyValue'),
         PropertySet = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertySet'),
-        PropertyList = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertyList'),
+        PropertySetList = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertySetList'),
         MetaData =SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.MetaData'),
         Metric = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.Metric');
 
@@ -475,12 +475,13 @@
             propertySets.push(encodePropertySet(object[i]));
         }
         return PropertySetList.create({
-            "propertySet" : propertySets
+            "propertyset" : propertySets
         });
     }
 
-    decodePropertySetList = function(protoSets) {
-        var propertySets = [];
+    decodePropertySetList = function(protoSetList) {
+        var propertySets = [],
+            protoSets = protoSetList.propertyset;
         for (var i = 0; i < protoSets.length; i++) {
             propertySets.push(decodePropertySet(protoSets[i]));
         }
