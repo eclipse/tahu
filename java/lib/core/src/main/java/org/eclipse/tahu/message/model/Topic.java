@@ -28,9 +28,9 @@ public class Topic {
 	private final String namespace;
 
 	/**
-	 * The combination of the Group ID and the Edge Node ID
+	 * The {@link SparkplugDesciptor} for this Edge Node or Device
 	 */
-	private final String edgeNodeDescriptor;
+	private final SparkplugDescriptor sparkplugDescriptor;
 
 	/**
 	 * The ID of the logical grouping of Edge of Network (EoN) Nodes and devices.
@@ -64,7 +64,9 @@ public class Topic {
 	public Topic(String namespace, String groupId, String edgeNodeId, String deviceId, MessageType type) {
 		super();
 		this.namespace = namespace;
-		this.edgeNodeDescriptor = groupId + "/" + edgeNodeId;
+		this.sparkplugDescriptor = deviceId == null
+				? new EdgeNodeDescriptor(groupId, edgeNodeId)
+				: new DeviceDescriptor(groupId, edgeNodeId, deviceId);
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = deviceId;
@@ -82,7 +84,7 @@ public class Topic {
 	public Topic(String namespace, String groupId, String edgeNodeId, MessageType type) {
 		super();
 		this.namespace = namespace;
-		this.edgeNodeDescriptor = groupId + "/" + edgeNodeId;
+		this.sparkplugDescriptor = new EdgeNodeDescriptor(groupId, edgeNodeId);
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = null;
@@ -99,12 +101,12 @@ public class Topic {
 	}
 
 	/**
-	 * Returns the Sparkplug EdgeNodeDescriptor
+	 * Returns the {@link SparkplugDescriptor}
 	 * 
-	 * @return the EdgeNodeDescriptor of the form group_id/edge_node_id
+	 * @return the SparkplugDescriptor
 	 */
-	public String getEdgeNodeDescriptor() {
-		return edgeNodeDescriptor;
+	public SparkplugDescriptor getSparkplugDescriptor() {
+		return sparkplugDescriptor;
 	}
 
 	/**
