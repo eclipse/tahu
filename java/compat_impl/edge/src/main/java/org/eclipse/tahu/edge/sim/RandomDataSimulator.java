@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.eclipse.tahu.message.model.DeviceDescriptor;
+import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
@@ -32,8 +34,7 @@ public class RandomDataSimulator implements DataSimulator {
 	private final Map<SparkplugDescriptor, Integer> numDeviceMetrics;
 
 	private final Random random = new Random();
-	private final Map<String, Metric> nodeMetricMap = new HashMap<>();
-	private final Map<SparkplugDescriptor, Map<String, Metric>> deviceMetricMaps = new HashMap<>();
+	private final Map<SparkplugDescriptor, Map<String, Metric>> metricMaps = new HashMap<>();
 	private final Map<SparkplugDescriptor, Long> lastUpdateMap = new HashMap<>();
 
 	public RandomDataSimulator(int numNodeMetrics, Map<SparkplugDescriptor, Integer> numDeviceMetrics) {
@@ -41,19 +42,23 @@ public class RandomDataSimulator implements DataSimulator {
 		this.numDeviceMetrics = numDeviceMetrics;
 	}
 
-	public SparkplugBPayloadMap getNBirthPayload(SparkplugDescriptor sparkplugDescriptor) {
+	// DataSimultor API
+	@Override
+	public SparkplugBPayloadMap getNodeBirthPayload(EdgeNodeDescriptor edgeNodeDescriptor) {
 		try {
 			Date now = new Date();
+			Map<String, Metric> metricMap = new HashMap<>();
 
 			SparkplugBPayloadMapBuilder payloadBuilder = new SparkplugBPayloadMapBuilder();
 			payloadBuilder.setTimestamp(now);
 			for (int i = 0; i < numNodeMetrics; i++) {
 				Metric metric = getRandomMetric("NT", i, true);
-				nodeMetricMap.put(metric.getName(), metric);
+				metricMap.put(metric.getName(), metric);
 				payloadBuilder.addMetric(metric);
 			}
 
-			lastUpdateMap.put(sparkplugDescriptor, now.getTime());
+			metricMaps.put(edgeNodeDescriptor, metricMap);
+			lastUpdateMap.put(edgeNodeDescriptor, now.getTime());
 			return payloadBuilder.createPayload();
 		} catch (Exception e) {
 			logger.error("Failed to get the NBIRTH", e);
@@ -61,26 +66,72 @@ public class RandomDataSimulator implements DataSimulator {
 		}
 	}
 
-	public SparkplugBPayload getDBirth(SparkplugDescriptor sparkplugDescriptor) {
+	// DataSimultor API
+	@Override
+	public SparkplugBPayload getDeviceBirthPayload(DeviceDescriptor deviceDescriptor) {
 		try {
 			Date now = new Date();
 			Map<String, Metric> metricMap = new HashMap<>();
 
 			SparkplugBPayloadBuilder payloadBuilder = new SparkplugBPayloadBuilder();
 			payloadBuilder.setTimestamp(now);
-			for (int i = 0; i < numDeviceMetrics.get(sparkplugDescriptor); i++) {
+			logger.info("Getting number of metrics for {}", deviceDescriptor);
+			for (int i = 0; i < numDeviceMetrics.get(deviceDescriptor); i++) {
 				Metric metric = getRandomMetric("DT", i, true);
 				metricMap.put(metric.getName(), metric);
 				payloadBuilder.addMetric(metric);
 			}
 
-			deviceMetricMaps.put(sparkplugDescriptor, metricMap);
-			lastUpdateMap.put(sparkplugDescriptor, now.getTime());
+			metricMaps.put(deviceDescriptor, metricMap);
+			lastUpdateMap.put(deviceDescriptor, now.getTime());
 			return payloadBuilder.createPayload();
 		} catch (Exception e) {
 			logger.error("Failed to get the DBIRTH", e);
 			return null;
 		}
+	}
+
+	// DataSimultor API
+	@Override
+	public SparkplugBPayload getDeviceDataPayload(DeviceDescriptor deviceDescriptor) {
+		try {
+			Date now = new Date();
+			Map<String, Metric> metricMap = new HashMap<>();
+
+			SparkplugBPayloadBuilder payloadBuilder = new SparkplugBPayloadBuilder();
+			payloadBuilder.setTimestamp(now);
+			logger.info("Getting number of metrics for {}", deviceDescriptor);
+			for (int i = 0; i < numDeviceMetrics.get(deviceDescriptor); i++) {
+				Metric metric = getRandomMetric("DT", i, true);
+				metricMap.put(metric.getName(), metric);
+				payloadBuilder.addMetric(metric);
+			}
+
+			metricMaps.put(deviceDescriptor, metricMap);
+			lastUpdateMap.put(deviceDescriptor, now.getTime());
+			return payloadBuilder.createPayload();
+		} catch (Exception e) {
+			logger.error("Failed to get the DBIRTH", e);
+			return null;
+		}
+	}
+
+	// DataSimultor API
+	@Override
+	public boolean hasMetric(SparkplugDescriptor sparkplugDescriptor, String metricName) {
+		if (metricMaps.containsKey(sparkplugDescriptor)
+				&& metricMaps.get(sparkplugDescriptor).get(metricName) != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// DataSimultor API
+	@Override
+	public Metric handleMetricWrite(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
+		// No-op for this simulator - just return the metric as though the value was 'written'
+		return metric;
 	}
 
 	private Metric getRandomMetric(String namePrefix, int index, boolean isBirth) throws Exception {

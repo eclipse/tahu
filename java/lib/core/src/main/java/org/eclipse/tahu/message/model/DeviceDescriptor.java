@@ -51,6 +51,10 @@ public class DeviceDescriptor extends EdgeNodeDescriptor {
 		return descriptorString;
 	}
 
+	public String getEdgeNodeDescriptorString() {
+		return super.getDescriptorString();
+	}
+
 	@Override
 	public int hashCode() {
 		return this.getDescriptorString().hashCode();

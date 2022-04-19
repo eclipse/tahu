@@ -14,9 +14,12 @@ import java.util.TimerTask;
 import org.eclipse.tahu.edge.api.MetricHandler;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
+import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
+import org.eclipse.tahu.message.model.MessageType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugMeta;
+import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttOperatorDefs;
@@ -84,15 +87,28 @@ public class EdgeClient implements Runnable {
 		connectedToPrimaryHost = false;
 	}
 
-//	public void connect() {
-//		synchronized (clientLock) {
-//			try {
-//				tahuClient.connect();
-//			} catch (Exception e) {
-//				logger.error("Failed to connect", e);
-//			}
-//		}
-//	}
+	public void shutdwon() {
+		stayRunning = false;
+		connectedToPrimaryHost = false;
+		connectedToMqttServer = false;
+		disconnect(false);
+	}
+
+	public boolean isDisconnectedOrDisconnecting() {
+		return tahuClient.isDisconnectInProgress() || !tahuClient.isConnected();
+	}
+
+	public boolean isConnected() {
+		if (tahuClient == null || !tahuClient.isConnected()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public boolean isConnectedToPrimaryHost() {
+		return connectedToPrimaryHost;
+	}
 
 	public void disconnect(boolean publishLwt) {
 		synchronized (clientLock) {
@@ -122,34 +138,42 @@ public class EdgeClient implements Runnable {
 					logger.error("Error while attempting to close client: {}", connectionId, t);
 				}
 			}
+
+			connectedToMqttServer = false;
 		}
 	}
 
-	void publishSparkplugMessage(String topic, SparkplugBPayload payload, int qos, boolean retained) {
+	private void publishSparkplugMessage(Topic topic, SparkplugBPayload payload, int qos, boolean retained) {
 		synchronized (clientLock) {
 			try {
 				payload.setSeq(getNextSeqNum());
-				tahuClient.publish(topic, new SparkplugBPayloadEncoder().getBytes(payload), qos, retained);
+				tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload), qos, retained);
 			} catch (Exception e) {
 				logger.error("Failed to publish message on topic={}", topic, e);
 			}
 		}
 	}
 
-	public void publishNodeData() {
-
+	public void publishNodeBirth(SparkplugBPayload payload) {
+		publishSparkplugMessage(
+				new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, edgeNodeDescriptor, MessageType.NBIRTH), payload, 0,
+				false);
 	}
 
-	public void publishDeviceData() {
-
+	public void publishNodeData(SparkplugBPayload payload) {
+		publishSparkplugMessage(
+				new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, edgeNodeDescriptor, MessageType.NDATA), payload, 0,
+				false);
 	}
 
-	public void publishNodeDeath() {
-
+	public void publishDeviceBirth(String deviceId, SparkplugBPayload payload) {
+		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
+				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DBIRTH), payload, 0, false);
 	}
 
-	public void publishDeviceDeath() {
-
+	public void publishDeviceData(String deviceId, SparkplugBPayload payload) {
+		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
+				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDATA), payload, 0, false);
 	}
 
 	public long getNextSeqNum() {
@@ -240,6 +264,7 @@ public class EdgeClient implements Runnable {
 					if (transitionToOnline) {
 						// In a transition to an MQTT session, publish the NBIRTH and DBIRTH messages.
 						transitionToOnline = false;
+						connectedToMqttServer = true;
 
 						// Check if the server type is NOT JSON and we have specified a primary host ID
 						if (primaryHostId != null && !primaryHostId.isEmpty()) {
@@ -290,7 +315,7 @@ public class EdgeClient implements Runnable {
 			}
 
 			try {
-				String deathTopic = metricHandler.getDeathTopic();
+				Topic deathTopic = metricHandler.getDeathTopic();
 				byte[] deathPayloadBytes = null;
 				try {
 					deathPayloadBytes = metricHandler.getDeathPayloadBytes();
@@ -307,9 +332,9 @@ public class EdgeClient implements Runnable {
 					return false;
 				}
 
-				tahuClient =
-						new TahuClient(clientId, mqttServerName, mqttServerUrl, username, password, true, keepAlive,
-								callback, randomStartupDelay, null, null, false, deathTopic, deathPayloadBytes, false);
+				tahuClient = new TahuClient(clientId, mqttServerName, mqttServerUrl, username, password, true,
+						keepAlive, callback, randomStartupDelay, null, null, false, deathTopic.toString(),
+						deathPayloadBytes, false);
 				tahuClient.setTrackFirstConnection(true);
 				tahuClient.setAutoReconnect(false);
 
@@ -402,23 +427,25 @@ public class EdgeClient implements Runnable {
 	 * @param state the state
 	 */
 	public void handleStateMessage(String primaryHostId, String state) {
-		if (this.primaryHostId != null && this.primaryHostId.equals(primaryHostId)) {
-			if (state.equals("ONLINE")) {
-				logger.info("Critical/Primary app is ONLINE - cancelling disconnect timer");
-				if (primaryHostIdResponseTimer != null) {
-					primaryHostIdResponseTimer.cancel();
-					primaryHostIdResponseTimer = null;
-				}
-				handleOnlineTransition("STATE CHANGE");
-			} else if (state.equals("OFFLINE")) {
-				logger.error("Critical/Primary app went OFFLINE - disconnecting from this server");
-				// Check if currently connected to primary host
-				if (connectedToPrimaryHost) {
-					connectedToPrimaryHost = false;
-					disconnect(true);
-				} else {
-					// Disconnect cleanly and don't publish LWT
-					disconnect(false);
+		synchronized (clientLock) {
+			if (this.primaryHostId != null && this.primaryHostId.equals(primaryHostId)) {
+				if (state.equals("ONLINE") && !connectedToPrimaryHost) {
+					logger.info("Critical/Primary app is ONLINE - cancelling disconnect timer");
+					if (primaryHostIdResponseTimer != null) {
+						primaryHostIdResponseTimer.cancel();
+						primaryHostIdResponseTimer = null;
+					}
+					handleOnlineTransition("STATE CHANGE");
+				} else if (state.equals("OFFLINE")) {
+					logger.error("Critical/Primary app went OFFLINE - disconnecting from this server");
+					// Check if currently connected to primary host
+					if (connectedToPrimaryHost) {
+						connectedToPrimaryHost = false;
+						disconnect(true);
+					} else {
+						// Disconnect cleanly and don't publish LWT
+						disconnect(false);
+					}
 				}
 			}
 		}
