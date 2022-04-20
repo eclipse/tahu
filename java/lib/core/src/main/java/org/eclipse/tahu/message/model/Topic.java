@@ -53,13 +53,13 @@ public class Topic {
 	private final MessageType type;
 
 	/**
-	 * A Constructor.
+	 * A Constructor for Device Topics
 	 * 
-	 * @param namespace the namespace.
-	 * @param groupId the group ID.
-	 * @param edgeNodeId the edge node ID.
-	 * @param deviceId the device ID.
-	 * @param type the message type.
+	 * @param namespace the namespace
+	 * @param groupId the group ID
+	 * @param edgeNodeId the edge node ID
+	 * @param deviceId the device ID
+	 * @param type the message type
 	 */
 	public Topic(String namespace, String groupId, String edgeNodeId, String deviceId, MessageType type) {
 		super();
@@ -74,12 +74,12 @@ public class Topic {
 	}
 
 	/**
-	 * A Constructor.
+	 * A Constructor for Edge Node Topics
 	 * 
-	 * @param namespace the namespace.
-	 * @param groupId the group ID.
-	 * @param edgeNodeId the edge node ID.
-	 * @param type the message type.
+	 * @param namespace the namespace
+	 * @param groupId the group ID
+	 * @param edgeNodeId the edge node ID
+	 * @param type the message type
 	 */
 	public Topic(String namespace, String groupId, String edgeNodeId, MessageType type) {
 		super();
@@ -89,6 +89,29 @@ public class Topic {
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = null;
 		this.type = type;
+	}
+
+	/**
+	 * A Constructor for Device Topics
+	 * 
+	 * @param namespace the namespace
+	 * @param deviceDescriptor the {@link EdgeNodeDescriptor}
+	 * @param type the message type
+	 */
+	public Topic(String namespace, DeviceDescriptor deviceDescriptor, MessageType type) {
+		this(namespace, deviceDescriptor.getGroupId(), deviceDescriptor.getEdgeNodeId(), deviceDescriptor.getDeviceId(),
+				type);
+	}
+
+	/**
+	 * A Constructor for Edge Node Topics
+	 * 
+	 * @param namespace the namespace
+	 * @param edgeNodeDescriptor the {@link EdgeNodeDescriptor}
+	 * @param type the message type
+	 */
+	public Topic(String namespace, EdgeNodeDescriptor edgeNodeDescriptor, MessageType type) {
+		this(namespace, edgeNodeDescriptor.getGroupId(), edgeNodeDescriptor.getEdgeNodeId(), type);
 	}
 
 	/**
