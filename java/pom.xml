@@ -29,13 +29,6 @@
   <packaging>pom</packaging>
 
   <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-        </repository>
-
     <snapshotRepository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
