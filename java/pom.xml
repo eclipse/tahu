@@ -29,16 +29,14 @@
   <packaging>pom</packaging>
 
   <distributionManagement>
-    <repository>
-      <id>aws-release</id>
-      <name>AWS S3 Release Repository</name>
-      <url>s3://cirrus-link-maven-repo/release</url>
-    </repository>
     <snapshotRepository>
-      <id>aws-snapshot</id>
-      <name>AWS S3 Snapshot Repository</name>
-      <url>s3://cirrus-link-maven-repo/snapshot</url>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
   </distributionManagement>
 
   <modules>
@@ -135,6 +133,30 @@
           <source>1.8</source>
           <target>1.8</target>
           <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!--
+          Use the Nexus Staging plugin as a full replacement for the standard
+          Maven Deploy plugin.
+          See https://github.com/sonatype/nexus-maven-plugins/tree/master/staging/maven-plugin
+          why this makes sense :-)
+          We can control whether we want to deploy to the Eclipse repo or Maven Central
+          by a combination of the version being a SNAPHOT or release version and property
+          skipStaging=true/false.
+          In any case we can take advantage of the plugin's "deferred deploy" feature which
+          makes sure that all artifacts of a multi-module project are deployed as a whole
+          at the end of the build process instead of deploying each module's artifacts
+          individually as part of building the module.
+        -->
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.8</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
     </plugins>
