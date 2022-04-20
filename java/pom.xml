@@ -25,7 +25,7 @@
 
   <groupId>org.eclipse.tahu</groupId>
   <artifactId>tahu</artifactId>
-  <version>0.5.14</version>
+  <version>0.5.15-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <distributionManagement>
