@@ -51,7 +51,7 @@
         Row = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.DataSet.Row'),
         PropertyValue = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertyValue'),
         PropertySet = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertySet'),
-        PropertyList = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertyList'),
+        PropertySetList = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertySetList'),
         MetaData =SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.MetaData'),
         Metric = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.Metric');
 
@@ -64,13 +64,13 @@
             case 2: // Int16
             case 3: // Int32
             case 5: // UInt8
-            case 6: // UInt32
+            case 6: // UInt16
                 object.intValue = value;
                 break;
             case 4: // Int64
             case 7: // UInt32
             case 8: // UInt64
-            case 13: // DataTime
+            case 13: // DateTime
                 object.longValue = value;
                 break;
             case 9: // Float
@@ -111,13 +111,16 @@
             case 1: // Int8
             case 2: // Int16
             case 3: // Int32
+                return new Int32Array([object.intValue])[0];
             case 5: // UInt8
-            case 6: // UInt32
+            case 6: // UInt16
                 return object.intValue;
             case 4: // Int64
+                return object.longValue.toSigned();
             case 7: // UInt32
+                return object.longValue.toInt();
             case 8: // UInt64
-            case 13: // DataTime
+            case 13: // DateTime
                 return object.longValue;
             case 9: // Float
                 return object.floatValue;
@@ -222,6 +225,8 @@
                 return "Boolean";
             case 12:
                 return "String";
+            case 13:
+                return "DateTime";
             case 14:
                 return "Text";
             case 15:
@@ -470,12 +475,13 @@
             propertySets.push(encodePropertySet(object[i]));
         }
         return PropertySetList.create({
-            "propertySet" : propertySets
+            "propertyset" : propertySets
         });
     }
 
-    decodePropertySetList = function(protoSets) {
-        var propertySets = [];
+    decodePropertySetList = function(protoSetList) {
+        var propertySets = [],
+            protoSets = protoSetList.propertyset;
         for (var i = 0; i < protoSets.length; i++) {
             propertySets.push(decodePropertySet(protoSets[i]));
         }
