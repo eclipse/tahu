@@ -141,6 +141,11 @@ var sample = (function () {
         // Create the SparkplugClient
         sparkplugClient = SparkplugClient.newClient(config);
         
+        // Create Incoming Message Handler
+        sparkPlugClient.on('message', function(topic, payload) {
+            console.log(topic, payload);
+        })
+
         // Create 'birth' handler
         sparkplugClient.on('birth', function () {
             // Publish Node BIRTH certificate
