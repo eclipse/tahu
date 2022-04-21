@@ -51,6 +51,11 @@
     <module>examples/udt/pom.xml</module>
     <module>examples/raspberry_pi/pom.xml</module>
     <module>examples/host_file/pom.xml</module>
+
+    <!--
+      Do no change the order of these modules below - the last module MUST be deployed to Maven Central per this
+      https://issues.sonatype.org/browse/NEXUS-9138
+    -->
     <module>lib/edge/pom.xml</module>
     <module>lib/host/pom.xml</module>
     <module>compat_impl/edge/pom.xml</module>
@@ -184,7 +189,7 @@
         <extensions>true</extensions>
         <configuration>
           <serverId>ossrh</serverId>
-          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
