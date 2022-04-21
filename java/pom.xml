@@ -20,6 +20,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.basedir>${project.basedir}</main.basedir>
     <paho.version>1.2.5</paho.version>
+    <jackson.version>2.13.2</jackson.version>
+    <logback.version>1.2.9</logback.version>
     <protobuf.version>3.16.1</protobuf.version>
   </properties>
 
@@ -41,10 +43,6 @@
 
   <modules>
     <module>lib/core/pom.xml</module>
-    <module>lib/edge/pom.xml</module>
-    <module>lib/host/pom.xml</module>
-    <module>compat_impl/edge/pom.xml</module>
-    <module>compat_impl/host/pom.xml</module>
     <module>examples/records/pom.xml</module>
     <module>examples/listener/pom.xml</module>
     <module>examples/edge_node_control/pom.xml</module>
@@ -53,7 +51,10 @@
     <module>examples/udt/pom.xml</module>
     <module>examples/raspberry_pi/pom.xml</module>
     <module>examples/host_file/pom.xml</module>
-    <module>.dummy/pom.xml</module>
+    <module>lib/edge/pom.xml</module>
+    <module>lib/host/pom.xml</module>
+    <module>compat_impl/edge/pom.xml</module>
+    <module>compat_impl/host/pom.xml</module>
   </modules>
 
   <dependencies>
@@ -93,17 +94,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.13.2.1</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.13.2.1</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.13.2.1</version>
+      <version>${jackson.version}</version>
     </dependency>
 
     <!-- Logging -->
@@ -115,12 +116,12 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.9</version>
+      <version>${logback.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>1.2.9</version>
+      <version>${logback.version}</version>
     </dependency>
   </dependencies>
 
