@@ -30,6 +30,67 @@
   <version>0.5.15-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <name>Eclipse Tahu</name>
+  <url>http://www.eclipse.org/tahu</url>
+  <description>
+    The Tahu project provides open-source implementations of Eclipse Sparkplug
+  </description>
+
+  <organization>
+    <name>Eclipse Tahu</name>
+    <url>http://www.eclipse.org/tahu</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <id>ibinshtok</id>
+      <name>Ilya Binshtok</name>
+      <organization>Cirrus Link Solutions</organization>
+      <organizationUrl>http://www.cirrus-link.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>nathandavenport</id>
+      <name>Nathan Davenport</name>
+      <organization>Cirrus Link Solutions</organization>
+      <organizationUrl>http://www.cirrus-link.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>wes-johnson</id>
+      <name>Wes Johnson</name>
+      <organization>Cirrus Link Solutions</organization>
+      <organizationUrl>http://www.cirrus-link.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ckienle</id>
+      <name>Chad Kienle</name>
+      <organization>Cirrus Link Solutions</organization>
+      <organizationUrl>http://www.cirrus-link.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>Eclipse Public License - Version 2.0</name>
+      <url>https://www.eclipse.org/legal/epl-2.0</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/eclipse/tahu.git</url>
+    <connection>scm:git:git@github.com:eclipse/tahu.git</connection>
+  </scm>
+
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
@@ -184,7 +245,7 @@
           <serverId>ossrh</serverId>
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
-          <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+          <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
         </configuration>
       </plugin>
     </plugins>
