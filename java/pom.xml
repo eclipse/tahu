@@ -41,6 +41,7 @@
     </repository>
   </distributionManagement>
 
+<!--
   <modules>
     <module>lib/core/pom.xml</module>
     <module>examples/records/pom.xml</module>
@@ -56,6 +57,7 @@
     <module>compat_impl/edge/pom.xml</module>
     <module>compat_impl/host/pom.xml</module>
   </modules>
+-->
 
   <dependencies>
     <dependency>
@@ -128,13 +130,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <configuration>
-          <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>
@@ -186,6 +181,7 @@
           <serverId>ossrh</serverId>
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
+          <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
         </configuration>
       </plugin>
     </plugins>
