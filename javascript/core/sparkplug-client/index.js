@@ -290,7 +290,7 @@ var SparkplugClient = /** @class */ (function (_super) {
     // Configures and connects the client
     SparkplugClient.prototype.init = function () {
         var _this = this;
-        var deathPayload = this.getDeathPayload();
+        var deathPayload = this.getDeathPayload(), 
         // Client connection options
         clientOptions = {
             "clientId": this.clientId,
@@ -393,7 +393,7 @@ var SparkplugClient = /** @class */ (function (_super) {
                 _this.emit("dcmd", splitTopic[4], payload);
             }
             else {
-                logger.info("Message received on unknown topic " + topic);
+                _this.emit("message", topic, payload);
             }
         });
     };
