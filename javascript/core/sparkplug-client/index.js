@@ -1,15 +1,4 @@
 "use strict";
-/**
- * Copyright (c) 2016-2017 Cirrus Link Solutions
- *
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  which accompanies this distribution, and is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *   Cirrus Link Solutions
- */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -25,9 +14,59 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-exports.__esModule = true;
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.newClient = void 0;
-var mqtt = require('mqtt'), sparkplug = require('sparkplug-payload'), sparkplugbpayload = sparkplug.get("spBv1.0"), events = require('events'), pako = require('pako'), winston = require('winston');
+/**
+ * Copyright (c) 2016-2017 Cirrus Link Solutions
+ *
+ *  All rights reserved. This program and the accompanying materials
+ *  are made available under the terms of the Eclipse Public License v1.0
+ *  which accompanies this distribution, and is available at
+ *  http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Cirrus Link Solutions
+ */
+var mqtt = __importStar(require("mqtt"));
+var events_1 = __importDefault(require("events"));
+var sparkplug = require('sparkplug-payload'), sparkplugbpayload = sparkplug.get("spBv1.0"), pako = require('pako'), winston = require('winston');
 var compressed = "SPBV1.0_COMPRESSED";
 // Config for winston logging
 var logger = winston.createLogger({
@@ -39,7 +78,7 @@ var logger = winston.createLogger({
 });
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
-        format: winston.format.simple()
+        format: winston.format.simple(),
     }));
 }
 function getRequiredProperty(config, propName) {
@@ -68,12 +107,8 @@ var SparkplugClient = /** @class */ (function (_super) {
         _this.type_boolean = 11;
         _this.type_string = 12;
         _this.versionB = "spBv1.0";
-        _this.serverUrl = getRequiredProperty(config, "serverUrl");
-        _this.username = getRequiredProperty(config, "username");
-        _this.password = getRequiredProperty(config, "password");
         _this.groupId = getRequiredProperty(config, "groupId");
         _this.edgeNode = getRequiredProperty(config, "edgeNode");
-        _this.clientId = getRequiredProperty(config, "clientId");
         _this.publishDeath = getProperty(config, "publishDeath", false);
         _this.version = getProperty(config, "version", _this.versionB);
         _this.bdSeq = 0;
@@ -82,6 +117,19 @@ var SparkplugClient = /** @class */ (function (_super) {
         _this.client = null;
         _this.connecting = false;
         _this.connected = false;
+        // Client connection options
+        _this.serverUrl = getRequiredProperty(config, "serverUrl");
+        var username = getRequiredProperty(config, "username");
+        var password = getRequiredProperty(config, "password");
+        var clientId = getRequiredProperty(config, "clientId");
+        var keepalive = getProperty(config, "keepalive", 5);
+        _this.mqttOptions = __assign(__assign({}, config.mqttOptions || {}), { // allow additional options
+            clientId: clientId, clean: true, keepalive: keepalive, reschedulePings: false, connectTimeout: 30, username: username, password: password, will: {
+                topic: _this.version + "/" + _this.groupId + "/NDEATH/" + _this.edgeNode,
+                payload: _this.encodePayload(_this.getDeathPayload()),
+                qos: 0,
+                retain: false,
+            } });
         _this.init();
         return _this;
     }
@@ -290,28 +338,11 @@ var SparkplugClient = /** @class */ (function (_super) {
     // Configures and connects the client
     SparkplugClient.prototype.init = function () {
         var _this = this;
-        var deathPayload = this.getDeathPayload(), 
-        // Client connection options
-        clientOptions = {
-            "clientId": this.clientId,
-            "clean": true,
-            "keepalive": 5,
-            "reschedulePings": false,
-            "connectionTimeout": 30,
-            "username": this.username,
-            "password": this.password,
-            "will": {
-                "topic": this.version + "/" + this.groupId + "/NDEATH/" + this.edgeNode,
-                "payload": this.encodePayload(deathPayload),
-                "qos": 0,
-                "retain": false
-            }
-        };
         // Connect to the MQTT server
         this.connecting = true;
         logger.debug("Attempting to connect: " + this.serverUrl);
-        logger.debug("              options: " + JSON.stringify(clientOptions));
-        this.client = mqtt.connect(this.serverUrl, clientOptions);
+        logger.debug("              options: " + JSON.stringify(this.mqttOptions));
+        this.client = mqtt.connect(this.serverUrl, this.mqttOptions);
         logger.debug("Finished attempting to connect");
         /*
          * 'connect' handler
@@ -398,7 +429,7 @@ var SparkplugClient = /** @class */ (function (_super) {
         });
     };
     return SparkplugClient;
-}(events.EventEmitter));
+}(events_1.default.EventEmitter));
 function newClient(config) {
     return new SparkplugClient(config);
 }

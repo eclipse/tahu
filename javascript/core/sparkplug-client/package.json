@@ -4,7 +4,8 @@
   "description": "A client module for MQTT communication using the Sparkplug specification from Cirrus Link Solutions",
   "main": "index.js",
   "scripts": {
-    "build": "tsc index.ts"
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
   "repository": {
     "type": "git",

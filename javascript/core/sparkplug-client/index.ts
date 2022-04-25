@@ -9,11 +9,12 @@
  * Contributors:
  *   Cirrus Link Solutions
  */
+import * as mqtt from 'mqtt';
+import type { IClientOptions } from 'mqtt';
+import events from 'events';
 
-const mqtt = require('mqtt'),
-    sparkplug = require('sparkplug-payload'),
+const sparkplug = require('sparkplug-payload'),
     sparkplugbpayload = sparkplug.get("spBv1.0"),
-    events = require('events'),
     pako = require('pako'),
     winston = require('winston');
 
@@ -41,12 +42,25 @@ function getRequiredProperty(config, propName) {
     throw new Error("Missing required configuration property '" + propName + "'");
 }
 
-function getProperty(config, propName, defaultValue) {
+function getProperty<C, P extends keyof C>(config: C, propName: P, defaultValue: C[P]) {
     if (config[propName] !== undefined) {
         return config[propName];
     } else {
         return defaultValue;
     }
+}
+
+export type ISparkplugClientOptions = {
+    serverUrl: string;
+    username: string;
+    password: string;
+    groupId: string;
+    edgeNode: string;
+    clientId: string;
+    publishDeath?: boolean;
+    version?: string;
+    keepalive?: number;
+    mqttOptions?: Omit<IClientOptions, 'clientId' | 'clean' | 'keepalive' | 'reschedulePings' | 'connectTimeout' | 'username' | 'password' | 'will'>;
 }
 
 /*
@@ -62,13 +76,11 @@ class SparkplugClient extends events.EventEmitter {
 
     // Config Variables
     private serverUrl: string;
-    private username: string;
-    private password: string;
     private groupId: string;
     private edgeNode: string;
-    private clientId: string;
     private publishDeath: boolean;
     private version: string;
+    private mqttOptions: IClientOptions;
 
     // MQTT Client Variables
     private bdSeq: number;
@@ -78,14 +90,10 @@ class SparkplugClient extends events.EventEmitter {
     private connecting: boolean;
     private connected: boolean;
 
-    constructor(config) {
+    constructor(config: ISparkplugClientOptions) {
         super();
-        this.serverUrl = getRequiredProperty(config, "serverUrl");
-        this.username = getRequiredProperty(config, "username");
-        this.password = getRequiredProperty(config, "password");
         this.groupId = getRequiredProperty(config, "groupId");
         this.edgeNode = getRequiredProperty(config, "edgeNode");
-        this.clientId = getRequiredProperty(config, "clientId");
         this.publishDeath = getProperty(config, "publishDeath", false);
         this.version = getProperty(config, "version", this.versionB);
         this.bdSeq = 0;
@@ -94,6 +102,29 @@ class SparkplugClient extends events.EventEmitter {
         this.client = null;
         this.connecting = false;
         this.connected = false;
+
+        // Client connection options
+        this.serverUrl = getRequiredProperty(config, "serverUrl");
+        const username = getRequiredProperty(config, "username");
+        const password = getRequiredProperty(config, "password");
+        const clientId = getRequiredProperty(config, "clientId");
+        const keepalive = getProperty(config, "keepalive", 5);
+        this.mqttOptions = {
+            ...config.mqttOptions || {}, // allow additional options
+            clientId,
+            clean: true,
+            keepalive,
+            reschedulePings: false,
+            connectTimeout: 30,
+            username,
+            password,
+            will: {
+                topic: this.version + "/" + this.groupId + "/NDEATH/" + this.edgeNode,
+                payload: this.encodePayload(this.getDeathPayload()),
+                qos: 0,
+                retain: false,
+            },
+        };
 
         this.init();
     }
@@ -326,29 +357,12 @@ class SparkplugClient extends events.EventEmitter {
 
     // Configures and connects the client
     private init() {
-        let deathPayload = this.getDeathPayload(),
-            // Client connection options
-            clientOptions = {
-                "clientId": this.clientId,
-                "clean": true,
-                "keepalive": 5,
-                "reschedulePings": false,
-                "connectionTimeout": 30,
-                "username": this.username,
-                "password": this.password,
-                "will": {
-                    "topic": this.version + "/" + this.groupId + "/NDEATH/" + this.edgeNode,
-                    "payload": this.encodePayload(deathPayload),
-                    "qos": 0,
-                    "retain": false
-                }
-            };
 
         // Connect to the MQTT server
         this.connecting = true;
         logger.debug("Attempting to connect: " + this.serverUrl);
-        logger.debug("              options: " + JSON.stringify(clientOptions));
-        this.client = mqtt.connect(this.serverUrl, clientOptions);
+        logger.debug("              options: " + JSON.stringify(this.mqttOptions));
+        this.client = mqtt.connect(this.serverUrl, this.mqttOptions);
         logger.debug("Finished attempting to connect");
 
         /*
@@ -449,6 +463,6 @@ class SparkplugClient extends events.EventEmitter {
     }
 }
 
-export function newClient(config) {
+export function newClient(config: ISparkplugClientOptions): SparkplugClient {
     return new SparkplugClient(config);
 }
