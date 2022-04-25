@@ -11,45 +11,33 @@
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
 
-import ProtoBuf from 'protobufjs';
+import * as ProtoRoot from './sparkplugPayloadProto';
+import type * as IProtoRoot from './sparkplugPayloadProto';
 
-const SparkplugPayload = ProtoBuf.parse("package org.eclipse.tahu.protobuf; message Payload { message Template { " +
-        "message Parameter { optional string name = 1;optional uint32 type = 2; oneof value { uint32 int_value = 3; uint64 long_value = 4; " +
-        "float float_value = 5; double double_value = 6; bool boolean_value = 7; string string_value = 8; ParameterValueExtension extension_value = 9; } " +
-        "message ParameterValueExtension { extensions 1 to max; } } optional string version = 1; repeated Metric metrics = 2; " +
-        "repeated Parameter parameters = 3; optional string template_ref = 4; optional bool is_definition = 5; extensions 6 to max; } " +
-        "message DataSet { " +
-        "message DataSetValue { oneof value { uint32 int_value = 1; uint64 long_value = 2; float float_value = 3; double double_value = 4; " +
-        "bool boolean_value = 5; string string_value = 6; DataSetValueExtension extension_value = 7; } " +
-        "message DataSetValueExtension { extensions 1 to max; } } " +
-        "message Row { repeated DataSetValue elements = 1; extensions 2 to max; } optional uint64 num_of_columns = 1; repeated string columns = 2; " +
-        "repeated uint32 types = 3; repeated Row rows = 4; extensions 5 to max; } " +
-        "message PropertyValue { optional uint32 type = 1; optional bool is_null = 2;  oneof value { uint32 int_value = 3; uint64 long_value = 4; " +
-        "float float_value = 5; double double_value = 6; bool boolean_value = 7; string string_value = 8; PropertySet propertyset_value = 9; " +
-        "PropertySetList propertysets_value = 10; PropertyValueExtension extension_value = 11; } " +
-        "message PropertyValueExtension { extensions 1 to max; } } " +
-        "message PropertySet { repeated string keys = 1; repeated PropertyValue values = 2; extensions 3 to max; } " +
-        "message PropertySetList { repeated PropertySet propertyset = 1; extensions 2 to max; } " +
-        "message MetaData { optional bool is_multi_part = 1; optional string content_type = 2; optional uint64 size = 3; optional uint64 seq = 4; " +
-        "optional string file_name = 5; optional string file_type = 6; optional string md5 = 7; optional string description = 8; extensions 9 to max; } " +
-        "message Metric { optional string name = 1; optional uint64 alias = 2; optional uint64 timestamp = 3; optional uint32 datatype = 4; " +
-        "optional bool is_historical = 5; optional bool is_transient = 6; optional bool is_null = 7; optional MetaData metadata = 8; " +
-        "optional PropertySet properties = 9; oneof value { uint32 int_value = 10; uint64 long_value = 11; float float_value = 12; double double_value = 13; " +
-        "bool boolean_value = 14; string string_value = 15; bytes bytes_value = 16; DataSet dataset_value = 17; Template template_value = 18; " +
-        "MetricValueExtension extension_value = 19; } " +
-        "message MetricValueExtension { extensions 1 to max; } } optional uint64 timestamp = 1; repeated Metric metrics = 2; optional uint64 seq = 3; " +
-        "optional string uuid = 4; optional bytes body = 5; extensions 6 to max; } ").root,
-    Payload = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload'),
-    Template = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.Template'),
-    Parameter = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.Template.Parameter'),
-    DataSet = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.DataSet'),
-    DataSetValue = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.DataSet.DataSetValue'),
-    Row = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.DataSet.Row'),
-    PropertyValue = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertyValue'),
-    PropertySet = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertySet'),
-    PropertySetList = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.PropertySetList'),
-    MetaData =SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.MetaData'),
-    Metric = SparkplugPayload.lookup('org.eclipse.tahu.protobuf.Payload.Metric');
+const Payload = ProtoRoot.org.eclipse.tahu.protobuf.Payload;
+const Template = Payload.Template;
+const Parameter = Template.Parameter;
+const DataSet = Payload.DataSet;
+const DataSetValue = DataSet.DataSetValue;
+const Row = DataSet.Row;
+const PropertyValue = Payload.PropertyValue;
+const PropertySet = Payload.PropertySet;
+const PropertySetList = Payload.PropertySetList;
+const MetaData = Payload.MetaData;
+const Metric = Payload.Metric;
+
+// import generated interfaces
+type IPayload = IProtoRoot.org.eclipse.tahu.protobuf.IPayload;
+type ITemplate = IProtoRoot.org.eclipse.tahu.protobuf.Payload.ITemplate;
+type IParameter = IProtoRoot.org.eclipse.tahu.protobuf.Payload.Template.IParameter;
+type IDataSet = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IDataSet;
+type IDataSetValue = IProtoRoot.org.eclipse.tahu.protobuf.Payload.DataSet.IDataSetValue;
+type IRow = IProtoRoot.org.eclipse.tahu.protobuf.Payload.DataSet.IRow;
+type IPropertyValue = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IPropertyValue;
+type IPropertySet = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IPropertySet;
+type IPropertySetList = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IPropertySetList;
+type IMetaData = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IMetaData;
+type IMetric = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IMetric;
 
 /**
  * Sets the value of an object given it's type expressed as an integer
@@ -288,8 +276,7 @@ function encodeDataSet (object) {
 }
 
 function decodeDataSet (protoDataSet) {
-    // TODO better type
-    var dataSet: any = {},
+    var dataSet: IDataSet = {},
         protoTypes = protoDataSet.types,
         types = decodeTypes(protoTypes),
         protoRows = protoDataSet.rows,
@@ -363,8 +350,7 @@ function encodeMetaData (object) {
 }
 
 function decodeMetaData (protoMetaData) {
-    // TODO better type
-    var metadata: any = {},
+    var metadata: IMetaData = {},
         isMultiPart = protoMetaData.isMultiPart,
         contentType = protoMetaData.contentType,
         size = protoMetaData.size,
@@ -517,15 +503,15 @@ function encodeTemplate (object) {
         version = object.version;
 
     if (version !== undefined && version !== null) {
-        template.version = version;    
+        template.version = version;
     }
 
     if (ref !== undefined && ref !== null) {
-        template.templateRef = ref;    
+        template.templateRef = ref;
     }
 
     if (isDef !== undefined && isDef !== null) {
-        template.isDefinition = isDef;    
+        template.isDefinition = isDef;
     }
 
     // Build up the metric
@@ -553,7 +539,7 @@ function encodeTemplate (object) {
 }
 
 function decodeTemplate (protoTemplate) {
-    var template: any = {}, // TODO better type
+    var template: ITemplate = {},
         protoMetrics = protoTemplate.metrics,
         protoParameters = protoTemplate.parameters,
         isDef = protoTemplate.isDefinition,
@@ -723,14 +709,14 @@ export function encodePayload(object) {
 
 export function decodePayload(proto) {
     var sparkplugPayload = Payload.decode(proto),
-        payload: any = {}; // TODO better type
+        payload: IPayload = {};
 
     if (sparkplugPayload.hasOwnProperty("timestamp")) {
         payload.timestamp = Number(sparkplugPayload.timestamp);
     }
 
     if (sparkplugPayload.hasOwnProperty("metrics")) {
-        const metrics: any[] = []; // TODO better type
+        const metrics: IMetric[] = [];
         for (var i = 0; i < sparkplugPayload.metrics.length; i++) {
             metrics.push(decodeMetric(sparkplugPayload.metrics[i]));
         }
