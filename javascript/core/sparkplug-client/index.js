@@ -1,15 +1,4 @@
 "use strict";
-/**
- * Copyright (c) 2016-2017 Cirrus Link Solutions
- *
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  which accompanies this distribution, and is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *   Cirrus Link Solutions
- */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -27,7 +16,19 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 exports.newClient = void 0;
-var mqtt = require('mqtt'), sparkplug = require('sparkplug-payload'), sparkplugbpayload = sparkplug.get("spBv1.0"), events = require('events'), pako = require('pako'), winston = require('winston');
+/**
+ * Copyright (c) 2016-2017 Cirrus Link Solutions
+ *
+ *  All rights reserved. This program and the accompanying materials
+ *  are made available under the terms of the Eclipse Public License v1.0
+ *  which accompanies this distribution, and is available at
+ *  http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Cirrus Link Solutions
+ */
+var mqtt = require("mqtt");
+var sparkplug = require('sparkplug-payload'), sparkplugbpayload = sparkplug.get("spBv1.0"), events = require('events'), pako = require('pako'), winston = require('winston');
 var compressed = "SPBV1.0_COMPRESSED";
 // Config for winston logging
 var logger = winston.createLogger({
@@ -68,12 +69,8 @@ var SparkplugClient = /** @class */ (function (_super) {
         _this.type_boolean = 11;
         _this.type_string = 12;
         _this.versionB = "spBv1.0";
-        _this.serverUrl = getRequiredProperty(config, "serverUrl");
-        _this.username = getRequiredProperty(config, "username");
-        _this.password = getRequiredProperty(config, "password");
         _this.groupId = getRequiredProperty(config, "groupId");
         _this.edgeNode = getRequiredProperty(config, "edgeNode");
-        _this.clientId = getRequiredProperty(config, "clientId");
         _this.publishDeath = getProperty(config, "publishDeath", false);
         _this.version = getProperty(config, "version", _this.versionB);
         _this.bdSeq = 0;
@@ -82,6 +79,28 @@ var SparkplugClient = /** @class */ (function (_super) {
         _this.client = null;
         _this.connecting = false;
         _this.connected = false;
+        // MQTT Connection options
+        _this.serverUrl = getRequiredProperty(config, "serverUrl");
+        var username = getRequiredProperty(config, "username");
+        var password = getRequiredProperty(config, "password");
+        var clientId = getRequiredProperty(config, "clientId");
+        var keepalive = getProperty(config, "keepalive", 5);
+        // Client connection options
+        _this.mqttOptions = getProperty(config, "mqttOptions", {
+            clientId: clientId,
+            clean: true,
+            keepalive: keepalive,
+            reschedulePings: false,
+            connectTimeout: 30,
+            username: username,
+            password: password,
+            will: {
+                topic: _this.version + "/" + _this.groupId + "/NDEATH/" + _this.edgeNode,
+                payload: _this.encodePayload(_this.getDeathPayload()),
+                qos: 0,
+                retain: false
+            }
+        });
         _this.init();
         return _this;
     }
@@ -290,28 +309,11 @@ var SparkplugClient = /** @class */ (function (_super) {
     // Configures and connects the client
     SparkplugClient.prototype.init = function () {
         var _this = this;
-        var deathPayload = this.getDeathPayload(), 
-        // Client connection options
-        clientOptions = {
-            "clientId": this.clientId,
-            "clean": true,
-            "keepalive": 5,
-            "reschedulePings": false,
-            "connectionTimeout": 30,
-            "username": this.username,
-            "password": this.password,
-            "will": {
-                "topic": this.version + "/" + this.groupId + "/NDEATH/" + this.edgeNode,
-                "payload": this.encodePayload(deathPayload),
-                "qos": 0,
-                "retain": false
-            }
-        };
         // Connect to the MQTT server
         this.connecting = true;
         logger.debug("Attempting to connect: " + this.serverUrl);
-        logger.debug("              options: " + JSON.stringify(clientOptions));
-        this.client = mqtt.connect(this.serverUrl, clientOptions);
+        logger.debug("              options: " + JSON.stringify(this.mqttOptions));
+        this.client = mqtt.connect(this.serverUrl, this.mqttOptions);
         logger.debug("Finished attempting to connect");
         /*
          * 'connect' handler
