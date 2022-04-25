@@ -665,7 +665,7 @@
         }
 
         if (protoMetric.hasOwnProperty("timestamp")) {
-            metric.timestamp = protoMetric.timestamp.toNumber();
+            metric.timestamp = Number(protoMetric.timestamp);
         }
 
         if (protoMetric.hasOwnProperty("alias")) {
@@ -727,7 +727,7 @@
             payload = {};
 
         if (sparkplugPayload.hasOwnProperty("timestamp")) {
-            payload.timestamp = sparkplugPayload.timestamp.toNumber();
+            payload.timestamp = Number(sparkplugPayload.timestamp);
         }
 
         if (sparkplugPayload.hasOwnProperty("metrics")) {
@@ -739,7 +739,7 @@
         }
 
         if (sparkplugPayload.hasOwnProperty("seq")) {
-            payload.seq = sparkplugPayload.seq.toNumber();
+            payload.seq = Number(sparkplugPayload.seq);
         }
 
         if (sparkplugPayload.hasOwnProperty("uuid")) {
