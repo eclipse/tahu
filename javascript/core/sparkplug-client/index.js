@@ -124,7 +124,7 @@ var SparkplugClient = /** @class */ (function (_super) {
         var clientId = getRequiredProperty(config, "clientId");
         var keepalive = getProperty(config, "keepalive", 5);
         _this.mqttOptions = __assign(__assign({}, config.mqttOptions || {}), { // allow additional options
-            clientId: clientId, clean: true, keepalive: keepalive, reschedulePings: false, connectTimeout: 30, username: username, password: password, will: {
+            clientId: clientId, clean: true, keepalive: keepalive, reschedulePings: false, connectTimeout: 30000, username: username, password: password, will: {
                 topic: _this.version + "/" + _this.groupId + "/NDEATH/" + _this.edgeNode,
                 payload: _this.encodePayload(_this.getDeathPayload()),
                 qos: 0,

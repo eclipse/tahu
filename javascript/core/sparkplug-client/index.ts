@@ -115,7 +115,7 @@ class SparkplugClient extends events.EventEmitter {
             clean: true,
             keepalive,
             reschedulePings: false,
-            connectTimeout: 30,
+            connectTimeout: 30000,
             username,
             password,
             will: {
