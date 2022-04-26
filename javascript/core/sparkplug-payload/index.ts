@@ -13,7 +13,7 @@
 
 import * as sparkplugbpayload from './lib/sparkplugbpayload';
 
-export function get(namespace) {
+export function get(namespace: string | undefined | null) {
     if (namespace !== undefined && namespace !== null) {
         if (namespace === "spBv1.0") {
             return sparkplugbpayload;

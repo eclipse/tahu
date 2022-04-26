@@ -13,6 +13,7 @@
 
 import * as ProtoRoot from './sparkplugPayloadProto';
 import type * as IProtoRoot from './sparkplugPayloadProto';
+import type { Reader } from 'protobufjs';
 
 const Payload = ProtoRoot.org.eclipse.tahu.protobuf.Payload;
 const Template = Payload.Template;
@@ -39,100 +40,135 @@ type IPropertySetList = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IPropertySe
 type IMetaData = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IMetaData;
 type IMetric = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IMetric;
 
+// "user types"
+interface UMetric extends IMetric {
+    value: null | number | Long.Long | boolean | string | Uint8Array | IDataSet | UTemplate;
+    type: string;
+    properties?: Record<string, UPropertyValue>
+}
+interface UPropertyValue extends Omit<IPropertyValue, 'type'> { // TODO is the type supposed to be like the metric type in the readme?
+    value: null | number | Long.Long | boolean | string | IPropertySet | IPropertySetList;
+    type: string;
+}
+interface UParameter extends Omit<IParameter, 'type'> { // TODO is the type supposed to be like the metric type in the readme?
+    value: number | Long.Long | boolean | string | IPropertySet | IPropertySetList;
+    type: string;
+}
+interface UTemplate extends Omit<ITemplate, 'metrics' | 'parameters'> { // TODO is the type supposed to be like the metric type in the readme?
+    metrics?: UMetric[];
+    parameters?: UParameter[];
+}
+interface UDataSet extends Omit<IDataSet, 'types' | 'rows'> {
+    types: string[];
+    rows: IDataSetValue[][];
+}
+type UPropertySet = Record<string, UPropertyValue>;
+type UPropertySetList = UPropertySet[];
+type UserValue = UMetric['value'] | UPropertyValue['value'] | UDataSet | IDataSetValue | UPropertySet | UPropertySetList;
+interface JPayload extends IPayload {
+    metrics?: UMetric[] | null;
+}
+
 /**
  * Sets the value of an object given it's type expressed as an integer
+ * 
+ * only used during encode functions
  */
-function setValue (type, value, object) {
+function setValue (type: number, value: UserValue, object: IMetric | IPropertyValue) {
+    // TODO not sure about type casts
     switch (type) {
         case 1: // Int8
         case 2: // Int16
         case 3: // Int32
         case 5: // UInt8
         case 6: // UInt16
-            object.intValue = value;
+            object.intValue = value as number;
             break;
         case 4: // Int64
         case 7: // UInt32
         case 8: // UInt64
         case 13: // DateTime
-            object.longValue = value;
+            object.longValue = value as number;
             break;
         case 9: // Float
-            object.floatValue = value;
+            object.floatValue = value as number;
             break;
         case 10: // Double
-            object.doubleValue = value;
+            object.doubleValue = value as number;
             break;
         case 11: // Boolean
-            object.booleanValue = value;
+            object.booleanValue = value as boolean;
             break;
         case 12: // String
         case 14: // Text
         case 15: // UUID
-            object.stringValue = value;
+            object.stringValue = value as string;
             break;
         case 16: // DataSet
-            object.datasetValue = encodeDataSet(value);
+            (object as IMetric).datasetValue = encodeDataSet(value as UDataSet);
             break;
         case 17: // Bytes
         case 18: // File
-            object.bytesValue = value;
+            (object as IMetric).bytesValue = value as Uint8Array;
             break;
         case 19: // Template
-            object.templateValue = encodeTemplate(value);
+            (object as IMetric).templateValue = encodeTemplate(value as UTemplate);
             break;
         case 20: // PropertySet
-            object.propertysetValue = encodePropertySet(value);
+            (object as IPropertyValue).propertysetValue = encodePropertySet(value as UPropertySet);
             break;
         case 21:
-            object.propertysetsValue = encodePropertySetList(value);
+            (object as IPropertyValue).propertysetsValue = encodePropertySetList(value as UPropertySetList);
             break;
     } 
 }
 
-function getValue (type, object) {
+/** only used during decode functions */
+function getValue<T extends UserValue> (type: number | null | undefined, object: IMetric | IPropertyValue): T | undefined | null {
+    // TODO change type casts
     switch (type) {
         case 1: // Int8
         case 2: // Int16
         case 3: // Int32
-            return new Int32Array([object.intValue])[0];
+            return new Int32Array([object.intValue!])[0] as T;
         case 5: // UInt8
         case 6: // UInt16
-            return object.intValue;
+            return object.intValue as T;
         case 4: // Int64
-            return object.longValue.toSigned();
+            return (object.longValue as Long.Long).toSigned() as T;
         case 7: // UInt32
-            return object.longValue.toInt();
+            return (object.longValue as Long.Long).toInt() as T;
         case 8: // UInt64
         case 13: // DateTime
-            return object.longValue;
+            return object.longValue! as T;
         case 9: // Float
-            return object.floatValue;
+            return object.floatValue! as T;
         case 10: // Double
-            return object.doubleValue;
+            return object.doubleValue! as T;
         case 11: // Boolean
-            return object.booleanValue;
+            return object.booleanValue! as T;
         case 12: // String
         case 14: // Text
         case 15: // UUID
-            return object.stringValue;
+            return object.stringValue! as T;
         case 16: // DataSet
-            return decodeDataSet(object.datasetValue);
+            return decodeDataSet((object as IMetric).datasetValue!) as T;
         case 17: // Bytes
         case 18: // File
-            return object.bytesValue;
+            return (object as IMetric).bytesValue as T;
         case 19: // Template
-            return decodeTemplate(object.templateValue);
+            return decodeTemplate((object as IMetric).templateValue!) as T;
         case 20: // PropertySet
-            return decodePropertySet(object.propertysetValue);
+            return decodePropertySet((object as IPropertyValue).propertysetValue!) as T;
         case 21:
-            return decodePropertySetList(object.propertysetsValue);
+            return decodePropertySetList((object as IPropertyValue).propertysetsValue!) as T;
         default:
             return null;
     } 
 }
 
-function encodeType (typeString) {
+/** transforms a user friendly type and converts it to its corresponding type code */
+function encodeType (typeString: string): number {
     switch (typeString.toUpperCase()) {
         case "INT8":
             return 1;
@@ -183,7 +219,9 @@ function encodeType (typeString) {
     }
 }
 
-function decodeType (typeInt) {
+/** transforms a type code into a user friendly type */
+// @ts-expect-error TODO no consistent return
+function decodeType (typeInt: number | null | undefined): string {
     switch (typeInt) {
         case 1:
             return "Int8";
@@ -230,24 +268,24 @@ function decodeType (typeInt) {
     }
 }
 
-function encodeTypes (typeArray) {
-    var types = [];
+function encodeTypes (typeArray: string[]): number[]  {
+    var types: number[] = [];
     for (var i = 0; i < typeArray.length; i++) {
         types.push(encodeType(typeArray[i]));
     }
     return types;
 }
 
-function decodeTypes (typeArray) {
-    var types = [];
+function decodeTypes (typeArray: number[]): string[] {
+    var types: string[] = [];
     for (var i = 0; i < typeArray.length; i++) {
         types.push(decodeType(typeArray[i]));
     }
     return types;
 }
 
-function encodeDataSet (object) {
-    var num = object.numOfColumns,
+function encodeDataSet (object: UDataSet): ProtoRoot.org.eclipse.tahu.protobuf.Payload.DataSet {
+    const num = object.numOfColumns,
         names = object.columns,
         types = encodeTypes(object.types),
         rows = object.rows,
@@ -258,13 +296,14 @@ function encodeDataSet (object) {
         }),
         newRows = [];
     // Loop over all the rows
-    for (var i = 0; i < rows.length; i++) {
-        var newRow = Row.create(),
+    for (let i = 0; i < rows.length; i++) {
+        const newRow = Row.create(),
             row = rows[i],
-            elements = [];
+            elements: IDataSetValue[] = [];
         // Loop over all the elements in each row
-        for (var t = 0; t < num; t++) {
-            var newValue = DataSetValue.create();
+        // @ts-expect-error TODO check if num is set
+        for (let t = 0; t < num; t++) {
+            const newValue = DataSetValue.create();
             setValue(types[t], row[t], newValue);
             elements.push(newValue);
         }
@@ -275,35 +314,37 @@ function encodeDataSet (object) {
     return newDataSet;
 }
 
-function decodeDataSet (protoDataSet) {
-    var dataSet: IDataSet = {},
-        protoTypes = protoDataSet.types,
-        types = decodeTypes(protoTypes),
-        protoRows = protoDataSet.rows,
-        num = protoDataSet.numOfColumns,
-        rows = [];
+function decodeDataSet (protoDataSet: IDataSet): UDataSet {
+    const protoTypes = protoDataSet.types!; // TODO check exists
+    const dataSet: UDataSet = {
+        types: decodeTypes(protoTypes),
+        rows: [],
+    };
+    const types = decodeTypes(protoTypes),
+        protoRows = protoDataSet.rows || [], // TODO check exists
+        num = protoDataSet.numOfColumns;
     
     // Loop over all the rows
     for (var i = 0; i < protoRows.length; i++) {
         var protoRow = protoRows[i],
-            protoElements = protoRow.elements,
-            row = [];
+            protoElements = protoRow.elements || [], // TODO check exists
+            row: IDataSetValue[] = [];
         // Loop over all the elements in each row
+        // @ts-expect-error TODO check exists
         for (var t = 0; t < num; t++) {
-            row.push(getValue(protoTypes[t], protoElements[t]));
+            row.push(getValue(protoTypes[t], protoElements[t])!);
         }
-        rows.push(row);
+        dataSet.rows.push(row);
     }
 
     dataSet.numOfColumns = num;
     dataSet.types = types;
     dataSet.columns = protoDataSet.columns;
-    dataSet.rows = rows;
 
     return dataSet;
 }
 
-function encodeMetaData (object) {
+function encodeMetaData (object: IMetaData): ProtoRoot.org.eclipse.tahu.protobuf.Payload.MetaData {
     var metadata = MetaData.create(),
         isMultiPart = object.isMultiPart,
         contentType = object.contentType,
@@ -349,7 +390,7 @@ function encodeMetaData (object) {
     return metadata;
 }
 
-function decodeMetaData (protoMetaData) {
+function decodeMetaData (protoMetaData: IMetaData): IMetaData {
     var metadata: IMetaData = {},
         isMultiPart = protoMetaData.isMultiPart,
         contentType = protoMetaData.contentType,
@@ -395,7 +436,7 @@ function decodeMetaData (protoMetaData) {
     return metadata;
 }
 
-function encodePropertyValue (object) {
+function encodePropertyValue (object: UPropertyValue): ProtoRoot.org.eclipse.tahu.protobuf.Payload.PropertyValue {
     var type = encodeType(object.type),
         newPropertyValue = PropertyValue.create({
             "type" : type
@@ -410,14 +451,17 @@ function encodePropertyValue (object) {
     return newPropertyValue;
 }
 
-function decodePropertyValue (protoValue) {
-    // TODO better type
-    var propertyValue: any = {};
+function decodePropertyValue (protoValue: IPropertyValue): UPropertyValue {
+    const propertyValue: UPropertyValue = {
+        // @ts-expect-error TODO check exists
+        value: getValue(protoValue.type, protoValue),
+        type: decodeType(protoValue.type),
+    };
 
     if (protoValue.isNull !== undefined && protoValue.isNull === true) {
         propertyValue.value = null;
     } else {
-        propertyValue.value = getValue(protoValue.type, protoValue);
+        propertyValue.value = getValue(protoValue.type, protoValue)!;
     }
 
     propertyValue.type = decodeType(protoValue.type);
@@ -425,8 +469,8 @@ function decodePropertyValue (protoValue) {
     return propertyValue;
 }
 
-function encodePropertySet (object) {
-    var keys = [],
+function encodePropertySet (object: Record<string, UPropertyValue>): ProtoRoot.org.eclipse.tahu.protobuf.Payload.PropertySet {
+    const keys = [],
         values = [];
 
     for (var key in object) {
@@ -442,10 +486,10 @@ function encodePropertySet (object) {
     });
 }
 
-function decodePropertySet (protoSet) {
-    var propertySet = {},
-        protoKeys = protoSet.keys,
-        protoValues = protoSet.values;
+function decodePropertySet (protoSet: IPropertySet): Record<string, UPropertyValue> {
+    const propertySet: Record<string, UPropertyValue> = {},
+        protoKeys = protoSet.keys || [], // TODO check exists
+        protoValues = protoSet.values || []; // TODO check exists
 
     for (var i = 0; i < protoKeys.length; i++) {
         propertySet[protoKeys[i]] = decodePropertyValue(protoValues[i]);
@@ -454,9 +498,9 @@ function decodePropertySet (protoSet) {
     return propertySet;
 }
 
-function encodePropertySetList (object) {
-    var propertySets = [];
-    for (var i = 0; i < object.length; i++) {
+function encodePropertySetList (object: Record<string, UPropertyValue>[]): ProtoRoot.org.eclipse.tahu.protobuf.Payload.PropertySetList {
+    const propertySets: IPropertySet[] = [];
+    for (let i = 0; i < object.length; i++) {
         propertySets.push(encodePropertySet(object[i]));
     }
     return PropertySetList.create({
@@ -464,17 +508,17 @@ function encodePropertySetList (object) {
     });
 }
 
-function decodePropertySetList (protoSetList) {
-    var propertySets = [],
-        protoSets = protoSetList.propertyset;
-    for (var i = 0; i < protoSets.length; i++) {
+function decodePropertySetList (protoSetList: IPropertySetList): Record<string, UPropertyValue>[]  {
+    const propertySets: Record<string, UPropertyValue>[] = [],
+        protoSets = protoSetList.propertyset || []; // TODO check exists
+    for (let i = 0; i < protoSets.length; i++) {
         propertySets.push(decodePropertySet(protoSets[i]));
     }
     return propertySets;
 }
 
-function encodeParameter (object) {
-    var type = encodeType(object.type),
+function encodeParameter (object: UParameter): ProtoRoot.org.eclipse.tahu.protobuf.Payload.Template.Parameter {
+    const type = encodeType(object.type),
         newParameter = Parameter.create({
             "name" : object.name, 
             "type" : type
@@ -483,19 +527,24 @@ function encodeParameter (object) {
     return newParameter;
 }
 
-function decodeParameter (protoParameter) {
-    var protoType = protoParameter.type,
-        parameter: any = {}; // TODO better type
+function decodeParameter (protoParameter: IParameter): UParameter {
+    const protoType = protoParameter.type,
+        parameter: UParameter = {
+            // @ts-expect-error TODO check exists
+            value: getValue(protoType, protoParameter),
+            type: decodeType(protoType),
+        };
 
     parameter.name = protoParameter.name;
     parameter.type = decodeType(protoType);
+    // @ts-expect-error TODO check exists
     parameter.value = getValue(protoType, protoParameter);
 
     return parameter;
 }
 
-function encodeTemplate (object) {
-    var template = Template.create(),
+function encodeTemplate (object: UTemplate): ProtoRoot.org.eclipse.tahu.protobuf.Payload.Template {
+    let template = Template.create(),
         metrics = object.metrics,
         parameters = object.parameters,
         isDef = object.isDefinition,
@@ -516,10 +565,10 @@ function encodeTemplate (object) {
 
     // Build up the metric
     if (object.metrics !== undefined && object.metrics !== null) {
-        var newMetrics = []
+        const newMetrics = []
             metrics = object.metrics;
         // loop over array of metrics
-        for (var i = 0; i < metrics.length; i++) {
+        for (let i = 0; i < metrics.length; i++) {
             newMetrics.push(encodeMetric(metrics[i]));
         }
         template.metrics = newMetrics;
@@ -527,9 +576,9 @@ function encodeTemplate (object) {
 
     // Build up the parameters
     if (object.parameters !== undefined && object.parameters !== null) {
-        var newParameter = [];
+        const newParameter = [];
         // loop over array of parameters
-        for (var i = 0; i < object.parameters.length; i++) {
+        for (let i = 0; i < object.parameters.length; i++) {
             newParameter.push(encodeParameter(object.parameters[i]));
         }
         template.parameters = newParameter;
@@ -538,8 +587,8 @@ function encodeTemplate (object) {
     return template;
 }
 
-function decodeTemplate (protoTemplate) {
-    var template: ITemplate = {},
+function decodeTemplate (protoTemplate: ITemplate): UTemplate {
+    const template: UTemplate = {},
         protoMetrics = protoTemplate.metrics,
         protoParameters = protoTemplate.parameters,
         isDef = protoTemplate.isDefinition,
@@ -560,9 +609,9 @@ function decodeTemplate (protoTemplate) {
 
     // Build up the metric
     if (protoMetrics !== undefined && protoMetrics !== null) {
-        var metrics = []
+        const metrics = []
         // loop over array of proto metrics, decoding each one
-        for (var i = 0; i < protoMetrics.length; i++) {
+        for (let i = 0; i < protoMetrics.length; i++) {
             metrics.push(decodeMetric(protoMetrics[i]));
         }
         template.metrics = metrics;
@@ -570,9 +619,9 @@ function decodeTemplate (protoTemplate) {
 
     // Build up the parameters
     if (protoParameters !== undefined && protoParameters !== null) {
-        var parameter = [];
+        const parameter: UParameter[] = [];
         // loop over array of parameters
-        for (var i = 0; i < protoParameters.length; i++) {
+        for (let i = 0; i < protoParameters.length; i++) {
             parameter.push(decodeParameter(protoParameters[i]));
         }
         template.parameters = parameter;
@@ -581,9 +630,9 @@ function decodeTemplate (protoTemplate) {
     return template;
 }
 
-function encodeMetric (metric) {
-    var newMetric = Metric.create({
-            "name" : metric.name
+function encodeMetric (metric: UMetric): ProtoRoot.org.eclipse.tahu.protobuf.Payload.Metric {
+    const newMetric = Metric.create({
+            name : metric.name
         }),
         value = metric.value,
         datatype = encodeType(metric.type),
@@ -629,23 +678,21 @@ function encodeMetric (metric) {
     return newMetric;
 }
 
-function decodeMetric (protoMetric) {
-    var metric: any = {}, // TODO better type
-        alias = protoMetric.alias,
-        isHistorical = protoMetric.isHistorical,
-        isTransient = protoMetric.isTransient,
-        isNull = protoMetric.isNull,
-        metadata = protoMetric.metadata,
-        properties = protoMetric.properties,
-        timestamp = protoMetric.timestamp;
+function decodeMetric (protoMetric: Partial<IMetric>): UMetric {
+    const metric: UMetric = {
+        // @ts-expect-error TODO check exists
+        value: getValue(protoMetric.datatype, protoMetric),
+        type: decodeType(protoMetric.datatype)
+    };
 
-    metric.name = protoMetric.name;
-    metric.type = decodeType(protoMetric.datatype);
-    metric.value = getValue(protoMetric.datatype, protoMetric);
+    if (protoMetric.hasOwnProperty("name")) {
+        metric.name = protoMetric.name;
+    }
 
     if (protoMetric.hasOwnProperty("isNull") && protoMetric.isNull === true) {
         metric.value = null;
     } else {
+        // @ts-expect-error TODO check exists
         metric.value = getValue(protoMetric.datatype, protoMetric);
     }
 
@@ -665,18 +712,18 @@ function decodeMetric (protoMetric) {
         metric.isTransient = protoMetric.isTransient;
     }
 
-    if (protoMetric.hasOwnProperty("metadata")) {
+    if (protoMetric.hasOwnProperty("metadata") && protoMetric.metadata) {
         metric.metadata = decodeMetaData(protoMetric.metadata);
     }
 
-    if (protoMetric.hasOwnProperty("properties")) {
+    if (protoMetric.hasOwnProperty("properties") && protoMetric.properties) {
         metric.properties = decodePropertySet(protoMetric.properties);
     }
 
     return metric;
 }
 
-export function encodePayload(object) {
+export function encodePayload(object: JPayload): Uint8Array {
     var payload = Payload.create({
         "timestamp" : object.timestamp
     });
@@ -707,16 +754,16 @@ export function encodePayload(object) {
     return Payload.encode(payload).finish();
 }
 
-export function decodePayload(proto) {
+export function decodePayload(proto: Uint8Array | Reader): JPayload {
     var sparkplugPayload = Payload.decode(proto),
-        payload: IPayload = {};
+        payload: JPayload = {};
 
     if (sparkplugPayload.hasOwnProperty("timestamp")) {
         payload.timestamp = Number(sparkplugPayload.timestamp);
     }
 
     if (sparkplugPayload.hasOwnProperty("metrics")) {
-        const metrics: IMetric[] = [];
+        const metrics: UMetric[] = [];
         for (var i = 0; i < sparkplugPayload.metrics.length; i++) {
             metrics.push(decodeMetric(sparkplugPayload.metrics[i]));
         }
