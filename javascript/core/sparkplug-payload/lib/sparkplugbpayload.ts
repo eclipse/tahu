@@ -65,7 +65,7 @@ interface UDataSet extends Omit<IDataSet, 'types' | 'rows'> {
 type UPropertySet = Record<string, UPropertyValue>;
 type UPropertySetList = UPropertySet[];
 type UserValue = UMetric['value'] | UPropertyValue['value'] | UDataSet | IDataSetValue | UPropertySet | UPropertySetList;
-interface JPayload extends IPayload {
+interface UPayload extends IPayload {
     metrics?: UMetric[] | null;
 }
 
@@ -723,7 +723,7 @@ function decodeMetric (protoMetric: Partial<IMetric>): UMetric {
     return metric;
 }
 
-export function encodePayload(object: JPayload): Uint8Array {
+export function encodePayload(object: UPayload): Uint8Array {
     var payload = Payload.create({
         "timestamp" : object.timestamp
     });
@@ -754,9 +754,9 @@ export function encodePayload(object: JPayload): Uint8Array {
     return Payload.encode(payload).finish();
 }
 
-export function decodePayload(proto: Uint8Array | Reader): JPayload {
+export function decodePayload(proto: Uint8Array | Reader): UPayload {
     var sparkplugPayload = Payload.decode(proto),
-        payload: JPayload = {};
+        payload: UPayload = {};
 
     if (sparkplugPayload.hasOwnProperty("timestamp")) {
         payload.timestamp = Number(sparkplugPayload.timestamp);
