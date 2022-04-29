@@ -103,6 +103,17 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 	}
 
 	/**
+	 * Gets a Metric for a given metric name
+	 * 
+	 * @param metricName the name of the {@link Metric} to fetch
+	 * 
+	 * @return the {@link Metric} with the provided metric name
+	 */
+	public Metric getMetric(String metricName) {
+		return metricMap.get(metricName);
+	}
+
+	/**
 	 * Updates a {@link Metric} value in the {@link SparkplugBPayloadMap}
 	 * 
 	 * @param metricName the name of the metric. This is required as Aliasing may be enabled and the name may not be set
