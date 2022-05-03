@@ -142,7 +142,7 @@ var sample = (function () {
         sparkplugClient = SparkplugClient.newClient(config);
         
         // Create Incoming Message Handler
-        sparkPlugClient.on('message', function(topic, payload) {
+        sparkplugClient.on('message', function(topic, payload) {
             console.log(topic, payload);
         })
 
