@@ -145,6 +145,26 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 		}
 	}
 
+	public void updateMetricTimestamps(Date date) {
+		for (Metric metric : metricMap.values()) {
+			metric.setTimestamp(date);
+			if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
+				updateTemplateTimestamps((Template) metric.getValue(), date);
+			}
+		}
+	}
+
+	private void updateTemplateTimestamps(Template template, Date date) {
+		if (template != null && template.getMetrics() != null) {
+			for (Metric metric : template.getMetrics()) {
+				metric.setTimestamp(date);
+				if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
+					updateTemplateTimestamps((Template) metric.getValue(), date);
+				}
+			}
+		}
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
