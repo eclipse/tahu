@@ -13,6 +13,8 @@
 
 package org.eclipse.tahu.message.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * An Edge Node Identifier
  */
@@ -72,6 +74,7 @@ public class EdgeNodeDescriptor implements SparkplugDescriptor {
 	}
 
 	@Override
+	@JsonValue
 	public String toString() {
 		return getDescriptorString();
 	}
