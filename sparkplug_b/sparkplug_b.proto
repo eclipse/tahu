@@ -97,7 +97,7 @@ message Payload {
         optional string version         = 1;          // The version of the Template to prevent mismatches
         repeated Metric metrics         = 2;          // Each metric includes a name, datatype, and optionally a value
         repeated Parameter parameters   = 3;
-        optional string template_ref    = 4;          // Reference to a template if this is extending a Template or an instance - must exist if an instance
+        optional string template_ref    = 4;          // MUST be a reference to a template definition if this is an instance (i.e. the name of the template definition) - MUST be omitted for template definitions
         optional bool is_definition     = 5;
         extensions                      6 to max;
     }
