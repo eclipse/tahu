@@ -7,6 +7,8 @@ testament messages that must be sent to ensure the device lifecycle state and da
 
 # Sparkplug
 
+Sparkplug®, Sparkplug Compatible, and the Sparkplug Logo are trademarks of the Eclipse Foundation.
+
 Sparkplug is a specification for MQTT enabled devices and applications to send and receive messages in a stateful way.
 While MQTT is stateful by nature it doesn't ensure that all data on a receiving MQTT application is current or valid.
 Sparkplug provides a mechanism for ensuring that remote device or application data is current and valid.
