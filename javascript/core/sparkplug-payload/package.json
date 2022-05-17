@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run build:proto && npm run build:ts",
     "build:ts": "tsc",
-    "build:proto": "pbjs -t static-module -w commonjs -o lib/sparkplugPayloadProto.js lib/SparkplugPayload.proto && pbts -o lib/sparkplugPayloadProto.d.ts lib/sparkplugPayloadProto.js"
+    "build:proto": "pbjs -t static-module -w commonjs -o lib/sparkplugPayloadProto.js ../../../sparkplug_b/sparkplug_b.proto && pbts -o lib/sparkplugPayloadProto.d.ts lib/sparkplugPayloadProto.js"
   },
   "repository": {
     "type": "git",
