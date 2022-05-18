@@ -1,2 +1,3 @@
 *.js
-lib/sparkplugPayloadProto.d.ts
+lib/*.d.ts
+index.d.ts

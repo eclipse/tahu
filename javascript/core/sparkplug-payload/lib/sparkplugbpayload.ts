@@ -12,6 +12,7 @@
  ********************************************************************************/
 
 import * as ProtoRoot from './sparkplugPayloadProto';
+import Long from 'long';
 import type * as IProtoRoot from './sparkplugPayloadProto';
 import type { Reader } from 'protobufjs';
 
@@ -41,31 +42,32 @@ type IMetaData = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IMetaData;
 type IMetric = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IMetric;
 
 // "user types"
-interface UMetric extends IMetric {
-    value: null | number | Long.Long | boolean | string | Uint8Array | IDataSet | UTemplate;
+export interface UMetric extends IMetric {
+    value: null | number | Long.Long | boolean | string | Uint8Array | UDataSet | UTemplate;
     type: string;
     properties?: Record<string, UPropertyValue>
 }
-interface UPropertyValue extends Omit<IPropertyValue, 'type'> { // TODO is the type supposed to be like the metric type in the readme?
-    value: null | number | Long.Long | boolean | string | IPropertySet | IPropertySetList;
+export interface UPropertyValue extends Omit<IPropertyValue, 'type'> { // TODO is the type supposed to be like the metric type in the readme?
+    value: null | number | Long.Long | boolean | string | UPropertySet | UPropertySetList;
     type: string;
 }
-interface UParameter extends Omit<IParameter, 'type'> { // TODO is the type supposed to be like the metric type in the readme?
-    value: number | Long.Long | boolean | string | IPropertySet | IPropertySetList;
+export interface UParameter extends Omit<IParameter, 'type'> { // TODO is the type supposed to be like the metric type in the readme?
+    value: number | Long.Long | boolean | string | UPropertySet | UPropertySetList;
     type: string;
 }
-interface UTemplate extends Omit<ITemplate, 'metrics' | 'parameters'> { // TODO is the type supposed to be like the metric type in the readme?
+export interface UTemplate extends Omit<ITemplate, 'metrics' | 'parameters'> { // TODO is the type supposed to be like the metric type in the readme?
     metrics?: UMetric[];
     parameters?: UParameter[];
 }
-interface UDataSet extends Omit<IDataSet, 'types' | 'rows'> {
+export interface UDataSet extends Omit<IDataSet, 'types' | 'rows'> {
     types: string[];
-    rows: IDataSetValue[][];
+    rows: UDataSetValue[][];
 }
-type UPropertySet = Record<string, UPropertyValue>;
-type UPropertySetList = UPropertySet[];
-type UserValue = UMetric['value'] | UPropertyValue['value'] | UDataSet | IDataSetValue | UPropertySet | UPropertySetList;
-interface UPayload extends IPayload {
+export type UDataSetValue = number | Long.Long | boolean | string;
+export type UPropertySet = Record<string, UPropertyValue>;
+export type UPropertySetList = UPropertySet[];
+export type UserValue = UMetric['value'] | UPropertyValue['value'] | UDataSet | UDataSetValue | UPropertySet | UPropertySetList;
+export interface UPayload extends IPayload {
     metrics?: UMetric[] | null;
 }
 
@@ -88,7 +90,7 @@ function setValue (type: number, value: UserValue, object: IMetric | IPropertyVa
         case 7: // UInt32
         case 8: // UInt64
         case 13: // DateTime
-            object.longValue = value as number;
+            object.longValue = value as number | Long;
             break;
         case 9: // Float
             object.floatValue = value as number;
@@ -135,9 +137,17 @@ function getValue<T extends UserValue> (type: number | null | undefined, object:
         case 6: // UInt16
             return object.intValue as T;
         case 4: // Int64
-            return (object.longValue as Long.Long).toSigned() as T;
+            if (object.longValue instanceof Long) {
+                return object.longValue.toSigned() as T;
+            } else {
+                return object.longValue as T;
+            }
         case 7: // UInt32
-            return (object.longValue as Long.Long).toInt() as T;
+            if (object.longValue instanceof Long) {
+                return object.longValue.toInt() as T;
+            } else {
+                return object.longValue as T;
+            }
         case 8: // UInt64
         case 13: // DateTime
             return object.longValue! as T;
@@ -328,13 +338,13 @@ function decodeDataSet (protoDataSet: IDataSet): UDataSet {
     for (var i = 0; i < protoRows.length; i++) {
         var protoRow = protoRows[i],
             protoElements = protoRow.elements || [], // TODO check exists
-            row: IDataSetValue[] = [];
+            rowElements: UDataSetValue[] = [];
         // Loop over all the elements in each row
         // @ts-expect-error TODO check exists
         for (var t = 0; t < num; t++) {
-            row.push(getValue(protoTypes[t], protoElements[t])!);
+            rowElements.push(getDataSetValue(protoTypes[t], protoElements[t])!);
         }
-        dataSet.rows.push(row);
+        dataSet.rows.push(rowElements);
     }
 
     dataSet.numOfColumns = num;

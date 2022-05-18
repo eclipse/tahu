@@ -26,11 +26,15 @@
   "homepage": "https://github.com/eclipse/tahu",
   "files": [
     "index.js",
-    "lib/sparkplugbpayload.js",
+    "index.d.ts",
+    "lib/*.d.ts",
+    "lib/*.d.js",
     "README.md",
     "LICENSE"
   ],
   "dependencies": {
+    "@types/long": "^4.0.0",
+    "long": "^4.0.0",
     "protobufjs": "^6.8.0"
   },
   "devDependencies": {
