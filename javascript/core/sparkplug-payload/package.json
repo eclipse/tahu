@@ -28,7 +28,7 @@
     "index.js",
     "index.d.ts",
     "lib/*.d.ts",
-    "lib/*.d.js",
+    "lib/*.js",
     "README.md",
     "LICENSE"
   ],
