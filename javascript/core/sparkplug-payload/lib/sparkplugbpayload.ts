@@ -812,7 +812,7 @@ export function decodePayload(proto: Uint8Array | Reader): UPayload {
         payload: UPayload = {};
 
     if (sparkplugPayload.hasOwnProperty("timestamp")) {
-        payload.timestamp = Number(sparkplugPayload.timestamp);
+        payload.timestamp = sparkplugPayload.timestamp;
     }
 
     if (sparkplugPayload.hasOwnProperty("metrics")) {
@@ -824,7 +824,7 @@ export function decodePayload(proto: Uint8Array | Reader): UPayload {
     }
 
     if (sparkplugPayload.hasOwnProperty("seq")) {
-        payload.seq = Number(sparkplugPayload.seq);
+        payload.seq = sparkplugPayload.seq;
     }
 
     if (sparkplugPayload.hasOwnProperty("uuid")) {
