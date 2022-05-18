@@ -177,6 +177,50 @@ function getValue<T extends UserValue> (type: number | null | undefined, object:
     } 
 }
 
+function isSet<T> (value: T): value is Exclude<T, null | undefined> {
+    return value !== null && value !== undefined;
+}
+
+function getDataSetValue (type: number | null | undefined, object: IDataSetValue): UDataSetValue {
+    switch (type) {
+        case 7: // UInt32
+            if (object.longValue instanceof Long) return object.longValue.toInt();
+            else if (isSet(object.longValue)) return object.longValue;
+        case 4: // UInt64
+            if (isSet(object.longValue)) return object.longValue;
+        case 9: // Float
+            if (isSet(object.floatValue)) return object.floatValue;
+        case 10: // Double
+            if (isSet(object.doubleValue)) return object.doubleValue;
+        case 11: // Boolean
+            if (isSet(object.booleanValue)) return object.booleanValue;
+        case 12: // String
+            if (isSet(object.stringValue)) return object.stringValue;
+        default:
+            throw new Error(`Invalid DataSetValue: ${JSON.stringify(object)}`);
+    }
+}
+
+function getTemplateParamValue (type: number | null | undefined, object: IParameter): UParameter['value'] {
+    switch (type) {
+        case 7: // UInt32
+            if (object.longValue instanceof Long) return object.longValue.toInt();
+            else if (isSet(object.longValue)) return object.longValue;
+        case 4: // UInt64
+            if (isSet(object.longValue)) return object.longValue;
+        case 9: // Float
+            if (isSet(object.floatValue)) return object.floatValue;
+        case 10: // Double
+            if (isSet(object.doubleValue)) return object.doubleValue;
+        case 11: // Boolean
+            if (isSet(object.booleanValue)) return object.booleanValue;
+        case 12: // String
+            if (isSet(object.stringValue)) return object.stringValue;
+        default:
+            throw new Error(`Invalid Parameter value: ${JSON.stringify(object)}`);
+    }
+}
+
 /** transforms a user friendly type and converts it to its corresponding type code */
 function encodeType (typeString: string): number {
     switch (typeString.toUpperCase()) {
@@ -540,8 +584,7 @@ function encodeParameter (object: UParameter): ProtoRoot.org.eclipse.tahu.protob
 function decodeParameter (protoParameter: IParameter): UParameter {
     const protoType = protoParameter.type,
         parameter: UParameter = {
-            // @ts-expect-error TODO check exists
-            value: getValue(protoType, protoParameter),
+            value: getTemplateParamValue(protoType, protoParameter),
             type: decodeType(protoType),
         };
 
@@ -707,7 +750,7 @@ function decodeMetric (protoMetric: Partial<IMetric>): UMetric {
     }
 
     if (protoMetric.hasOwnProperty("timestamp")) {
-        metric.timestamp = Number(protoMetric.timestamp);
+        metric.timestamp = protoMetric.timestamp;
     }
 
     if (protoMetric.hasOwnProperty("alias")) {
