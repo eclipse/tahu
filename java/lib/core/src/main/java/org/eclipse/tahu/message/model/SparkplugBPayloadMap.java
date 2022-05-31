@@ -73,7 +73,17 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 	public boolean removeMetric(Metric metric) {
 		synchronized (mapLock) {
 			if (metric != null) {
-				Metric removedMetric = metricMap.remove(metric.getName());
+				return removeMetric(metric.getName());
+			}
+
+			return false;
+		}
+	}
+
+	public boolean removeMetric(String metricName) {
+		synchronized (mapLock) {
+			if (metricName != null) {
+				Metric removedMetric = metricMap.remove(metricName);
 				if (removedMetric != null) {
 					return true;
 				}
