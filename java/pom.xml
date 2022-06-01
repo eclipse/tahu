@@ -102,7 +102,6 @@
     </repository>
   </distributionManagement>
 
-<!--
   <modules>
     <module>lib/core/pom.xml</module>
     <module>examples/records/pom.xml</module>
@@ -123,7 +122,6 @@
     <module>compat_impl/edge/pom.xml</module>
     <module>compat_impl/host/pom.xml</module>
   </modules>
--->
 
   <dependencies>
     <dependency>
