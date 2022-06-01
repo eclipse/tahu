@@ -3,6 +3,10 @@
   "version": "3.2.2",
   "description": "A client module for MQTT communication using the Sparkplug specification from Cirrus Link Solutions",
   "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/eclipse/tahu.git"
@@ -24,9 +28,13 @@
     "LICENSE"
   ],
   "dependencies": {
-    "mqtt": "^2.16.0",
+    "mqtt": "^4.2.8",
+    "pako": "^2.0.4",
     "sparkplug-payload": "^1.0.1",
-    "pako": "^1.0.6",
-    "winston": "^2.4.0"
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.7",
+    "typescript": "^4.6.3"
   }
 }

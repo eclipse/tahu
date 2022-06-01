@@ -13,6 +13,7 @@
 
 package org.eclipse.tahu.message.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -30,7 +31,13 @@ public class Topic {
 	/**
 	 * The {@link SparkplugDesciptor} for this Edge Node or Device
 	 */
+	@JsonIgnore
 	private final SparkplugDescriptor sparkplugDescriptor;
+
+	/**
+	 * The {@link EdgeNodeDescriptor} for this Edge Node or Device
+	 */
+	private final EdgeNodeDescriptor edgeNodeDescriptor;
 
 	/**
 	 * The ID of the logical grouping of Edge of Network (EoN) Nodes and devices.
@@ -67,6 +74,7 @@ public class Topic {
 		this.sparkplugDescriptor = deviceId == null
 				? new EdgeNodeDescriptor(groupId, edgeNodeId)
 				: new DeviceDescriptor(groupId, edgeNodeId, deviceId);
+		this.edgeNodeDescriptor = new EdgeNodeDescriptor(groupId, edgeNodeId);
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = deviceId;
@@ -85,6 +93,7 @@ public class Topic {
 		super();
 		this.namespace = namespace;
 		this.sparkplugDescriptor = new EdgeNodeDescriptor(groupId, edgeNodeId);
+		this.edgeNodeDescriptor = new EdgeNodeDescriptor(groupId, edgeNodeId);
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = null;
@@ -130,6 +139,15 @@ public class Topic {
 	 */
 	public SparkplugDescriptor getSparkplugDescriptor() {
 		return sparkplugDescriptor;
+	}
+
+	/**
+	 * Returns the {@link EdgeNodeDescriptor}
+	 * 
+	 * @return the EdgeNodeDescriptor
+	 */
+	public EdgeNodeDescriptor getEdgeNodeDescriptor() {
+		return edgeNodeDescriptor;
 	}
 
 	/**

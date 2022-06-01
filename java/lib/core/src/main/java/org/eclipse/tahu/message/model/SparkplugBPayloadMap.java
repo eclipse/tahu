@@ -73,7 +73,17 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 	public boolean removeMetric(Metric metric) {
 		synchronized (mapLock) {
 			if (metric != null) {
-				Metric removedMetric = metricMap.remove(metric.getName());
+				return removeMetric(metric.getName());
+			}
+
+			return false;
+		}
+	}
+
+	public boolean removeMetric(String metricName) {
+		synchronized (mapLock) {
+			if (metricName != null) {
+				Metric removedMetric = metricMap.remove(metricName);
 				if (removedMetric != null) {
 					return true;
 				}
@@ -100,6 +110,17 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 		for (Metric metric : metrics) {
 			metricMap.put(metric.getName(), metric);
 		}
+	}
+
+	/**
+	 * Gets a Metric for a given metric name
+	 * 
+	 * @param metricName the name of the {@link Metric} to fetch
+	 * 
+	 * @return the {@link Metric} with the provided metric name
+	 */
+	public Metric getMetric(String metricName) {
+		return metricMap.get(metricName);
 	}
 
 	/**
@@ -131,6 +152,26 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 		} else {
 			logger.info("Adding new metric to cache when updating: {}", metricName);
 			metricMap.put(metricName, metric);
+		}
+	}
+
+	public void updateMetricTimestamps(Date date) {
+		for (Metric metric : metricMap.values()) {
+			metric.setTimestamp(date);
+			if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
+				updateTemplateTimestamps((Template) metric.getValue(), date);
+			}
+		}
+	}
+
+	private void updateTemplateTimestamps(Template template, Date date) {
+		if (template != null && template.getMetrics() != null) {
+			for (Metric metric : template.getMetrics()) {
+				metric.setTimestamp(date);
+				if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
+					updateTemplateTimestamps((Template) metric.getValue(), date);
+				}
+			}
 		}
 	}
 
