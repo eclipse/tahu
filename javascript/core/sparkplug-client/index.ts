@@ -10,29 +10,24 @@
  *   Cirrus Link Solutions
  */
 import * as mqtt from 'mqtt';
-import type { IClientOptions } from 'mqtt';
+import type { IClientOptions, MqttClient } from 'mqtt';
 import events from 'events';
+import * as sparkplug from 'sparkplug-payload';
+import type { UPayload } from 'sparkplug-payload/lib/sparkplugbpayload';
+import type { Reader } from 'protobufjs';
+import pako from 'pako';
+import createDebug from 'debug';
 
-const sparkplug = require('sparkplug-payload'),
-    sparkplugbpayload = sparkplug.get("spBv1.0"),
-    pako = require('pako'),
-    winston = require('winston');
+const sparkplugbpayload = sparkplug.get("spBv1.0");
 
 const compressed = "SPBV1.0_COMPRESSED";
 
-// Config for winston logging
-const logger = winston.createLogger({
-    level: 'warn',
-    format: winston.format.json(),
-    transports: [
-      new winston.transports.File({ filename: 'logfile.log' })
-    ]
-});
-
-if (process.env.NODE_ENV !== 'production') {
-    logger.add(new winston.transports.Console({
-      format: winston.format.simple(),
-    }));
+// setup logging
+const debugLog = createDebug('sparkplug-client:debug');
+const infoLog = createDebug('sparkplug-client:info');
+const logger = {
+    debug: (formatter: string, ...args: unknown[]) => debugLog(formatter, ...args),
+    info: (formatter: string, ...args: unknown[]) => infoLog(formatter, ...args),
 }
 
 function getRequiredProperty(config, propName) {
