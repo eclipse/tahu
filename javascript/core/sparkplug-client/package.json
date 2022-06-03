@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "prepack": "tsc"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,8 @@
   "homepage": "https://github.com/eclipse/tahu",
   "files": [
     "index.js",
+    "index.ts",
+    "index.js.map",
     "README.md",
     "LICENSE"
   ],
