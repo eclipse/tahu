@@ -64,6 +64,29 @@ export type PayloadOptions = {
     compress?: boolean;
 }
 
+interface SparkplugClient extends events.EventEmitter {
+    /** MQTT client event */
+    on(event: 'connect' | 'close' | 'reconnect' | 'offline', listener: () => void): this;
+    /** MQTT client event */
+    on(event: 'error', listener: (error: Error) => void): this;
+    /** emitted when birth messages are ready to be sent*/
+    on(event: 'birth', listener: () => void): this;
+    /** emitted when a node command is received */
+    on(event: 'ncmd', listener: (payload: UPayload) => void): this;
+    /** emitted when a device command is received */
+    on(event: 'dcmd', listener: (device: string, payload: UPayload) => void): this;
+    /** emitted when a payload is received with a version unsupported by this client */
+    on(event: 'message', listener: (topic: string, payload: UPayload) => void): this;
+
+    emit(event: 'connect' | 'close' | 'reconnect' | 'offline' | 'birth'): boolean;
+    emit(event: 'error', error: Error): boolean;
+    emit(event: 'ncmd', payload: UPayload): boolean;
+    emit(event: 'dcmd', device: string, payload: UPayload): boolean;
+    emit(event: 'message', topic: string, payload: UPayload): boolean;
+}
+
+export { UPayload };
+
 /*
  * Sparkplug Client
  */
