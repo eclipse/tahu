@@ -35,6 +35,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/node": "^16.11.7",
+    "@types/pako": "^2.0.0",
     "typescript": "^4.6.3"
   }
 }
