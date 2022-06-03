@@ -207,7 +207,7 @@ class SparkplugClient extends events.EventEmitter {
             resultPayload.metrics = [{
                 "name": "algorithm",
                 "value": algorithm.toUpperCase(),
-                "type": "string"
+                "type": "String"
             }];
         }
 
@@ -279,7 +279,7 @@ class SparkplugClient extends events.EventEmitter {
         if (metrics !== undefined && metrics !== null) {
             metrics.push({
                 "name": "bdSeq",
-                "type": "uint64",
+                "type": "UInt64",
                 "value": this.bdSeq
             });
         }
