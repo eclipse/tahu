@@ -327,13 +327,13 @@ var SparkplugClient = /** @class */ (function (_super) {
         this.client.publish(topic, this.encodePayload(this.maybeCompressPayload(payload, options)));
         this.messageAlert("published", topic, payload);
     };
-    SparkplugClient.prototype.stop = function () {
+    SparkplugClient.prototype.stop = function (cb) {
         logger.debug("publishDeath: " + this.publishDeath);
         if (this.publishDeath) {
             // Publish the DEATH certificate
             this.publishNDeath(this.client);
         }
-        this.client.end();
+        this.client.end(cb);
     };
     // Configures and connects the client
     SparkplugClient.prototype.init = function () {

@@ -346,13 +346,13 @@ class SparkplugClient extends events.EventEmitter {
         this.messageAlert("published", topic, payload);
     }
 
-    stop() {
+    stop(cb?: (err: Error) => void) {
         logger.debug("publishDeath: " + this.publishDeath);
         if (this.publishDeath) {
             // Publish the DEATH certificate
             this.publishNDeath(this.client);
         }
-        this.client.end();
+        this.client.end(cb);
     }
 
     // Configures and connects the client
