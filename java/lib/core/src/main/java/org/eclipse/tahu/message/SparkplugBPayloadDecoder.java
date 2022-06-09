@@ -157,10 +157,17 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 			case UInt16:
 				return value.getIntValue();
 			case UInt32:
+				if (value.hasIntValue()) {
+					return Integer.toUnsignedLong(value.getIntValue());
+				} else if (value.hasLongValue()) {
+					return value.getLongValue();
+				} else {
+					logger.error("Invalid value for UInt32 datatype");
+				}
 			case Int64:
 				return value.getLongValue();
 			case UInt64:
-				return BigInteger.valueOf(value.getLongValue());
+				return new BigInteger(Long.toUnsignedString(value.getLongValue()));
 			case String:
 			case Text:
 				return value.getStringValue();
@@ -210,10 +217,17 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 			case UInt16:
 				return protoMetric.getIntValue();
 			case UInt32:
+				if (protoMetric.hasIntValue()) {
+					return Integer.toUnsignedLong(protoMetric.getIntValue());
+				} else if (protoMetric.hasLongValue()) {
+					return protoMetric.getLongValue();
+				} else {
+					logger.error("Invalid value for UInt32 datatype");
+				}
 			case Int64:
 				return protoMetric.getLongValue();
 			case UInt64:
-				return BigInteger.valueOf(protoMetric.getLongValue());
+				return new BigInteger(Long.toUnsignedString(protoMetric.getLongValue()));
 			case String:
 			case Text:
 			case UUID:
@@ -396,10 +410,17 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 			case UInt16:
 				return protoParameter.getIntValue();
 			case UInt32:
+				if (protoParameter.hasIntValue()) {
+					return Integer.toUnsignedLong(protoParameter.getIntValue());
+				} else if (protoParameter.hasLongValue()) {
+					return protoParameter.getLongValue();
+				} else {
+					logger.error("Invalid value for UInt32 datatype");
+				}
 			case Int64:
 				return protoParameter.getLongValue();
 			case UInt64:
-				return BigInteger.valueOf(protoParameter.getLongValue());
+				return new BigInteger(Long.toUnsignedString(protoParameter.getLongValue()));
 			case String:
 			case Text:
 				return protoParameter.getStringValue();
@@ -463,6 +484,13 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 					return new Value<Integer>(type, null);
 				}
 			case UInt32:
+				if (protoValue.hasIntValue()) {
+					return new Value<Long>(type, Integer.toUnsignedLong(protoValue.getIntValue()));
+				} else if (protoValue.hasLongValue()) {
+					return new Value<Long>(type, protoValue.getLongValue());
+				} else {
+					return new Value<Long>(type, null);
+				}
 			case Int64:
 				if (protoValue.hasLongValue()) {
 					return new Value<Long>(type, protoValue.getLongValue());
@@ -471,7 +499,8 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 				}
 			case UInt64:
 				if (protoValue.hasLongValue()) {
-					return new Value<BigInteger>(type, BigInteger.valueOf(protoValue.getLongValue()));
+					return new Value<BigInteger>(type,
+							new BigInteger(Long.toUnsignedString(protoValue.getLongValue())));
 				} else {
 					return new Value<BigInteger>(type, null);
 				}
