@@ -13,7 +13,23 @@
 
 package org.eclipse.tahu;
 
-import static org.eclipse.tahu.message.model.MetricDataType.*;
+import static org.eclipse.tahu.message.model.MetricDataType.Boolean;
+import static org.eclipse.tahu.message.model.MetricDataType.DataSet;
+import static org.eclipse.tahu.message.model.MetricDataType.DateTime;
+import static org.eclipse.tahu.message.model.MetricDataType.Double;
+import static org.eclipse.tahu.message.model.MetricDataType.Float;
+import static org.eclipse.tahu.message.model.MetricDataType.Int16;
+import static org.eclipse.tahu.message.model.MetricDataType.Int32;
+import static org.eclipse.tahu.message.model.MetricDataType.Int64;
+import static org.eclipse.tahu.message.model.MetricDataType.Int8;
+import static org.eclipse.tahu.message.model.MetricDataType.String;
+import static org.eclipse.tahu.message.model.MetricDataType.Template;
+import static org.eclipse.tahu.message.model.MetricDataType.Text;
+import static org.eclipse.tahu.message.model.MetricDataType.UInt16;
+import static org.eclipse.tahu.message.model.MetricDataType.UInt32;
+import static org.eclipse.tahu.message.model.MetricDataType.UInt64;
+import static org.eclipse.tahu.message.model.MetricDataType.UInt8;
+import static org.eclipse.tahu.message.model.MetricDataType.UUID;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -24,6 +40,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
@@ -35,17 +52,25 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-import org.eclipse.tahu.SparkplugException;
-import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
-import org.eclipse.tahu.message.model.*;
+import org.eclipse.tahu.message.model.DataSet;
 import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
+import org.eclipse.tahu.message.model.DataSetDataType;
+import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.Metric.MetricBuilder;
+import org.eclipse.tahu.message.model.Parameter;
+import org.eclipse.tahu.message.model.ParameterDataType;
+import org.eclipse.tahu.message.model.PropertyDataType;
+import org.eclipse.tahu.message.model.PropertySet;
 import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
+import org.eclipse.tahu.message.model.PropertyValue;
 import org.eclipse.tahu.message.model.Row.RowBuilder;
+import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
+import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.util.CompressionAlgorithm;
 import org.eclipse.tahu.util.PayloadUtil;
 
@@ -68,8 +93,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 	private String groupId = "Sparkplug B Devices";
 	private String edgeNode = "Java Sparkplug B Example";
 	private String deviceId = "SparkplugBExample";
-	private String clientId = null;
-	// private String clientId = "SparkplugBExampleEdgeNode";
+	private String clientId = "SparkplugBExampleEdgeNode";
 	private String username = "admin";
 	private String password = "changeme";
 	private long PUBLISH_PERIOD = 60000; // Publish period in milliseconds
@@ -213,16 +237,23 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 				payload.addMetric(new MetricBuilder("Device Control/Rebirth", Boolean, false).createMetric());
 
-				// Only do this once to set up the inputs and outputs
-				payload.addMetric(new MetricBuilder("Inputs/0", Boolean, true).createMetric());
-				payload.addMetric(new MetricBuilder("Inputs/1", Int32, 0).createMetric());
-				payload.addMetric(new MetricBuilder("Inputs/2", Double, 1.23d).createMetric());
-				payload.addMetric(new MetricBuilder("Outputs/0", Boolean, true).createMetric());
-				payload.addMetric(new MetricBuilder("Outputs/1", Int32, 0).createMetric());
-				payload.addMetric(new MetricBuilder("Outputs/2", Double, 1.23d).createMetric());
-
-				// payload.addMetric(new MetricBuilder("New_1", Int32, 0).createMetric());
-				// payload.addMetric(new MetricBuilder("New_2", Double, 1.23d).createMetric());
+				payload.addMetric(new MetricBuilder("Int8_Min", Int8, (byte) -128).createMetric());
+				payload.addMetric(new MetricBuilder("Int8_Max", Int8, (byte) 127).createMetric());
+				payload.addMetric(new MetricBuilder("Int16_Min", Int16, (short) -32768).createMetric());
+				payload.addMetric(new MetricBuilder("Int16_Max", Int16, (short) 32767).createMetric());
+				payload.addMetric(new MetricBuilder("Int32_Min", Int32, -2147483648).createMetric());
+				payload.addMetric(new MetricBuilder("Int32_Max", Int32, 2147483647).createMetric());
+				payload.addMetric(new MetricBuilder("Int64_Min", Int64, -9223372036854775808L).createMetric());
+				payload.addMetric(new MetricBuilder("Int64_Max", Int64, 9223372036854775807L).createMetric());
+				payload.addMetric(new MetricBuilder("UInt8_Min", UInt8, (short) 0).createMetric());
+				payload.addMetric(new MetricBuilder("UInt8_Max", UInt8, (short) 255).createMetric());
+				payload.addMetric(new MetricBuilder("UInt16_Min", UInt16, 0).createMetric());
+				payload.addMetric(new MetricBuilder("UInt16_Max", UInt16, 64535).createMetric());
+				payload.addMetric(new MetricBuilder("UInt32_Min", UInt32, 0L).createMetric());
+				payload.addMetric(new MetricBuilder("UInt32_Max", UInt32, 4294967295L).createMetric());
+				payload.addMetric(new MetricBuilder("UInt64_Min", UInt64, BigInteger.valueOf(0L)).createMetric());
+				payload.addMetric(
+						new MetricBuilder("UInt64_Max", UInt64, new BigInteger("18446744073709551615")).createMetric());
 
 				// Add some properties
 				payload.addMetric(new MetricBuilder("Properties/hw_version", String, HW_VERSION).createMetric());
@@ -359,10 +390,10 @@ public class SparkplugExample implements MqttCallbackExtended {
 		metrics.add(new MetricBuilder("Int16", Int16, (short) random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("Int32", Int32, random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("Int64", Int64, random.nextLong()).createMetric());
-		metrics.add(new MetricBuilder("UInt8", UInt8, (short) random.nextInt()).createMetric());
-		metrics.add(new MetricBuilder("UInt16", UInt16, random.nextInt()).createMetric());
-		metrics.add(new MetricBuilder("UInt32", UInt32, random.nextLong()).createMetric());
-		metrics.add(new MetricBuilder("UInt64", UInt64, BigInteger.valueOf(random.nextLong())).createMetric());
+		metrics.add(new MetricBuilder("UInt8", UInt8, getRandomUInt8()).createMetric());
+		metrics.add(new MetricBuilder("UInt16", UInt16, getRandomUInt16()).createMetric());
+		metrics.add(new MetricBuilder("UInt32", UInt32, getRandomUInt32()).createMetric());
+		metrics.add(new MetricBuilder("UInt64", UInt64, getRandomUInt64()).createMetric());
 		metrics.add(new MetricBuilder("Float", Float, random.nextFloat()).createMetric());
 		metrics.add(new MetricBuilder("Double", Double, random.nextDouble()).createMetric());
 		metrics.add(new MetricBuilder("Boolean", Boolean, random.nextBoolean()).createMetric());
@@ -417,10 +448,10 @@ public class SparkplugExample implements MqttCallbackExtended {
 		propMap.put("PropInt16", new PropertyValue(PropertyDataType.Int16, (short) random.nextInt()));
 		propMap.put("PropInt32", new PropertyValue(PropertyDataType.Int32, random.nextInt()));
 		propMap.put("PropInt64", new PropertyValue(PropertyDataType.Int64, random.nextLong()));
-		propMap.put("PropUInt8", new PropertyValue(PropertyDataType.UInt8, (short) random.nextInt()));
-		propMap.put("PropUInt16", new PropertyValue(PropertyDataType.UInt16, random.nextInt()));
-		propMap.put("PropUInt32", new PropertyValue(PropertyDataType.UInt32, random.nextLong()));
-		propMap.put("PropUInt64", new PropertyValue(PropertyDataType.UInt64, BigInteger.valueOf(random.nextLong())));
+		propMap.put("PropUInt8", new PropertyValue(PropertyDataType.UInt8, getRandomUInt8()));
+		propMap.put("PropUInt16", new PropertyValue(PropertyDataType.UInt16, getRandomUInt16()));
+		propMap.put("PropUInt32", new PropertyValue(PropertyDataType.UInt32, getRandomUInt32()));
+		propMap.put("PropUInt64", new PropertyValue(PropertyDataType.UInt64, getRandomUInt64()));
 		propMap.put("PropFloat", new PropertyValue(PropertyDataType.Float, random.nextFloat()));
 		propMap.put("PropDouble", new PropertyValue(PropertyDataType.Double, random.nextDouble()));
 		propMap.put("PropBoolean", new PropertyValue(PropertyDataType.Boolean, random.nextBoolean()));
@@ -491,10 +522,10 @@ public class SparkplugExample implements MqttCallbackExtended {
 		metrics.add(new MetricBuilder("MyInt16", Int16, (short) random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("MyInt32", Int32, random.nextInt()).createMetric());
 		metrics.add(new MetricBuilder("MyInt64", Int64, random.nextLong()).createMetric());
-		metrics.add(new MetricBuilder("MyUInt8", UInt8, (short) random.nextInt()).createMetric());
-		metrics.add(new MetricBuilder("MyUInt16", UInt16, random.nextInt()).createMetric());
-		metrics.add(new MetricBuilder("MyUInt32", UInt32, random.nextLong()).createMetric());
-		metrics.add(new MetricBuilder("MyUInt64", UInt64, BigInteger.valueOf(random.nextLong())).createMetric());
+		metrics.add(new MetricBuilder("MyUInt8", UInt8, getRandomUInt8()).createMetric());
+		metrics.add(new MetricBuilder("MyUInt16", UInt16, getRandomUInt16()).createMetric());
+		metrics.add(new MetricBuilder("MyUInt32", UInt32, getRandomUInt32()).createMetric());
+		metrics.add(new MetricBuilder("MyUInt64", UInt64, getRandomUInt64()).createMetric());
 		metrics.add(new MetricBuilder("MyFloat", Float, random.nextFloat()).createMetric());
 		metrics.add(new MetricBuilder("MyDouble", Double, random.nextDouble()).createMetric());
 		metrics.add(new MetricBuilder("MyBoolean", Boolean, random.nextBoolean()).createMetric());
@@ -522,10 +553,10 @@ public class SparkplugExample implements MqttCallbackExtended {
 						.addValue(new Value<Short>(DataSetDataType.Int16, (short) random.nextInt()))
 						.addValue(new Value<Integer>(DataSetDataType.Int32, random.nextInt()))
 						.addValue(new Value<Long>(DataSetDataType.Int64, random.nextLong()))
-						.addValue(new Value<Short>(DataSetDataType.UInt8, (short) random.nextInt()))
-						.addValue(new Value<Integer>(DataSetDataType.UInt16, random.nextInt()))
-						.addValue(new Value<Long>(DataSetDataType.UInt32, random.nextLong()))
-						.addValue(new Value<BigInteger>(DataSetDataType.UInt64, BigInteger.valueOf(random.nextLong())))
+						.addValue(new Value<Short>(DataSetDataType.UInt8, getRandomUInt8()))
+						.addValue(new Value<Integer>(DataSetDataType.UInt16, getRandomUInt16()))
+						.addValue(new Value<Long>(DataSetDataType.UInt32, getRandomUInt32()))
+						.addValue(new Value<BigInteger>(DataSetDataType.UInt64, getRandomUInt64()))
 						.addValue(new Value<Float>(DataSetDataType.Float, random.nextFloat()))
 						.addValue(new Value<Double>(DataSetDataType.Double, random.nextDouble()))
 						.addValue(new Value<Boolean>(DataSetDataType.Boolean, random.nextBoolean()))
@@ -536,10 +567,10 @@ public class SparkplugExample implements MqttCallbackExtended {
 						.addValue(new Value<Short>(DataSetDataType.Int16, (short) random.nextInt()))
 						.addValue(new Value<Integer>(DataSetDataType.Int32, random.nextInt()))
 						.addValue(new Value<Long>(DataSetDataType.Int64, random.nextLong()))
-						.addValue(new Value<Short>(DataSetDataType.UInt8, (short) random.nextInt()))
-						.addValue(new Value<Integer>(DataSetDataType.UInt16, random.nextInt()))
-						.addValue(new Value<Long>(DataSetDataType.UInt32, random.nextLong()))
-						.addValue(new Value<BigInteger>(DataSetDataType.UInt64, BigInteger.valueOf(random.nextLong())))
+						.addValue(new Value<Short>(DataSetDataType.UInt8, getRandomUInt8()))
+						.addValue(new Value<Integer>(DataSetDataType.UInt16, getRandomUInt16()))
+						.addValue(new Value<Long>(DataSetDataType.UInt32, getRandomUInt32()))
+						.addValue(new Value<BigInteger>(DataSetDataType.UInt64, getRandomUInt64()))
 						.addValue(new Value<Float>(DataSetDataType.Float, random.nextFloat()))
 						.addValue(new Value<Double>(DataSetDataType.Double, random.nextDouble()))
 						.addValue(new Value<Boolean>(DataSetDataType.Boolean, random.nextBoolean()))
@@ -547,6 +578,33 @@ public class SparkplugExample implements MqttCallbackExtended {
 						.addValue(new Value<Date>(DataSetDataType.DateTime, new Date()))
 						.addValue(new Value<String>(DataSetDataType.Text, newUUID())).createRow())
 				.createDataSet();
+	}
+
+	private short getRandomUInt8() {
+		Random random = new Random();
+		return (short) random.nextInt(256);
+	}
+
+	private int getRandomUInt16() {
+		Random random = new Random();
+		return random.nextInt(65536);
+
+	}
+
+	private long getRandomUInt32() {
+		return ThreadLocalRandom.current().nextLong(4294967296L);
+	}
+
+	private BigInteger getRandomUInt64() {
+		Random random = new Random();
+		BigInteger minSize = new BigInteger("0");
+		BigInteger maxSize = new BigInteger("18446744073709551616");
+		BigInteger randomResult = new BigInteger(64, random);
+		while (randomResult.compareTo(minSize) <= 0 || randomResult.compareTo(maxSize) >= 0) {
+			randomResult = new BigInteger(64, random);
+			System.out.println("New randomResult: " + randomResult);
+		}
+		return randomResult;
 	}
 
 	private class Publisher implements Runnable {

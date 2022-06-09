@@ -193,19 +193,25 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						builder.setIntValue((Byte) value.getValue());
 						break;
 					case Int16:
-					case UInt8:
 						builder.setIntValue((Short) value.getValue());
 						break;
 					case Int32:
-					case UInt16:
 						builder.setIntValue((Integer) value.getValue());
 						break;
 					case Int64:
-					case UInt32:
 						builder.setLongValue((Long) value.getValue());
 						break;
+					case UInt8:
+						builder.setIntValue(Short.toUnsignedInt((Short) value.getValue()));
+						break;
+					case UInt16:
+						builder.setIntValue((int) Integer.toUnsignedLong((Integer) value.getValue()));
+						break;
+					case UInt32:
+						builder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) value.getValue())));
+						break;
 					case UInt64:
-						builder.setLongValue(((BigInteger) value.getValue()).longValue());
+						builder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value.getValue()));
 						break;
 					case String:
 					case Text:
@@ -260,19 +266,25 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					builder.setIntValue((Byte) value);
 					break;
 				case Int16:
-				case UInt8:
 					builder.setIntValue((Short) value);
 					break;
 				case Int32:
-				case UInt16:
 					builder.setIntValue((Integer) value);
 					break;
 				case Int64:
-				case UInt32:
 					builder.setLongValue((Long) value);
 					break;
+				case UInt8:
+					builder.setIntValue(Short.toUnsignedInt((Short) value));
+					break;
+				case UInt16:
+					builder.setIntValue((int) Integer.toUnsignedLong((Integer) value));
+					break;
+				case UInt32:
+					builder.setLongValue(Long.valueOf(Long.toUnsignedString(((BigInteger) value).longValue())));
+					break;
 				case UInt64:
-					builder.setLongValue(((BigInteger) value).longValue());
+					builder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value));
 					break;
 				case Text:
 				case String:
@@ -318,22 +330,29 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					metricBuilder.setDoubleValue((Double) metric.getValue());
 					break;
 				case Int8:
-					metricBuilder.setIntValue(((Byte) metric.getValue()).intValue());
+					metricBuilder.setIntValue((Byte) metric.getValue());
 					break;
 				case Int16:
-				case UInt8:
-					metricBuilder.setIntValue(((Short) metric.getValue()).intValue());
+					metricBuilder.setIntValue((Short) metric.getValue());
 					break;
 				case Int32:
-				case UInt16:
-					metricBuilder.setIntValue((int) metric.getValue());
+					metricBuilder.setIntValue((Integer) metric.getValue());
 					break;
-				case UInt32:
 				case Int64:
 					metricBuilder.setLongValue((Long) metric.getValue());
 					break;
+				case UInt8:
+					metricBuilder.setIntValue(Short.toUnsignedInt((Short) metric.getValue()));
+					break;
+				case UInt16:
+					metricBuilder.setIntValue((int) Integer.toUnsignedLong((Integer) metric.getValue()));
+					break;
+				case UInt32:
+					metricBuilder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) metric.getValue())));
+					break;
 				case UInt64:
-					metricBuilder.setLongValue(((BigInteger) metric.getValue()).longValue());
+					System.err.println("ENCODE Metric.getValue(): " + metric.getValue());
+					metricBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) metric.getValue()));
 					break;
 				case String:
 				case Text:
@@ -574,31 +593,46 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				protoValueBuilder.setIntValue((Byte) value.getValue());
 				break;
 			case Int16:
-			case UInt8:
 				if (value == null || value.getValue() == null) {
 					return protoValueBuilder;
 				}
 				protoValueBuilder.setIntValue((Short) value.getValue());
 				break;
 			case Int32:
-			case UInt16:
 				if (value == null || value.getValue() == null) {
 					return protoValueBuilder;
 				}
 				protoValueBuilder.setIntValue((Integer) value.getValue());
 				break;
 			case Int64:
-			case UInt32:
 				if (value == null || value.getValue() == null) {
 					return protoValueBuilder;
 				}
 				protoValueBuilder.setLongValue((Long) value.getValue());
 				break;
+			case UInt8:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
+				protoValueBuilder.setIntValue(Short.toUnsignedInt((Short) value.getValue()));
+				break;
+			case UInt16:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
+				protoValueBuilder.setIntValue((int) Integer.toUnsignedLong((Integer) value.getValue()));
+				break;
+			case UInt32:
+				if (value == null || value.getValue() == null) {
+					return protoValueBuilder;
+				}
+				protoValueBuilder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) value.getValue())));
+				break;
 			case UInt64:
 				if (value == null || value.getValue() == null) {
 					return protoValueBuilder;
 				}
-				protoValueBuilder.setLongValue(((BigInteger) value.getValue()).longValue());
+				protoValueBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value.getValue()));
 				break;
 			case Float:
 				if (value == null || value.getValue() == null) {
@@ -659,5 +693,14 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 			return Boolean.parseBoolean(value.toString());
 		}
 		return (Boolean) value;
+	}
+
+	private long bigIntegerToUnsignedLong(BigInteger bigInteger) {
+		BigInteger bref = BigInteger.ONE.shiftLeft(64);
+		if (bigInteger.compareTo(BigInteger.ZERO) < 0)
+			bigInteger = bigInteger.add(bref);
+		if (bigInteger.compareTo(bref) >= 0 || bigInteger.compareTo(BigInteger.ZERO) < 0)
+			throw new RuntimeException("Out of range: " + bigInteger);
+		return bigInteger.longValue();
 	}
 }
