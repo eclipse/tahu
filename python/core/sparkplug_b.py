@@ -186,15 +186,23 @@ def addMetric(container, name, alias, type, value):
 
     if type == MetricDataType.Int8:
         metric.datatype = MetricDataType.Int8
+        if value < 0:
+            value = value + 2**8
         metric.int_value = value
     elif type == MetricDataType.Int16:
         metric.datatype = MetricDataType.Int16
+        if value < 0:
+            value = value + 2**16
         metric.int_value = value
     elif type == MetricDataType.Int32:
         metric.datatype = MetricDataType.Int32
+        if value < 0:
+            value = value + 2**32
         metric.int_value = value
     elif type == MetricDataType.Int64:
         metric.datatype = MetricDataType.Int64
+        if value < 0:
+            value = value + 2**64
         metric.long_value = value
     elif type == MetricDataType.UInt8:
         metric.datatype = MetricDataType.UInt8
