@@ -65,8 +65,8 @@ public enum MetricDataType {
 	FloatArray(30, Float[].class),
 	DoubleArray(31, Double[].class),
 	BooleanArray(32, Boolean[].class),
-	StringArray(33, Byte[].class),
-	DateTimeArray(34, Long[].class),
+	StringArray(33, String[].class),
+	DateTimeArray(34, Date[].class),
 
 	// Unknown
 	Unknown(0, Object.class);

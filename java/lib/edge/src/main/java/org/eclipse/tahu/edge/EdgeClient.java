@@ -464,7 +464,7 @@ public class EdgeClient implements Runnable {
 				logger.info("Processing {} request", isRebirth ? "Rebirth" : "Birth");
 				seq = 0;
 				metricHandler.publishBirthSequence();
-				long randomDelay = randomStartupDelay.getRandomDelay();
+				long randomDelay = randomStartupDelay != null ? randomStartupDelay.getRandomDelay() : 0L;
 				rebirthDelayTimer = new Timer(String.format("RebirthDelayTimer-%s", edgeNodeDescriptor.toString()));
 				logger.debug("Setting RebirthDelayTimer to {}ms", randomDelay + rebirthDebounceDelay);
 				rebirthDelayTimer.schedule(new RebirthDelayTask(), randomDelay + rebirthDebounceDelay);

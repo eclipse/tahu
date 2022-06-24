@@ -78,9 +78,9 @@ public class EdgeNode implements Runnable, MetricHandler, ClientCallback {
 				private static final long serialVersionUID = 1L;
 
 				{
-					put(new DeviceDescriptor("G1/E1/D1"), 10);
-					put(new DeviceDescriptor("G1/E1/D2"), 10);
-					put(new DeviceDescriptor("G1/E1/D3"), 10);
+					put(new DeviceDescriptor("G1/E1/D1"), 50);
+					put(new DeviceDescriptor("G1/E1/D2"), 50);
+					put(new DeviceDescriptor("G1/E1/D3"), 50);
 				}
 			});
 

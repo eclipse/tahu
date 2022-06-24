@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +50,8 @@ import com.google.protobuf.ByteString;
 public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayload> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadEncoder.class.getName());
+
+	private final CharsetEncoder enc = Charset.forName("ISO-8859-1").newEncoder();
 
 	public SparkplugBPayloadEncoder() {
 		super();
@@ -351,7 +356,6 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					metricBuilder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) metric.getValue())));
 					break;
 				case UInt64:
-					System.err.println("ENCODE Metric.getValue(): " + metric.getValue());
 					metricBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) metric.getValue()));
 					break;
 				case String:
@@ -487,6 +491,50 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						metricBuilder.setBytesValue(ByteString.copyFrom(int64ByteBuffer.array()));
 					}
 					break;
+				case UInt8Array:
+					Short[] uInt8ArrayValue = (Short[]) metric.getValue();
+					ByteBuffer uInt8ByteBuffer =
+							ByteBuffer.allocate(uInt8ArrayValue.length).order(ByteOrder.LITTLE_ENDIAN);
+					for (Short value : uInt8ArrayValue) {
+						uInt8ByteBuffer.put((byte) (value & 0xffff));
+					}
+					if (uInt8ByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(uInt8ByteBuffer.array()));
+					}
+					break;
+				case UInt16Array:
+					Integer[] uInt16ArrayValue = (Integer[]) metric.getValue();
+					ByteBuffer uInt16ByteBuffer =
+							ByteBuffer.allocate(uInt16ArrayValue.length * 2).order(ByteOrder.LITTLE_ENDIAN);
+					for (Integer value : uInt16ArrayValue) {
+						uInt16ByteBuffer.putShort((short) (value & 0xffffffff));
+					}
+					if (uInt16ByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(uInt16ByteBuffer.array()));
+					}
+					break;
+				case UInt32Array:
+					Long[] uInt32ArrayValue = (Long[]) metric.getValue();
+					ByteBuffer uInt32ByteBuffer =
+							ByteBuffer.allocate(uInt32ArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+					for (Long value : uInt32ArrayValue) {
+						uInt32ByteBuffer.putInt((int) (value & 0xffffffffffffffffL));
+					}
+					if (uInt32ByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(uInt32ByteBuffer.array()));
+					}
+					break;
+				case UInt64Array:
+					BigInteger[] uInt64ArrayValue = (BigInteger[]) metric.getValue();
+					ByteBuffer uInt64ByteBuffer =
+							ByteBuffer.allocate(uInt64ArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+					for (BigInteger value : uInt64ArrayValue) {
+						uInt64ByteBuffer.putLong(bigIntegerToUnsignedLong(value));
+					}
+					if (uInt64ByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(uInt64ByteBuffer.array()));
+					}
+					break;
 				case FloatArray:
 					Float[] floatArrayValue = (Float[]) metric.getValue();
 					ByteBuffer floatByteBuffer =
@@ -530,6 +578,33 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						booleanByteBuffer.put(nextByte);
 					}
 					metricBuilder.setBytesValue(ByteString.copyFrom(booleanByteBuffer.array()));
+					break;
+				case StringArray:
+					String[] stringArrayValue = (String[]) metric.getValue();
+					int size = 0;
+					for (String string : stringArrayValue) {
+						size = size + string.length() + 1;
+					}
+					ByteBuffer stringByteBuffer = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
+					for (String value : stringArrayValue) {
+						byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
+						stringByteBuffer.put(stringBytes);
+						stringByteBuffer.put((byte) 0);
+					}
+					if (stringByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(stringByteBuffer.array()));
+					}
+					break;
+				case DateTimeArray:
+					Date[] dateTimeArrayValue = (Date[]) metric.getValue();
+					ByteBuffer dateTimeByteBuffer =
+							ByteBuffer.allocate(dateTimeArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+					for (Date value : dateTimeArrayValue) {
+						dateTimeByteBuffer.putLong(value.getTime());
+					}
+					if (dateTimeByteBuffer.hasArray()) {
+						metricBuilder.setBytesValue(ByteString.copyFrom(dateTimeByteBuffer.array()));
+					}
 					break;
 				case Unknown:
 				default:
