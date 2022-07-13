@@ -63,6 +63,7 @@ public class TahuClient implements MqttCallbackExtended {
 	private boolean birthRetain;
 	private String lwtTopic;
 	private byte[] lwtPayload;
+	private int lwtQoS;
 	private boolean lwtRetain;
 	private IMqttDeliveryToken lwtDeliveryToken;
 	private Object lwtDeliveryLock = new Object();
@@ -150,19 +151,19 @@ public class TahuClient implements MqttCallbackExtended {
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
 			ClientCallback callback, RandomStartupDelay randomStartupDelay, String birthTopic, byte[] birthPayload,
-			String lwtTopic, byte[] lwtPayload) {
+			String lwtTopic, byte[] lwtPayload, int lwtQoS) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
 				randomStartupDelay);
-		this.setLifecycleProps(birthTopic, birthPayload, false, lwtTopic, lwtPayload, false);
+		this.setLifecycleProps(birthTopic, birthPayload, false, lwtTopic, lwtPayload, lwtQoS, false);
 	}
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
 			ClientCallback callback, RandomStartupDelay randomStartupDelay, String birthTopic, byte[] birthPayload,
-			boolean birthRetain, String lwtTopic, byte[] lwtPayload, boolean lwtRetain) {
+			boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
 				randomStartupDelay);
-		this.setLifecycleProps(birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload, lwtRetain);
+		this.setLifecycleProps(birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload, lwtQoS, lwtRetain);
 	}
 
 	/**
@@ -176,12 +177,13 @@ public class TahuClient implements MqttCallbackExtended {
 	 * @param lwtRetain whether to retain LWT messages
 	 */
 	private void setLifecycleProps(String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic,
-			byte[] lwtPayload, boolean lwtRetain) {
+			byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
 		this.birthTopic = birthTopic;
 		this.birthPayload = birthPayload;
 		this.birthRetain = birthRetain;
 		this.lwtTopic = lwtTopic;
 		this.lwtPayload = lwtPayload;
+		this.lwtQoS = lwtQoS;
 		this.lwtRetain = lwtRetain;
 
 	}
@@ -668,16 +670,15 @@ public class TahuClient implements MqttCallbackExtended {
 					boolean clientConnected = client.isConnected();
 					boolean lwtDeliveryComplete = false;
 					if (publishLwt && lwtTopic != null && clientConnected) {
-						int qos = lwtRetain ? MqttOperatorDefs.QOS1 : MqttOperatorDefs.QOS0;
-						logger.info("{}: Publishing LWT on {} with qos={} and retain={}", getClientId(), lwtTopic, qos,
-								lwtRetain);
+						logger.info("{}: Publishing LWT on {} with qos={} and retain={}", getClientId(), lwtTopic,
+								lwtQoS, lwtRetain);
 						synchronized (lwtDeliveryLock) {
 							/* 
 							 * Synchronization with the deliveryComplete() callback is needed to ensure that
 							 * the publish() call is fully completed and the lwtDeliveryToken is set before
 							 * it is being nullified in the Paho callback.
 							*/
-							lwtDeliveryToken = publish(lwtTopic, lwtPayload, qos, lwtRetain);
+							lwtDeliveryToken = publish(lwtTopic, lwtPayload, lwtQoS, lwtRetain);
 							logger.debug("published on LWT Topic={}, messageId={}", lwtTopic,
 									lwtDeliveryToken.getMessageId());
 						}
@@ -1140,7 +1141,8 @@ public class TahuClient implements MqttCallbackExtended {
 							logger.error("{}: on connection to {} - Failed to subscribe to {} - forcing disconnect",
 									getClientId(), getMqttServerName(), Arrays.toString(topics));
 
-							// FIXME - remove This sleep is necessary due to: https://github.com/eclipse/paho.mqtt.java/issues/850
+							// FIXME - remove This sleep is necessary due to:
+							// https://github.com/eclipse/paho.mqtt.java/issues/850
 							Thread.sleep(1000);
 
 							// Force the disconnect and return

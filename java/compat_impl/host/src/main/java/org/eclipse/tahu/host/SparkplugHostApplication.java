@@ -21,6 +21,6 @@ public class SparkplugHostApplication {
 	}
 
 	public void stop() {
-		tahuClient = new TahuClient(null, null, null, null, null, false, 0, null, null, null, null, false, null, null, false);
+		tahuClient = new TahuClient(null, null, null, null, null, false, 0, null, null, null, null, false, null, null, 0, false);
 	}
 }

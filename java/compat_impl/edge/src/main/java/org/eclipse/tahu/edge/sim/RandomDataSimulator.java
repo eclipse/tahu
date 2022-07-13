@@ -171,9 +171,9 @@ public class RandomDataSimulator implements DataSimulator {
 		int remainder = index % 34;
 		int dataType = remainder + 1;
 
-		// HACK
+		// These are not valid MetricDataTypes - return an standard Int32
 		if (dataType == 20 || dataType == 21) {
-			return null;
+			return new MetricBuilder(namePrefix + "-" + index, MetricDataType.Int32, getRandomInt32()).createMetric();
 		}
 
 		switch (dataType) {
@@ -240,12 +240,6 @@ public class RandomDataSimulator implements DataSimulator {
 			case 19:
 				return new MetricBuilder(namePrefix + "-" + index, MetricDataType.Template,
 						newComplexTemplateInstance()).createMetric();
-//			case 20:
-//				return new MetricBuilder(namePrefix + "-" + index, MetricDataType.PropertySet, UUID.randomUUID())
-//						.createMetric();
-//			case 21:
-//				return new MetricBuilder(namePrefix + "-" + index, MetricDataType.PropertySetList, UUID.randomUUID())
-//						.createMetric();
 			case 22:
 				Byte[] int8ArrayValue = new Byte[5];
 				for (int i = 0; i < 5; i++) {
@@ -346,13 +340,11 @@ public class RandomDataSimulator implements DataSimulator {
 	private DataSet newDataSet() throws SparkplugException {
 		return new DataSetBuilder(14).addColumnName("Int8s").addColumnName("Int16s").addColumnName("Int32s")
 				.addColumnName("Int64s").addColumnName("UInt8s").addColumnName("UInt16s").addColumnName("UInt32s")
-				.addColumnName("UInt64s")
-				.addColumnName("Floats").addColumnName("Doubles").addColumnName("Booleans")
+				.addColumnName("UInt64s").addColumnName("Floats").addColumnName("Doubles").addColumnName("Booleans")
 				.addColumnName("Strings").addColumnName("Dates").addColumnName("Texts").addType(DataSetDataType.Int8)
 				.addType(DataSetDataType.Int16).addType(DataSetDataType.Int32).addType(DataSetDataType.Int64)
 				.addType(DataSetDataType.UInt8).addType(DataSetDataType.UInt16).addType(DataSetDataType.UInt32)
-				.addType(DataSetDataType.UInt64)
-				.addType(DataSetDataType.Float).addType(DataSetDataType.Double)
+				.addType(DataSetDataType.UInt64).addType(DataSetDataType.Float).addType(DataSetDataType.Double)
 				.addType(DataSetDataType.Boolean).addType(DataSetDataType.String).addType(DataSetDataType.DateTime)
 				.addType(DataSetDataType.Text)
 				.addRow(new RowBuilder().addValue(new Value<Byte>(DataSetDataType.Int8, getRandomInt8()))
