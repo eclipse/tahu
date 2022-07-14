@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
@@ -50,8 +48,6 @@ import com.google.protobuf.ByteString;
 public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayload> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadEncoder.class.getName());
-
-	private final CharsetEncoder enc = Charset.forName("ISO-8859-1").newEncoder();
 
 	public SparkplugBPayloadEncoder() {
 		super();
@@ -577,6 +573,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						}
 						booleanByteBuffer.put(nextByte);
 					}
+
 					metricBuilder.setBytesValue(ByteString.copyFrom(booleanByteBuffer.array()));
 					break;
 				case StringArray:

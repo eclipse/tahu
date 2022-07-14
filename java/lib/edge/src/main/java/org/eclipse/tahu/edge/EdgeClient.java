@@ -11,13 +11,17 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.eclipse.tahu.edge.api.MetricHandler;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.MessageType;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
+import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
+import org.eclipse.tahu.message.model.SparkplugBPayloadMap;
 import org.eclipse.tahu.message.model.SparkplugMeta;
 import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.mqtt.ClientCallback;
@@ -154,7 +158,12 @@ public class EdgeClient implements Runnable {
 		}
 	}
 
-	public void publishNodeBirth(SparkplugBPayload payload) {
+	public void publishNodeBirth(SparkplugBPayloadMap payload) throws SparkplugInvalidTypeException {
+		// Ensure the 'Node Control/Rebirth' metric is present
+		if (payload.getMetric("Node Control/Rebirth") == null) {
+			payload.addMetric(new MetricBuilder("Node Control/Rebirth", MetricDataType.Boolean, false).createMetric());
+		}
+
 		publishSparkplugMessage(
 				new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, edgeNodeDescriptor, MessageType.NBIRTH), payload, 0,
 				false);
@@ -334,7 +343,7 @@ public class EdgeClient implements Runnable {
 
 				tahuClient = new TahuClient(clientId, mqttServerName, mqttServerUrl, username, password, true,
 						keepAlive, callback, randomStartupDelay, null, null, false, deathTopic.toString(),
-						deathPayloadBytes, false);
+						deathPayloadBytes, 1, false);
 				tahuClient.setTrackFirstConnection(true);
 				tahuClient.setAutoReconnect(false);
 
