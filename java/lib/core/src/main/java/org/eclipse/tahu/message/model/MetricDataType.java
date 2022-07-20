@@ -48,10 +48,7 @@ public enum MetricDataType {
 	File(18, File.class),
 	Template(19, Template.class),
 
-	// TODO - to be added
-	// Additional PropertyValue Types
-	// PropertySet = 20;
-	// PropertySetList = 21;
+	// PropertyValue Types (20 and 21) are NOT metric datatypes
 
 	// Array Types
 	Int8Array(22, Byte[].class),
@@ -65,8 +62,8 @@ public enum MetricDataType {
 	FloatArray(30, Float[].class),
 	DoubleArray(31, Double[].class),
 	BooleanArray(32, Boolean[].class),
-	StringArray(33, Byte[].class),
-	DateTimeArray(34, Long[].class),
+	StringArray(33, String[].class),
+	DateTimeArray(34, Date[].class),
 
 	// Unknown
 	Unknown(0, Object.class);
