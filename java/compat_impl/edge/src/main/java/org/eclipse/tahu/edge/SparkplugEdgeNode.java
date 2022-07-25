@@ -43,9 +43,9 @@ import org.eclipse.tahu.util.TopicUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EdgeNode implements Runnable, MetricHandler, ClientCallback {
+public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallback {
 
-	private static Logger logger = LoggerFactory.getLogger(EdgeNode.class.getName());
+	private static Logger logger = LoggerFactory.getLogger(SparkplugEdgeNode.class.getName());
 
 	private static final String GROUP_ID = "G1";
 	private static final String EDGE_NODE_ID = "E1";
@@ -91,13 +91,13 @@ public class EdgeNode implements Runnable, MetricHandler, ClientCallback {
 
 	public static void main(String[] arg) {
 		try {
-			EdgeNode edgeNode = new EdgeNode();
-			Thread edgeNodeThread = new Thread(edgeNode);
+			SparkplugEdgeNode sparkplugEdgeNode = new SparkplugEdgeNode();
+			Thread edgeNodeThread = new Thread(sparkplugEdgeNode);
 			edgeNodeThread.start();
 
 			// Run for a while and shutdown
-			Thread.sleep(300000);
-			edgeNode.shutdown();
+			Thread.sleep(30000);
+			sparkplugEdgeNode.shutdown();
 		} catch (Exception e) {
 			logger.error("Failed to run the Edge Node", e);
 		}
@@ -108,7 +108,7 @@ public class EdgeNode implements Runnable, MetricHandler, ClientCallback {
 	private PeriodicPublisher periodicPublisher;
 	private Thread periodicPublisherThread;
 
-	public EdgeNode() {
+	public SparkplugEdgeNode() {
 		try {
 			edgeClient = new EdgeClient(this, EDGE_NODE_DESCRIPTOR, DEVICE_IDS, PRIMARY_HOST_ID, REBIRTH_DEBOUNCE_DELAY,
 					new MqttClientId(MQTT_CLIENT_ID, false), MQTT_SERVER_NAME, MQTT_SERVER_URL, USERNAME, PASSWORD,
