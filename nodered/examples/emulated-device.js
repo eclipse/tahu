@@ -10,7 +10,7 @@
  * Contributors:
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
-var deviceId = "Emulated Device"
+var deviceId = "Emulated Device",
     hwVersion = "Emulated Hardware",
     swVersion = "v1.0.0",
 
