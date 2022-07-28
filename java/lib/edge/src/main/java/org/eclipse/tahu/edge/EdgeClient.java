@@ -7,6 +7,7 @@
 package org.eclipse.tahu.edge;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,6 +23,7 @@ import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayloadMap;
+import org.eclipse.tahu.message.model.SparkplugBPayloadMap.SparkplugBPayloadMapBuilder;
 import org.eclipse.tahu.message.model.SparkplugMeta;
 import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.mqtt.ClientCallback;
@@ -95,7 +97,7 @@ public class EdgeClient implements Runnable {
 		stayRunning = false;
 		connectedToPrimaryHost = false;
 		connectedToMqttServer = false;
-		disconnect(false);
+		disconnect(true);
 	}
 
 	public boolean isDisconnectedOrDisconnecting() {
@@ -133,6 +135,11 @@ public class EdgeClient implements Runnable {
 				logger.info("Attempting disconnect {}", connectionId);
 				try {
 					if (publishLwt) {
+						for (String deviceId : deviceIds) {
+							// Publish all of the DDEATHs since we're shutting down cleanly
+							publishDeviceDeath(deviceId);
+						}
+
 						tahuClient.disconnect(50, 50, false, true, false);
 					} else {
 						tahuClient.disconnect(0, 1, true, false, false);
@@ -183,6 +190,14 @@ public class EdgeClient implements Runnable {
 	public void publishDeviceData(String deviceId, SparkplugBPayload payload) {
 		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
 				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDATA), payload, 0, false);
+	}
+
+	public void publishDeviceDeath(String deviceId) {
+		SparkplugBPayloadMapBuilder payloadBuilder = new SparkplugBPayloadMapBuilder();
+		payloadBuilder.setTimestamp(new Date());
+		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
+				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDEATH), payloadBuilder.createPayload(),
+				0, false);
 	}
 
 	public long getNextSeqNum() {
