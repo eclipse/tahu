@@ -18,12 +18,12 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.17-SNAPSHOT</version>
+    <version>0.5.17</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>example_host_file</artifactId>
-  <version>0.5.17-SNAPSHOT</version>
+  <version>0.5.17</version>
   <packaging>jar</packaging>
   <name>Sparkplug B Host File Example</name>
 
