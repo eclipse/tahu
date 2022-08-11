@@ -63,7 +63,7 @@ public class RandomDataSimulator implements DataSimulator {
 		this.numDeviceMetrics = numDeviceMetrics;
 	}
 
-	// DataSimultor API
+	// DataSimulator API
 	@Override
 	public SparkplugBPayloadMap getNodeBirthPayload(EdgeNodeDescriptor edgeNodeDescriptor) {
 		try {
@@ -95,7 +95,7 @@ public class RandomDataSimulator implements DataSimulator {
 		}
 	}
 
-	// DataSimultor API
+	// DataSimulator API
 	@Override
 	public SparkplugBPayload getDeviceBirthPayload(DeviceDescriptor deviceDescriptor) {
 		try {
@@ -122,7 +122,7 @@ public class RandomDataSimulator implements DataSimulator {
 		}
 	}
 
-	// DataSimultor API
+	// DataSimulator API
 	@Override
 	public SparkplugBPayload getDeviceDataPayload(DeviceDescriptor deviceDescriptor) {
 		try {
@@ -149,7 +149,7 @@ public class RandomDataSimulator implements DataSimulator {
 		}
 	}
 
-	// DataSimultor API
+	// DataSimulator API
 	@Override
 	public boolean hasMetric(SparkplugDescriptor sparkplugDescriptor, String metricName) {
 		if (metricMaps.containsKey(sparkplugDescriptor)
@@ -160,7 +160,7 @@ public class RandomDataSimulator implements DataSimulator {
 		}
 	}
 
-	// DataSimultor API
+	// DataSimulator API
 	@Override
 	public Metric handleMetricWrite(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
 		// No-op for this simulator - just return the metric as though the value was 'written'
