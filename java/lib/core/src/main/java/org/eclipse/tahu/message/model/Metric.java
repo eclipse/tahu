@@ -13,6 +13,8 @@
 
 package org.eclipse.tahu.message.model;
 
+import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.eclipse.tahu.SparkplugException;
@@ -228,7 +230,35 @@ public class Metric {
 		builder.append(", properties=");
 		builder.append(properties);
 		builder.append(", value=");
-		builder.append(value);
+		if (dataType == MetricDataType.BooleanArray) {
+			builder.append(Arrays.toString((Boolean[]) value));
+		} else if (dataType == MetricDataType.DateTimeArray) {
+			builder.append(Arrays.toString((Date[]) value));
+		} else if (dataType == MetricDataType.DoubleArray) {
+			builder.append(Arrays.toString((Double[]) value));
+		} else if (dataType == MetricDataType.FloatArray) {
+			builder.append(Arrays.toString((Float[]) value));
+		} else if (dataType == MetricDataType.Int8Array) {
+			builder.append(Arrays.toString((Byte[]) value));
+		} else if (dataType == MetricDataType.Int16Array) {
+			builder.append(Arrays.toString((Short[]) value));
+		} else if (dataType == MetricDataType.Int32Array) {
+			builder.append(Arrays.toString((Integer[]) value));
+		} else if (dataType == MetricDataType.Int64Array) {
+			builder.append(Arrays.toString((Long[]) value));
+		} else if (dataType == MetricDataType.StringArray) {
+			builder.append(Arrays.toString((String[]) value));
+		} else if (dataType == MetricDataType.UInt8Array) {
+			builder.append(Arrays.toString((Short[]) value));
+		} else if (dataType == MetricDataType.UInt16Array) {
+			builder.append(Arrays.toString((Integer[]) value));
+		} else if (dataType == MetricDataType.UInt32Array) {
+			builder.append(Arrays.toString((Long[]) value));
+		} else if (dataType == MetricDataType.UInt64Array) {
+			builder.append(Arrays.toString((BigInteger[]) value));
+		} else {
+			builder.append(value);
+		}
 		builder.append(", isNull=");
 		builder.append(isNull);
 		builder.append("]");
