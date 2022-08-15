@@ -404,7 +404,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 						stringList.add(sb.toString());
 						sb = new StringBuilder();
 					} else {
-						sb.append(b);
+						sb.append((char) b);
 					}
 				}
 				return stringList.toArray(new String[0]);
