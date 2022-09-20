@@ -1090,6 +1090,15 @@ public class TahuClient implements MqttCallbackExtended {
 
 	@Override
 	public void connectComplete(boolean reconnect, String serverURI) {
+		
+		// Check if we are in the process of disconnecting
+		if (disconnectInProgress) {
+			logger.warn("Ignoring connect complete to {}, disconnect in progress", serverURI);
+			// This potentially prevents a deadlock situation upon synchronizing on the clientLock below if a disconnect
+			// is in progress and waiting on the client.disconnect() call
+			return;
+		}
+		
 		synchronized (clientLock) {
 			if (reconnect) {
 				logger.debug("{}: SUCCESSFULLY RECONNECTED to {}", getClientId(), getMqttServerUrl());
