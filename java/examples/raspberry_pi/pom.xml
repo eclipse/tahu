@@ -18,12 +18,12 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.18</version>
+    <version>0.5.19-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>example_raspberry_pi</artifactId>
-  <version>0.5.18</version>
+  <version>0.5.19-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Sparkplug B Raspberry Pi Example</name>
 
