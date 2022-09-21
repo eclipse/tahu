@@ -145,12 +145,22 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 			PropertySet props = existingMetric.getProperties();
 			if (metric.getProperties() != null
 					&& metric.getProperties().getPropertyValue(SparkplugMeta.QUALITY_PROP_NAME) != null) {
+				if (props == null) {
+					props = new PropertySet();
+					existingMetric.setProperties(props);
+				}
 				props.setProperty(SparkplugMeta.QUALITY_PROP_NAME,
 						metric.getProperties().getPropertyValue(SparkplugMeta.QUALITY_PROP_NAME));
+			} else {
+				if (props != null) {
+					// If there is no quality - it is implied good and should be updated as such by simply removing it
+					props.remove(SparkplugMeta.QUALITY_PROP_NAME);
+				}
 			}
 			existingMetric.setTimestamp(metric.getTimestamp());
+			logger.trace("Updated metric in the map: {}", existingMetric);
 		} else {
-			logger.info("Adding new metric to cache when updating: {}", metricName);
+			logger.trace("Adding new metric to cache when updating: {}", metric);
 			metricMap.put(metricName, metric);
 		}
 	}

@@ -18,12 +18,12 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu</artifactId>
-    <version>0.5.17</version>
+    <version>0.5.18</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>example_edge_node_control</artifactId>
-  <version>0.5.17</version>
+  <version>0.5.18</version>
   <packaging>jar</packaging>
   <name>Sparkplug B Edge Node Control Example</name>
 
