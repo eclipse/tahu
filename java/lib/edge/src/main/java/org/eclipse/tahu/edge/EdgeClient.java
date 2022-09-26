@@ -177,9 +177,11 @@ public class EdgeClient implements Runnable {
 	}
 
 	public void publishNodeData(SparkplugBPayload payload) {
-		publishSparkplugMessage(
-				new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, edgeNodeDescriptor, MessageType.NDATA), payload, 0,
-				false);
+		if (connectedToPrimaryHost) {
+			publishSparkplugMessage(
+					new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, edgeNodeDescriptor, MessageType.NDATA), payload,
+					0, false);
+		}
 	}
 
 	public void publishDeviceBirth(String deviceId, SparkplugBPayload payload) {
@@ -188,8 +190,10 @@ public class EdgeClient implements Runnable {
 	}
 
 	public void publishDeviceData(String deviceId, SparkplugBPayload payload) {
-		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
-				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDATA), payload, 0, false);
+		if (connectedToPrimaryHost) {
+			publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
+					new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDATA), payload, 0, false);
+		}
 	}
 
 	public void publishDeviceDeath(String deviceId) {
@@ -264,7 +268,8 @@ public class EdgeClient implements Runnable {
 								subQos.add(1);
 
 								if (primaryHostId != null && !primaryHostId.isEmpty()) {
-									subTopics.add("STATE/" + primaryHostId);
+									subTopics
+											.add(SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + primaryHostId);
 									subQos.add(1);
 								}
 
@@ -305,9 +310,10 @@ public class EdgeClient implements Runnable {
 							primaryHostIdResponseTimer.schedule(new PrimaryHostIdResponseTask(), 30000);
 
 							// Subscribe to the STATE topic for primary host ID notifications
-							int grantedQos = tahuClient.subscribe("STATE/" + primaryHostId, MqttOperatorDefs.QOS1);
+							String subHostTopic = SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX + "/" + primaryHostId;
+							int grantedQos = tahuClient.subscribe(subHostTopic, MqttOperatorDefs.QOS1);
 							if (grantedQos != 1) {
-								logger.error("Failed to subscribe to 'STATE/{}'", primaryHostId);
+								logger.error("Failed to subscribe to '{}'", subHostTopic);
 								// Cancel the timer and disconnect
 								if (primaryHostIdResponseTimer != null) {
 									primaryHostIdResponseTimer.cancel();
@@ -450,18 +456,18 @@ public class EdgeClient implements Runnable {
 	 * @param primaryHostId the primary host ID
 	 * @param state the state
 	 */
-	public void handleStateMessage(String primaryHostId, String state) {
+	public void handleStateMessage(String primaryHostId, boolean online) {
 		synchronized (clientLock) {
 			if (this.primaryHostId != null && this.primaryHostId.equals(primaryHostId)) {
-				if (state.equals("ONLINE") && !connectedToPrimaryHost) {
-					logger.info("Critical/Primary app is ONLINE - cancelling disconnect timer");
+				if (online && !connectedToPrimaryHost) {
+					logger.info("Critical/Primary app is online - cancelling disconnect timer");
 					if (primaryHostIdResponseTimer != null) {
 						primaryHostIdResponseTimer.cancel();
 						primaryHostIdResponseTimer = null;
 					}
 					handleOnlineTransition("STATE CHANGE");
-				} else if (state.equals("OFFLINE")) {
-					logger.error("Critical/Primary app went OFFLINE - disconnecting from this server");
+				} else if (!online) {
+					logger.error("Critical/Primary app went offline - disconnecting from this server");
 					// Check if currently connected to primary host
 					if (connectedToPrimaryHost) {
 						connectedToPrimaryHost = false;
@@ -500,7 +506,7 @@ public class EdgeClient implements Runnable {
 
 	private class PrimaryHostIdResponseTask extends TimerTask {
 		public void run() {
-			logger.error("Failed to validate the Primary Host is ONLINE");
+			logger.error("Failed to validate the Primary Host is online");
 			disconnect(true);
 		}
 	}
