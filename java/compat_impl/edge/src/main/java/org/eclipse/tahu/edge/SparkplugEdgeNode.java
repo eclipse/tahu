@@ -16,6 +16,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.eclipse.tahu.SparkplugParsingException;
 import org.eclipse.tahu.edge.api.MetricHandler;
+import org.eclipse.tahu.edge.persistence.PersistentUtils;
 import org.eclipse.tahu.edge.sim.DataSimulator;
 import org.eclipse.tahu.edge.sim.RandomDataSimulator;
 import org.eclipse.tahu.message.PayloadDecoder;
@@ -33,6 +34,7 @@ import org.eclipse.tahu.message.model.SparkplugBPayloadMap;
 import org.eclipse.tahu.message.model.SparkplugBPayloadMap.SparkplugBPayloadMapBuilder;
 import org.eclipse.tahu.message.model.SparkplugDescriptor;
 import org.eclipse.tahu.message.model.SparkplugMeta;
+import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
@@ -43,6 +45,8 @@ import org.eclipse.tahu.util.TopicUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallback {
 
 	private static Logger logger = LoggerFactory.getLogger(SparkplugEdgeNode.class.getName());
@@ -50,7 +54,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	private static final String GROUP_ID = "G1";
 	private static final String EDGE_NODE_ID = "E1";
 	private static final EdgeNodeDescriptor EDGE_NODE_DESCRIPTOR = new EdgeNodeDescriptor(GROUP_ID, EDGE_NODE_ID);
-	private static final List<String> DEVICE_IDS = Arrays.asList("D1", "D2", "D3");
+	private static final List<String> DEVICE_IDS = Arrays.asList("D1");
 	private static final String PRIMARY_HOST_ID = "IamHost";
 	private static final Long REBIRTH_DEBOUNCE_DELAY = 5000L;
 	private static final String MQTT_CLIENT_ID = "Sparkplug-Tahu-Compatible-Impl";
@@ -65,12 +69,12 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	/*
 	 * Next Birth BD sequence number - same as last deathBdSeq
 	 */
-	private long birthBdSeq = 0;
+	private long birthBdSeq;
 
 	/*
 	 * Next Death BD sequence number
 	 */
-	private long deathBdSeq = 0;
+	private long deathBdSeq;
 
 	private final DataSimulator dataSimulator =
 			new RandomDataSimulator(10, new HashMap<SparkplugDescriptor, Integer>() {
@@ -79,8 +83,6 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 				{
 					put(new DeviceDescriptor("G1/E1/D1"), 50);
-					put(new DeviceDescriptor("G1/E1/D2"), 50);
-					put(new DeviceDescriptor("G1/E1/D3"), 50);
 				}
 			});
 
@@ -96,7 +98,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			edgeNodeThread.start();
 
 			// Run for a while and shutdown
-			Thread.sleep(30000);
+			Thread.sleep(300000);
 			sparkplugEdgeNode.shutdown();
 		} catch (Exception e) {
 			logger.error("Failed to run the Edge Node", e);
@@ -110,6 +112,9 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 	public SparkplugEdgeNode() {
 		try {
+			deathBdSeq = PersistentUtils.getNextDeathBdSeqNum();
+			birthBdSeq = deathBdSeq;
+
 			edgeClient = new EdgeClient(this, EDGE_NODE_DESCRIPTOR, DEVICE_IDS, PRIMARY_HOST_ID, REBIRTH_DEBOUNCE_DELAY,
 					new MqttClientId(MQTT_CLIENT_ID, false), MQTT_SERVER_NAME, MQTT_SERVER_URL, USERNAME, PASSWORD,
 					KEEP_ALIVE, this, null);
@@ -154,9 +159,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 			// The BIRTH sequence has been published - set up a periodic publisher
 			periodicPublisher = new PeriodicPublisher(5000, dataSimulator, edgeClient,
-					Arrays.asList(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D1"),
-							new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D2"),
-							new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D3")));
+					Arrays.asList(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D1")));
 			periodicPublisherThread = new Thread(periodicPublisher);
 			periodicPublisherThread.start();
 		} catch (Exception e) {
@@ -190,23 +193,31 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			String rawTopic, MqttMessage message) {
 		logger.info("{}: ClientCallback messageArrived on topic={}", clientId, rawTopic);
 
-		if (rawTopic.startsWith("STATE/")) {
-			logger.info("Got STATE message: {} :: {}", rawTopic, new String(message.getPayload()));
-			edgeClient.handleStateMessage(rawTopic.substring(6), new String(message.getPayload()));
+		final Topic topic;
+		try {
+			topic = TopicUtil.parseTopic(rawTopic);
+		} catch (SparkplugParsingException e) {
+			logger.error("Error parsing Sparkplug topic {}", rawTopic, e);
+			return;
+		}
+
+		if (rawTopic.startsWith("spBv1.0/STATE/")) {
+			try {
+				logger.info("Got STATE message: {} :: {}", rawTopic, new String(message.getPayload()));
+				ObjectMapper mapper = new ObjectMapper();
+				StatePayload statePayload = mapper.readValue(message.getPayload(), StatePayload.class);
+				edgeClient.handleStateMessage(topic.getHostApplicationId(), statePayload.isOnline());
+			} catch (Exception e) {
+				logger.error("Failed to handle STATE message with topic={} and payload={}", rawTopic,
+						new String(message.getPayload()));
+			}
 			return;
 		} else if (!SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX.equals(TopicUtil.getSplitTopic(rawTopic)[0])) {
 			logger.warn("Message received on erroneous topic: {}", rawTopic);
 			return;
 		} else {
 			// Sparkplug message!
-			final Topic topic;
 			final SparkplugBPayload payload;
-			try {
-				topic = TopicUtil.parseTopic(rawTopic);
-			} catch (SparkplugParsingException e) {
-				logger.error("Error parsing Sparkplug topic {}", rawTopic, e);
-				return;
-			}
 
 			try {
 				// Handling case where the MQTT Server publishes an LWT on our behalf but we're actually online.
@@ -373,6 +384,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 				// Increment sequence numbers in preparation for the next new connect
 				birthBdSeq = deathBdSeq;
 				deathBdSeq++;
+				PersistentUtils.setNextDeathBdSeqNum(deathBdSeq);
 			} catch (SparkplugInvalidTypeException e) {
 				logger.error("Failed to create death payload", e);
 				return null;

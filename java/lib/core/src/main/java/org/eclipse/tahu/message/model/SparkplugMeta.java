@@ -9,7 +9,9 @@ package org.eclipse.tahu.message.model;
 public class SparkplugMeta {
 
 	public static final String SPARKPLUG_B_TOPIC_PREFIX = "spBv1.0";
-	public static final String SPARKPLUG_TOPIC_PRIMARY_HOST_PREFIX = "STATE";
+	public static final String SPARKPLUG_TOPIC_HOST_STATE_TOKEN = "STATE";
+	public static final String SPARKPLUG_TOPIC_HOST_STATE_PREFIX =
+			SPARKPLUG_B_TOPIC_PREFIX + "/" + SPARKPLUG_TOPIC_HOST_STATE_TOKEN;
 	public static final String SPARKPLUG_SEQUENCE_NUMBER_KEY = "seq";
 	public static final String SPARKPLUG_BD_SEQUENCE_NUMBER_KEY = "bdSeq";
 

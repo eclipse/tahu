@@ -36,8 +36,8 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 		try {
 			SparkplugHostApplication sparkplugHostApplication = new SparkplugHostApplication();
 			sparkplugHostApplication.start();
-			Thread.sleep(10000);
-			sparkplugHostApplication.shutdown();
+			Thread.sleep(60000);
+//			sparkplugHostApplication.shutdown();
 
 		} catch (Exception e) {
 			logger.error("Failed to run the Edge Node", e);

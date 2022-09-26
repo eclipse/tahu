@@ -207,10 +207,16 @@ public class SparkplugExample implements MqttCallbackExtended {
 				payload.addMetric(new MetricBuilder("bdSeq", Int64, (long) bdSeq).createMetric());
 				payload.addMetric(new MetricBuilder("Node Control/Rebirth", Boolean, false).createMetric());
 
+				PropertySet nestedPropertySet = new PropertySetBuilder()
+						.addProperty("custom", new PropertyValue(PropertyDataType.String, "Custom Value"))
+						.createPropertySet();
+
 				PropertySet propertySet = new PropertySetBuilder()
 						.addProperty("engUnit", new PropertyValue(PropertyDataType.String, "My Units"))
 						.addProperty("engLow", new PropertyValue(PropertyDataType.Double, 1.0))
 						.addProperty("engHigh", new PropertyValue(PropertyDataType.Double, 10.0))
+						.addProperty("Custom nested node prop",
+								new PropertyValue(PropertyDataType.PropertySet, nestedPropertySet))
 						/*
 						 * .addProperty("CustA", new PropertyValue(PropertyDataType.String, "Custom A"))
 						 * .addProperty("CustB", new PropertyValue(PropertyDataType.Double, 10.0)) .addProperty("CustC",
@@ -259,10 +265,16 @@ public class SparkplugExample implements MqttCallbackExtended {
 				payload.addMetric(new MetricBuilder("Properties/hw_version", String, HW_VERSION).createMetric());
 				payload.addMetric(new MetricBuilder("Properties/sw_version", String, SW_VERSION).createMetric());
 
+				PropertySet nestedPropertySet = new PropertySetBuilder()
+						.addProperty("custom", new PropertyValue(PropertyDataType.String, "Custom Value"))
+						.createPropertySet();
+
 				PropertySet propertySet = new PropertySetBuilder()
 						.addProperty("engUnit", new PropertyValue(PropertyDataType.String, "My Units"))
 						.addProperty("engLow", new PropertyValue(PropertyDataType.Double, 1.0))
 						.addProperty("engHigh", new PropertyValue(PropertyDataType.Double, 10.0))
+						.addProperty("Custom nested device prop",
+								new PropertyValue(PropertyDataType.PropertySet, nestedPropertySet))
 						/*
 						 * .addProperty("CustA", new PropertyValue(PropertyDataType.String, "Custom A"))
 						 * .addProperty("CustB", new PropertyValue(PropertyDataType.Double, 10.0)) .addProperty("CustC",

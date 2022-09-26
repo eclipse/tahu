@@ -55,6 +55,11 @@ public class Topic {
 	private final String deviceId;
 
 	/**
+	 * The ID if this is a Sparkplug Host Application topic
+	 */
+	private final String hostApplicationId;
+
+	/**
 	 * The message type.
 	 */
 	private final MessageType type;
@@ -63,9 +68,10 @@ public class Topic {
 	 * A Constructor for Device Topics
 	 * 
 	 * @param namespace the namespace
-	 * @param groupId the group ID
-	 * @param edgeNodeId the edge node ID
-	 * @param deviceId the device ID
+	 * @param groupId the Group ID
+	 * @param edgeNodeId the Edge Node ID
+	 * @param deviceId the Device ID
+	 * @param hostApplicationId the Host Application ID
 	 * @param type the message type
 	 */
 	public Topic(String namespace, String groupId, String edgeNodeId, String deviceId, MessageType type) {
@@ -78,6 +84,7 @@ public class Topic {
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = deviceId;
+		this.hostApplicationId = null;
 		this.type = type;
 	}
 
@@ -97,6 +104,7 @@ public class Topic {
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = null;
+		this.hostApplicationId = null;
 		this.type = type;
 	}
 
@@ -121,6 +129,24 @@ public class Topic {
 	 */
 	public Topic(String namespace, EdgeNodeDescriptor edgeNodeDescriptor, MessageType type) {
 		this(namespace, edgeNodeDescriptor.getGroupId(), edgeNodeDescriptor.getEdgeNodeId(), type);
+	}
+
+	/**
+	 * A Constructor for Host Application Topics
+	 *
+	 * @param namespace the namespace
+	 * @param hostApplicationId the Host Application ID
+	 */
+	public Topic(String namespace, String hostApplicationId, MessageType type) {
+		super();
+		this.namespace = namespace;
+		this.hostApplicationId = hostApplicationId;
+		this.type = type;
+		this.sparkplugDescriptor = null;
+		this.edgeNodeDescriptor = null;
+		this.groupId = null;
+		this.edgeNodeId = null;
+		this.deviceId = null;
 	}
 
 	/**
@@ -178,6 +204,15 @@ public class Topic {
 	}
 
 	/**
+	 * Returns the Host Application ID if this is a Host topic
+	 *
+	 * @return the Host Application ID
+	 */
+	public String getHostApplicationId() {
+		return hostApplicationId;
+	}
+
+	/**
 	 * Returns the message type.
 	 * 
 	 * @return the message type
@@ -188,10 +223,15 @@ public class Topic {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(getNamespace()).append("/").append(getGroupId()).append("/")
-				.append(getType()).append("/").append(getEdgeNodeId());
-		if (getDeviceId() != null) {
-			sb.append("/").append(getDeviceId());
+		StringBuilder sb = new StringBuilder();
+		if (hostApplicationId == null) {
+			sb.append(getNamespace()).append("/").append(getGroupId()).append("/").append(getType()).append("/")
+					.append(getEdgeNodeId());
+			if (getDeviceId() != null) {
+				sb.append("/").append(getDeviceId());
+			}
+		} else {
+			sb.append(getNamespace()).append("/").append(getType()).append("/").append(hostApplicationId);
 		}
 		return sb.toString();
 	}

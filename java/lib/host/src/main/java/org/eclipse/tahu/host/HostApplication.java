@@ -15,6 +15,7 @@ import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.seq.SequenceReorderManager;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
+import org.eclipse.tahu.message.model.SparkplugMeta;
 import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.mqtt.MqttClientId;
@@ -62,7 +63,7 @@ public class HostApplication implements CommandPublisher {
 		this.password = password;
 		this.keepAliveTimeout = keepAliveTimeout;
 		this.randomStartupDelay = randomStartupDelay;
-		this.stateTopic = "STATE/" + hostId;
+		this.stateTopic = SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + hostId;
 
 		SequenceReorderManager sequenceReorderManager = SequenceReorderManager.getInstance();
 		sequenceReorderManager.init(eventHandler, this, 5000L);
@@ -105,7 +106,7 @@ public class HostApplication implements CommandPublisher {
 			tahuClient.setAutoReconnect(true);
 			tahuClient.connect();
 
-			// Subscribe to our own STATE topic
+			// Subscribe to our own spBv1.0/STATE topic
 			logger.debug("PrimaryHostId is set. Subscribing on {}", stateTopic);
 			int grantedQos = tahuClient.subscribe(stateTopic, MqttOperatorDefs.QOS1);
 			if (grantedQos != 1) {
@@ -141,8 +142,7 @@ public class HostApplication implements CommandPublisher {
 				// Unsubscribe
 				// removeMqttClientSubscriptions(tahuClient, unsubscribe);
 
-				// Clean up STATE subscriptions
-				String stateTopic = "STATE" + "/" + hostId;
+				// Clean up spBv1.0/STATE subscriptions
 				logger.debug("Unsubscribing from {}", stateTopic);
 				tahuClient.unsubscribe(stateTopic);
 
