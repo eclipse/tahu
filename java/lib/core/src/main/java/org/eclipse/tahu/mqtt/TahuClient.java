@@ -30,6 +30,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
+import org.eclipse.paho.client.mqttv3.MqttToken;
 import org.eclipse.paho.client.mqttv3.internal.NetworkModuleService;
 import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
@@ -45,10 +46,12 @@ public class TahuClient implements MqttCallbackExtended {
 
 	private static final long DEFAULT_CONNECT_RETRY_INTERVAL = 1000;
 	private static final long DEFAULT_CONNECT_MONITOR_INTERVAL = 10000;
+	private static final long DEFAULT_CONNECT_ATTEMPT_TIMEOUT = 30000;
 
 	private Thread connectRunnableThread;
 	private ConnectRunnable connectRunnable;
 	private long connectRetryInterval;
+	private long connectAttemptTimeout;
 
 	/*
 	 * Tracks the state of the connection attempts.
@@ -143,6 +146,7 @@ public class TahuClient implements MqttCallbackExtended {
 		this.birthRetain = false;
 		this.autoReconnect = true;
 		this.setConnectRetryInterval(DEFAULT_CONNECT_RETRY_INTERVAL);
+		this.setConnectAttemptTimeout(DEFAULT_CONNECT_ATTEMPT_TIMEOUT);
 		this.renewDisconnectTime();
 		this.renewOnlineDate();
 		this.renewOfflineDate();
@@ -725,12 +729,12 @@ public class TahuClient implements MqttCallbackExtended {
 	/*
 	 * Attempt to connect.
 	 */
-	private void attemptConnect(MqttAsyncClient client, MqttConnectOptions options, String ctx)
+	private IMqttToken attemptConnect(MqttAsyncClient client, MqttConnectOptions options, String ctx)
 			throws MqttSecurityException, MqttException {
 		synchronized (clientLock) {
 			if (isConnected()) {
 				logger.trace("{} is already connected - not trying again", getClientId());
-				return;
+				return null;
 			}
 			if (randomStartupDelay != null && randomStartupDelay.isValid()) {
 				long randomDelay = randomStartupDelay.getRandomDelay();
@@ -747,7 +751,7 @@ public class TahuClient implements MqttCallbackExtended {
 					Thread.currentThread().getId());
 
 			// Make the call to connect (this is asynchronous)
-			client.connect(options, ctx, new IMqttActionListener() {
+			return client.connect(options, ctx, new IMqttActionListener() {
 
 				@Override
 				public void onSuccess(IMqttToken token) {
@@ -858,6 +862,10 @@ public class TahuClient implements MqttCallbackExtended {
 
 				// Set the callback handler
 				client.setCallback(callback);
+				IMqttToken connectToken = null;
+				
+				// A time stamp to track the current attempt in case the underlying client is stuck attempting forever
+				long attemptTimestamp = System.currentTimeMillis();
 
 				if (autoReconnect) {
 					try {
@@ -869,7 +877,10 @@ public class TahuClient implements MqttCallbackExtended {
 										return;
 									}
 
-									attemptConnect(client, connectOptions, "connect with retry");
+									connectToken = attemptConnect(client, connectOptions, "connect with retry");
+									
+									// Update time stamp for current attempt
+									attemptTimestamp = System.currentTimeMillis();
 								}
 
 								// Sleep for the connect retry interval
@@ -880,8 +891,22 @@ public class TahuClient implements MqttCallbackExtended {
 								return;
 							} catch (MqttException e) {
 								if (e.getReasonCode() == MqttException.REASON_CODE_CONNECT_IN_PROGRESS) {
-									logger.debug("{}: Still trying to connect", getClientId());
-									Thread.sleep(500);
+									if (connectToken != null) {
+										logger.debug("{}: Still trying to connect - isComplete? {}, sessionPresent? {}",
+												getClientId(), connectToken.isComplete(),
+												connectToken.getSessionPresent());
+									} else {
+										logger.debug("{}: Still trying to connect", getClientId());
+									}
+									
+									// Check if the connect attempt has timed out
+									if (System.currentTimeMillis() - attemptTimestamp > connectAttemptTimeout) {
+										logger.warn("{}: Connect attempt has timed out");
+										// Forcibly disconnect the client
+										client.disconnectForcibly(500);
+									} else {
+										Thread.sleep(500);
+									}
 								} else {
 									logger.debug("{}: Unable to connect due to {}, next connect attempt in {} ms",
 											getClientId(), e.getMessage(), getConnectRetryInterval());
@@ -1090,7 +1115,7 @@ public class TahuClient implements MqttCallbackExtended {
 
 	@Override
 	public void connectComplete(boolean reconnect, String serverURI) {
-		
+
 		// Check if we are in the process of disconnecting
 		if (disconnectInProgress) {
 			logger.warn("Ignoring connect complete to {}, disconnect in progress", serverURI);
@@ -1098,7 +1123,7 @@ public class TahuClient implements MqttCallbackExtended {
 			// is in progress and waiting on the client.disconnect() call
 			return;
 		}
-		
+
 		synchronized (clientLock) {
 			if (reconnect) {
 				logger.debug("{}: SUCCESSFULLY RECONNECTED to {}", getClientId(), getMqttServerUrl());
@@ -1231,6 +1256,14 @@ public class TahuClient implements MqttCallbackExtended {
 
 	public void setConnectRetryInterval(long connectRetryInterval) {
 		this.connectRetryInterval = connectRetryInterval;
+	}
+
+	private long getConnectAttemptTimeout() {
+		return connectAttemptTimeout;
+	}
+
+	public void setConnectAttemptTimeout(long connectAttemptTimeout) {
+		this.connectAttemptTimeout = connectAttemptTimeout;
 	}
 
 	public boolean isAttemptingConnect() {
