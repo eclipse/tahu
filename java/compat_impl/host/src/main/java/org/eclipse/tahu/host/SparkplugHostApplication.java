@@ -65,72 +65,72 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	@Override
 	public void onNodeBirthArrived(EdgeNodeDescriptor edgeNodeDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onNodeBirthArrived...");
+		logger.info("onNodeBirthArrived from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeBirthComplete(EdgeNodeDescriptor edgeNodeDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onNodeBirthComplete...");
+		logger.info("onNodeBirthComplete from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeDataArrived(EdgeNodeDescriptor edgeNodeDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onNodeDataArrived...");
+		logger.info("onNodeDataArrived from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeDataComplete(EdgeNodeDescriptor edgeNodeDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onNodeDataComplete...");
+		logger.info("onNodeDataComplete from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeDeath(EdgeNodeDescriptor edgeNodeDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onNodeDeath...");
+		logger.info("onNodeDeath from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onDeviceBirthArrived(DeviceDescriptor deviceDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onDeviceBirthArrived...");
+		logger.info("onDeviceBirthArrived from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceBirthComplete(DeviceDescriptor deviceDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onDeviceBirthComplete...");
+		logger.info("onDeviceBirthComplete from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceDataArrived(DeviceDescriptor deviceDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onDeviceDataArrived...");
+		logger.info("onDeviceDataArrived from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceDataComplete(DeviceDescriptor deviceDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onDeviceDataComplete...");
+		logger.info("onDeviceDataComplete from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceDeath(DeviceDescriptor deviceDescriptor) {
 		// TODO Auto-generated method stub
-		logger.info("onDeviceDeath...");
+		logger.info("onDeviceDeath from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onBirthMetric(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
 		// TODO Auto-generated method stub
-		logger.info("onBirthMetric...");
+		logger.info("onBirthMetric from {} with metric={}...", sparkplugDescriptor, metric);
 	}
 
 	@Override
 	public void onDataMetric(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
 		// TODO Auto-generated method stub
-		logger.info("onDataMetric...");
+		logger.info("onDataMetric from {} with metric={}...", sparkplugDescriptor, metric);
 	}
 }

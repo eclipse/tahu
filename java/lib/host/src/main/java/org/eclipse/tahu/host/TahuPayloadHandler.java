@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
+import org.eclipse.tahu.host.alias.HostApplicationAliasMap;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.manager.EdgeNodeManager;
 import org.eclipse.tahu.host.manager.SparkplugDevice;
@@ -169,6 +170,10 @@ public class TahuPayloadHandler {
 
 		eventHandler.onNodeBirthArrived(edgeNodeDescriptor);
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
+			if (metric.hasAlias()) {
+				HostApplicationAliasMap.getInstance().addAlias(edgeNodeDescriptor, metric.getName(), metric.getAlias());
+			}
+
 			eventHandler.onBirthMetric(edgeNodeDescriptor, metric);
 		}
 		eventHandler.onNodeBirthComplete(edgeNodeDescriptor);
@@ -180,9 +185,10 @@ public class TahuPayloadHandler {
 		EdgeNodeDescriptor edgeNodeDescriptor = messageContext.getTopic().getEdgeNodeDescriptor();
 		DeviceDescriptor deviceDescriptor = (DeviceDescriptor) messageContext.getTopic().getSparkplugDescriptor();
 		SparkplugEdgeNode sparkplugEdgeNode = EdgeNodeManager.getInstance().getSparkplugEdgeNode(edgeNodeDescriptor);
-		SparkplugDevice sparkplugDevice = EdgeNodeManager.getInstance().getSparkplugDevice(deviceDescriptor);
+		SparkplugDevice sparkplugDevice =
+				EdgeNodeManager.getInstance().getSparkplugDevice(edgeNodeDescriptor, deviceDescriptor);
 		if (sparkplugDevice == null) {
-			sparkplugDevice = EdgeNodeManager.getInstance().addSparkplugDevice(sparkplugEdgeNode, deviceDescriptor,
+			sparkplugDevice = EdgeNodeManager.getInstance().addSparkplugDevice(edgeNodeDescriptor, deviceDescriptor,
 					messageContext.getPayload().getTimestamp());
 		}
 
@@ -192,6 +198,10 @@ public class TahuPayloadHandler {
 
 		eventHandler.onDeviceBirthArrived(deviceDescriptor);
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
+			if (metric.hasAlias()) {
+				HostApplicationAliasMap.getInstance().addAlias(edgeNodeDescriptor, metric.getName(), metric.getAlias());
+			}
+
 			eventHandler.onBirthMetric(deviceDescriptor, metric);
 		}
 		eventHandler.onDeviceBirthComplete(deviceDescriptor);
@@ -215,6 +225,11 @@ public class TahuPayloadHandler {
 
 		eventHandler.onNodeDataArrived(edgeNodeDescriptor);
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
+			if (!metric.hasName() && metric.hasAlias()) {
+				metric.setName(
+						HostApplicationAliasMap.getInstance().getMetricName(edgeNodeDescriptor, metric.getAlias()));
+			}
+
 			eventHandler.onDataMetric(edgeNodeDescriptor, metric);
 		}
 		eventHandler.onNodeDataArrived(edgeNodeDescriptor);
@@ -226,7 +241,8 @@ public class TahuPayloadHandler {
 		EdgeNodeDescriptor edgeNodeDescriptor = messageContext.getTopic().getEdgeNodeDescriptor();
 		DeviceDescriptor deviceDescriptor = (DeviceDescriptor) messageContext.getTopic().getSparkplugDescriptor();
 		SparkplugEdgeNode sparkplugEdgeNode = EdgeNodeManager.getInstance().getSparkplugEdgeNode(edgeNodeDescriptor);
-		SparkplugDevice sparkplugDevice = EdgeNodeManager.getInstance().getSparkplugDevice(deviceDescriptor);
+		SparkplugDevice sparkplugDevice =
+				EdgeNodeManager.getInstance().getSparkplugDevice(edgeNodeDescriptor, deviceDescriptor);
 		if (sparkplugDevice == null || !sparkplugEdgeNode.isOnline()) {
 			requestRebirth(messageContext.getMqttServerName(), messageContext.getHostAppMqttClientId(),
 					messageContext.getTopic().getEdgeNodeDescriptor());
@@ -239,6 +255,11 @@ public class TahuPayloadHandler {
 
 		eventHandler.onDeviceDataArrived(deviceDescriptor);
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
+			if (!metric.hasName() && metric.hasAlias()) {
+				metric.setName(
+						HostApplicationAliasMap.getInstance().getMetricName(edgeNodeDescriptor, metric.getAlias()));
+			}
+
 			eventHandler.onBirthMetric(deviceDescriptor, metric);
 		}
 		eventHandler.onDeviceDataComplete(deviceDescriptor);

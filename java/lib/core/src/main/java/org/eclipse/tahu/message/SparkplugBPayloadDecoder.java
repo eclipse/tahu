@@ -195,7 +195,8 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		}
 		// Otherwise convert the value based on the type
 		int metricType = protoMetric.getDatatype();
-		logger.trace("For metric={} - handling metric type in decoder: {}", protoMetric.getName(), metricType);
+		logger.trace("For metricName={} and alias={} - handling metric type in decoder: {}", protoMetric.getName(),
+				protoMetric.getAlias(), metricType);
 		switch (MetricDataType.fromInteger(metricType)) {
 			case Boolean:
 				return protoMetric.getBooleanValue();

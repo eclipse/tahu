@@ -56,6 +56,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	private static final EdgeNodeDescriptor EDGE_NODE_DESCRIPTOR = new EdgeNodeDescriptor(GROUP_ID, EDGE_NODE_ID);
 	private static final List<String> DEVICE_IDS = Arrays.asList("D1");
 	private static final String PRIMARY_HOST_ID = "IamHost";
+	private static final boolean USE_ALIASES = true;
 	private static final Long REBIRTH_DEBOUNCE_DELAY = 5000L;
 	private static final String MQTT_CLIENT_ID = "Sparkplug-Tahu-Compatible-Impl";
 	private static final MqttServerName MQTT_SERVER_NAME = new MqttServerName("My Mqtt Server");
@@ -115,9 +116,9 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			deathBdSeq = PersistentUtils.getNextDeathBdSeqNum();
 			birthBdSeq = deathBdSeq;
 
-			edgeClient = new EdgeClient(this, EDGE_NODE_DESCRIPTOR, DEVICE_IDS, PRIMARY_HOST_ID, REBIRTH_DEBOUNCE_DELAY,
-					new MqttClientId(MQTT_CLIENT_ID, false), MQTT_SERVER_NAME, MQTT_SERVER_URL, USERNAME, PASSWORD,
-					KEEP_ALIVE, this, null);
+			edgeClient = new EdgeClient(this, EDGE_NODE_DESCRIPTOR, DEVICE_IDS, PRIMARY_HOST_ID, USE_ALIASES,
+					REBIRTH_DEBOUNCE_DELAY, new MqttClientId(MQTT_CLIENT_ID, false), MQTT_SERVER_NAME, MQTT_SERVER_URL,
+					USERNAME, PASSWORD, KEEP_ALIVE, this, null);
 		} catch (Exception e) {
 			logger.error("Failed to create the Sparkplug Edge Client", e);
 		}
@@ -182,7 +183,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 		periodicPublisher = null;
 		periodicPublisherThread = null;
 
-		edgeClient.shutdwon();
+		edgeClient.shutdown();
 		edgeClient = null;
 		edgeClientThread = null;
 	}

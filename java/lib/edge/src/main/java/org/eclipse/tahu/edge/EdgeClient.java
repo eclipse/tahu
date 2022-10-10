@@ -13,12 +13,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.eclipse.tahu.alias.EdgeNodeAliasMap;
 import org.eclipse.tahu.edge.api.MetricHandler;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.MessageType;
+import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
@@ -52,6 +54,7 @@ public class EdgeClient implements Runnable {
 	private final EdgeNodeDescriptor edgeNodeDescriptor;
 	private final List<String> deviceIds;
 	private final String primaryHostId;
+	private final EdgeNodeAliasMap edgeNodeAliasMap;
 	private final long rebirthDebounceDelay; // The user specified Rebirth Debounce Delay
 	private final RandomStartupDelay randomStartupDelay;
 
@@ -63,15 +66,14 @@ public class EdgeClient implements Runnable {
 
 	// Tracking variables
 	private volatile boolean stayRunning;
-	private boolean connectedToMqttServer;
 	private boolean connectedToPrimaryHost; // Whether or not this client is connected to Primary Host ID
 	private Timer primaryHostIdResponseTimer; // The Primary Host ID response timer
 	private Timer rebirthDelayTimer; // A Timer used to prevent multiple rebirth requests while the timer is running
 
 	public EdgeClient(MetricHandler metricHandler, EdgeNodeDescriptor edgeNodeDescriptor, List<String> deviceIds,
-			String primaryHostId, Long rebirthDebounceDelay, MqttClientId clientId, MqttServerName mqttServerName,
-			MqttServerUrl mqttServerUrl, String username, String password, int keepAlive, ClientCallback callback,
-			RandomStartupDelay randomStartupDelay) {
+			String primaryHostId, boolean useAliases, Long rebirthDebounceDelay, MqttClientId clientId,
+			MqttServerName mqttServerName, MqttServerUrl mqttServerUrl, String username, String password, int keepAlive,
+			ClientCallback callback, RandomStartupDelay randomStartupDelay) {
 
 		this.clientId = clientId;
 		this.mqttServerName = mqttServerName;
@@ -85,18 +87,17 @@ public class EdgeClient implements Runnable {
 		this.edgeNodeDescriptor = edgeNodeDescriptor;
 		this.deviceIds = deviceIds;
 		this.primaryHostId = primaryHostId;
+		this.edgeNodeAliasMap = useAliases ? new EdgeNodeAliasMap() : null;
 		this.rebirthDebounceDelay = rebirthDebounceDelay;
 		this.randomStartupDelay = randomStartupDelay;
 
 		stayRunning = true;
-		connectedToMqttServer = false;
 		connectedToPrimaryHost = false;
 	}
 
-	public void shutdwon() {
+	public void shutdown() {
 		stayRunning = false;
 		connectedToPrimaryHost = false;
-		connectedToMqttServer = false;
 		disconnect(true);
 	}
 
@@ -149,23 +150,18 @@ public class EdgeClient implements Runnable {
 					logger.error("Error while attempting to close client: {}", connectionId, t);
 				}
 			}
-
-			connectedToMqttServer = false;
-		}
-	}
-
-	private void publishSparkplugMessage(Topic topic, SparkplugBPayload payload, int qos, boolean retained) {
-		synchronized (clientLock) {
-			try {
-				payload.setSeq(getNextSeqNum());
-				tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload), qos, retained);
-			} catch (Exception e) {
-				logger.error("Failed to publish message on topic={}", topic, e);
-			}
 		}
 	}
 
 	public void publishNodeBirth(SparkplugBPayloadMap payload) throws SparkplugInvalidTypeException {
+		if (edgeNodeAliasMap != null) {
+			// Aliasing is enabled so reinitialize the alias map and add the new NBIRTH metrics
+			edgeNodeAliasMap.clear();
+			for (Metric metric : payload.getMetrics()) {
+				metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+			}
+		}
+
 		// Ensure the 'Node Control/Rebirth' metric is present
 		if (payload.getMetric("Node Control/Rebirth") == null) {
 			payload.addMetric(new MetricBuilder("Node Control/Rebirth", MetricDataType.Boolean, false).createMetric());
@@ -178,6 +174,14 @@ public class EdgeClient implements Runnable {
 
 	public void publishNodeData(SparkplugBPayload payload) {
 		if (connectedToPrimaryHost) {
+			if (edgeNodeAliasMap != null) {
+				// Aliasing is enabled so replace metric names with aliases
+				for (Metric metric : payload.getMetrics()) {
+					metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+					metric.setName(null);
+				}
+			}
+
 			publishSparkplugMessage(
 					new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, edgeNodeDescriptor, MessageType.NDATA), payload,
 					0, false);
@@ -185,12 +189,27 @@ public class EdgeClient implements Runnable {
 	}
 
 	public void publishDeviceBirth(String deviceId, SparkplugBPayload payload) {
+		if (edgeNodeAliasMap != null) {
+			// Aliasing is enabled so add the new DBIRTH metrics
+			for (Metric metric : payload.getMetrics()) {
+				metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+			}
+		}
+
 		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
 				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DBIRTH), payload, 0, false);
 	}
 
 	public void publishDeviceData(String deviceId, SparkplugBPayload payload) {
 		if (connectedToPrimaryHost) {
+			if (edgeNodeAliasMap != null) {
+				// Aliasing is enabled so replace metric names with aliases
+				for (Metric metric : payload.getMetrics()) {
+					metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+					metric.setName(null);
+				}
+			}
+
 			publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
 					new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDATA), payload, 0, false);
 		}
@@ -202,6 +221,17 @@ public class EdgeClient implements Runnable {
 		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
 				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDEATH), payloadBuilder.createPayload(),
 				0, false);
+	}
+
+	private void publishSparkplugMessage(Topic topic, SparkplugBPayload payload, int qos, boolean retained) {
+		synchronized (clientLock) {
+			try {
+				payload.setSeq(getNextSeqNum());
+				tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload), qos, retained);
+			} catch (Exception e) {
+				logger.error("Failed to publish message on topic={}", topic, e);
+			}
+		}
 	}
 
 	public long getNextSeqNum() {
@@ -293,7 +323,6 @@ public class EdgeClient implements Runnable {
 					if (transitionToOnline) {
 						// In a transition to an MQTT session, publish the NBIRTH and DBIRTH messages.
 						transitionToOnline = false;
-						connectedToMqttServer = true;
 
 						// Check if the server type is NOT JSON and we have specified a primary host ID
 						if (primaryHostId != null && !primaryHostId.isEmpty()) {
