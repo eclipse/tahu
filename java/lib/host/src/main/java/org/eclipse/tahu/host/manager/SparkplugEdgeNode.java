@@ -6,12 +6,14 @@
  */
 package org.eclipse.tahu.host.manager;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
+import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
@@ -26,7 +28,7 @@ public class SparkplugEdgeNode {
 	private final EdgeNodeDescriptor edgeNodeDescriptor;
 	private final String groupId;
 	private final String edgeNodeId;
-	private final Map<String, SparkplugDevice> sparkplugDevices;
+	private final Map<DeviceDescriptor, SparkplugDevice> sparkplugDevices;
 
 	// Dynamic variables
 	private MqttServerName mqttServerName;
@@ -67,6 +69,18 @@ public class SparkplugEdgeNode {
 
 	public String getEdgeNodeId() {
 		return edgeNodeId;
+	}
+
+	public void addDevice(DeviceDescriptor deviceDescriptor, SparkplugDevice sparkplugDevice) {
+		sparkplugDevices.put(deviceDescriptor, sparkplugDevice);
+	}
+
+	public Map<DeviceDescriptor, SparkplugDevice> getSparkplugDevices() {
+		return Collections.unmodifiableMap(sparkplugDevices);
+	}
+
+	public SparkplugDevice getSparkplugDevice(DeviceDescriptor deviceDescriptor) {
+		return sparkplugDevices.get(deviceDescriptor);
 	}
 
 	public MqttServerName getMqttServerName() {

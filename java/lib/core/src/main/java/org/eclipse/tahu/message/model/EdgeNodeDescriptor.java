@@ -52,7 +52,7 @@ public class EdgeNodeDescriptor implements SparkplugDescriptor {
 
 	/**
 	 * Returns a {@link String} representing the Edge Node's Descriptor of the form: "<groupId>/<edgeNodeId>".
-	 * 
+	 *
 	 * @return a {@link String} representing the Edge Node's Descriptor.
 	 */
 	@Override

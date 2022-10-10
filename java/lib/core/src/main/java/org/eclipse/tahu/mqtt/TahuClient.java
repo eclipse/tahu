@@ -117,7 +117,7 @@ public class TahuClient implements MqttCallbackExtended {
 	private Date offlineDate;
 	private double totalUptime;
 	private double totalDowntime;
-	private int connectionCount = 0; // # of Directors connected to this MQTT Client's Broker
+	private int connectionCount = 0; // # of Edge Nodes connected to this MQTT Client's Broker
 	private boolean doLatencyCheck = false;
 	private long numMesgsArrived = 0;
 	private long lastNumMesgsArrived = 0;
