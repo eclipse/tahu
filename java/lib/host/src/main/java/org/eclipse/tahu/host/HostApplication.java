@@ -16,7 +16,6 @@ import org.eclipse.tahu.host.seq.SequenceReorderManager;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugMeta;
-import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttOperatorDefs;
@@ -26,8 +25,6 @@ import org.eclipse.tahu.mqtt.RandomStartupDelay;
 import org.eclipse.tahu.mqtt.TahuClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class HostApplication implements CommandPublisher {
 
@@ -48,7 +45,7 @@ public class HostApplication implements CommandPublisher {
 	private TahuClient tahuClient;
 	private final TahuHostCallback tahuHostCallback;
 
-	private int bdSeq;
+	private int initialBdSeq;
 
 	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, MqttClientId mqttClientId,
 			MqttServerName mqttServerName, MqttServerUrl mqttServerUrl, String username, String password,
@@ -69,32 +66,15 @@ public class HostApplication implements CommandPublisher {
 		sequenceReorderManager.init(eventHandler, this, 5000L);
 		this.tahuHostCallback = new TahuHostCallback(eventHandler, this, sequenceReorderManager);
 
-		this.bdSeq = initialBdSeq;
+		this.initialBdSeq = initialBdSeq;
 	}
 
 	public void start() {
 		logger.debug("Starting up the MQTT Client");
-
-		// Set up the BIRTH and DEATH payloads
-		byte[] birthPayload = null;
-		byte[] deathPayload = null;
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			StatePayload birthStatePayload = new StatePayload(true, bdSeq, System.currentTimeMillis());
-			birthPayload = mapper.writeValueAsString(birthStatePayload).getBytes();
-			StatePayload deathStatePayload = new StatePayload(false, bdSeq, System.currentTimeMillis());
-			deathPayload = mapper.writeValueAsString(deathStatePayload).getBytes();
-		} catch (Exception e) {
-			logger.error("Failed to construct Host ID payloads - not starting", e);
-			return;
-		} finally {
-			bdSeq++;
-		}
-
 		if (tahuClient == null) {
 			tahuClient = new TahuClient(mqttClientId, mqttServerName, mqttServerUrl, username, password, true,
-					keepAliveTimeout, tahuHostCallback, randomStartupDelay, stateTopic, birthPayload, true, stateTopic,
-					deathPayload, MqttOperatorDefs.QOS1, true);
+					keepAliveTimeout, tahuHostCallback, randomStartupDelay, true, stateTopic, null, true, stateTopic,
+					null, MqttOperatorDefs.QOS1, true);
 		}
 
 		tahuClient.setMaxInflightMessages(MAX_INFLIGHT_MESSAGES);
