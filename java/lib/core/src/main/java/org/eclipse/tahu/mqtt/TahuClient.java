@@ -34,8 +34,11 @@ import org.eclipse.paho.client.mqttv3.MqttToken;
 import org.eclipse.paho.client.mqttv3.internal.NetworkModuleService;
 import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
+import org.eclipse.tahu.message.model.StatePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * An Custom MQTT client.
@@ -61,6 +64,8 @@ public class TahuClient implements MqttCallbackExtended {
 	/*
 	 * birth/death properties
 	 */
+	private boolean useSparkplugStatePayload;
+	private int bdSeq;
 	private String birthTopic;
 	private byte[] birthPayload;
 	private boolean birthRetain;
@@ -154,20 +159,23 @@ public class TahuClient implements MqttCallbackExtended {
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
-			ClientCallback callback, RandomStartupDelay randomStartupDelay, String birthTopic, byte[] birthPayload,
-			String lwtTopic, byte[] lwtPayload, int lwtQoS) {
+			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
+			String birthTopic, byte[] birthPayload, String lwtTopic, byte[] lwtPayload, int lwtQoS) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
 				randomStartupDelay);
-		this.setLifecycleProps(birthTopic, birthPayload, false, lwtTopic, lwtPayload, lwtQoS, false);
+		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, false, lwtTopic, lwtPayload, lwtQoS,
+				false);
 	}
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
-			ClientCallback callback, RandomStartupDelay randomStartupDelay, String birthTopic, byte[] birthPayload,
-			boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
+			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
+			String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS,
+			boolean lwtRetain) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
 				randomStartupDelay);
-		this.setLifecycleProps(birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload, lwtQoS, lwtRetain);
+		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload,
+				lwtQoS, lwtRetain);
 	}
 
 	/**
@@ -180,8 +188,10 @@ public class TahuClient implements MqttCallbackExtended {
 	 * @param lwtPayload the payload of an LWT
 	 * @param lwtRetain whether to retain LWT messages
 	 */
-	private void setLifecycleProps(String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic,
-			byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
+	private void setLifecycleProps(boolean useSparkplugStatePayload, String birthTopic, byte[] birthPayload,
+			boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
+		this.useSparkplugStatePayload = useSparkplugStatePayload;
+		this.bdSeq = 255;
 		this.birthTopic = birthTopic;
 		this.birthPayload = birthPayload;
 		this.birthRetain = birthRetain;
@@ -682,7 +692,18 @@ public class TahuClient implements MqttCallbackExtended {
 							 * the publish() call is fully completed and the lwtDeliveryToken is set before
 							 * it is being nullified in the Paho callback.
 							*/
-							lwtDeliveryToken = publish(lwtTopic, lwtPayload, lwtQoS, lwtRetain);
+							if (useSparkplugStatePayload) {
+								try {
+									ObjectMapper mapper = new ObjectMapper();
+									StatePayload statePayload = new StatePayload(false, bdSeq, new Date().getTime());
+									byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+									lwtDeliveryToken = publish(lwtTopic, payload, lwtQoS, lwtRetain);
+								} catch (Exception e) {
+									logger.error("Failed to publish the LWT message on {}", lwtTopic, e);
+								}
+							} else {
+								lwtDeliveryToken = publish(lwtTopic, lwtPayload, lwtQoS, lwtRetain);
+							}
 							logger.debug("published on LWT Topic={}, messageId={}", lwtTopic,
 									lwtDeliveryToken.getMessageId());
 						}
@@ -851,7 +872,20 @@ public class TahuClient implements MqttCallbackExtended {
 				connectOptions.setKeepAliveInterval(keepAlive);
 				if (lwtTopic != null) {
 					logger.debug("{}: Setting WILL on {} with retain {}", getClientId(), lwtTopic, lwtRetain);
-					connectOptions.setWill(lwtTopic, lwtPayload, MqttOperatorDefs.QOS1, lwtRetain);
+					if (useSparkplugStatePayload) {
+						// Increment the bdSeq number for the new Will Message
+						bdSeq++;
+						if (bdSeq > 255) {
+							bdSeq = 0;
+						}
+
+						ObjectMapper mapper = new ObjectMapper();
+						StatePayload statePayload = new StatePayload(false, bdSeq, new Date().getTime());
+						byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+						connectOptions.setWill(lwtTopic, payload, MqttOperatorDefs.QOS1, lwtRetain);
+					} else {
+						connectOptions.setWill(lwtTopic, lwtPayload, MqttOperatorDefs.QOS1, lwtRetain);
+					}
 				}
 				connectOptions.setMaxInflight(getMaxInflightMessages());
 
@@ -1201,7 +1235,18 @@ public class TahuClient implements MqttCallbackExtended {
 			if (birthTopic != null) {
 				try {
 					logger.debug("{}: Publishing BIRTH on {} with retain {}", getClientId(), birthTopic, birthRetain);
-					publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
+					if (useSparkplugStatePayload) {
+						try {
+							ObjectMapper mapper = new ObjectMapper();
+							StatePayload statePayload = new StatePayload(true, bdSeq, new Date().getTime());
+							byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+							publish(birthTopic, payload, MqttOperatorDefs.QOS1, birthRetain);
+						} catch (Exception e) {
+							logger.error("Failed to publish the BIRTH message on {}", birthTopic, e);
+						}
+					} else {
+						publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
+					}
 				} catch (TahuException ce) {
 					logger.error("{}: Error in birth topic publish on connect", getClientId(), ce);
 					try {
