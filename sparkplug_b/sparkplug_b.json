@@ -95,7 +95,7 @@
                 "name" : { "type" : "string" },
                 "alias" : { "type" : "integer" },
                 "timestamp" : { "type" : "integer" },
-                "datatype" : { "type" : "string" },
+                "datatype" : { "type" : "integer" },
                 "isHistorical" : { "type" : "boolean" },
                 "isTransient" : { "type" : "boolean" },
                 "metadata" : { "$ref" : "#/definitions/metadata" },
