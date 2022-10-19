@@ -392,7 +392,7 @@ public class EdgeClient implements Runnable {
 				}
 
 				tahuClient = new TahuClient(clientId, mqttServerName, mqttServerUrl, username, password, true,
-						keepAlive, callback, randomStartupDelay, false, null, null, false, deathTopic.toString(),
+						keepAlive, callback, randomStartupDelay, false, null, null, null, false, deathTopic.toString(),
 						deathPayloadBytes, 1, false);
 				tahuClient.setTrackFirstConnection(true);
 				tahuClient.setAutoReconnect(false);

@@ -22,6 +22,9 @@ public class Message {
 
 	private SparkplugBPayload payload;
 
+	public Message() {
+	}
+
 	/**
 	 * @param topic
 	 * @param payload
@@ -38,6 +41,17 @@ public class Message {
 
 	public SparkplugBPayload getPayload() {
 		return payload;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Message [topic=");
+		builder.append(topic);
+		builder.append(", payload=");
+		builder.append(payload);
+		builder.append("]");
+		return builder.toString();
 	}
 
 	/**

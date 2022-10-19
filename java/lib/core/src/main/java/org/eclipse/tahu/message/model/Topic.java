@@ -64,6 +64,17 @@ public class Topic {
 	 */
 	private final MessageType type;
 
+	public Topic() {
+		this.namespace = null;
+		this.sparkplugDescriptor = null;
+		this.edgeNodeDescriptor = null;
+		this.groupId = null;
+		this.edgeNodeId = null;
+		this.deviceId = null;
+		this.hostApplicationId = null;
+		this.type = null;
+	}
+
 	/**
 	 * A Constructor for Device Topics
 	 * 

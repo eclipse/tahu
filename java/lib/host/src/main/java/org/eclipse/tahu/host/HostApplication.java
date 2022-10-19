@@ -13,6 +13,7 @@ import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.seq.SequenceReorderManager;
+import org.eclipse.tahu.message.DefaultBdSeqManager;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugMeta;
@@ -45,11 +46,9 @@ public class HostApplication implements CommandPublisher {
 	private TahuClient tahuClient;
 	private final TahuHostCallback tahuHostCallback;
 
-	private int initialBdSeq;
-
 	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, MqttClientId mqttClientId,
 			MqttServerName mqttServerName, MqttServerUrl mqttServerUrl, String username, String password,
-			int keepAliveTimeout, RandomStartupDelay randomStartupDelay, int initialBdSeq) {
+			int keepAliveTimeout, RandomStartupDelay randomStartupDelay) {
 		logger.info("Creating the Host Application");
 
 		this.hostId = hostId;
@@ -65,16 +64,15 @@ public class HostApplication implements CommandPublisher {
 		SequenceReorderManager sequenceReorderManager = SequenceReorderManager.getInstance();
 		sequenceReorderManager.init(eventHandler, this, 5000L);
 		this.tahuHostCallback = new TahuHostCallback(eventHandler, this, sequenceReorderManager);
-
-		this.initialBdSeq = initialBdSeq;
 	}
 
 	public void start() {
 		logger.debug("Starting up the MQTT Client");
 		if (tahuClient == null) {
 			tahuClient = new TahuClient(mqttClientId, mqttServerName, mqttServerUrl, username, password, true,
-					keepAliveTimeout, tahuHostCallback, randomStartupDelay, true, stateTopic, null, true, stateTopic,
-					null, MqttOperatorDefs.QOS1, true);
+					keepAliveTimeout, tahuHostCallback, randomStartupDelay, true,
+					new DefaultBdSeqManager("SparkplugHostApplication"), stateTopic, null, true, stateTopic, null,
+					MqttOperatorDefs.QOS1, true);
 		}
 
 		tahuClient.setMaxInflightMessages(MAX_INFLIGHT_MESSAGES);
@@ -137,7 +135,7 @@ public class HostApplication implements CommandPublisher {
 				// Shut down the MQTT client
 				tahuClient.setAutoReconnect(false);
 				logger.info("Attempting disconnect {}", connectionId);
-				tahuClient.disconnect(0, 1, false, true);
+				tahuClient.disconnect(100, 100, true, true);
 				logger.info("Successfully disconnected {}", connectionId);
 
 				// Set the Edge Nodes associated with this client offline
@@ -153,8 +151,7 @@ public class HostApplication implements CommandPublisher {
 	}
 
 	@Override
-	public void publishCommand(MqttServerName mqttServerName, MqttClientId hostAppMqttClientId, Topic topic,
-			SparkplugBPayload payload) throws Exception {
+	public void publishCommand(Topic topic, SparkplugBPayload payload) throws Exception {
 		if (tahuClient != null && tahuClient.isConnected()) {
 			SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
 			byte[] bytes = encoder.getBytes(payload);

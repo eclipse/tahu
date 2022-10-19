@@ -165,6 +165,11 @@ public class SequenceReorderManager {
 		}
 		MessageType messageType = topic.getType();
 
+		// Early return for commands
+		if (messageType == MessageType.NCMD || messageType == MessageType.DCMD) {
+			return;
+		}
+
 		// Parse the payload
 		PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();
 		SparkplugBPayload payload = decoder.buildFromByteArray(message.getPayload());

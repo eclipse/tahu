@@ -39,11 +39,19 @@ public class SparkplugBPayload {
 	}
 
 	public SparkplugBPayload(Date timestamp, List<Metric> metrics, Long seq, String uuid, byte[] body) {
-		this.timestamp = timestamp;
-		this.metrics = metrics;
-		this.seq = seq;
+		this(timestamp, metrics, seq);
 		this.uuid = uuid;
 		this.body = body;
+	}
+
+	public SparkplugBPayload(Date timestamp, List<Metric> metrics, Long seq) {
+		this(timestamp, metrics);
+		this.seq = seq;
+	}
+
+	public SparkplugBPayload(Date timestamp, List<Metric> metrics) {
+		this.timestamp = timestamp;
+		this.metrics = metrics;
 	}
 
 	public Date getTimestamp() {

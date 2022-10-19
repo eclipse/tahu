@@ -1,33 +1,17 @@
-<configuration debug="true">
-  <appender name="SysoutAppender" class="ch.qos.logback.core.ConsoleAppender">
+<configuration>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- encoders are assigned the type
+         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
     <encoder>
-      <pattern>%.-1p [%-30c{1}] [%d{HH:mm:ss,SSS}]: %m %X%n</pattern>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
-  <appender name="DB" class="com.inductiveautomation.logging.SQLiteAppender">
-    <dir>logs</dir>
-    <!--
-      Maintenance Settings
-      entryLimit: The maximum number of entries in the database. However, at any given time, there may be more than this number, due to how cleanup works.
-      maxEventsPerMaintenance: The number of event that can happen before a maintenance cycle occurs.
-      minTimeBetweenMaintenance: The minimum time (max frequency) between maintenance events. Takes precedent over max events.
-      vacuumFrequency: The number of maintenance cycles before a "vacuum" is performed, to recover disk space.
 
-      On disk, most log events are between 600-800 bytes.
-    <entryLimit>50000</entryLimit>
-    <maxEventsPerMaintenance>5000</maxEventsPerMaintenance>
-    <minTimeBetweenMaintenance>60000</minTimeBetweenMaintenance>
-    <vacuumFrequency>3</vacuumFrequency>
-    -->
-  </appender>
-  <appender name="SysoutAsync" class="ch.qos.logback.classic.AsyncAppender" queueSize="1000" discardingThreshold="0">
-    <appender-ref ref="SysoutAppender" />
-  </appender>
-  <appender name="DBAsync" class="ch.qos.logback.classic.AsyncAppender" queueSize="100000" discardingThreshold="0">
-    <appender-ref ref="DB" />
-  </appender>
-  <root level="INFO">
-    <appender-ref ref="SysoutAsync"/>
-    <appender-ref ref="DBAsync"/>
+<!--
+  <logger name="org.eclipse.tahu.host.HostApplication" level="TRACE"/>
+-->
+  <root level="TRACE">
+    <appender-ref ref="STDOUT" />
   </root>
 </configuration>

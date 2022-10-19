@@ -14,7 +14,7 @@ public class StatePayload {
 	private Boolean online;
 
 	@JsonProperty("bdSeq")
-	private Integer bdSeq;
+	private Long bdSeq;
 
 	@JsonProperty("timestamp")
 	private Long timestamp;
@@ -25,7 +25,7 @@ public class StatePayload {
 		this.timestamp = null;
 	}
 
-	public StatePayload(Boolean online, Integer bdSeq, Long timestamp) {
+	public StatePayload(Boolean online, Long bdSeq, Long timestamp) {
 		super();
 		this.online = online;
 		this.bdSeq = bdSeq;
@@ -40,11 +40,11 @@ public class StatePayload {
 		this.online = online;
 	}
 
-	public Integer getBdSeq() {
+	public Long getBdSeq() {
 		return bdSeq;
 	}
 
-	public void setBdSeq(Integer bdSeq) {
+	public void setBdSeq(Long bdSeq) {
 		this.bdSeq = bdSeq;
 	}
 
