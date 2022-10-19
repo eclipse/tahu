@@ -20,7 +20,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.basedir>${project.basedir}</main.basedir>
     <paho.version>1.2.5</paho.version>
-    <jackson.version>2.13.2</jackson.version>
+    <jackson.version>2.13.4.1</jackson.version>
     <logback.version>1.2.9</logback.version>
     <protobuf.version>3.16.1</protobuf.version>
   </properties>
