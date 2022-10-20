@@ -347,6 +347,6 @@ public class TahuPayloadHandler {
 
 	private void publishCommand(MqttServerName mqttServerName, MqttClientId hostAppMqttClientId, Topic topic,
 			SparkplugBPayload payload) throws Exception {
-		commandPublisher.publishCommand(mqttServerName, hostAppMqttClientId, topic, payload);
+		commandPublisher.publishCommand(topic, payload);
 	}
 }

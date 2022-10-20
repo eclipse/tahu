@@ -6,6 +6,7 @@
  */
 package org.eclipse.tahu.host;
 
+import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
@@ -21,23 +22,42 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 
 	private static Logger logger = LoggerFactory.getLogger(SparkplugHostApplication.class.getName());
 
+	private static final String COMMAND_LISTENER_DIRECTORY = "/tmp/commands";
+	private static final long COMMAND_LISTENER_POLL_RATE = 50L;
+
 	private static final String HOST_ID = "IamHost";
-	private static final String MQTT_CLIENT_ID = "Example Host Application";
+	private static final String MQTT_CLIENT_ID = "Tahu_Host_Application";
 	private static final String MQTT_SERVER_NAME = "My MQTT Server";
 	private static final String MQTT_SERVER_URL = "tcp://localhost:1883";
 	private static final String USERNAME = "admin";
 	private static final String PASSWORD = "changeme";
-	private static final int KEEP_ALIVE_TIMETOUT = 30;
-	private static final int INITIAL_BD_SEQ_NUMBER = 0;
+	private static final int KEEP_ALIVE_TIMEOUT = 30;
 
+	private CommandListener commandListener;
 	private HostApplication hostApplication;
 
 	public static void main(String[] arg) {
 		try {
+			System.out.println("Starting the Sparkplug Host Application");
+			System.out.println("\tSparkplug Host Application ID: " + HOST_ID);
+			System.out.println("\tMQTT Client ID: " + MQTT_CLIENT_ID);
+			System.out.println("\tMQTT Server Name: " + MQTT_SERVER_NAME);
+			System.out.println("\tMQTT Server URL: " + MQTT_SERVER_URL);
+			System.out.println("\tUsername: " + USERNAME);
+			System.out.println("\tPassword: ********");
+			System.out.println("\tKeep Alive Timeout: " + KEEP_ALIVE_TIMEOUT);
+			System.out.println("\tCommand Listener Directory: " + COMMAND_LISTENER_DIRECTORY);
+			System.out.println("\tCommand Listener Poll Rate: " + COMMAND_LISTENER_POLL_RATE);
+
+			// Start the Host Application
 			SparkplugHostApplication sparkplugHostApplication = new SparkplugHostApplication();
 			sparkplugHostApplication.start();
-			Thread.sleep(60000);
-//			sparkplugHostApplication.shutdown();
+
+			// Sleep a while
+			Thread.sleep(10000);
+
+			// Shutdown
+			sparkplugHostApplication.shutdown();
 
 		} catch (Exception e) {
 			logger.error("Failed to run the Edge Node", e);
@@ -46,19 +66,24 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 
 	public SparkplugHostApplication() {
 		try {
+
 			hostApplication = new HostApplication(this, HOST_ID, new MqttClientId(MQTT_CLIENT_ID, false),
 					new MqttServerName(MQTT_SERVER_NAME), new MqttServerUrl(MQTT_SERVER_URL), USERNAME, PASSWORD,
-					KEEP_ALIVE_TIMETOUT, null, INITIAL_BD_SEQ_NUMBER);
+					KEEP_ALIVE_TIMEOUT, null);
 		} catch (Exception e) {
 			logger.error("Failed to create the HostApplication", e);
 		}
 	}
 
-	public void start() {
+	public void start() throws TahuException {
+		commandListener = new CommandListener(hostApplication, COMMAND_LISTENER_DIRECTORY, COMMAND_LISTENER_POLL_RATE);
+		commandListener.start();
 		hostApplication.start();
 	}
 
 	public void shutdown() {
+		commandListener.shutdown();
+		commandListener = null;
 		hostApplication.shutdown();
 	}
 

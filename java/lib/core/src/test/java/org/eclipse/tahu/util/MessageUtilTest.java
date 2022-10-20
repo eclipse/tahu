@@ -1,0 +1,70 @@
+/*
+ * Licensed Materials - Property of Cirrus Link Solutions
+ * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ */
+package org.eclipse.tahu.util;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Date;
+
+import org.eclipse.tahu.message.model.Message;
+import org.eclipse.tahu.message.model.Message.MessageBuilder;
+import org.eclipse.tahu.message.model.MessageType;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
+import org.eclipse.tahu.message.model.MetricDataType;
+import org.eclipse.tahu.message.model.SparkplugBPayload;
+import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.message.model.Topic;
+import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+
+public class MessageUtilTest {
+
+	private Date testTime;
+
+	public MessageUtilTest() {
+		this.testTime = new Date();
+	}
+
+	@BeforeClass
+	public void beforeClass() {
+		Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		rootLogger.setLevel(Level.ALL);
+	}
+
+	@DataProvider
+	public Object[][] messageData() throws Exception {
+		return new Object[][] { { new Topic("spBv1.0", "G1", "E1", "D1", MessageType.DCMD),
+				new SparkplugBPayloadBuilder().setTimestamp(testTime)
+						.addMetric(new MetricBuilder("T1", MetricDataType.Int32, 12).timestamp(testTime).createMetric())
+						.createPayload(),
+				"{\"topic\":{\"namespace\":\"spBv1.0\",\"edgeNodeDescriptor\":\"G1/E1\",\"groupId\":\"G1\",\"edgeNodeId\":\"E1\",\"deviceId\":\"D1\",\"type\":\"DCMD\"},\"payload\":{\"timestamp\":"
+						+ testTime.getTime() + ",\"metrics\":[{\"name\":\"T1\",\"timestamp\":" + testTime.getTime()
+						+ ",\"dataType\":\"Int32\",\"value\":12}]}}" },
+				{ new Topic("spBv1.0", "G1", "E1", "D2", MessageType.DCMD),
+						new SparkplugBPayloadBuilder().setTimestamp(testTime)
+								.addMetric(new MetricBuilder("T2", MetricDataType.String, "String Value")
+										.timestamp(testTime).createMetric())
+								.createPayload(),
+						"{\"topic\":{\"namespace\":\"spBv1.0\",\"edgeNodeDescriptor\":\"G1/E1\",\"groupId\":\"G1\",\"edgeNodeId\":\"E1\",\"deviceId\":\"D2\",\"type\":\"DCMD\"},\"payload\":{\"timestamp\":"
+								+ testTime.getTime() + ",\"metrics\":[{\"name\":\"T2\",\"timestamp\":"
+								+ testTime.getTime() + ",\"dataType\":\"String\",\"value\":\"String Value\"}]}}" } };
+	}
+
+	@Test(
+			dataProvider = "messageData")
+	public void testCompression(Topic topic, SparkplugBPayload payload, String expectedJson) throws Exception {
+
+		Message message = new MessageBuilder(topic, payload).build();
+		String jsonString = MessageUtil.toJsonString(message);
+		assertThat(jsonString).isEqualTo(expectedJson);
+	}
+}

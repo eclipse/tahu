@@ -8,11 +8,8 @@ package org.eclipse.tahu.host;
 
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.Topic;
-import org.eclipse.tahu.mqtt.MqttClientId;
-import org.eclipse.tahu.mqtt.MqttServerName;
 
 public interface CommandPublisher {
 
-	public void publishCommand(MqttServerName mqttServerName, MqttClientId hostAppMqttClientId, Topic topic,
-			SparkplugBPayload payload) throws Exception;
+	public void publishCommand(Topic topic, SparkplugBPayload payload) throws Exception;
 }
