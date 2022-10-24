@@ -23,7 +23,8 @@ public class DefaultBdSeqManager implements BdSeqManager {
 
 	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
-	private static final String BD_SEQ_NUM_FILE_NAME_PREFIX = TMP_DIR + SPARKPLUG_DIRNAME + FILE_SEPARATOR;
+	private static final String BD_SEQ_NUM_FILE_NAME_PREFIX =
+			TMP_DIR + (TMP_DIR.endsWith(FILE_SEPARATOR) ? "" : FILE_SEPARATOR) + SPARKPLUG_DIRNAME + FILE_SEPARATOR;
 
 	private final String bdSeqNumFileName;
 

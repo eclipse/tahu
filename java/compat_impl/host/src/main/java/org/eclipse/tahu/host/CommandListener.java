@@ -73,7 +73,7 @@ public class CommandListener implements Runnable {
 					String jsonContents = FileUtils.readFileToString(commandFile, StandardCharsets.UTF_8);
 
 					try {
-						Message message = MessageUtil.fromJsonString(jsonContents);
+						Message message = MessageUtil.fromJsonString(jsonContents, true);
 						logger.info("Message: {}", message);
 
 						if (message != null) {

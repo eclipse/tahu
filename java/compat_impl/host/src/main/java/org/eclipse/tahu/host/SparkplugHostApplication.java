@@ -54,7 +54,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 			sparkplugHostApplication.start();
 
 			// Sleep a while
-			Thread.sleep(10000);
+			Thread.sleep(360000);
 
 			// Shutdown
 			sparkplugHostApplication.shutdown();
