@@ -176,9 +176,28 @@ public class MessageUtil {
 	 */
 	public static Message fromJsonString(String jsonString)
 			throws JsonParseException, JsonMappingException, IOException {
+		return fromJsonString(jsonString, false);
+	}
+
+	/**
+	 * Deserializes a JSON string into a {@link Message} instance.
+	 *
+	 * @param payload a JSON string
+	 * @param excludeSeqNum a boolean flag denoting whether or not to exclude the seq number from the payload
+	 * @return a {@link Message} instance
+	 * @throws JsonProcessingException
+	 */
+	public static Message fromJsonString(String jsonString, boolean excludeSeqNum)
+			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new DeserializerModule(new DeserializerModifier()));
-		return mapper.readValue(jsonString, Message.class);
+		Message message = mapper.readValue(jsonString, Message.class);
+		if (excludeSeqNum) {
+			message.getPayload().setSeq(null);
+			return message;
+		} else {
+			return message;
+		}
 	}
 
 	/**
