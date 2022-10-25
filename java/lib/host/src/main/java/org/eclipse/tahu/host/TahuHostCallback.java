@@ -18,6 +18,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.seq.SequenceReorderManager;
 import org.eclipse.tahu.message.model.SparkplugMeta;
+import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
@@ -26,6 +27,8 @@ import org.eclipse.tahu.mqtt.TahuClient;
 import org.eclipse.tahu.util.TopicUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TahuHostCallback implements ClientCallback {
 
@@ -118,9 +121,16 @@ public class TahuHostCallback implements ClientCallback {
 			final long arrivedTime = System.nanoTime();
 			if (topic.startsWith(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX)) {
 				if (splitTopic.length == 3 && splitTopic[1].equals("STATE")) {
-					// This is a STATE message
-					// TODO - handle as needed
-					logger.info("This is a STATE message from {}", splitTopic[2]);
+					// This is a STATE message - handle as needed
+					ObjectMapper mapper = new ObjectMapper();
+					StatePayload statePayload = mapper.readValue(new String(message.getPayload()), StatePayload.class);
+					if (!statePayload.isOnline()) {
+						// Make sure this isn't an OFFLINE message
+						logger.info(
+								"This is a offline STATE message from {} - correcting with new online STATE message",
+								splitTopic[2]);
+						client.publishBirthMessage();
+					}
 				} else {
 					// Get the proper executor
 					String key = splitTopic[1] + "/" + splitTopic[3];
@@ -138,8 +148,7 @@ public class TahuHostCallback implements ClientCallback {
 						executor.execute(() -> {
 							try {
 								// No sequence reordering required - just push the message through and handle the
-								// Sparkplug
-								// B Payload
+								// Sparkplug B Payload
 								logger.trace("Sending the message on {} directly to the TahuPayloadHandler", topic);
 								new TahuPayloadHandler(eventHandler, commandPublisher).handlePayload(topic, splitTopic,
 										message, server, clientId);

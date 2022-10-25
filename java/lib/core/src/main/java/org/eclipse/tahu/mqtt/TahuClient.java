@@ -1246,30 +1246,8 @@ public class TahuClient implements MqttCallbackExtended {
 			}
 
 			// Publish a standard Birth/Death Certificate if a baseTopic has been defined.
-			if (birthTopic != null) {
-				try {
-					logger.debug("{}: Publishing BIRTH on {} with retain {}", getClientId(), birthTopic, birthRetain);
-					if (useSparkplugStatePayload) {
-						try {
-							ObjectMapper mapper = new ObjectMapper();
-							StatePayload statePayload = new StatePayload(true, birthBdSeq, new Date().getTime());
-							byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
-							publish(birthTopic, payload, MqttOperatorDefs.QOS1, birthRetain);
-						} catch (Exception e) {
-							logger.error("Failed to publish the BIRTH message on {}", birthTopic, e);
-						}
-					} else {
-						publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
-					}
-				} catch (TahuException ce) {
-					logger.error("{}: Error in birth topic publish on connect", getClientId(), ce);
-					try {
-						client.disconnectForcibly(0, 1, false);
-					} catch (Exception e) {
-						logger.error("{}: Failed to disconnect after failed BIRTH publish", getClientId(), e);
-					}
-				}
-			}
+			publishBirthMessage();
+
 			firstConnection = false;
 		}
 	}
@@ -1282,6 +1260,33 @@ public class TahuClient implements MqttCallbackExtended {
 	public void setTrackFirstConnection(boolean trackFirstConnection) {
 		synchronized (clientLock) {
 			this.trackFirstConnection = trackFirstConnection;
+		}
+	}
+
+	public void publishBirthMessage() {
+		if (birthTopic != null) {
+			try {
+				logger.debug("{}: Publishing BIRTH on {} with retain {}", getClientId(), birthTopic, birthRetain);
+				if (useSparkplugStatePayload) {
+					try {
+						ObjectMapper mapper = new ObjectMapper();
+						StatePayload statePayload = new StatePayload(true, birthBdSeq, new Date().getTime());
+						byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+						publish(birthTopic, payload, MqttOperatorDefs.QOS1, birthRetain);
+					} catch (Exception e) {
+						logger.error("Failed to publish the BIRTH message on {}", birthTopic, e);
+					}
+				} else {
+					publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
+				}
+			} catch (TahuException ce) {
+				logger.error("{}: Error in birth topic publish on connect", getClientId(), ce);
+				try {
+					client.disconnectForcibly(0, 1, false);
+				} catch (Exception e) {
+					logger.error("{}: Failed to disconnect after failed BIRTH publish", getClientId(), e);
+				}
+			}
 		}
 	}
 
