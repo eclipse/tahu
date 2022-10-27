@@ -77,7 +77,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 			try {
 				protoMsg.addMetrics(convertMetric(metric));
 			} catch (Exception e) {
-				logger.error("Failed to add metric: " + metric.getName());
+				logger.error("Failed to add metric: " + metric.getName(), e);
 				throw new RuntimeException(e);
 			}
 		}
@@ -209,7 +209,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						builder.setIntValue((int) Integer.toUnsignedLong((Integer) value.getValue()));
 						break;
 					case UInt32:
-						builder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) value.getValue())));
+						builder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) value.getValue())));
 						break;
 					case UInt64:
 						builder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value.getValue()));
@@ -349,7 +349,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					metricBuilder.setIntValue((int) Integer.toUnsignedLong((Integer) metric.getValue()));
 					break;
 				case UInt32:
-					metricBuilder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) metric.getValue())));
+					metricBuilder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) metric.getValue())));
 					break;
 				case UInt64:
 					metricBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) metric.getValue()));
@@ -698,7 +698,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				if (value == null || value.getValue() == null) {
 					return protoValueBuilder;
 				}
-				protoValueBuilder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) value.getValue())));
+				protoValueBuilder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) value.getValue())));
 				break;
 			case UInt64:
 				if (value == null || value.getValue() == null) {
