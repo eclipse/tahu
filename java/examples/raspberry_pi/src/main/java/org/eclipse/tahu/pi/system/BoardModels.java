@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2018-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
+
 package org.eclipse.tahu.pi.system;
 
 /**
@@ -35,13 +36,13 @@ public enum BoardModels {
 	CODE_A52082("a52082", Constants.B3, 1.2f, 1024, Constants.STADIUM),
 	CODE_A020D3("a020d3", Constants.B3_PLUS, 1.3f, 10124, Constants.SONY_UK),
 	CODE_9020E0("9020e0", Constants.A3_PLUS, 1.0f, 512, Constants.SONY_UK);
-	
+
 	private String code;
 	private String model;
 	private float revision;
 	private int ramSize;
 	private String manufacturer;
-	
+
 	private BoardModels(String code, String model, float revision, int ramSize, String manufacturer) {
 		this.code = code;
 		this.model = model;
@@ -49,7 +50,7 @@ public enum BoardModels {
 		this.ramSize = ramSize;
 		this.manufacturer = manufacturer;
 	}
-	
+
 	public String getCode() {
 		return code;
 	}
@@ -69,7 +70,7 @@ public enum BoardModels {
 	public String getManufacturer() {
 		return this.manufacturer;
 	}
-	
+
 	private static class Constants {
 		private static final String A_PLUS = "A+";
 		private static final String B_PLUS = "B+";
@@ -81,10 +82,10 @@ public enum BoardModels {
 		private static final String B2_BCM2837 = "2B (with BCM2837)";
 		private static final String A3_PLUS = "3A+";
 		private static final String B3_PLUS = "3B+";
-		
+
 		private static final String SONY_UK = "Sony UK";
 		private static final String EMBEST = "Embest";
 		private static final String SONY_JAPAN = "Sony Japan";
 		private static final String STADIUM = "Stadium";
-    }
+	}
 }

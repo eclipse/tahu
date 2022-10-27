@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2018-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
+
 package org.eclipse.tahu.pi.dio;
 
 /**
@@ -44,19 +45,19 @@ public enum Pins {
 	P337(26, "GPIO26"),
 	P38(20, "GPIO20"),
 	P40(21, "GPIO21");
-	
+
 	private int gpio;
 	private String name;
-	
-	private Pins (int gpio, String name) {
+
+	private Pins(int gpio, String name) {
 		this.gpio = gpio;
 		this.name = name;
 	}
-	
+
 	public int getGPIO() {
 		return this.gpio;
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}

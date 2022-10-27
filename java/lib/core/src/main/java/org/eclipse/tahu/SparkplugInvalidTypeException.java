@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -18,10 +18,9 @@ package org.eclipse.tahu;
  */
 public class SparkplugInvalidTypeException extends SparkplugException {
 
-	private Class<?> type;
+	private static final long serialVersionUID = 1L;
 
 	public SparkplugInvalidTypeException(Class<?> type) {
 		super("Invalid type " + type);
-		this.type = type;
 	}
 }

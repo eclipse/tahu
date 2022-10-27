@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -48,17 +48,15 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-import org.eclipse.tahu.SparkplugException;
-import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.Parameter;
 import org.eclipse.tahu.message.model.ParameterDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
-import org.eclipse.tahu.message.model.Template;
-import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
 
 /**
@@ -155,8 +153,8 @@ public class SparkplugExample implements MqttCallbackExtended {
 				seq = 0;
 
 				// Create the BIRTH payload and set the position and other metrics
-				SparkplugBPayload payload = new SparkplugBPayload(new Date(), new ArrayList<Metric>(), getSeqNum(),
-						newUUID(), null);
+				SparkplugBPayload payload =
+						new SparkplugBPayload(new Date(), new ArrayList<Metric>(), getSeqNum(), newUUID(), null);
 
 				payload.addMetric(new MetricBuilder("bdSeq", Int64, (long) bdSeq).createMetric());
 				payload.addMetric(new MetricBuilder("Node Control/Rebirth", Boolean, false).createMetric());
@@ -166,7 +164,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 						new MetricBuilder("simpleType", Template, newSimpleTemplate(true, null)).createMetric());
 				payload.addMetric(new MetricBuilder("mySimpleType", Template, newSimpleTemplate(false, "simpleType"))
 						.createMetric());
-				
+
 				// Add the complex template definition - All UDT definitions must be published in the NBIRTH
 				payload.addMetrics(newComplexTemplateDefs());
 
@@ -244,8 +242,8 @@ public class SparkplugExample implements MqttCallbackExtended {
 				&& splitTopic[3].equals(edgeNode)) {
 			System.out.println("Command recevied for device " + splitTopic[4]);
 
-			SparkplugBPayload outboundPayload = new SparkplugBPayload(new Date(), new ArrayList<Metric>(), getSeqNum(),
-					newUUID(), null);
+			SparkplugBPayload outboundPayload =
+					new SparkplugBPayload(new Date(), new ArrayList<Metric>(), getSeqNum(), newUUID(), null);
 			for (Metric metric : inboundPayload.getMetrics()) {
 				// TODO
 				System.out.println("TODO - handle writes to tag: " + metric.getName());
@@ -278,24 +276,23 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 	private List<Metric> newComplexTemplateDefs() throws SparkplugInvalidTypeException {
 		ArrayList<Metric> metrics = new ArrayList<Metric>();
-		
-			// Add a new template "subType" definition with two primitive members
-			metrics.add(new MetricBuilder("subType", Template,
-					new TemplateBuilder().definition(true)
-							.addMetric(new MetricBuilder("StringMember", String, "value").createMetric())
-							.addMetric(new MetricBuilder("IntegerMember", Int32, 0).createMetric()).createTemplate())
-									.createMetric());
-			// Add new template "complexType" definition that contains an instance of "subType" as a member
-			metrics.add(new MetricBuilder("complexType", Template,
-					new TemplateBuilder().definition(true)
-							.addMetric(new MetricBuilder("mySubType", Template,
-									new TemplateBuilder().definition(false).templateRef("subType")
-											.addMetric(
-													new MetricBuilder("StringMember", String, "value").createMetric())
-											.addMetric(new MetricBuilder("IntegerMember", Int32, 0).createMetric())
-											.createTemplate()).createMetric())
-							.createTemplate()).createMetric());
-		
+
+		// Add a new template "subType" definition with two primitive members
+		metrics.add(new MetricBuilder("subType", Template,
+				new TemplateBuilder().definition(true)
+						.addMetric(new MetricBuilder("StringMember", String, "value").createMetric())
+						.addMetric(new MetricBuilder("IntegerMember", Int32, 0).createMetric()).createTemplate())
+								.createMetric());
+		// Add new template "complexType" definition that contains an instance of "subType" as a member
+		metrics.add(
+				new MetricBuilder("complexType", Template,
+						new TemplateBuilder().definition(true).addMetric(new MetricBuilder("mySubType", Template,
+								new TemplateBuilder().definition(false).templateRef("subType")
+										.addMetric(new MetricBuilder("StringMember", String, "value").createMetric())
+										.addMetric(new MetricBuilder("IntegerMember", Int32, 0).createMetric())
+										.createTemplate()).createMetric())
+								.createTemplate()).createMetric());
+
 		return metrics;
 
 	}
@@ -304,20 +301,18 @@ public class SparkplugExample implements MqttCallbackExtended {
 		ArrayList<Metric> metrics = new ArrayList<Metric>();
 
 		// Add an instance of "complexType
-		metrics.add(
-				new MetricBuilder("myNewType", Template,
-						new TemplateBuilder().definition(false).templateRef("complexType")
-								.addMetric(new MetricBuilder("mySubType", Template,
-										new TemplateBuilder().definition(false).templateRef("subType")
-												.addMetric(
-														new MetricBuilder("StringMember", String, "myValue")
-																.createMetric())
-												.addMetric(new MetricBuilder("IntegerMember", Int32, 1).createMetric())
-												.createTemplate()).createMetric())
-								.createTemplate()).createMetric());
+		metrics.add(new MetricBuilder("myNewType", Template,
+				new TemplateBuilder().definition(false).templateRef("complexType")
+						.addMetric(new MetricBuilder("mySubType", Template,
+								new TemplateBuilder().definition(false).templateRef("subType")
+										.addMetric(new MetricBuilder("StringMember", String, "myValue").createMetric())
+										.addMetric(new MetricBuilder("IntegerMember", Int32, 1).createMetric())
+										.createTemplate()).createMetric())
+						.createTemplate()).createMetric());
 
 		return metrics;
 	}
+
 	private Template newSimpleTemplate(boolean isDef, String templatRef) throws SparkplugException {
 		Random random = new Random();
 		List<Metric> metrics = new ArrayList<Metric>();

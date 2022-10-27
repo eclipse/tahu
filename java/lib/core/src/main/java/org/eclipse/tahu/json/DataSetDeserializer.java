@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -21,11 +21,10 @@ import java.util.List;
 
 import org.eclipse.tahu.SparkplugException;
 import org.eclipse.tahu.message.model.DataSet;
+import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.DataSetDataType;
 import org.eclipse.tahu.message.model.Row;
 import org.eclipse.tahu.message.model.Value;
-import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
