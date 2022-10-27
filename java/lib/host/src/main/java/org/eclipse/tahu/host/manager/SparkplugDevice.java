@@ -9,10 +9,11 @@ package org.eclipse.tahu.host.manager;
 import java.util.Date;
 
 import org.eclipse.tahu.message.model.DeviceDescriptor;
+import org.eclipse.tahu.message.model.SparkplugDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SparkplugDevice {
+public class SparkplugDevice extends MetricManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SparkplugDevice.class.getName());
 
@@ -44,6 +45,11 @@ public class SparkplugDevice {
 		this.onlineTimestamp = onlineTimestamp;
 	}
 
+	@Override
+	public SparkplugDescriptor getSparkplugDescriptor() {
+		return deviceDescriptor;
+	}
+
 	public SparkplugEdgeNode getSparkplugEdgeNode() {
 		return sparkplugEdgeNode;
 	}
@@ -71,8 +77,10 @@ public class SparkplugDevice {
 	public void setOnline(boolean online, Date timestamp) {
 		this.online = online;
 		if (online) {
+			logger.info("Device {} set online at {}", deviceDescriptor, timestamp);
 			this.onlineTimestamp = timestamp;
 		} else {
+			logger.info("Device {} set offline at {}", deviceDescriptor, timestamp);
 			this.offlineTimestamp = timestamp;
 		}
 	}

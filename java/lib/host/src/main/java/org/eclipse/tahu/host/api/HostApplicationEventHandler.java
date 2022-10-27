@@ -23,6 +23,8 @@ public interface HostApplicationEventHandler {
 
 	public void onNodeDeath(EdgeNodeDescriptor edgeNodeDescriptor);
 
+	public void onNodeDeathComplete(EdgeNodeDescriptor edgeNodeDescriptor);
+
 	public void onDeviceBirthArrived(DeviceDescriptor deviceDescriptor);
 
 	public void onDeviceBirthComplete(DeviceDescriptor deviceDescriptor);
@@ -33,7 +35,11 @@ public interface HostApplicationEventHandler {
 
 	public void onDeviceDeath(DeviceDescriptor deviceDescriptor);
 
+	public void onDeviceDeathComplete(DeviceDescriptor deviceDescriptor);
+
 	public void onBirthMetric(SparkplugDescriptor sparkplugDescriptor, Metric metric);
 
 	public void onDataMetric(SparkplugDescriptor sparkplugDescriptor, Metric metric);
+
+	public void onStale(SparkplugDescriptor sparkplugDescriptor, Metric metric);
 }

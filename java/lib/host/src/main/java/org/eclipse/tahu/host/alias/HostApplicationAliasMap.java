@@ -62,4 +62,13 @@ public class HostApplicationAliasMap {
 			return null;
 		}
 	}
+
+	public boolean aliasExists(EdgeNodeDescriptor edgeNodeDescriptor, long alias) {
+		EdgeNodeAliasMap edgeNodeAliasMap = edgeNodeAliasMaps.get(edgeNodeDescriptor);
+		if (edgeNodeAliasMap != null && edgeNodeAliasMap.getMetricName(alias) != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

@@ -118,6 +118,12 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
+	public void onNodeDeathComplete(EdgeNodeDescriptor edgeNodeDescriptor) {
+		// TODO Auto-generated method stub
+		logger.info("onNodeDeathComplete from {}...", edgeNodeDescriptor);
+	}
+
+	@Override
 	public void onDeviceBirthArrived(DeviceDescriptor deviceDescriptor) {
 		// TODO Auto-generated method stub
 		logger.info("onDeviceBirthArrived from {}...", deviceDescriptor);
@@ -148,6 +154,12 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
+	public void onDeviceDeathComplete(DeviceDescriptor deviceDescriptor) {
+		// TODO Auto-generated method stub
+		logger.info("onDeviceDeathComplete from {}...", deviceDescriptor);
+	}
+
+	@Override
 	public void onBirthMetric(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
 		// TODO Auto-generated method stub
 		logger.info("onBirthMetric from {} with metric={}...", sparkplugDescriptor, metric);
@@ -157,5 +169,10 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	public void onDataMetric(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
 		// TODO Auto-generated method stub
 		logger.info("onDataMetric from {} with metric={}...", sparkplugDescriptor, metric);
+	}
+
+	public void onStale(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
+		// TODO Auto-generated method stub
+		logger.info("onStale from {} for {}...", sparkplugDescriptor, metric.getName());
 	}
 }
