@@ -15,12 +15,13 @@ import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
+import org.eclipse.tahu.message.model.SparkplugDescriptor;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SparkplugEdgeNode {
+public class SparkplugEdgeNode extends MetricManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SparkplugEdgeNode.class.getName());
 
@@ -57,6 +58,11 @@ public class SparkplugEdgeNode {
 
 		this.mqttServerName = mqttServerName;
 		this.hostAppMqttClientId = hostAppMqttClientId;
+	}
+
+	@Override
+	public SparkplugDescriptor getSparkplugDescriptor() {
+		return edgeNodeDescriptor;
 	}
 
 	public EdgeNodeDescriptor getEdgeNodeDescriptor() {
@@ -114,10 +120,6 @@ public class SparkplugEdgeNode {
 					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
 							"The bdSeq can not be missing from an NBIRTH message");
 				}
-				if (incomingSeq == null) {
-					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
-							"The seqNum can not be missing from an NBIRTH message");
-				}
 
 				this.online = online;
 				this.onlineTimestamp = timestamp;
@@ -139,6 +141,8 @@ public class SparkplugEdgeNode {
 					this.offlineTimestamp = timestamp;
 				}
 			}
+
+			logger.info("Edge Node {} set {} at {}", edgeNodeDescriptor, online ? "online" : "offline", timestamp);
 		}
 	}
 
@@ -148,6 +152,10 @@ public class SparkplugEdgeNode {
 
 	public Date getOfflineTimestamp() {
 		return offlineTimestamp;
+	}
+
+	public Long getBirthBdSeqNum() {
+		return birthBdSeqNum;
 	}
 
 	public void handleSeq(Long incomingSeq) throws TahuException {

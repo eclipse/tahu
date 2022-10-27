@@ -59,5 +59,4 @@ public class SparkplugUtil {
 		// Default to explicit cast to long
 		return (long) sequenceNumber;
 	}
-
 }
