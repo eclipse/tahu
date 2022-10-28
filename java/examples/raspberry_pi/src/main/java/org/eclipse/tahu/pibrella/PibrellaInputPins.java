@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2018-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
+
 package org.eclipse.tahu.pibrella;
 
 /**
@@ -20,21 +21,21 @@ public enum PibrellaInputPins {
 	B(PibrellaPins.INB),
 	C(PibrellaPins.INC),
 	D(PibrellaPins.IND);
-	
+
 	private PibrellaPins pin;
-	
+
 	private PibrellaInputPins(PibrellaPins pin) {
 		this.pin = pin;
 	}
-	
+
 	public PibrellaPins getPin() {
 		return this.pin;
 	}
-	
+
 	public int getGPIO() {
 		return this.pin.getGPIO();
 	}
-	
+
 	public String getName() {
 		return this.getPin().getName();
 	}

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2018-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
+
 package org.eclipse.tahu.pi.dio;
 
 import jdk.dio.DeviceManager;

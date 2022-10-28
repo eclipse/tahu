@@ -1,9 +1,16 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.edge;
 
 import java.util.ArrayList;
@@ -96,9 +103,9 @@ public class EdgeClient implements Runnable {
 	}
 
 	public void shutdown() {
+		disconnect(true);
 		stayRunning = false;
 		connectedToPrimaryHost = false;
-		disconnect(true);
 	}
 
 	public boolean isDisconnectedOrDisconnecting() {
@@ -141,9 +148,9 @@ public class EdgeClient implements Runnable {
 							publishDeviceDeath(deviceId);
 						}
 
-						tahuClient.disconnect(50, 50, false, true, false);
+						tahuClient.disconnect(50, 50, true, true, true);
 					} else {
-						tahuClient.disconnect(0, 1, true, false, false);
+						tahuClient.disconnect(0, 1, false, false, false);
 					}
 					logger.info("Successfully disconnected {}", connectionId);
 				} catch (Throwable t) {
@@ -177,7 +184,7 @@ public class EdgeClient implements Runnable {
 			if (edgeNodeAliasMap != null) {
 				// Aliasing is enabled so replace metric names with aliases
 				for (Metric metric : payload.getMetrics()) {
-					metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+					metric.setAlias(edgeNodeAliasMap.getAlias(metric.getName()));
 					metric.setName(null);
 				}
 			}
@@ -205,7 +212,7 @@ public class EdgeClient implements Runnable {
 			if (edgeNodeAliasMap != null) {
 				// Aliasing is enabled so replace metric names with aliases
 				for (Metric metric : payload.getMetrics()) {
-					metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+					metric.setAlias(edgeNodeAliasMap.getAlias(metric.getName()));
 					metric.setName(null);
 				}
 			}

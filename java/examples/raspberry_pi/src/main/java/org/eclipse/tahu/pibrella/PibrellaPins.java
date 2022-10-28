@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2018-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -10,6 +10,7 @@
  * Contributors:
  *   Cirrus Link Solutions - initial implementation
  ********************************************************************************/
+
 package org.eclipse.tahu.pibrella;
 
 import org.eclipse.tahu.pi.dio.PinDirection;
@@ -32,35 +33,35 @@ public enum PibrellaPins {
 	LEDY(Pins.P11, PinDirection.OUTPUT, "Yellow LED", "Outputs/LEDs/yellow"),
 	LEDR(Pins.P13, PinDirection.OUTPUT, "Red LED", "Outputs/LEDs/red"),
 	BUZZER(Pins.P12, PinDirection.OUTPUT, "Buzzer", "buzzer");
-	
+
 	private Pins pin;
 	private PinDirection direction;
 	private String name;
 	private String description;
-	
+
 	private PibrellaPins(Pins pin, PinDirection direction, String name, String description) {
 		this.pin = pin;
 		this.direction = direction;
 		this.name = name;
 		this.description = description;
 	}
-	
+
 	public Pins getPin() {
 		return this.pin;
 	}
-	
+
 	public int getGPIO() {
 		return this.pin.getGPIO();
 	}
-	
+
 	public PinDirection getDirection() {
 		return this.direction;
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public String getDescription() {
 		return this.description;
 	}

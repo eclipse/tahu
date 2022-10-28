@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2017-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  * Serializes a {@link File} instance.
  */
 public class FileSerializer extends StdSerializer<File> {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor.
