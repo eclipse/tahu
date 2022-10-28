@@ -120,7 +120,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			edgeNodeThread.start();
 
 			// Run for a while and shutdown
-			Thread.sleep(300000);
+			Thread.sleep(360000);
 			sparkplugEdgeNode.shutdown();
 		} catch (Exception e) {
 			logger.error("Failed to run the Edge Node", e);
@@ -201,14 +201,20 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	@Override
 	public void shutdown() {
 		logger.info("ClientCallback shutdown");
-		periodicPublisher.shutdown();
-		periodicPublisherThread.interrupt();
-		periodicPublisher = null;
-		periodicPublisherThread = null;
+		if (periodicPublisher != null) {
+			periodicPublisher.shutdown();
+			periodicPublisher = null;
+		}
+		if (periodicPublisherThread != null) {
+			periodicPublisherThread.interrupt();
+			periodicPublisherThread = null;
+		}
 
-		edgeClient.shutdown();
-		edgeClient = null;
-		edgeClientThread = null;
+		if (edgeClient != null) {
+			edgeClient.shutdown();
+			edgeClient = null;
+			edgeClientThread = null;
+		}
 	}
 
 	// ClientCallback API

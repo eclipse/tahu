@@ -103,9 +103,9 @@ public class EdgeClient implements Runnable {
 	}
 
 	public void shutdown() {
+		disconnect(true);
 		stayRunning = false;
 		connectedToPrimaryHost = false;
-		disconnect(true);
 	}
 
 	public boolean isDisconnectedOrDisconnecting() {
@@ -148,9 +148,9 @@ public class EdgeClient implements Runnable {
 							publishDeviceDeath(deviceId);
 						}
 
-						tahuClient.disconnect(50, 50, false, true, false);
+						tahuClient.disconnect(50, 50, true, true, true);
 					} else {
-						tahuClient.disconnect(0, 1, true, false, false);
+						tahuClient.disconnect(0, 1, false, false, false);
 					}
 					logger.info("Successfully disconnected {}", connectionId);
 				} catch (Throwable t) {
@@ -184,7 +184,7 @@ public class EdgeClient implements Runnable {
 			if (edgeNodeAliasMap != null) {
 				// Aliasing is enabled so replace metric names with aliases
 				for (Metric metric : payload.getMetrics()) {
-					metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+					metric.setAlias(edgeNodeAliasMap.getAlias(metric.getName()));
 					metric.setName(null);
 				}
 			}
@@ -212,7 +212,7 @@ public class EdgeClient implements Runnable {
 			if (edgeNodeAliasMap != null) {
 				// Aliasing is enabled so replace metric names with aliases
 				for (Metric metric : payload.getMetrics()) {
-					metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+					metric.setAlias(edgeNodeAliasMap.getAlias(metric.getName()));
 					metric.setName(null);
 				}
 			}
