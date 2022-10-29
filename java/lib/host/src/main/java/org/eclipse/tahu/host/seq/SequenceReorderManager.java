@@ -258,23 +258,9 @@ public class SequenceReorderManager {
 				SequenceReorderContext sequenceReorderContext = new SequenceReorderContext(topicString, topic, message,
 						payload, messageType, mqttServerName, mqttClientId, arrivedTime);
 				sequenceReorderMap.put(payload.getSeq(), sequenceReorderContext);
-
-				// Increment the reordered mesg count
-//				updateReorderCount();
 			}
 		}
 	}
-
-	public void resetReorderCount() {
-//		reorderedMesgCount = 0;
-//		updateReorderCount();
-	}
-
-//	public void updateReorderCount() {
-//		ModuleTagUtils.updateModuleTagValue(EngineSettings.getInstance().getContext(),
-//				EngineSettings.getInstance().getManagedTagProvider(), managedTagProviderName,
-//				EngineGwHook.SYSTEM_INFO_REORDERED_MESG_COUNT, DataType.Int8, reorderedMesgCount);
-//	}
 
 	/**
 	 * Removes and Edge Node from the {@link SequenceReorderManager}. This should be used any time an Edge Node goes

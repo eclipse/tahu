@@ -412,7 +412,7 @@ public class TahuPayloadHandler {
 				Topic cmdTopic = new Topic("spBv1.0", edgeNodeDescriptor, MessageType.NCMD);
 				if (sparkplugEdgeNode != null) {
 					// Set the Edge Node offline
-					sparkplugEdgeNode.setOnline(false, new Date(), null, null);
+					sparkplugEdgeNode.forceOffline(new Date());
 
 					if (mqttServerName != null && sparkplugEdgeNode.getMqttServerName() != null
 							&& mqttServerName.equals(sparkplugEdgeNode.getMqttServerName())) {

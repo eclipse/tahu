@@ -153,6 +153,13 @@ public class SparkplugEdgeNode extends MetricManager {
 		}
 	}
 
+	public void forceOffline(Date timestamp) {
+		synchronized (lock) {
+			this.online = false;
+			this.offlineTimestamp = timestamp;
+		}
+	}
+
 	public Date getOnlineTimestamp() {
 		return onlineTimestamp;
 	}
