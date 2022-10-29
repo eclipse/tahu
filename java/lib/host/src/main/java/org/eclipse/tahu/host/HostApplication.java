@@ -20,7 +20,6 @@ import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.seq.SequenceReorderManager;
-import org.eclipse.tahu.message.DefaultBdSeqManager;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugMeta;
@@ -77,9 +76,8 @@ public class HostApplication implements CommandPublisher {
 		logger.debug("Starting up the MQTT Client");
 		if (tahuClient == null) {
 			tahuClient = new TahuClient(mqttClientId, mqttServerName, mqttServerUrl, username, password, true,
-					keepAliveTimeout, tahuHostCallback, randomStartupDelay, true,
-					new DefaultBdSeqManager("SparkplugHostApplication"), stateTopic, null, true, stateTopic, null,
-					MqttOperatorDefs.QOS1, true);
+					keepAliveTimeout, tahuHostCallback, randomStartupDelay, true, stateTopic, null, true, stateTopic,
+					null, MqttOperatorDefs.QOS1, true);
 		}
 
 		tahuClient.setMaxInflightMessages(MAX_INFLIGHT_MESSAGES);

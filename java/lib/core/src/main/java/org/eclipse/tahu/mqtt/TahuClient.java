@@ -33,7 +33,6 @@ import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.internal.NetworkModuleService;
 import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
-import org.eclipse.tahu.message.BdSeqManager;
 import org.eclipse.tahu.message.model.StatePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +64,7 @@ public class TahuClient implements MqttCallbackExtended {
 	 * birth/death properties
 	 */
 	private boolean useSparkplugStatePayload;
-	private BdSeqManager bdSeqManager;
-	private long deathBdSeq;
-	private long birthBdSeq;
+	private Long lastStateDeathPayloadTimestamp;
 	private String birthTopic;
 	private byte[] birthPayload;
 	private boolean birthRetain;
@@ -162,23 +159,22 @@ public class TahuClient implements MqttCallbackExtended {
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
 			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
-			BdSeqManager bdSeqManager, String birthTopic, byte[] birthPayload, String lwtTopic, byte[] lwtPayload,
-			int lwtQoS) {
+			String birthTopic, byte[] birthPayload, String lwtTopic, byte[] lwtPayload, int lwtQoS) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
 				randomStartupDelay);
-		this.setLifecycleProps(useSparkplugStatePayload, bdSeqManager, birthTopic, birthPayload, false, lwtTopic,
-				lwtPayload, lwtQoS, false);
+		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, false, lwtTopic, lwtPayload, lwtQoS,
+				false);
 	}
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
 			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
-			BdSeqManager bdSeqManager, String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic,
-			byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
+			String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS,
+			boolean lwtRetain) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
 				randomStartupDelay);
-		this.setLifecycleProps(useSparkplugStatePayload, bdSeqManager, birthTopic, birthPayload, birthRetain, lwtTopic,
-				lwtPayload, lwtQoS, lwtRetain);
+		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload,
+				lwtQoS, lwtRetain);
 	}
 
 	/**
@@ -191,16 +187,9 @@ public class TahuClient implements MqttCallbackExtended {
 	 * @param lwtPayload the payload of an LWT
 	 * @param lwtRetain whether to retain LWT messages
 	 */
-	private void setLifecycleProps(boolean useSparkplugStatePayload, BdSeqManager bdSeqManager, String birthTopic,
-			byte[] birthPayload, boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS,
-			boolean lwtRetain) {
+	private void setLifecycleProps(boolean useSparkplugStatePayload, String birthTopic, byte[] birthPayload,
+			boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
 		this.useSparkplugStatePayload = useSparkplugStatePayload;
-		this.bdSeqManager = bdSeqManager;
-		if (bdSeqManager != null) {
-			this.deathBdSeq = bdSeqManager.getNextDeathBdSeqNum();
-		} else {
-			this.deathBdSeq = 0;
-		}
 		this.birthTopic = birthTopic;
 		this.birthPayload = birthPayload;
 		this.birthRetain = birthRetain;
@@ -704,8 +693,7 @@ public class TahuClient implements MqttCallbackExtended {
 							if (useSparkplugStatePayload) {
 								try {
 									ObjectMapper mapper = new ObjectMapper();
-									StatePayload statePayload =
-											new StatePayload(false, birthBdSeq, new Date().getTime());
+									StatePayload statePayload = new StatePayload(false, new Date().getTime());
 									byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
 									lwtDeliveryToken = publish(lwtTopic, payload, lwtQoS, lwtRetain);
 								} catch (Exception e) {
@@ -884,19 +872,10 @@ public class TahuClient implements MqttCallbackExtended {
 					logger.debug("{}: Setting WILL on {} with retain {}", getClientId(), lwtTopic, lwtRetain);
 					if (useSparkplugStatePayload) {
 						ObjectMapper mapper = new ObjectMapper();
-						StatePayload statePayload = new StatePayload(false, deathBdSeq, new Date().getTime());
+						lastStateDeathPayloadTimestamp = new Date().getTime();
+						StatePayload statePayload = new StatePayload(false, lastStateDeathPayloadTimestamp);
 						byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
 						connectOptions.setWill(lwtTopic, payload, MqttOperatorDefs.QOS1, lwtRetain);
-
-						// Increment the bdSeq number for the next Will Message and store it
-						birthBdSeq = deathBdSeq;
-						deathBdSeq++;
-						if (deathBdSeq > 255) {
-							deathBdSeq = 0;
-						}
-						if (bdSeqManager != null) {
-							bdSeqManager.storeNextDeathBdSeqNum(deathBdSeq);
-						}
 					} else {
 						connectOptions.setWill(lwtTopic, lwtPayload, MqttOperatorDefs.QOS1, lwtRetain);
 					}
@@ -1270,7 +1249,7 @@ public class TahuClient implements MqttCallbackExtended {
 				if (useSparkplugStatePayload) {
 					try {
 						ObjectMapper mapper = new ObjectMapper();
-						StatePayload statePayload = new StatePayload(true, birthBdSeq, new Date().getTime());
+						StatePayload statePayload = new StatePayload(true, lastStateDeathPayloadTimestamp);
 						byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
 						publish(birthTopic, payload, MqttOperatorDefs.QOS1, birthRetain);
 					} catch (Exception e) {

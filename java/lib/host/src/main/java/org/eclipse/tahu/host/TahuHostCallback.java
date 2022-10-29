@@ -62,6 +62,7 @@ public class TahuHostCallback implements ClientCallback {
 		if (sequenceReorderManager != null) {
 			this.enableSequenceReordering = true;
 			this.sequenceReorderManager = sequenceReorderManager;
+			this.sequenceReorderManager.start();
 		} else {
 			this.enableSequenceReordering = false;
 			this.sequenceReorderManager = null;
