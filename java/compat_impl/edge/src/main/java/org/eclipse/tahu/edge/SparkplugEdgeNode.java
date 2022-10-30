@@ -236,7 +236,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 				logger.info("Got STATE message: {} :: {}", rawTopic, new String(message.getPayload()));
 				ObjectMapper mapper = new ObjectMapper();
 				StatePayload statePayload = mapper.readValue(message.getPayload(), StatePayload.class);
-				edgeClient.handleStateMessage(topic.getHostApplicationId(), statePayload.isOnline());
+				edgeClient.handleStateMessage(topic.getHostApplicationId(), statePayload);
 			} catch (Exception e) {
 				logger.error("Failed to handle STATE message with topic={} and payload={}", rawTopic,
 						new String(message.getPayload()));
