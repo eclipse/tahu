@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.tahu.edge.sim.DataSimulator;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
+import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +29,17 @@ public class PeriodicPublisher implements Runnable {
 	private final long period;
 	private final DataSimulator dataSimulator;
 	private final EdgeClient edgeClient;
+	private final EdgeNodeDescriptor edgeNodeDescriptor;
 	private final List<DeviceDescriptor> deviceDescriptors;
 
 	private volatile boolean stayRunning;
 
 	public PeriodicPublisher(long period, DataSimulator dataSimulator, EdgeClient edgeClient,
-			List<DeviceDescriptor> deviceDescriptors) {
+			EdgeNodeDescriptor edgeNodeDescriptor, List<DeviceDescriptor> deviceDescriptors) {
 		this.period = period;
 		this.dataSimulator = dataSimulator;
 		this.edgeClient = edgeClient;
+		this.edgeNodeDescriptor = edgeNodeDescriptor;
 		this.deviceDescriptors = deviceDescriptors;
 		this.stayRunning = true;
 	}
@@ -48,9 +51,12 @@ public class PeriodicPublisher implements Runnable {
 				// Sleep a bit
 				Thread.sleep(period);
 
+				SparkplugBPayload nDataPayload = dataSimulator.getNodeDataPayload(edgeNodeDescriptor);
+				edgeClient.publishNodeData(nDataPayload);
+
 				for (DeviceDescriptor deviceDescriptor : deviceDescriptors) {
-					SparkplugBPayload dBirthPayload = dataSimulator.getDeviceDataPayload(deviceDescriptor);
-					edgeClient.publishDeviceData(deviceDescriptor.getDeviceId(), dBirthPayload);
+					SparkplugBPayload dDataPayload = dataSimulator.getDeviceDataPayload(deviceDescriptor);
+					edgeClient.publishDeviceData(deviceDescriptor.getDeviceId(), dDataPayload);
 				}
 			}
 		} catch (InterruptedException e) {
