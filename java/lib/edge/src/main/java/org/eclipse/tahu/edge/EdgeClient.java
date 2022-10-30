@@ -34,6 +34,7 @@ import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayloadMap;
 import org.eclipse.tahu.message.model.SparkplugBPayloadMap.SparkplugBPayloadMapBuilder;
 import org.eclipse.tahu.message.model.SparkplugMeta;
+import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
@@ -74,6 +75,7 @@ public class EdgeClient implements Runnable {
 	// Tracking variables
 	private volatile boolean stayRunning;
 	private boolean connectedToPrimaryHost; // Whether or not this client is connected to Primary Host ID
+	private Long lastStatePayloadTimestamp;
 	private Timer primaryHostIdResponseTimer; // The Primary Host ID response timer
 	private Timer rebirthDelayTimer; // A Timer used to prevent multiple rebirth requests while the timer is running
 
@@ -148,7 +150,7 @@ public class EdgeClient implements Runnable {
 							publishDeviceDeath(deviceId);
 						}
 
-						tahuClient.disconnect(50, 50, true, true, true);
+						tahuClient.disconnect(50, 50, true, true, false);
 					} else {
 						tahuClient.disconnect(0, 1, false, false, false);
 					}
@@ -492,17 +494,26 @@ public class EdgeClient implements Runnable {
 	 * @param primaryHostId the primary host ID
 	 * @param state the state
 	 */
-	public void handleStateMessage(String primaryHostId, boolean online) {
+	public void handleStateMessage(String primaryHostId, StatePayload statePayload) {
 		synchronized (clientLock) {
 			if (this.primaryHostId != null && this.primaryHostId.equals(primaryHostId)) {
-				if (online && !connectedToPrimaryHost) {
+				Long payloadTimestamp = statePayload.getTimestamp();
+				if (lastStatePayloadTimestamp != null && payloadTimestamp.compareTo(lastStatePayloadTimestamp) < 0) {
+					logger.info("Reveived a stale STATE message - ignoring hostId={} and payload={}", primaryHostId,
+							statePayload);
+					return;
+				} else {
+					lastStatePayloadTimestamp = payloadTimestamp;
+				}
+
+				if (statePayload.isOnline() && !connectedToPrimaryHost) {
 					logger.info("Critical/Primary app is online - cancelling disconnect timer");
 					if (primaryHostIdResponseTimer != null) {
 						primaryHostIdResponseTimer.cancel();
 						primaryHostIdResponseTimer = null;
 					}
 					handleOnlineTransition("STATE CHANGE");
-				} else if (!online) {
+				} else if (!statePayload.isOnline()) {
 					logger.error("Critical/Primary app went offline - disconnecting from this server");
 					// Check if currently connected to primary host
 					if (connectedToPrimaryHost) {
