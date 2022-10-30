@@ -104,6 +104,33 @@ public class RandomDataSimulator implements DataSimulator {
 
 	// DataSimulator API
 	@Override
+	public SparkplugBPayload getNodeDataPayload(EdgeNodeDescriptor edgeNodeDescriptor) {
+		try {
+			Date now = new Date();
+			Map<String, Metric> metricMap = new HashMap<>();
+
+			SparkplugBPayloadBuilder payloadBuilder = new SparkplugBPayloadBuilder();
+			payloadBuilder.setTimestamp(now);
+			logger.info("Getting number of metrics for {}", edgeNodeDescriptor);
+			for (int i = 0; i < numNodeMetrics; i++) {
+				Metric metric = getRandomMetric("NT", i, true);
+				if (metric != null) {
+					metricMap.put(metric.getName(), metric);
+					payloadBuilder.addMetric(metric);
+				}
+			}
+
+			metricMaps.put(edgeNodeDescriptor, metricMap);
+			lastUpdateMap.put(edgeNodeDescriptor, now.getTime());
+			return payloadBuilder.createPayload();
+		} catch (Exception e) {
+			logger.error("Failed to get the NDATA", e);
+			return null;
+		}
+	}
+
+	// DataSimulator API
+	@Override
 	public SparkplugBPayload getDeviceBirthPayload(DeviceDescriptor deviceDescriptor) {
 		try {
 			Date now = new Date();
@@ -151,7 +178,7 @@ public class RandomDataSimulator implements DataSimulator {
 			lastUpdateMap.put(deviceDescriptor, now.getTime());
 			return payloadBuilder.createPayload();
 		} catch (Exception e) {
-			logger.error("Failed to get the DBIRTH", e);
+			logger.error("Failed to get the DDATA", e);
 			return null;
 		}
 	}

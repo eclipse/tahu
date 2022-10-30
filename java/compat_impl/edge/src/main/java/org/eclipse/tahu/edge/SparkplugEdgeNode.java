@@ -182,7 +182,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			}
 
 			// The BIRTH sequence has been published - set up a periodic publisher
-			periodicPublisher = new PeriodicPublisher(5000, dataSimulator, edgeClient,
+			periodicPublisher = new PeriodicPublisher(5000, dataSimulator, edgeClient, EDGE_NODE_DESCRIPTOR,
 					Arrays.asList(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D1")));
 			periodicPublisherThread = new Thread(periodicPublisher);
 			periodicPublisherThread.start();

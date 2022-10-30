@@ -32,6 +32,15 @@ public interface DataSimulator {
 	public SparkplugBPayloadMap getNodeBirthPayload(EdgeNodeDescriptor edgeNodeDescriptor);
 
 	/**
+	 * Getting for fetching a NDATA {@link SparkplugBPayload}
+	 *
+	 * @param sparkplugDescriptor the {@link EdgeNodeDescriptor} to use when fetching the {@link SparkplugBPayloadMap}
+	 *
+	 * @return a {@link SparkplugBPayload} representing an NDATA payload
+	 */
+	public SparkplugBPayload getNodeDataPayload(EdgeNodeDescriptor edgeNodeDescriptor);
+
+	/**
 	 * Getting for fetching a DBIRTH {@link SparkplugBPayload}
 	 * 
 	 * @param deviceDescriptor the {@link DeviceDescriptor} to use when fetching the {@link SparkplugBPayload}
