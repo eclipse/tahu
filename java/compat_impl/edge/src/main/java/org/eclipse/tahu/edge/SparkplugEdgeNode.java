@@ -43,6 +43,7 @@ import org.eclipse.tahu.message.model.SparkplugDescriptor;
 import org.eclipse.tahu.message.model.SparkplugMeta;
 import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.message.model.Topic;
+import org.eclipse.tahu.model.MqttServerDefinition;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
@@ -54,9 +55,12 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallback {
+public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallback, CommandCallback {
 
 	private static Logger logger = LoggerFactory.getLogger(SparkplugEdgeNode.class.getName());
+
+	private static final String COMMAND_LISTENER_DIRECTORY = "/tmp/commands";
+	private static final long COMMAND_LISTENER_POLL_RATE = 50L;
 
 	private static final String GROUP_ID = "G1";
 	private static final String EDGE_NODE_ID = "E1";
@@ -65,14 +69,24 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	private static final String PRIMARY_HOST_ID = "IamHost";
 	private static final boolean USE_ALIASES = true;
 	private static final Long REBIRTH_DEBOUNCE_DELAY = 5000L;
-	private static final String MQTT_CLIENT_ID = "Sparkplug-Tahu-Compatible-Impl";
-	private static final MqttServerName MQTT_SERVER_NAME = new MqttServerName("My Mqtt Server");
-	private static final MqttServerUrl MQTT_SERVER_URL = new MqttServerUrl("tcp://localhost:1883");
-	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "changeme";
+
+	private static final MqttServerName MQTT_SERVER_NAME_1 = new MqttServerName("Mqtt Server One");
+	private static final String MQTT_CLIENT_ID_1 = "Sparkplug-Tahu-Compatible-Impl-One";
+	private static final MqttServerUrl MQTT_SERVER_URL_1 = new MqttServerUrl("tcp://localhost:1883");
+	private static final String USERNAME_1 = "admin";
+	private static final String PASSWORD_1 = "changeme";
+	private static final MqttServerName MQTT_SERVER_NAME_2 = new MqttServerName("Mqtt Server Two");
+	private static final String MQTT_CLIENT_ID_2 = "Sparkplug-Tahu-Compatible-Impl-Two";
+	private static final MqttServerUrl MQTT_SERVER_URL_2 = new MqttServerUrl("tcp://localhost:1884");
+	private static final String USERNAME_2 = "admin";
+	private static final String PASSWORD_2 = "changeme";
 	private static final int KEEP_ALIVE_TIMEOUT = 30;
 	private static final Topic NDEATH_TOPIC =
 			new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, GROUP_ID, EDGE_NODE_ID, MessageType.NDEATH);
+
+	private static final List<MqttServerDefinition> mqttServerDefinitions = new ArrayList<>();
+
+	private CommandListener commandListener;
 
 	/*
 	 * Next Birth BD sequence number - same as last deathBdSeq
@@ -101,6 +115,13 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 	public static void main(String[] arg) {
 		try {
+			mqttServerDefinitions
+					.add(new MqttServerDefinition(MQTT_SERVER_NAME_1, new MqttClientId(MQTT_CLIENT_ID_1, false),
+							MQTT_SERVER_URL_1, USERNAME_1, PASSWORD_1, KEEP_ALIVE_TIMEOUT, NDEATH_TOPIC));
+			mqttServerDefinitions
+					.add(new MqttServerDefinition(MQTT_SERVER_NAME_2, new MqttClientId(MQTT_CLIENT_ID_2, false),
+							MQTT_SERVER_URL_2, USERNAME_2, PASSWORD_2, KEEP_ALIVE_TIMEOUT, NDEATH_TOPIC));
+
 			System.out.println("Starting the Sparkplug Edge Node");
 			System.out.println("\tGroup ID: " + GROUP_ID);
 			System.out.println("\tEdge Node ID: " + EDGE_NODE_ID);
@@ -108,12 +129,15 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			System.out.println("\tPrimary Host ID: " + PRIMARY_HOST_ID);
 			System.out.println("\tUsing Aliases: " + USE_ALIASES);
 			System.out.println("\tRebirth Debounce Delay: " + REBIRTH_DEBOUNCE_DELAY);
-			System.out.println("\tMQTT Client ID: " + MQTT_CLIENT_ID);
-			System.out.println("\tMQTT Server Name: " + MQTT_SERVER_NAME);
-			System.out.println("\tMQTT Server URL: " + MQTT_SERVER_URL);
-			System.out.println("\tUsername: " + USERNAME);
-			System.out.println("\tPassword: ********");
-			System.out.println("\tKeep Alive Timeout: " + KEEP_ALIVE_TIMEOUT);
+
+			for (MqttServerDefinition mqttServerDefinition : mqttServerDefinitions) {
+				System.out.println("\tMQTT Server Name: " + mqttServerDefinition.getMqttServerName());
+				System.out.println("\tMQTT Client ID: " + mqttServerDefinition.getMqttClientId());
+				System.out.println("\tMQTT Server URL: " + mqttServerDefinition.getMqttServerUrl());
+				System.out.println("\tUsername: " + mqttServerDefinition.getUsername());
+				System.out.println("\tPassword: ********");
+				System.out.println("\tKeep Alive Timeout: " + mqttServerDefinition.getKeepAliveTimeout());
+			}
 
 			SparkplugEdgeNode sparkplugEdgeNode = new SparkplugEdgeNode();
 			Thread edgeNodeThread = new Thread(sparkplugEdgeNode);
@@ -140,8 +164,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			birthBdSeq = deathBdSeq;
 
 			edgeClient = new EdgeClient(this, EDGE_NODE_DESCRIPTOR, DEVICE_IDS, PRIMARY_HOST_ID, USE_ALIASES,
-					REBIRTH_DEBOUNCE_DELAY, new MqttClientId(MQTT_CLIENT_ID, false), MQTT_SERVER_NAME, MQTT_SERVER_URL,
-					USERNAME, PASSWORD, KEEP_ALIVE_TIMEOUT, this, null);
+					REBIRTH_DEBOUNCE_DELAY, mqttServerDefinitions, this, null);
 		} catch (Exception e) {
 			logger.error("Failed to create the Sparkplug Edge Client", e);
 		}
@@ -149,8 +172,15 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 	@Override
 	public void run() {
-		edgeClientThread = new Thread(edgeClient);
-		edgeClientThread.start();
+		try {
+			commandListener = new CommandListener(this, COMMAND_LISTENER_DIRECTORY, COMMAND_LISTENER_POLL_RATE);
+			commandListener.start();
+
+			edgeClientThread = new Thread(edgeClient);
+			edgeClientThread.start();
+		} catch (Exception e) {
+			logger.error("Failed to start", e);
+		}
 	}
 
 	// MetricHandler API
@@ -201,6 +231,11 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	@Override
 	public void shutdown() {
 		logger.info("ClientCallback shutdown");
+
+		if (commandListener != null) {
+			commandListener.shutdown();
+			commandListener = null;
+		}
 		if (periodicPublisher != null) {
 			periodicPublisher.shutdown();
 			periodicPublisher = null;
@@ -393,6 +428,20 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	public void connectComplete(boolean reconnect, MqttServerName mqttServerName, MqttServerUrl mqttServerUrl,
 			MqttClientId clientId) {
 		logger.info("{}: ClientCallback connectComplete", clientId);
+	}
+
+	// CommandCallback API
+	@Override
+	public void setDeviceOffline(String deviceId) {
+		edgeClient.publishDeviceDeath(deviceId);
+	}
+
+	// CommandCallback API
+	@Override
+	public void setDeviceOnline(String deviceId) {
+		SparkplugBPayload dBirthPayload =
+				dataSimulator.getDeviceBirthPayload(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, deviceId));
+		edgeClient.publishDeviceBirth(deviceId, dBirthPayload);
 	}
 
 	/*

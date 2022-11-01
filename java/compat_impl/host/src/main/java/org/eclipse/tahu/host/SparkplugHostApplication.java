@@ -13,12 +13,16 @@
 
 package org.eclipse.tahu.host;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.SparkplugDescriptor;
+import org.eclipse.tahu.model.MqttServerDefinition;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
 import org.eclipse.tahu.mqtt.MqttServerUrl;
@@ -33,28 +37,46 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	private static final long COMMAND_LISTENER_POLL_RATE = 50L;
 
 	private static final String HOST_ID = "IamHost";
-	private static final String MQTT_CLIENT_ID = "Tahu_Host_Application";
-	private static final String MQTT_SERVER_NAME = "My MQTT Server";
-	private static final String MQTT_SERVER_URL = "tcp://localhost:1883";
-	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "changeme";
+	private static final String MQTT_SERVER_NAME_1 = "Mqtt Server One";
+	private static final String MQTT_CLIENT_ID_1 = "Tahu_Host_Application";
+	private static final String MQTT_SERVER_URL_1 = "tcp://localhost:1883";
+	private static final String USERNAME_1 = "admin";
+	private static final String PASSWORD_1 = "changeme";
+	private static final String MQTT_SERVER_NAME_2 = "Mqtt Server Two";
+	private static final String MQTT_CLIENT_ID_2 = "Tahu_Host_Application";
+	private static final String MQTT_SERVER_URL_2 = "tcp://localhost:1884";
+	private static final String USERNAME_2 = null;
+	private static final String PASSWORD_2 = null;
 	private static final int KEEP_ALIVE_TIMEOUT = 30;
 
 	private CommandListener commandListener;
 	private HostApplication hostApplication;
 
+	private static final List<MqttServerDefinition> mqttServerDefinitions = new ArrayList<>();
+
 	public static void main(String[] arg) {
 		try {
+			mqttServerDefinitions.add(new MqttServerDefinition(new MqttServerName(MQTT_SERVER_NAME_1),
+					new MqttClientId(MQTT_CLIENT_ID_1, false), new MqttServerUrl(MQTT_SERVER_URL_1), USERNAME_1,
+					PASSWORD_1, KEEP_ALIVE_TIMEOUT, null));
+//			mqttServerDefinitions.add(new MqttServerDefinition(new MqttServerName(MQTT_SERVER_NAME_2),
+//					new MqttClientId(MQTT_CLIENT_ID_2, false), new MqttServerUrl(MQTT_SERVER_URL_2), USERNAME_2,
+//					PASSWORD_2, KEEP_ALIVE_TIMEOUT, null));
+
 			System.out.println("Starting the Sparkplug Host Application");
 			System.out.println("\tSparkplug Host Application ID: " + HOST_ID);
-			System.out.println("\tMQTT Client ID: " + MQTT_CLIENT_ID);
-			System.out.println("\tMQTT Server Name: " + MQTT_SERVER_NAME);
-			System.out.println("\tMQTT Server URL: " + MQTT_SERVER_URL);
-			System.out.println("\tUsername: " + USERNAME);
-			System.out.println("\tPassword: ********");
 			System.out.println("\tKeep Alive Timeout: " + KEEP_ALIVE_TIMEOUT);
 			System.out.println("\tCommand Listener Directory: " + COMMAND_LISTENER_DIRECTORY);
 			System.out.println("\tCommand Listener Poll Rate: " + COMMAND_LISTENER_POLL_RATE);
+
+			for (MqttServerDefinition mqttServerDefinition : mqttServerDefinitions) {
+				System.out.println("\tMQTT Server Name: " + mqttServerDefinition.getMqttServerName());
+				System.out.println("\tMQTT Client ID: " + mqttServerDefinition.getMqttClientId());
+				System.out.println("\tMQTT Server URL: " + mqttServerDefinition.getMqttServerUrl());
+				System.out.println("\tUsername: " + mqttServerDefinition.getUsername());
+				System.out.println("\tPassword: ********");
+				System.out.println("\tKeep Alive Timeout: " + mqttServerDefinition.getKeepAliveTimeout());
+			}
 
 			// Start the Host Application
 			SparkplugHostApplication sparkplugHostApplication = new SparkplugHostApplication();
@@ -74,9 +96,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	public SparkplugHostApplication() {
 		try {
 
-			hostApplication = new HostApplication(this, HOST_ID, new MqttClientId(MQTT_CLIENT_ID, false),
-					new MqttServerName(MQTT_SERVER_NAME), new MqttServerUrl(MQTT_SERVER_URL), USERNAME, PASSWORD,
-					KEEP_ALIVE_TIMEOUT, null);
+			hostApplication = new HostApplication(this, HOST_ID, mqttServerDefinitions, null);
 		} catch (Exception e) {
 			logger.error("Failed to create the HostApplication", e);
 		}
