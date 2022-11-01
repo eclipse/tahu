@@ -15,8 +15,11 @@ package org.eclipse.tahu.host;
 
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.Topic;
+import org.eclipse.tahu.mqtt.MqttServerName;
 
 public interface CommandPublisher {
 
 	public void publishCommand(Topic topic, SparkplugBPayload payload) throws Exception;
+
+	public void publishCommand(MqttServerName mqttServerName, Topic topic, SparkplugBPayload payload) throws Exception;
 }
