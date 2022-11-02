@@ -269,9 +269,13 @@ public class EdgeClient implements Runnable {
 					boolean tryToConnect = false;
 					boolean transitionToOnline = false;
 					if (tahuClient == null || !tahuClient.isConnected()) {
-						logger.warn("{} Not connected - attempting connect with isStayRunning={}", edgeNodeDescriptor,
-								stayRunning);
-						tryToConnect = true;
+						if (!stayRunning) {
+							return;
+						} else {
+							logger.warn("{} Not connected - attempting connect with isStayRunning={}",
+									edgeNodeDescriptor, stayRunning);
+							tryToConnect = true;
+						}
 					}
 
 					if (stayRunning && tryToConnect) {
