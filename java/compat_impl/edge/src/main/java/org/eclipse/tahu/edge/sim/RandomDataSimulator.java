@@ -28,7 +28,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.tahu.SparkplugException;
-import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.eclipse.tahu.message.model.DataSet;
 import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.DataSetDataType;
@@ -445,18 +444,20 @@ public class RandomDataSimulator implements DataSimulator {
 		return params;
 	}
 
-	private List<Metric> newComplexTemplateDefs() throws SparkplugInvalidTypeException {
+	private List<Metric> newComplexTemplateDefs() throws Exception {
 		ArrayList<Metric> metrics = new ArrayList<Metric>();
 
 		// Add a new template "subType" definition with two primitive members
-		metrics.add(new MetricBuilder("subType", MetricDataType.Template, new TemplateBuilder().definition(true)
-				.addMetric(new MetricBuilder("StringMember", MetricDataType.String, "value").createMetric())
-				.addMetric(new MetricBuilder("IntegerMember", MetricDataType.Int32, 0).createMetric()).createTemplate())
-						.createMetric());
+		metrics.add(new MetricBuilder("subType", MetricDataType.Template,
+				new TemplateBuilder().definition(true).addParameters(newParams())
+						.addMetric(new MetricBuilder("StringMember", MetricDataType.String, "value").createMetric())
+						.addMetric(new MetricBuilder("IntegerMember", MetricDataType.Int32, 0).createMetric())
+						.createTemplate()).createMetric());
 		// Add new template "complexType" definition that contains an instance of "subType" as a member
 		metrics.add(new MetricBuilder("complexType", MetricDataType.Template, new TemplateBuilder().definition(true)
-				.addMetric(new MetricBuilder("mySubType", MetricDataType.Template, new TemplateBuilder()
-						.definition(false).templateRef("subType")
+				.addParameters(newParams())
+				.addMetric(new MetricBuilder("subType", MetricDataType.Template, new TemplateBuilder().definition(false)
+						.templateRef("subType")
 						.addMetric(new MetricBuilder("StringMember", MetricDataType.String, "value").createMetric())
 						.addMetric(new MetricBuilder("IntegerMember", MetricDataType.Int32, 0).createMetric())
 						.createTemplate()).createMetric())
@@ -465,11 +466,11 @@ public class RandomDataSimulator implements DataSimulator {
 		return metrics;
 	}
 
-	private Template newComplexTemplateInstance() throws SparkplugInvalidTypeException {
+	private Template newComplexTemplateInstance() throws Exception {
 		// Create and return the template
-		return new TemplateBuilder().definition(false).templateRef("complexType").addMetric(new MetricBuilder(
-				"mySubType", MetricDataType.Template,
-				new TemplateBuilder().definition(false).templateRef("subType")
+		return new TemplateBuilder().definition(false).templateRef("complexType").addParameters(newParams())
+				.addMetric(new MetricBuilder("subType", MetricDataType.Template, new TemplateBuilder().definition(false)
+						.templateRef("subType").addParameters(newParams())
 						.addMetric(new MetricBuilder("StringMember", MetricDataType.String, "myValue").createMetric())
 						.addMetric(new MetricBuilder("IntegerMember", MetricDataType.Int32, 1).createMetric())
 						.createTemplate()).createMetric())
