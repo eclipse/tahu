@@ -42,25 +42,47 @@ type IMetaData = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IMetaData;
 type IMetric = IProtoRoot.org.eclipse.tahu.protobuf.Payload.IMetric;
 
 // "user types"
+export type TypeStr = "Int8"
+    | "Int16"
+    | "Int32"
+    | "Int64"
+    | "UInt8"
+    | "UInt16"
+    | "UInt32"
+    | "UInt64"
+    | "Float"
+    | "Double"
+    | "Boolean"
+    | "String"
+    | "DateTime"
+    | "Text"
+    | "UUID"
+    | "DataSet"
+    | "Bytes"
+    | "File"
+    | "Template"
+    | "PropertySet"
+    | "PropertySetList";
+
 export interface UMetric extends IMetric {
     value: null | number | Long.Long | boolean | string | Uint8Array | UDataSet | UTemplate;
-    type: string;
+    type: TypeStr;
     properties?: Record<string, UPropertyValue>
 }
 export interface UPropertyValue extends Omit<IPropertyValue, 'type'> { // TODO is the type supposed to be like the metric type in the readme?
     value: null | number | Long.Long | boolean | string | UPropertySet | UPropertySetList;
-    type: string;
+    type: TypeStr;
 }
 export interface UParameter extends Omit<IParameter, 'type'> { // TODO is the type supposed to be like the metric type in the readme?
     value: number | Long.Long | boolean | string | UPropertySet | UPropertySetList;
-    type: string;
+    type: TypeStr;
 }
 export interface UTemplate extends Omit<ITemplate, 'metrics' | 'parameters'> { // TODO is the type supposed to be like the metric type in the readme?
     metrics?: UMetric[];
     parameters?: UParameter[];
 }
 export interface UDataSet extends Omit<IDataSet, 'types' | 'rows'> {
-    types: string[];
+    types: TypeStr[];
     rows: UDataSetValue[][];
 }
 export type UDataSetValue = number | Long.Long | boolean | string;
@@ -275,7 +297,7 @@ function encodeType (typeString: string): number {
 
 /** transforms a type code into a user friendly type */
 // @ts-expect-error TODO no consistent return
-function decodeType (typeInt: number | null | undefined): string {
+function decodeType (typeInt: number | null | undefined): TypeStr {
     switch (typeInt) {
         case 1:
             return "Int8";
@@ -330,8 +352,8 @@ function encodeTypes (typeArray: string[]): number[]  {
     return types;
 }
 
-function decodeTypes (typeArray: number[]): string[] {
-    var types: string[] = [];
+function decodeTypes (typeArray: number[]): TypeStr[] {
+    var types: TypeStr[] = [];
     for (var i = 0; i < typeArray.length; i++) {
         types.push(decodeType(typeArray[i]));
     }

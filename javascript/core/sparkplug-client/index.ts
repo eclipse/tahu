@@ -10,41 +10,36 @@
  *   Cirrus Link Solutions
  */
 import * as mqtt from 'mqtt';
-import type { IClientOptions } from 'mqtt';
+import type { IClientOptions, MqttClient } from 'mqtt';
 import events from 'events';
+import * as sparkplug from 'sparkplug-payload';
+import type { UPayload } from 'sparkplug-payload/lib/sparkplugbpayload';
+import type { Reader } from 'protobufjs';
+import pako from 'pako';
+import createDebug from 'debug';
 
-const sparkplug = require('sparkplug-payload'),
-    sparkplugbpayload = sparkplug.get("spBv1.0"),
-    pako = require('pako'),
-    winston = require('winston');
+const sparkplugbpayload = sparkplug.get("spBv1.0")!;
 
 const compressed = "SPBV1.0_COMPRESSED";
 
-// Config for winston logging
-const logger = winston.createLogger({
-    level: 'warn',
-    format: winston.format.json(),
-    transports: [
-      new winston.transports.File({ filename: 'logfile.log' })
-    ]
-});
-
-if (process.env.NODE_ENV !== 'production') {
-    logger.add(new winston.transports.Console({
-      format: winston.format.simple(),
-    }));
+// setup logging
+const debugLog = createDebug('sparkplug-client:debug');
+const infoLog = createDebug('sparkplug-client:info');
+const logger = {
+    debug: (formatter: string, ...args: unknown[]) => debugLog(formatter, ...args),
+    info: (formatter: string, ...args: unknown[]) => infoLog(formatter, ...args),
 }
 
-function getRequiredProperty(config, propName) {
+function getRequiredProperty<C extends Record<string, unknown>, P extends keyof C & string>(config: C, propName: P): C[P] {
     if (config[propName] !== undefined) {
         return config[propName];
     }
     throw new Error("Missing required configuration property '" + propName + "'");
 }
 
-function getProperty<C, P extends keyof C>(config: C, propName: P, defaultValue: C[P]) {
+function getProperty<C, P extends keyof C, DEFAULT extends C[P]>(config: C, propName: P, defaultValue: DEFAULT): Exclude<C[P], undefined> | DEFAULT {
     if (config[propName] !== undefined) {
-        return config[propName];
+        return config[propName] as Exclude<C[P], undefined>;
     } else {
         return defaultValue;
     }
@@ -62,6 +57,35 @@ export type ISparkplugClientOptions = {
     keepalive?: number;
     mqttOptions?: Omit<IClientOptions, 'clientId' | 'clean' | 'keepalive' | 'reschedulePings' | 'connectTimeout' | 'username' | 'password' | 'will'>;
 }
+
+export type PayloadOptions = {
+    algorithm?: 'GZIP' | 'DEFLATE';
+    /** @default false */
+    compress?: boolean;
+}
+
+interface SparkplugClient extends events.EventEmitter {
+    /** MQTT client event */
+    on(event: 'connect' | 'close' | 'reconnect' | 'offline', listener: () => void): this;
+    /** MQTT client event */
+    on(event: 'error', listener: (error: Error) => void): this;
+    /** emitted when birth messages are ready to be sent*/
+    on(event: 'birth', listener: () => void): this;
+    /** emitted when a node command is received */
+    on(event: 'ncmd', listener: (payload: UPayload) => void): this;
+    /** emitted when a device command is received */
+    on(event: 'dcmd', listener: (device: string, payload: UPayload) => void): this;
+    /** emitted when a payload is received with a version unsupported by this client */
+    on(event: 'message', listener: (topic: string, payload: UPayload) => void): this;
+
+    emit(event: 'connect' | 'close' | 'reconnect' | 'offline' | 'birth'): boolean;
+    emit(event: 'error', error: Error): boolean;
+    emit(event: 'ncmd', payload: UPayload): boolean;
+    emit(event: 'dcmd', device: string, payload: UPayload): boolean;
+    emit(event: 'message', topic: string, payload: UPayload): boolean;
+}
+
+export { UPayload };
 
 /*
  * Sparkplug Client
@@ -83,12 +107,11 @@ class SparkplugClient extends events.EventEmitter {
     private mqttOptions: IClientOptions;
 
     // MQTT Client Variables
-    private bdSeq: number;
-    private seq: number;
-    private devices: any[];
-    private client: any;
-    private connecting: boolean;
-    private connected: boolean;
+    private bdSeq = 0;
+    private seq = 0;
+    private client: null | MqttClient = null;
+    private connecting = false;
+    private connected = false;
 
     constructor(config: ISparkplugClientOptions) {
         super();
@@ -96,12 +119,6 @@ class SparkplugClient extends events.EventEmitter {
         this.edgeNode = getRequiredProperty(config, "edgeNode");
         this.publishDeath = getProperty(config, "publishDeath", false);
         this.version = getProperty(config, "version", this.versionB);
-        this.bdSeq = 0;
-        this.seq = 0;
-        this.devices = [];
-        this.client = null;
-        this.connecting = false;
-        this.connected = false;
 
         // Client connection options
         this.serverUrl = getRequiredProperty(config, "serverUrl");
@@ -120,7 +137,7 @@ class SparkplugClient extends events.EventEmitter {
             password,
             will: {
                 topic: this.version + "/" + this.groupId + "/NDEATH/" + this.edgeNode,
-                payload: this.encodePayload(this.getDeathPayload()),
+                payload: Buffer.from(this.encodePayload(this.getDeathPayload())),
                 qos: 0,
                 retain: false,
             },
@@ -137,15 +154,15 @@ class SparkplugClient extends events.EventEmitter {
         return this.seq++;
     }
 
-    private encodePayload(payload): any {
+    private encodePayload(payload: UPayload): Uint8Array {
         return sparkplugbpayload.encodePayload(payload);
     };
 
-    private decodePayload(payload): any {
+    private decodePayload(payload: Uint8Array | Reader): UPayload {
         return sparkplugbpayload.decodePayload(payload);
     }
 
-    private addSeqNumber(payload): void {
+    private addSeqNumber(payload: UPayload): void {
         payload.seq = this.incrementSeqNum();
     }
 
@@ -162,30 +179,29 @@ class SparkplugClient extends events.EventEmitter {
     }
 
     // Publishes DEATH certificates for the edge node
-    private publishNDeath(client): void {
+    private publishNDeath(client: MqttClient): void {
         let payload, topic;
 
         // Publish DEATH certificate for edge node
         logger.info("Publishing Edge Node Death");
         payload = this.getDeathPayload();
         topic = this.version + "/" + this.groupId + "/NDEATH/" + this.edgeNode;
-        client.publish(topic, this.encodePayload(payload));
+        client.publish(topic, Buffer.from(this.encodePayload(payload)));
         this.messageAlert("published", topic, payload);
     }
 
     // Logs a message alert to the console
-    private messageAlert(alert, topic, payload): void {
+    private messageAlert(alert: string, topic: string, payload: any): void {
         logger.debug("Message " + alert);
         logger.debug(" topic: " + topic);
         logger.debug(" payload: " + JSON.stringify(payload));
     }
 
-    private compressPayload(payload, options) {
-        let algorithm = null,
+    private compressPayload(payload: Uint8Array, options?: PayloadOptions): UPayload {
+        let algorithm: NonNullable<PayloadOptions['algorithm']> | null = null,
             compressedPayload,
-            resultPayload = {
+            resultPayload: UPayload = {
                 "uuid": compressed,
-                "body": "",
                 "metrics": []
             };
 
@@ -214,40 +230,38 @@ class SparkplugClient extends events.EventEmitter {
             resultPayload.metrics = [{
                 "name": "algorithm",
                 "value": algorithm.toUpperCase(),
-                "type": "string"
+                "type": "String"
             }];
         }
 
         return resultPayload;
     }
 
-    private decompressPayload(payload) {
-        let metrics = payload.metrics,
-            algorithm = null;
+    private decompressPayload(payload: UPayload): Uint8Array {
+        let metrics = payload.metrics || [],
+            algorithm: null | NonNullable<PayloadOptions['algorithm']> = null;
+        const body = payload.body || new Uint8Array();
 
         logger.debug("Decompressing payload");
 
-        if (metrics !== undefined && metrics !== null) {
-            for (let i = 0; i < metrics.length; i++) {
-                if (metrics[i].name === "algorithm") {
-                    algorithm = metrics[i].value;
-                }
-            }
+        const algorithmMetric = metrics.find(m => m.name === 'algorithm');
+        if (algorithmMetric && typeof algorithmMetric.value === 'string') {
+            algorithm = algorithmMetric.value as NonNullable<PayloadOptions['algorithm']>;
         }
 
         if (algorithm === null || algorithm.toUpperCase() === "DEFLATE") {
             logger.debug("Decompressing with DEFLATE!");
-            return pako.inflate(payload.body);
+            return pako.inflate(body);
         } else if (algorithm.toUpperCase() === "GZIP") {
             logger.debug("Decompressing with GZIP");
-            return pako.ungzip(payload.body);
+            return pako.ungzip(body);
         } else {
             throw new Error("Unknown or unsupported algorithm " + algorithm);
         }
     }
 
-    private maybeCompressPayload(payload, options) {
-        if (options !== undefined && options !== null && options.compress) {
+    private maybeCompressPayload(payload: UPayload, options?: PayloadOptions): UPayload {
+        if (options?.compress) {
             // Compress the payload
             return this.compressPayload(this.encodePayload(payload), options);
         } else {
@@ -256,7 +270,7 @@ class SparkplugClient extends events.EventEmitter {
         }
     }
 
-    private maybeDecompressPayload(payload) {
+    private maybeDecompressPayload(payload: UPayload): UPayload {
         if (payload.uuid !== undefined && payload.uuid === compressed) {
             // Decompress the payload
             return this.decodePayload(this.decompressPayload(payload));
@@ -266,18 +280,18 @@ class SparkplugClient extends events.EventEmitter {
         }
     }
 
-    subscribeTopic(topic: string, options = { "qos": 0 }, callback?) {
+    subscribeTopic(topic: string, options: mqtt.IClientSubscribeOptions = { "qos": 0 }, callback?: mqtt.ClientSubscribeCallback) {
         logger.info("Subscribing to topic:", topic);
-        this.client.subscribe(topic, options, callback);
+        this.client!.subscribe(topic, options, callback);
     }
 
-    unsubscribeTopic(topic: string, options?, callback?) {
+    unsubscribeTopic(topic: string, options?: any, callback?: mqtt.PacketCallback) {
         logger.info("Unsubscribing topic:", topic);
-        this.client.unsubscribe(topic, options, callback);
+        this.client!.unsubscribe(topic, options, callback);
     }
 
     // Publishes Node BIRTH certificates for the edge node
-    publishNodeBirth(payload, options) {
+    publishNodeBirth(payload: UPayload, options?: PayloadOptions) {
         let topic = this.version + "/" + this.groupId + "/NBIRTH/" + this.edgeNode;
         // Reset sequence number
         this.seq = 0;
@@ -288,7 +302,7 @@ class SparkplugClient extends events.EventEmitter {
         if (metrics !== undefined && metrics !== null) {
             metrics.push({
                 "name": "bdSeq",
-                "type": "uint64",
+                "type": "UInt64",
                 "value": this.bdSeq
             });
         }
@@ -296,53 +310,53 @@ class SparkplugClient extends events.EventEmitter {
         // Publish BIRTH certificate for edge node
         logger.info("Publishing Edge Node Birth");
         let p = this.maybeCompressPayload(payload, options);
-        this.client.publish(topic, this.encodePayload(p));
+        this.client!.publish(topic, Buffer.from(this.encodePayload(p)));
         this.messageAlert("published", topic, p);
     }
 
     // Publishes Node Data messages for the edge node
-    publishNodeData(payload, options) {
+    publishNodeData(payload: UPayload, options?: PayloadOptions) {
         let topic = this.version + "/" + this.groupId + "/NDATA/" + this.edgeNode;
         // Add seq number
         this.addSeqNumber(payload);
         // Publish
         logger.info("Publishing NDATA");
-        this.client.publish(topic, this.encodePayload(this.maybeCompressPayload(payload, options)));
+        this.client!.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
         this.messageAlert("published", topic, payload);
     }
 
     // Publishes Node BIRTH certificates for the edge node
-    publishDeviceData(deviceId, payload, options) {
+    publishDeviceData(deviceId: string, payload: UPayload, options?: PayloadOptions) {
         let topic = this.version + "/" + this.groupId + "/DDATA/" + this.edgeNode + "/" + deviceId;
         // Add seq number
         this.addSeqNumber(payload);
         // Publish
         logger.info("Publishing DDATA for device " + deviceId);
-        this.client.publish(topic, this.encodePayload(this.maybeCompressPayload(payload, options)));
+        this.client!.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
         this.messageAlert("published", topic, payload);
     };
 
     // Publishes Node BIRTH certificates for the edge node
-    publishDeviceBirth(deviceId, payload, options) {
+    publishDeviceBirth(deviceId: string, payload: UPayload, options?: PayloadOptions) {
         let topic = this.version + "/" + this.groupId + "/DBIRTH/" + this.edgeNode + "/" + deviceId;
         // Add seq number
         this.addSeqNumber(payload);
         // Publish
         logger.info("Publishing DBIRTH for device " + deviceId);
         let p = this.maybeCompressPayload(payload, options);
-        this.client.publish(topic, this.encodePayload(p));
+        this.client!.publish(topic, Buffer.from(this.encodePayload(p)));
         this.messageAlert("published", topic, p);
     }
 
     // Publishes Node BIRTH certificates for the edge node
-    publishDeviceDeath(deviceId, payload) {
+    publishDeviceDeath(deviceId: string, payload: UPayload) {
         let topic = this.version + "/" + this.groupId + "/DDEATH/" + this.edgeNode + "/" + deviceId,
             options = {};
         // Add seq number
         this.addSeqNumber(payload);
         // Publish
         logger.info("Publishing DDEATH for device " + deviceId);
-        this.client.publish(topic, this.encodePayload(this.maybeCompressPayload(payload, options)));
+        this.client!.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
         this.messageAlert("published", topic, payload);
     }
 
@@ -350,9 +364,9 @@ class SparkplugClient extends events.EventEmitter {
         logger.debug("publishDeath: " + this.publishDeath);
         if (this.publishDeath) {
             // Publish the DEATH certificate
-            this.publishNDeath(this.client);
+            this.publishNDeath(this.client!);
         }
-        this.client.end();
+        this.client!.end();
     }
 
     // Configures and connects the client
@@ -376,8 +390,8 @@ class SparkplugClient extends events.EventEmitter {
 
             // Subscribe to control/command messages for both the edge node and the attached devices
             logger.info("Subscribing to control/command messages for both the edge node and the attached devices");
-            this.client.subscribe(this.version + "/" + this.groupId + "/NCMD/" + this.edgeNode + "/#", { "qos": 0 });
-            this.client.subscribe(this.version + "/" + this.groupId + "/DCMD/" + this.edgeNode + "/#", { "qos": 0 });
+            this.client!.subscribe(this.version + "/" + this.groupId + "/NCMD/" + this.edgeNode + "/#", { "qos": 0 });
+            this.client!.subscribe(this.version + "/" + this.groupId + "/DCMD/" + this.edgeNode + "/#", { "qos": 0 });
 
             // Emit the "birth" event to notify the application to send a births
             this.emit("birth");
@@ -389,7 +403,7 @@ class SparkplugClient extends events.EventEmitter {
         this.client.on('error', (error) => {
             if (this.connecting) {
                 this.emit("error", error);
-                this.client.end();
+                this.client!.end();
             }
         });
 

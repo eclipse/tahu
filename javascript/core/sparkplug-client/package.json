@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "prepack": "tsc"
   },
   "repository": {
     "type": "git",
@@ -24,17 +25,22 @@
   "homepage": "https://github.com/eclipse/tahu",
   "files": [
     "index.js",
+    "index.js.map",
+    "index.d.ts",
     "README.md",
     "LICENSE"
   ],
   "dependencies": {
+    "debug": "^4.3.4",
     "mqtt": "^4.2.8",
     "pako": "^2.0.4",
-    "sparkplug-payload": "^1.0.1",
-    "winston": "^3.3.3"
+    "sparkplug-payload": "^1.0.1"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.7",
     "@types/node": "^16.11.7",
+    "@types/pako": "^2.0.0",
+    "protobufjs": "^6.11.2",
     "typescript": "^4.6.3"
   }
 }
