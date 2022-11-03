@@ -26,7 +26,7 @@
   </properties>
 
   <groupId>org.eclipse.tahu</groupId>
-  <artifactId>tahu</artifactId>
+  <artifactId>tahu-examples</artifactId>
   <version>0.5.19-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -103,16 +103,14 @@
   </distributionManagement>
 
   <modules>
-    <module>lib/core/pom.xml</module>
-
-    <!--
-      Do no change the order of these modules below - the last module MUST be deployed to Maven Central per this
-      https://issues.sonatype.org/browse/NEXUS-9138
-    -->
-    <module>lib/edge/pom.xml</module>
-    <module>lib/host/pom.xml</module>
-    <module>compat_impl/edge/pom.xml</module>
-    <module>compat_impl/host/pom.xml</module>
+    <module>records/pom.xml</module>
+    <module>listener/pom.xml</module>
+    <module>edge_node_control/pom.xml</module>
+    <module>simple/pom.xml</module>
+    <module>device_timestamp/pom.xml</module>
+    <module>udt/pom.xml</module>
+    <module>raspberry_pi/pom.xml</module>
+    <module>host_file/pom.xml</module>
   </modules>
 
   <dependencies>
