@@ -21,8 +21,9 @@
     <main.basedir>${project.basedir}</main.basedir>
     <paho.version>1.2.5</paho.version>
     <jackson.version>2.13.4</jackson.version>
+    <jackson.databind.version>2.13.4.2</jackson.databind.version>
     <logback.version>1.2.9</logback.version>
-    <protobuf.version>3.16.1</protobuf.version>
+    <protobuf.version>3.16.3</protobuf.version>
   </properties>
 
   <groupId>org.eclipse.tahu</groupId>
@@ -162,7 +163,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson.databind.version}</version>
     </dependency>
 
     <!-- Logging -->
