@@ -194,7 +194,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	public byte[] getDeathPayloadBytes() throws Exception {
 		SparkplugBPayload nDeathPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date()).createPayload();
 		addDeathSeqNum(nDeathPayload);
-		return new SparkplugBPayloadEncoder().getBytes(nDeathPayload);
+		return new SparkplugBPayloadEncoder().getBytes(nDeathPayload, true);
 	}
 
 	// MetricHandler API

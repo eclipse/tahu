@@ -124,11 +124,11 @@ public class PayloadUtil {
 	 * @return
 	 * @throws IOException
 	 */
-	public static SparkplugBPayload compress(SparkplugBPayload payload) throws IOException {
+	public static SparkplugBPayload compress(SparkplugBPayload payload, boolean stripDataTypes) throws IOException {
 		logger.trace("Compressing payload");
 		SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
 		// Encode bytes
-		byte[] encoded = encoder.getBytes(payload);
+		byte[] encoded = encoder.getBytes(payload, stripDataTypes);
 
 		// Default to DEFLATE
 		byte[] compressedBytes = deflateBytes(encoded);
@@ -144,12 +144,12 @@ public class PayloadUtil {
 	 * @return
 	 * @throws IOException
 	 */
-	public static SparkplugBPayload compress(SparkplugBPayload payload, CompressionAlgorithm algorithm)
-			throws IOException, SparkplugException {
+	public static SparkplugBPayload compress(SparkplugBPayload payload, CompressionAlgorithm algorithm,
+			boolean stripDataTypes) throws IOException, SparkplugException {
 		logger.trace("Compressing payload");
 		SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
 		// Encode bytes
-		byte[] encoded = encoder.getBytes(payload);
+		byte[] encoded = encoder.getBytes(payload, stripDataTypes);
 		byte[] compressed = null;
 		Metric algorithmMetric =
 				new MetricBuilder(METRIC_ALGORITHM, MetricDataType.String, algorithm.toString()).createMetric();

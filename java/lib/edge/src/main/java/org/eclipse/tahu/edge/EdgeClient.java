@@ -239,7 +239,14 @@ public class EdgeClient implements Runnable {
 		synchronized (clientLock) {
 			try {
 				payload.setSeq(getNextSeqNum());
-				tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload), qos, retained);
+				if (topic.isType(MessageType.DCMD) || topic.isType(MessageType.DDATA) || topic.isType(MessageType.NCMD)
+						|| topic.isType(MessageType.NDATA)) {
+					tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload, true), qos,
+							retained);
+				} else {
+					tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload, false), qos,
+							retained);
+				}
 			} catch (Exception e) {
 				logger.error("Failed to publish message on topic={}", topic, e);
 			}
