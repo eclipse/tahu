@@ -71,7 +71,7 @@ public class PayloadUtilTest {
 	public void testCompression(CompressionAlgorithm algorithm, SparkplugBPayload payload) throws Exception {
 
 		// Compress the payload
-		SparkplugBPayload compressedPayload = PayloadUtil.compress(payload, algorithm);
+		SparkplugBPayload compressedPayload = PayloadUtil.compress(payload, algorithm, false);
 
 		// Test that there is a body (the compressed bytes)
 		assertThat(compressedPayload.getBody() != null).isTrue();

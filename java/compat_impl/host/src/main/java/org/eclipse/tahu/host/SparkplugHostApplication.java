@@ -95,7 +95,6 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 
 	public SparkplugHostApplication() {
 		try {
-
 			hostApplication = new HostApplication(this, HOST_ID, mqttServerDefinitions, null);
 		} catch (Exception e) {
 			logger.error("Failed to create the HostApplication", e);

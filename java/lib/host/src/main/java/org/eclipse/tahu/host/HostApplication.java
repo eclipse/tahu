@@ -162,7 +162,7 @@ public class HostApplication implements CommandPublisher {
 		TahuClient tahuClient = tahuClients.get(mqttServerName);
 		if (tahuClient != null && tahuClient.isConnected()) {
 			SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
-			byte[] bytes = encoder.getBytes(payload);
+			byte[] bytes = encoder.getBytes(payload, true);
 			tahuClient.publish(topic.toString(), bytes, MqttOperatorDefs.QOS0, false);
 		} else {
 			throw new TahuException(TahuErrorCode.INITIALIZATION_ERROR,

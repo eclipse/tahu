@@ -53,7 +53,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		super();
 	}
 
-	public byte[] getBytes(SparkplugBPayload payload) throws IOException {
+	public byte[] getBytes(SparkplugBPayload payload, boolean stripDataTypes) throws IOException {
 
 		SparkplugBProto.Payload.Builder protoMsg = SparkplugBProto.Payload.newBuilder();
 
@@ -75,7 +75,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		// Set the metrics
 		for (Metric metric : payload.getMetrics()) {
 			try {
-				protoMsg.addMetrics(convertMetric(metric));
+				protoMsg.addMetrics(convertMetric(metric, stripDataTypes));
 			} catch (Exception e) {
 				logger.error("Failed to add metric: " + metric.getName(), e);
 				throw new RuntimeException(e);
@@ -90,14 +90,17 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		return protoMsg.build().toByteArray();
 	}
 
-	private SparkplugBProto.Payload.Metric.Builder convertMetric(Metric metric) throws Exception {
+	private SparkplugBProto.Payload.Metric.Builder convertMetric(Metric metric, boolean stripDataTypes)
+			throws Exception {
 
 		// build a metric
 		SparkplugBProto.Payload.Metric.Builder builder = SparkplugBProto.Payload.Metric.newBuilder();
 
 		// set the basic parameters
-		builder.setDatatype(metric.getDataType().toIntValue());
-		builder = setMetricValue(builder, metric);
+		if (!stripDataTypes) {
+			builder.setDatatype(metric.getDataType().toIntValue());
+		}
+		builder = setMetricValue(builder, metric, stripDataTypes);
 
 		// Set the name, data type, and value
 		if (metric.hasName()) {
@@ -302,10 +305,12 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 	}
 
 	private SparkplugBProto.Payload.Metric.Builder setMetricValue(SparkplugBProto.Payload.Metric.Builder metricBuilder,
-			Metric metric) throws Exception {
+			Metric metric, boolean stripDataTypes) throws Exception {
 
 		// Set the data type
-		metricBuilder.setDatatype(metric.getDataType().toIntValue());
+		if (!stripDataTypes) {
+			metricBuilder.setDatatype(metric.getDataType().toIntValue());
+		}
 
 		if (metric.getValue() == null) {
 			metricBuilder.setIsNull(true);
@@ -429,7 +434,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					// Set the template metrics
 					if (template.getMetrics() != null) {
 						for (Metric templateMetric : template.getMetrics()) {
-							templateBuilder.addMetrics(convertMetric(templateMetric));
+							templateBuilder.addMetrics(convertMetric(templateMetric, stripDataTypes));
 						}
 					}
 

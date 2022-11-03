@@ -29,5 +29,5 @@ public interface PayloadEncoder<P> {
 	 * @return the byte array representing the payload
 	 * @throws IOException
 	 */
-	public byte[] getBytes(P payload) throws IOException;
+	public byte[] getBytes(P payload, boolean stripDataTypes) throws IOException;
 }
