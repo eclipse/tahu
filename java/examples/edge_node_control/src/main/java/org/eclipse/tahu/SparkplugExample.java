@@ -122,7 +122,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 				client.publish(NAMESPACE + "/" + groupId + "/NCMD/" + edgeNode,
 						new SparkplugBPayloadEncoder().getBytes(new SparkplugBPayloadBuilder().addMetric(
 								new MetricBuilder("Node Control/Rebirth", MetricDataType.Boolean, true).createMetric())
-								.createPayload()),
+								.createPayload(), false),
 						0, false);
 				return;
 			}

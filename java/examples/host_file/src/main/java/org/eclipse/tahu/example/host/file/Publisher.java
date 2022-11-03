@@ -55,7 +55,7 @@ public class Publisher implements Runnable {
 			} else if (sparkplugPayload != null) {
 				sparkplugPayload.setTimestamp(new Date());
 				SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
-				client.publish(topic, encoder.getBytes(sparkplugPayload), qos, retained);
+				client.publish(topic, encoder.getBytes(sparkplugPayload, false), qos, retained);
 			} else {
 				client.publish(topic, null, 0, false);
 			}
