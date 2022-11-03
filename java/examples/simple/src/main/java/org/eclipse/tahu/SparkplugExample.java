@@ -121,10 +121,10 @@ public class SparkplugExample implements MqttCallbackExtended {
 			byte[] deathBytes;
 			if (USING_COMPRESSION) {
 				// Compress payload (optional)
-				deathBytes = new SparkplugBPayloadEncoder()
-						.getBytes(PayloadUtil.compress(deathPayload.createPayload(), compressionAlgorithm));
+				deathBytes = new SparkplugBPayloadEncoder().getBytes(
+						PayloadUtil.compress(deathPayload.createPayload(), compressionAlgorithm, false), false);
 			} else {
-				deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
+				deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload(), false);
 			}
 
 			MqttConnectOptions options = new MqttConnectOptions();
@@ -166,12 +166,12 @@ public class SparkplugExample implements MqttCallbackExtended {
 						// Compress payload (optional)
 						if (USING_COMPRESSION) {
 							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
-									new SparkplugBPayloadEncoder()
-											.getBytes(PayloadUtil.compress(payload, compressionAlgorithm)),
+									new SparkplugBPayloadEncoder().getBytes(
+											PayloadUtil.compress(payload, compressionAlgorithm, false), false),
 									0, false);
 						} else {
 							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
-									new SparkplugBPayloadEncoder().getBytes(payload), 0, false);
+									new SparkplugBPayloadEncoder().getBytes(payload, false), 0, false);
 						}
 					}
 				} else {
@@ -636,10 +636,11 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 				// Compress payload (optional)
 				if (USING_COMPRESSION) {
-					client.publish(topic, encoder.getBytes(PayloadUtil.compress(outboundPayload, compressionAlgorithm)),
+					client.publish(topic,
+							encoder.getBytes(PayloadUtil.compress(outboundPayload, compressionAlgorithm, false), false),
 							0, false);
 				} else {
-					client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+					client.publish(topic, encoder.getBytes(outboundPayload, false), 0, false);
 				}
 			} catch (MqttPersistenceException e) {
 				e.printStackTrace();

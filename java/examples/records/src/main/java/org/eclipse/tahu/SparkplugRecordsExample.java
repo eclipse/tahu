@@ -82,7 +82,7 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 			// Build up DEATH payload - note DEATH payloads don't have a regular sequence number
 			SparkplugBPayloadBuilder deathPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date());
 			deathPayload = addBdSeqNum(deathPayload);
-			byte[] deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
+			byte[] deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload(), false);
 
 			MqttConnectOptions options = new MqttConnectOptions();
 
@@ -129,7 +129,7 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 					synchronized (seqLock) {
 						System.out.println("Connected - publishing new records");
 						client.publish(NAMESPACE + "/" + groupId + "/DRECORD/" + edgeNode + "/" + deviceId,
-								new SparkplugBPayloadEncoder().getBytes(payload), 0, false);
+								new SparkplugBPayloadEncoder().getBytes(payload, false), 0, false);
 					}
 				} else {
 					System.out.println("Not connected - not publishing records");
@@ -304,7 +304,7 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 			try {
 				outboundPayload.setTimestamp(new Date());
 				SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
-				client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+				client.publish(topic, encoder.getBytes(outboundPayload, false), 0, false);
 			} catch (MqttPersistenceException e) {
 				e.printStackTrace();
 			} catch (MqttException e) {

@@ -82,7 +82,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 			// Build up DEATH payload - note DEATH payloads don't have a regular sequence number
 			SparkplugBPayloadBuilder deathPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date());
 			deathPayload = addBdSeqNum(deathPayload);
-			byte[] deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
+			byte[] deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload(), false);
 
 			MqttConnectOptions options = new MqttConnectOptions();
 
@@ -140,13 +140,13 @@ public class SparkplugExample implements MqttCallbackExtended {
 									new SparkplugBPayload(new Date(), nodeMetrics, getSeqNum(), null, null);
 
 							client.publish(NAMESPACE + "/" + groupId + "/NDATA/" + edgeNode,
-									new SparkplugBPayloadEncoder().getBytes(nodePayload), 0, false);
+									new SparkplugBPayloadEncoder().getBytes(nodePayload, false), 0, false);
 
 							SparkplugBPayload devicePayload =
 									new SparkplugBPayload(new Date(), deviceMetrics, getSeqNum(), null, null);
 
 							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
-									new SparkplugBPayloadEncoder().getBytes(devicePayload), 0, false);
+									new SparkplugBPayloadEncoder().getBytes(devicePayload, false), 0, false);
 
 							nodeMetrics = new ArrayList<Metric>();
 							deviceMetrics = new ArrayList<Metric>();
@@ -280,7 +280,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 			try {
 				outboundPayload.setTimestamp(new Date());
 				SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
-				client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+				client.publish(topic, encoder.getBytes(outboundPayload, false), 0, false);
 			} catch (MqttPersistenceException e) {
 				e.printStackTrace();
 			} catch (MqttException e) {
