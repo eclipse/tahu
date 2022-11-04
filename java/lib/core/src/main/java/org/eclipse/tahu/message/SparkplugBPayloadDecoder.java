@@ -55,10 +55,14 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 
 	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadDecoder.class.getName());
 
+	/**
+	 * Default Constructor
+	 */
 	public SparkplugBPayloadDecoder() {
 		super();
 	}
 
+	@Override
 	public SparkplugBPayload buildFromByteArray(byte[] bytes) throws Exception {
 		SparkplugBProto.Payload protoPayload = SparkplugBProto.Payload.parseFrom(bytes);
 		SparkplugBPayloadBuilder builder = new SparkplugBPayloadBuilder();

@@ -39,6 +39,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  */
 public class DataSetDeserializer extends StdDeserializer<DataSet> {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger logger = LoggerFactory.getLogger(DataSetDeserializer.class.getName());
 
 	private static final String FIELD_SIZE = "numberOfColumns";

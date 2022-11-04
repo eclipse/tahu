@@ -22,12 +22,17 @@ public class Message {
 
 	private SparkplugBPayload payload;
 
+	/**
+	 * Default Constructor
+	 */
 	public Message() {
 	}
 
 	/**
-	 * @param topic
-	 * @param payload
+	 * Constructor
+	 *
+	 * @param topic the {@link Topic} associated with the {@link Message}
+	 * @param payload the {@link SparkplugBPayload} associated with the {@link Message}
 	 */
 	private Message(Topic topic, SparkplugBPayload payload) {
 		super();
@@ -35,10 +40,20 @@ public class Message {
 		this.payload = payload;
 	}
 
+	/**
+	 * Gets the {@link Topic} of this {@link Message}
+	 *
+	 * @return the {@link Topic} of this {@link Message}
+	 */
 	public Topic getTopic() {
 		return topic;
 	}
 
+	/**
+	 * Gets the {@link SparkplugBPayload} of this {@link Message}
+	 *
+	 * @return the {@link SparkplugBPayload} of this {@link Message}
+	 */
 	public SparkplugBPayload getPayload() {
 		return payload;
 	}

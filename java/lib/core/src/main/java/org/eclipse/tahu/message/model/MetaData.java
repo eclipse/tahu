@@ -94,73 +94,169 @@ public class MetaData {
 		this.description = description;
 	}
 
+	/**
+	 * Whether or not this is a mult-part {@link MetaData}
+	 *
+	 * @return true if this is multi-part {@link MetaData} otherwise false
+	 */
 	public Boolean isMultiPart() {
 		return isMultiPart;
 	}
 
+	/**
+	 * Sets whether or not this is multi-part {@link MetaData}
+	 *
+	 * @param isMultiPart whether or not this is multi-part {@link MetaData}
+	 *
+	 * @return the {@link MetaData} that was just modified
+	 */
 	public MetaData setMultiPart(Boolean isMultiPart) {
 		this.isMultiPart = isMultiPart;
 		return this;
 	}
 
+	/**
+	 * Gets the ContentType of this {@link MetaData}
+	 *
+	 * @return the ContentType of this {@link MetaData}
+	 */
 	public String getContentType() {
 		return contentType;
 	}
 
+	/**
+	 * Sets the ContentType of this {@link MetaData}
+	 *
+	 * @param contentType the ContentType of this {@link MetaData}
+	 *
+	 * @return the {@link MetaData} that was just modified
+	 */
 	public MetaData setContentType(String contentType) {
 		this.contentType = contentType;
 		return this;
 	}
 
+	/**
+	 * Gets the size of this {@link MetaData}
+	 *
+	 * @return the size of this {@link MetaData}
+	 */
 	public Long getSize() {
 		return size;
 	}
 
+	/**
+	 * Sets the size of this {@link MetaData}
+	 *
+	 * @param size the size of this {@link MetaData}
+	 *
+	 * @return the {@link MetaData} that was just modified
+	 */
 	public MetaData setSize(Long size) {
 		this.size = size;
 		return this;
 	}
 
+	/**
+	 * Gets the sequence number of this {@link MetaData}
+	 *
+	 * @return the sequence number of this {@link MetaData}
+	 */
 	public Long getSeq() {
 		return seq;
 	}
 
+	/**
+	 * Sets the sequence number of this {@link MetaData}
+	 *
+	 * @param seq the sequence number of this {@link MetaData}
+	 *
+	 * @return the {@link MetaData} that was just modified
+	 */
 	public MetaData setSeq(Long seq) {
 		this.seq = seq;
 		return this;
 	}
 
+	/**
+	 * Gets the filename of this {@link MetaData}
+	 *
+	 * @return the filename of this {@link MetaData}
+	 */
 	public String getFileName() {
 		return fileName;
 	}
 
+	/**
+	 * Sets the filename of this {@link MetaData}
+	 *
+	 * @param fileName the filename of this {@link MetaData}
+	 *
+	 * @return the {@link MetaData} that was just modified
+	 */
 	public MetaData setFileName(String fileName) {
 		this.fileName = fileName;
 		return this;
 	}
 
+	/**
+	 * Gets the file type of this {@link MetaData}
+	 *
+	 * @return the file type of this {@link MetaData}
+	 */
 	public String getFileType() {
 		return fileType;
 	}
 
+	/**
+	 * Sets the file type of this {@link MetaData}
+	 *
+	 * @param fileType the file type of this {@link MetaData}
+	 *
+	 * @return the {@link MetaData} that was just modified
+	 */
 	public MetaData setFileType(String fileType) {
 		this.fileType = fileType;
 		return this;
 	}
 
+	/**
+	 * Gets the MD5 sum of this {@link MetaData}
+	 *
+	 * @return the MD5 sum of this {@link MetaData}
+	 */
 	public String getMd5() {
 		return md5;
 	}
 
+	/**
+	 * Sets the MD5 sum of this {@link MetaData}
+	 *
+	 * @param md5 the MD% sum of this {@link MetaData}
+	 *
+	 * @return the {@link MetaData} that was just modified
+	 */
 	public MetaData setMd5(String md5) {
 		this.md5 = md5;
 		return this;
 	}
 
+	/**
+	 * Gets the description of this {@link MetaData}
+	 *
+	 * @return the description of this {@link MetaData}
+	 */
 	public String getDescription() {
 		return description;
 	}
 
+	/**
+	 * Sets the description of this {@link MetaData}
+	 *
+	 * @param description the description of this {@link MetaData}
+	 *
+	 * @return the {@link MetaData} that was just modified
+	 */
 	public MetaData setDescription(String description) {
 		this.description = description;
 		return this;

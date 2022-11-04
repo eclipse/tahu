@@ -20,6 +20,11 @@ public class SparkplugInvalidTypeException extends SparkplugException {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * An Exception for handling invalid types
+	 *
+	 * @param type the invalid class type
+	 */
 	public SparkplugInvalidTypeException(Class<?> type) {
 		super("Invalid type " + type);
 	}

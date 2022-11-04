@@ -54,11 +54,26 @@ public enum PropertyDataType {
 	private Class<?> clazz = null;
 	private int intValue = 0;
 
+	/**
+	 * Constructor
+	 *
+	 * @param intValue the integer representation of this {@link PropertyDataType}
+	 *
+	 * @param clazz the {@link Class} type of this {@link PropertyDataType}
+	 */
 	private PropertyDataType(int intValue, Class<?> clazz) {
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
 
+	/**
+	 * Checks the type of this {@link PropertyDataType} against an {@link Object} value
+	 *
+	 * @param value the {@link Object} value to validate against the {@link PropertyDataType}
+	 *
+	 * @throws SparkplugInvalidTypeException if the validation of the {@link Object} value against the
+	 *             {@link PropertyDataType} fails
+	 */
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			if (clazz == List.class && value instanceof List) {

@@ -18,9 +18,11 @@ package org.eclipse.tahu;
  */
 public class SparkplugParsingException extends SparkplugException {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param message an error message
 	 */
 	public SparkplugParsingException(String message) {
@@ -29,7 +31,7 @@ public class SparkplugParsingException extends SparkplugException {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param message an error message
 	 * @param exception an underlying exception
 	 */

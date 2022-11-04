@@ -30,44 +30,88 @@ public class PropertySet implements Map<String, PropertyValue> {
 	@JsonIgnore
 	private Map<String, PropertyValue> map;
 
+	/**
+	 * Default Constructor
+	 */
 	public PropertySet() {
 		this.map = new HashMap<>();
 	}
 
+	/**
+	 * Constructor
+	 *
+	 * @param propertyMap the {@link Map} of {@link String}s to {@link PropertyValie}s
+	 */
 	private PropertySet(Map<String, PropertyValue> propertyMap) {
 		this.map = propertyMap;
 	}
 
+	/**
+	 * Gets the {@link PropertyValue} associated with a given Property name
+	 *
+	 * @param name the name of the Property
+	 *
+	 * @return the {@link PropertyValue} associated with the name
+	 */
 	@JsonIgnore
 	public PropertyValue getPropertyValue(String name) {
 		return this.map.get(name);
 	}
 
+	/**
+	 * Sets the {@link PropertyValue} for a give property name
+	 *
+	 * @param name the name of the property
+	 * @param value the {@link PropertyValue} associated with the property name
+	 */
 	@JsonIgnore
 	public void setProperty(String name, PropertyValue value) {
 		this.map.put(name, value);
 	}
 
+	/**
+	 * Removes a property based on the property name
+	 *
+	 * @param name the name of the property to remove
+	 */
 	@JsonIgnore
 	public void removeProperty(String name) {
 		this.map.remove(name);
 	}
 
+	/**
+	 * Clears all properties and values from the {@link PropertySet}
+	 */
 	@JsonIgnore
 	public void clear() {
 		this.map.clear();
 	}
 
+	/**
+	 * Gets the names of the {@link PropertySet}
+	 *
+	 * @return the names of the {@link PropertySet}
+	 */
 	@JsonIgnore
 	public Set<String> getNames() {
 		return map.keySet();
 	}
 
+	/**
+	 * Gets the values of the {@link PropertySet}
+	 *
+	 * @return the values of the {@link PropertySet}
+	 */
 	@JsonIgnore
 	public Collection<PropertyValue> getValues() {
 		return map.values();
 	}
 
+	/**
+	 * Gets the {@link Map} of {@link String} property names to {@link PropertyValue}s
+	 *
+	 * @return the {@link Map} of {@link String} property names to {@link PropertyValue}s
+	 */
 	@JsonIgnore
 	public Map<String, PropertyValue> getPropertyMap() {
 		return map;

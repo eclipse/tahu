@@ -16,12 +16,10 @@ package org.eclipse.tahu.alias;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+/**
+ * Used to track Sparkplug aliases to Metric names and Metric names to aliases
+ */
 public class EdgeNodeAliasMap {
-
-	private static Logger logger = LoggerFactory.getLogger(EdgeNodeAliasMap.class.getName());
 
 	private final Map<String, Long> metricNameToAliasMap;
 	private final Map<Long, String> aliasToMetricNameMap;
@@ -30,12 +28,23 @@ public class EdgeNodeAliasMap {
 
 	private final Object mapLock = new Object();
 
+	/**
+	 * Constructor
+	 */
 	public EdgeNodeAliasMap() {
 		metricNameToAliasMap = new ConcurrentHashMap<>();
 		aliasToMetricNameMap = new ConcurrentHashMap<>();
 		nextAliasIndex = 0;
 	}
 
+	/**
+	 * Addes a new metric to the map and generates and returns the new alias that will be unique as required for the
+	 * Edge Node
+	 *
+	 * @param metricName the name of the metric to generate the alias for
+	 *
+	 * @return the generated alias for the supplied Metric name
+	 */
 	public long addGeneratedAlias(String metricName) {
 		synchronized (mapLock) {
 			long newAlias = nextAliasIndex++;
@@ -45,6 +54,13 @@ public class EdgeNodeAliasMap {
 		}
 	}
 
+	/**
+	 * Adds a Metric name and alias to the map. The alias must be unique and not already tied to another Metric name
+	 * before calling this method
+	 *
+	 * @param metricName the name of the Metric to add to the map
+	 * @param alias the alias to add to the map and be tied to the alias
+	 */
 	public void addAlias(String metricName, Long alias) {
 		synchronized (mapLock) {
 			metricNameToAliasMap.put(metricName, alias);
@@ -52,6 +68,9 @@ public class EdgeNodeAliasMap {
 		}
 	}
 
+	/**
+	 * Clears the map of all Metric names and aliases
+	 */
 	public void clear() {
 		synchronized (mapLock) {
 			metricNameToAliasMap.clear();
@@ -60,10 +79,22 @@ public class EdgeNodeAliasMap {
 		}
 	}
 
+	/**
+	 * Gets and alias for a given Metric name
+	 *
+	 * @param metricName the Metric name associated with the alias
+	 * @return the alias that is associated with the Metric name
+	 */
 	public Long getAlias(String metricName) {
 		return metricNameToAliasMap.get(metricName);
 	}
 
+	/**
+	 * Gets and Metric name for a given alias
+	 *
+	 * @param alias the alias associated with the Metric name
+	 * @return the alias that is associated with the Metric name
+	 */
 	public String getMetricName(long alias) {
 		return aliasToMetricNameMap.get(alias);
 	}
