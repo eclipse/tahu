@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2016, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2016-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -249,7 +249,7 @@ public class SparkplugTest {
 		SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
 		byte[] bytes = null;
 		try {
-			bytes = encoder.getBytes(payloadBuilder.createPayload());
+			bytes = encoder.getBytes(payloadBuilder.createPayload(), false);
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -322,8 +322,8 @@ public class SparkplugTest {
 	public void testValidMetricPayload(Metric metric, long alias, Date timestamp, boolean isHistorical,
 			boolean isTransient, boolean isNull) throws Exception {
 		// Encode
-		byte[] bytes = new SparkplugBPayloadEncoder()
-				.getBytes(new SparkplugBPayloadBuilder().setTimestamp(new Date()).addMetric(metric).createPayload());
+		byte[] bytes = new SparkplugBPayloadEncoder().getBytes(
+				new SparkplugBPayloadBuilder().setTimestamp(new Date()).addMetric(metric).createPayload(), false);
 
 		// Decode and test
 		SparkplugBPayload payload = new SparkplugBPayloadDecoder().buildFromByteArray(bytes);
@@ -356,7 +356,8 @@ public class SparkplugTest {
 
 			// Encode
 			byte[] bytes = encoder.getBytes(new SparkplugBPayloadBuilder().setTimestamp(currentTime)
-					.addMetric(new MetricBuilder(name, type, value).metaData(metaData).createMetric()).createPayload());
+					.addMetric(new MetricBuilder(name, type, value).metaData(metaData).createMetric()).createPayload(),
+					false);
 
 			// Decode
 			PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();

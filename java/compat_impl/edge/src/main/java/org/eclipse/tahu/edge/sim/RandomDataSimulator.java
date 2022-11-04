@@ -1,9 +1,16 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.edge.sim;
 
 import java.math.BigInteger;
@@ -21,7 +28,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.tahu.SparkplugException;
-import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.eclipse.tahu.message.model.DataSet;
 import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.DataSetDataType;
@@ -97,6 +103,33 @@ public class RandomDataSimulator implements DataSimulator {
 
 	// DataSimulator API
 	@Override
+	public SparkplugBPayload getNodeDataPayload(EdgeNodeDescriptor edgeNodeDescriptor) {
+		try {
+			Date now = new Date();
+			Map<String, Metric> metricMap = new HashMap<>();
+
+			SparkplugBPayloadBuilder payloadBuilder = new SparkplugBPayloadBuilder();
+			payloadBuilder.setTimestamp(now);
+			logger.info("Getting number of metrics for {}", edgeNodeDescriptor);
+			for (int i = 0; i < numNodeMetrics; i++) {
+				Metric metric = getRandomMetric("NT", i, true);
+				if (metric != null) {
+					metricMap.put(metric.getName(), metric);
+					payloadBuilder.addMetric(metric);
+				}
+			}
+
+			metricMaps.put(edgeNodeDescriptor, metricMap);
+			lastUpdateMap.put(edgeNodeDescriptor, now.getTime());
+			return payloadBuilder.createPayload();
+		} catch (Exception e) {
+			logger.error("Failed to get the NDATA", e);
+			return null;
+		}
+	}
+
+	// DataSimulator API
+	@Override
 	public SparkplugBPayload getDeviceBirthPayload(DeviceDescriptor deviceDescriptor) {
 		try {
 			Date now = new Date();
@@ -144,7 +177,7 @@ public class RandomDataSimulator implements DataSimulator {
 			lastUpdateMap.put(deviceDescriptor, now.getTime());
 			return payloadBuilder.createPayload();
 		} catch (Exception e) {
-			logger.error("Failed to get the DBIRTH", e);
+			logger.error("Failed to get the DDATA", e);
 			return null;
 		}
 	}
@@ -411,18 +444,20 @@ public class RandomDataSimulator implements DataSimulator {
 		return params;
 	}
 
-	private List<Metric> newComplexTemplateDefs() throws SparkplugInvalidTypeException {
+	private List<Metric> newComplexTemplateDefs() throws Exception {
 		ArrayList<Metric> metrics = new ArrayList<Metric>();
 
 		// Add a new template "subType" definition with two primitive members
-		metrics.add(new MetricBuilder("subType", MetricDataType.Template, new TemplateBuilder().definition(true)
-				.addMetric(new MetricBuilder("StringMember", MetricDataType.String, "value").createMetric())
-				.addMetric(new MetricBuilder("IntegerMember", MetricDataType.Int32, 0).createMetric()).createTemplate())
-						.createMetric());
+		metrics.add(new MetricBuilder("subType", MetricDataType.Template,
+				new TemplateBuilder().definition(true).addParameters(newParams())
+						.addMetric(new MetricBuilder("StringMember", MetricDataType.String, "value").createMetric())
+						.addMetric(new MetricBuilder("IntegerMember", MetricDataType.Int32, 0).createMetric())
+						.createTemplate()).createMetric());
 		// Add new template "complexType" definition that contains an instance of "subType" as a member
 		metrics.add(new MetricBuilder("complexType", MetricDataType.Template, new TemplateBuilder().definition(true)
-				.addMetric(new MetricBuilder("mySubType", MetricDataType.Template, new TemplateBuilder()
-						.definition(false).templateRef("subType")
+				.addParameters(newParams())
+				.addMetric(new MetricBuilder("subType", MetricDataType.Template, new TemplateBuilder().definition(false)
+						.templateRef("subType")
 						.addMetric(new MetricBuilder("StringMember", MetricDataType.String, "value").createMetric())
 						.addMetric(new MetricBuilder("IntegerMember", MetricDataType.Int32, 0).createMetric())
 						.createTemplate()).createMetric())
@@ -431,11 +466,11 @@ public class RandomDataSimulator implements DataSimulator {
 		return metrics;
 	}
 
-	private Template newComplexTemplateInstance() throws SparkplugInvalidTypeException {
+	private Template newComplexTemplateInstance() throws Exception {
 		// Create and return the template
-		return new TemplateBuilder().definition(false).templateRef("complexType").addMetric(new MetricBuilder(
-				"mySubType", MetricDataType.Template,
-				new TemplateBuilder().definition(false).templateRef("subType")
+		return new TemplateBuilder().definition(false).templateRef("complexType").addParameters(newParams())
+				.addMetric(new MetricBuilder("subType", MetricDataType.Template, new TemplateBuilder().definition(false)
+						.templateRef("subType").addParameters(newParams())
 						.addMetric(new MetricBuilder("StringMember", MetricDataType.String, "myValue").createMetric())
 						.addMetric(new MetricBuilder("IntegerMember", MetricDataType.Int32, 1).createMetric())
 						.createTemplate()).createMetric())

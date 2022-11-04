@@ -24,6 +24,12 @@ public class EdgeNodeDescriptor implements SparkplugDescriptor {
 	private final String edgeNodeId;
 	private final String descriptorString;
 
+	/**
+	 * Constructor
+	 *
+	 * @param groupId the Sparkplug Group ID associated with this {@link EdgeNodeDescriptor}
+	 * @param edgeNodeId the Sparkplug Edge Node ID associated with this {@link EdgeNodeDescriptor}
+	 */
 	public EdgeNodeDescriptor(String groupId, String edgeNodeId) {
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
@@ -42,17 +48,27 @@ public class EdgeNodeDescriptor implements SparkplugDescriptor {
 		this.descriptorString = descriptorString;
 	}
 
+	/**
+	 * Gets the Sparkplug Group ID for this {@link EdgeNodeDescriptor}
+	 *
+	 * @return the Sparkplug Group ID associated with this {@link EdgeNodeDescriptor}
+	 */
 	public String getGroupId() {
 		return groupId;
 	}
 
+	/**
+	 * Gets the Sparkplug Edge Node ID for this {@link EdgeNodeDescriptor}
+	 *
+	 * @return the Sparkplug Edge Node ID associated with this {@link EdgeNodeDescriptor}
+	 */
 	public String getEdgeNodeId() {
 		return edgeNodeId;
 	}
 
 	/**
 	 * Returns a {@link String} representing the Edge Node's Descriptor of the form: "<groupId>/<edgeNodeId>".
-	 * 
+	 *
 	 * @return a {@link String} representing the Edge Node's Descriptor.
 	 */
 	@Override

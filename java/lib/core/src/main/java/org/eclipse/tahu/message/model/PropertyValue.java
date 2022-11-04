@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -28,11 +28,14 @@ public class PropertyValue {
 	private Object value;
 	private Boolean isNull = null;
 
+	/**
+	 * Default Constructor
+	 */
 	public PropertyValue() {
 	}
 
 	/**
-	 * A constructor.
+	 * Constructor.
 	 * 
 	 * @param type the property type
 	 * @param value the property value
@@ -45,23 +48,48 @@ public class PropertyValue {
 		type.checkType(value);
 	}
 
+	/**
+	 * Gets the {@link PropertyDataType} of the {@link PropertyValue}
+	 *
+	 * @return the {@link PropertyDataType} of the {@link PropertyValue}
+	 */
 	public PropertyDataType getType() {
 		return type;
 	}
 
+	/**
+	 * Sets the {@link PropertyDataType} of this {@link PropertyValue}
+	 *
+	 * @param type the {@link PropertyDataType} of this {@link PropertyValue}
+	 */
 	public void setType(PropertyDataType type) {
 		this.type = type;
 	}
 
+	/**
+	 * Gets the {@link Object} value of the {@link PropertyValue}
+	 *
+	 * @return the {@link Object} value of the {@link PropertyValue}
+	 */
 	public Object getValue() {
 		return value;
 	}
 
+	/**
+	 * Sets the {@link Object} value of this {@link PropertyValue}
+	 *
+	 * @param type the {@link Object} value of this {@link PropertyValue}
+	 */
 	public void setValue(Object value) {
 		this.value = value;
 		isNull = (value == null) ? true : false;
 	}
 
+	/**
+	 * Whether or not this {@link PropertyValue} is null or not
+	 *
+	 * @return true if this {@link PropertyValue} is null, otherwise false
+	 */
 	@JsonIgnore
 	public Boolean isNull() {
 		return isNull;

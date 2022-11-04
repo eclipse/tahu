@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -30,7 +30,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 /**
  * A data set that represents a table of data.
  */
-@JsonDeserialize(using = DataSetDeserializer.class)
+@JsonDeserialize(
+		using = DataSetDeserializer.class)
 public class DataSet {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataSet.class.getName());
@@ -58,9 +59,20 @@ public class DataSet {
 	 */
 	private List<Row> rows;
 
+	/**
+	 * Default Constructor
+	 */
 	public DataSet() {
 	}
 
+	/**
+	 * Constructor
+	 *
+	 * @param numOfColumns the number of columns in the {@link DataSet}
+	 * @param columnNames a {@link List} of column names in the {@link DataSet}
+	 * @param types a {@link List} of {@link DataSetDataTypes}s for the columns
+	 * @param rows a {@link List} of {@link Row}s in the {@link DataSet}
+	 */
 	public DataSet(long numOfColumns, List<String> columnNames, List<DataSetDataType> types, List<Row> rows) {
 		this.numOfColumns = numOfColumns;
 		this.columnNames = columnNames;
@@ -68,30 +80,65 @@ public class DataSet {
 		this.rows = rows;
 	}
 
+	/**
+	 * Returns the number of columns in the {@link DataSet}
+	 *
+	 * @return the number of columns in the {@link DataSet}
+	 */
 	public long getNumOfColumns() {
 		return numOfColumns;
 	}
 
+	/**
+	 * Sets the number of columns in the {@link DataSet}
+	 *
+	 * @param numOfColumns the number of columns to set in the {@link DataSet}
+	 */
 	public void setNumOfColumns(long numOfColumns) {
 		this.numOfColumns = numOfColumns;
 	}
 
+	/**
+	 * Gets a {@link List} of the column names in the {@link DataSet}
+	 *
+	 * @return a {@link List} of the column names in the {@link DataSet}
+	 */
 	public List<String> getColumnNames() {
 		return columnNames;
 	}
 
+	/**
+	 * Sets a {@link List} of column names in the {@link DataSet}
+	 *
+	 * @param columnNames a {@link List} of column names to set in the {@link DataSet}
+	 */
 	public void setColumnNames(List<String> columnNames) {
 		this.columnNames = columnNames;
 	}
 
+	/**
+	 * Adds a column name to the {@link List} of column names in the {@link DataSet}
+	 *
+	 * @param columnName the column name to add to the {@link List} of column names in the {@link DataSet}
+	 */
 	public void addColumnName(String columnName) {
 		this.columnNames.add(columnName);
 	}
 
+	/**
+	 * Gets a {@link List} of {@link Row}s for the {@link DataSet}
+	 *
+	 * @return a {@link List} of {@link Row}s for the {@link DataSet}
+	 */
 	public List<Row> getRows() {
 		return rows;
 	}
 
+	/**
+	 * Gets a {@link List} of {@link List}s of {@link Object}s representing the rows in the {@link DataSet}
+	 *
+	 * @return a {@link List} of {@link List}s of {@link Object}s representing the rows in the {@link DataSet}
+	 */
 	@JsonGetter("rows")
 	public List<List<Object>> getRowsAsLists() {
 		List<List<Object>> list = new ArrayList<List<Object>>(getRows().size());
@@ -101,38 +148,90 @@ public class DataSet {
 		return list;
 	}
 
+	/**
+	 * Adds a {@link Row} to the {@link DataSet}
+	 *
+	 * @param row a {@link Row} to add to the {@link DataSet}
+	 */
 	public void addRow(Row row) {
 		this.rows.add(row);
 	}
 
+	/**
+	 * Adds a {@link Row} to the {@link DataSet} at a specified index
+	 *
+	 * @param index the index to add the {@link Row} in the {@link List} of {@link Row}s
+	 * @param row the {@link Row} to add
+	 */
 	public void addRow(int index, Row row) {
 		this.rows.add(index, row);
 	}
 
+	/**
+	 * Removes a {@link Row} at a specified index
+	 *
+	 * @param index the index to use when removing the {@link Row}
+	 *
+	 * @return the removed {@link Row}
+	 */
 	public Row removeRow(int index) {
 		return rows.remove(index);
 	}
 
+	/**
+	 * Removes a {@link Row} by equality to another {@link Row}
+	 *
+	 * @param row the {@link Row} to remove
+	 *
+	 * @return true if the {@link Row} was removed, otherwise false
+	 */
 	public boolean removeRow(Row row) {
 		return rows.remove(row);
 	}
 
+	/**
+	 * Sets the {@link List} of {@link Row}s to set for the {@link DataSet}
+	 *
+	 * @param rows the {@link List} of {@link Row}s to set for the {@link DataSet}
+	 */
 	public void setRows(List<Row> rows) {
 		this.rows = rows;
 	}
 
+	/**
+	 * Gets a {@link List} of {@link DataSetDataType}s for the {@link DataSet}
+	 *
+	 * @return a {@link List} of {@link DataSetDataType}s for the {@link DataSet}
+	 */
 	public List<DataSetDataType> getTypes() {
 		return types;
 	}
 
+	/**
+	 * Sets the {@link List} of {@link DataSetDataType}s for the {@link DataSet}
+	 *
+	 * @param types the {@link List} of {@link DataSetDataType}s to set for the {@link DataSet}
+	 */
 	public void setTypes(List<DataSetDataType> types) {
 		this.types = types;
 	}
 
+	/**
+	 * Adds a {@link DataSetDataType} to the end of the {@link List} of {@link DataSetDataType}s in the {@link DataSet}
+	 *
+	 * @param type the {@link DataSetDateType} to add to the end of the {@link DataSet}
+	 */
 	public void addType(DataSetDataType type) {
 		this.types.add(type);
 	}
 
+	/**
+	 * Adds a {@link DataSetDataType} to the at the specified index to the {@link List} of {@link DataSetDataType}s in
+	 * the {@link DataSet}
+	 *
+	 * @param index the index at which to add the new {@link DataSetDataType}
+	 * @param type the {@link DataSetDateType} to add to the {@link DataSet}
+	 */
 	public void addType(int index, DataSetDataType type) {
 		this.types.add(index, type);
 	}

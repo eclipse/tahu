@@ -1,24 +1,34 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.host.manager;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
+import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
+import org.eclipse.tahu.message.model.SparkplugDescriptor;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SparkplugEdgeNode {
+public class SparkplugEdgeNode extends MetricManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SparkplugEdgeNode.class.getName());
 
@@ -26,7 +36,7 @@ public class SparkplugEdgeNode {
 	private final EdgeNodeDescriptor edgeNodeDescriptor;
 	private final String groupId;
 	private final String edgeNodeId;
-	private final Map<String, SparkplugDevice> sparkplugDevices;
+	private final Map<DeviceDescriptor, SparkplugDevice> sparkplugDevices;
 
 	// Dynamic variables
 	private MqttServerName mqttServerName;
@@ -57,6 +67,11 @@ public class SparkplugEdgeNode {
 		this.hostAppMqttClientId = hostAppMqttClientId;
 	}
 
+	@Override
+	public SparkplugDescriptor getSparkplugDescriptor() {
+		return edgeNodeDescriptor;
+	}
+
 	public EdgeNodeDescriptor getEdgeNodeDescriptor() {
 		return edgeNodeDescriptor;
 	}
@@ -67,6 +82,18 @@ public class SparkplugEdgeNode {
 
 	public String getEdgeNodeId() {
 		return edgeNodeId;
+	}
+
+	public void addDevice(DeviceDescriptor deviceDescriptor, SparkplugDevice sparkplugDevice) {
+		sparkplugDevices.put(deviceDescriptor, sparkplugDevice);
+	}
+
+	public Map<DeviceDescriptor, SparkplugDevice> getSparkplugDevices() {
+		return Collections.unmodifiableMap(sparkplugDevices);
+	}
+
+	public SparkplugDevice getSparkplugDevice(DeviceDescriptor deviceDescriptor) {
+		return sparkplugDevices.get(deviceDescriptor);
 	}
 
 	public MqttServerName getMqttServerName() {
@@ -100,10 +127,6 @@ public class SparkplugEdgeNode {
 					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
 							"The bdSeq can not be missing from an NBIRTH message");
 				}
-				if (incomingSeq == null) {
-					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
-							"The seqNum can not be missing from an NBIRTH message");
-				}
 
 				this.online = online;
 				this.onlineTimestamp = timestamp;
@@ -125,6 +148,15 @@ public class SparkplugEdgeNode {
 					this.offlineTimestamp = timestamp;
 				}
 			}
+
+			logger.info("Edge Node {} set {} at {}", edgeNodeDescriptor, online ? "online" : "offline", timestamp);
+		}
+	}
+
+	public void forceOffline(Date timestamp) {
+		synchronized (lock) {
+			this.online = false;
+			this.offlineTimestamp = timestamp;
 		}
 	}
 
@@ -134,6 +166,10 @@ public class SparkplugEdgeNode {
 
 	public Date getOfflineTimestamp() {
 		return offlineTimestamp;
+	}
+
+	public Long getBirthBdSeqNum() {
+		return birthBdSeqNum;
 	}
 
 	public void handleSeq(Long incomingSeq) throws TahuException {

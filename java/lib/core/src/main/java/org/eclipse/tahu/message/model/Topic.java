@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -12,6 +12,9 @@
  ********************************************************************************/
 
 package org.eclipse.tahu.message.model;
+
+import org.eclipse.tahu.exception.TahuErrorCode;
+import org.eclipse.tahu.exception.TahuException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -55,17 +58,36 @@ public class Topic {
 	private final String deviceId;
 
 	/**
+	 * The ID if this is a Sparkplug Host Application topic
+	 */
+	private final String hostApplicationId;
+
+	/**
 	 * The message type.
 	 */
 	private final MessageType type;
 
 	/**
+	 * Default Constructor
+	 */
+	public Topic() {
+		this.namespace = null;
+		this.sparkplugDescriptor = null;
+		this.edgeNodeDescriptor = null;
+		this.groupId = null;
+		this.edgeNodeId = null;
+		this.deviceId = null;
+		this.hostApplicationId = null;
+		this.type = null;
+	}
+
+	/**
 	 * A Constructor for Device Topics
 	 * 
 	 * @param namespace the namespace
-	 * @param groupId the group ID
-	 * @param edgeNodeId the edge node ID
-	 * @param deviceId the device ID
+	 * @param groupId the Group ID
+	 * @param edgeNodeId the Edge Node ID
+	 * @param deviceId the Device ID
 	 * @param type the message type
 	 */
 	public Topic(String namespace, String groupId, String edgeNodeId, String deviceId, MessageType type) {
@@ -78,6 +100,7 @@ public class Topic {
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = deviceId;
+		this.hostApplicationId = null;
 		this.type = type;
 	}
 
@@ -97,6 +120,7 @@ public class Topic {
 		this.groupId = groupId;
 		this.edgeNodeId = edgeNodeId;
 		this.deviceId = null;
+		this.hostApplicationId = null;
 		this.type = type;
 	}
 
@@ -121,6 +145,78 @@ public class Topic {
 	 */
 	public Topic(String namespace, EdgeNodeDescriptor edgeNodeDescriptor, MessageType type) {
 		this(namespace, edgeNodeDescriptor.getGroupId(), edgeNodeDescriptor.getEdgeNodeId(), type);
+	}
+
+	/**
+	 * A Constructor for Host Application Topics
+	 *
+	 * @param namespace the namespace
+	 * @param hostApplicationId the Host Application ID
+	 * @param type the message type
+	 */
+	public Topic(String namespace, String hostApplicationId, MessageType type) {
+		super();
+		this.namespace = namespace;
+		this.hostApplicationId = hostApplicationId;
+		this.type = type;
+		this.sparkplugDescriptor = null;
+		this.edgeNodeDescriptor = null;
+		this.groupId = null;
+		this.edgeNodeId = null;
+		this.deviceId = null;
+	}
+
+	/**
+	 * Parses a Sparkplug topic from an MQTT topic string
+	 *
+	 * @param topicString the MQTT topic string to convert to a {@link Topic}
+	 * @return the {@link Topic} that represents the input MQTT topic string
+	 * @throws TahuException if the MQTT topic string can not be parsed
+	 */
+	public static Topic parseTopic(String topicString) throws TahuException {
+		try {
+			if (topicString == null || topicString.isEmpty()
+					|| !topicString.startsWith(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX) || !topicString.contains("/")) {
+				throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+						"Invalid Sparkplug topic String: ''" + topicString);
+			}
+
+			String[] splitTopic = topicString.split("/");
+			if (splitTopic.length == 3) {
+				if (SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX.equals(splitTopic[0])
+						&& SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_TOKEN.equals(splitTopic[1])) {
+					return new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, splitTopic[2], MessageType.STATE);
+				} else {
+					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+							"Invalid Sparkplug STATE topic String: ''" + topicString);
+				}
+			} else if (splitTopic.length == 4) {
+				MessageType messageType = MessageType.parseMessageType(splitTopic[2]);
+				if (SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX.equals(splitTopic[0]) && (messageType == MessageType.NBIRTH
+						|| messageType == MessageType.NCMD || messageType == MessageType.NDATA
+						|| messageType == MessageType.NDEATH || messageType == MessageType.NRECORD)) {
+					return new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, splitTopic[1], splitTopic[3], messageType);
+				} else {
+					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+							"Invalid Sparkplug Edge Node topic String: ''" + topicString);
+				}
+			} else if (splitTopic.length == 5) {
+				MessageType messageType = MessageType.parseMessageType(splitTopic[2]);
+				if (SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX.equals(splitTopic[0]) && (messageType == MessageType.DBIRTH
+						|| messageType == MessageType.DCMD || messageType == MessageType.DDATA
+						|| messageType == MessageType.DDEATH || messageType == MessageType.DRECORD)) {
+					return new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, splitTopic[1], splitTopic[3], messageType);
+				} else {
+					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+							"Invalid Sparkplug Device topic String: ''" + topicString);
+				}
+			} else {
+				throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+						"Invalid topic String length: ''" + topicString);
+			}
+		} catch (Exception e) {
+			throw new TahuException(TahuErrorCode.INTERNAL_ERROR, e);
+		}
 	}
 
 	/**
@@ -178,6 +274,15 @@ public class Topic {
 	}
 
 	/**
+	 * Returns the Host Application ID if this is a Host topic
+	 *
+	 * @return the Host Application ID
+	 */
+	public String getHostApplicationId() {
+		return hostApplicationId;
+	}
+
+	/**
 	 * Returns the message type.
 	 * 
 	 * @return the message type
@@ -188,10 +293,15 @@ public class Topic {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(getNamespace()).append("/").append(getGroupId()).append("/")
-				.append(getType()).append("/").append(getEdgeNodeId());
-		if (getDeviceId() != null) {
-			sb.append("/").append(getDeviceId());
+		StringBuilder sb = new StringBuilder();
+		if (hostApplicationId == null) {
+			sb.append(getNamespace()).append("/").append(getGroupId()).append("/").append(getType()).append("/")
+					.append(getEdgeNodeId());
+			if (getDeviceId() != null) {
+				sb.append("/").append(getDeviceId());
+			}
+		} else {
+			sb.append(getNamespace()).append("/").append(getType()).append("/").append(hostApplicationId);
 		}
 		return sb.toString();
 	}

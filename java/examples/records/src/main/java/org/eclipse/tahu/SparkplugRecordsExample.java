@@ -1,9 +1,16 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2018 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2018-2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu;
 
 import static org.eclipse.tahu.message.model.MetricDataType.Boolean;
@@ -75,7 +82,7 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 			// Build up DEATH payload - note DEATH payloads don't have a regular sequence number
 			SparkplugBPayloadBuilder deathPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date());
 			deathPayload = addBdSeqNum(deathPayload);
-			byte[] deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
+			byte[] deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload(), false);
 
 			MqttConnectOptions options = new MqttConnectOptions();
 
@@ -103,14 +110,14 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 
 			// Delay before starting to publish records
 			Thread.sleep(3000);
-			
+
 			// Loop forever publishing records
 			while (true) {
 				String recordType = "deviceEvents";
 				// Create the payload
 				SparkplugBPayload payload = new SparkplugBPayloadBuilder(getSeqNum()).setTimestamp(new Date())
 						.setUuid(newUUID()).createPayload();
-				
+
 				// Add records to payload
 				for (int i = 0; i < numOfEventsPerPublish; i++) {
 					Thread.sleep(eventPeriod);
@@ -122,7 +129,7 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 					synchronized (seqLock) {
 						System.out.println("Connected - publishing new records");
 						client.publish(NAMESPACE + "/" + groupId + "/DRECORD/" + edgeNode + "/" + deviceId,
-								new SparkplugBPayloadEncoder().getBytes(payload), 0, false);
+								new SparkplugBPayloadEncoder().getBytes(payload, false), 0, false);
 					}
 				} else {
 					System.out.println("Not connected - not publishing records");
@@ -145,8 +152,7 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 		// Metric datatype = (not used)
 		// Metric value = (not used)
 		// Metric properties = Record fields
-		return new MetricBuilder(type, String, null)
-				.timestamp(timestamp)
+		return new MetricBuilder(type, String, null).timestamp(timestamp)
 				.properties(new PropertySetBuilder(new TreeMap<>()) // TreeMap for natural ordering of the fields
 						.addProperty("intField", new PropertyValue(PropertyDataType.PropertySet,
 								new PropertySetBuilder(new TreeMap<>())
@@ -198,10 +204,10 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 		try {
 			synchronized (seqLock) {
 				// Create the payload
-				SparkplugBPayload payload = new SparkplugBPayloadBuilder(getSeqNum()).setTimestamp(new Date())
-						.setUuid(newUUID())
-						.addMetric(new MetricBuilder("Device Control/Rebirth", Boolean, false).createMetric())
-						.createPayload();
+				SparkplugBPayload payload =
+						new SparkplugBPayloadBuilder(getSeqNum()).setTimestamp(new Date()).setUuid(newUUID())
+								.addMetric(new MetricBuilder("Device Control/Rebirth", Boolean, false).createMetric())
+								.createPayload();
 
 				System.out.println("Publishing Device Birth");
 				executor.execute(
@@ -298,7 +304,7 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 			try {
 				outboundPayload.setTimestamp(new Date());
 				SparkplugBPayloadEncoder encoder = new SparkplugBPayloadEncoder();
-				client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+				client.publish(topic, encoder.getBytes(outboundPayload, false), 0, false);
 			} catch (MqttPersistenceException e) {
 				e.printStackTrace();
 			} catch (MqttException e) {

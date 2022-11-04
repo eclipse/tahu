@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -49,11 +49,26 @@ public enum ParameterDataType {
 	private Class<?> clazz = null;
 	private int intValue = 0;
 
+	/**
+	 * Constructor
+	 *
+	 * @param intValue the integer representation of this {@link ParameterDatatype}
+	 *
+	 * @param clazz the {@link Class} type of this {@link ParameterDataType}
+	 */
 	private ParameterDataType(int intValue, Class<?> clazz) {
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
 
+	/**
+	 * Checks the type of this {@link ParameterDataType} against an {@link Object} value
+	 *
+	 * @param value the {@link Object} value to validate against the {@link ParameterDataType}
+	 *
+	 * @throws SparkplugInvalidTypeException if the validation of the {@link Object} value against the
+	 *             {@link ParameterDataType} fails
+	 */
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			logger.warn("Failed type check - " + clazz + " != " + value.getClass().toString());

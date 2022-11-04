@@ -17,9 +17,9 @@
 
   <parent>
     <groupId>org.eclipse.tahu</groupId>
-    <artifactId>tahu</artifactId>
-    <version>0.5.18</version>
-    <relativePath>../../pom.xml</relativePath>
+    <artifactId>tahu-examples</artifactId>
+    <version>1.0.0-rc1</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>example_records</artifactId>

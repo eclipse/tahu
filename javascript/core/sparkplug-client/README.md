@@ -149,12 +149,12 @@ var payload = {
             {
                 "name" : "my_int",
                 "value" : 456,
-                "type" : "int32"
+                "type" : "Int32"
             },
             {
                 "name" : "my_float",
                 "value" : 1.23,
-                "type" : "float"
+                "type" : "Float"
             }
         ]
     };
@@ -189,12 +189,12 @@ var deviceId = "testDevice",
             {
                 "name" : "my_int",
                 "value" : 456,
-                "type" : "int32"
+                "type" : "Int32"
             },
             {
                 "name" : "my_float",
                 "value" : 1.23,
-                "type" : "float"
+                "type" : "Float"
             }
         ]
     };
@@ -218,7 +218,7 @@ var payload = {
             {
                 "name" : "my_int",
                 "value" : 412,
-                "type" : "int32"
+                "type" : "Int32"
             }
         ]
     };
@@ -243,7 +243,7 @@ var deviceId = "testDevice",
             {
                 "name" : "my_int",
                 "value" : 412,
-                "type" : "int32"
+                "type" : "Int32"
             }
         ]
     };

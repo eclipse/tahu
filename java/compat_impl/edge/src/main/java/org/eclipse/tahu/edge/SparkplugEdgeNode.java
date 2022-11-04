@@ -1,9 +1,16 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.edge;
 
 import java.util.ArrayList;
@@ -18,6 +25,7 @@ import org.eclipse.tahu.SparkplugParsingException;
 import org.eclipse.tahu.edge.api.MetricHandler;
 import org.eclipse.tahu.edge.sim.DataSimulator;
 import org.eclipse.tahu.edge.sim.RandomDataSimulator;
+import org.eclipse.tahu.message.DefaultBdSeqManager;
 import org.eclipse.tahu.message.PayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
@@ -33,7 +41,9 @@ import org.eclipse.tahu.message.model.SparkplugBPayloadMap;
 import org.eclipse.tahu.message.model.SparkplugBPayloadMap.SparkplugBPayloadMapBuilder;
 import org.eclipse.tahu.message.model.SparkplugDescriptor;
 import org.eclipse.tahu.message.model.SparkplugMeta;
+import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.message.model.Topic;
+import org.eclipse.tahu.model.MqttServerDefinition;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
@@ -43,34 +53,50 @@ import org.eclipse.tahu.util.TopicUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallback {
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallback, CommandCallback {
 
 	private static Logger logger = LoggerFactory.getLogger(SparkplugEdgeNode.class.getName());
+
+	private static final String COMMAND_LISTENER_DIRECTORY = "/tmp/commands";
+	private static final long COMMAND_LISTENER_POLL_RATE = 50L;
 
 	private static final String GROUP_ID = "G1";
 	private static final String EDGE_NODE_ID = "E1";
 	private static final EdgeNodeDescriptor EDGE_NODE_DESCRIPTOR = new EdgeNodeDescriptor(GROUP_ID, EDGE_NODE_ID);
-	private static final List<String> DEVICE_IDS = Arrays.asList("D1", "D2", "D3");
+	private static final List<String> DEVICE_IDS = Arrays.asList("D1");
 	private static final String PRIMARY_HOST_ID = "IamHost";
+	private static final boolean USE_ALIASES = true;
 	private static final Long REBIRTH_DEBOUNCE_DELAY = 5000L;
-	private static final String MQTT_CLIENT_ID = "Sparkplug-Tahu-Compatible-Impl";
-	private static final MqttServerName MQTT_SERVER_NAME = new MqttServerName("My Mqtt Server");
-	private static final MqttServerUrl MQTT_SERVER_URL = new MqttServerUrl("tcp://localhost:1883");
-	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "changeme";
-	private static final int KEEP_ALIVE = 30;
+
+	private static final MqttServerName MQTT_SERVER_NAME_1 = new MqttServerName("Mqtt Server One");
+	private static final String MQTT_CLIENT_ID_1 = "Sparkplug-Tahu-Compatible-Impl-One";
+	private static final MqttServerUrl MQTT_SERVER_URL_1 = new MqttServerUrl("tcp://localhost:1883");
+	private static final String USERNAME_1 = "admin";
+	private static final String PASSWORD_1 = "changeme";
+	private static final MqttServerName MQTT_SERVER_NAME_2 = new MqttServerName("Mqtt Server Two");
+	private static final String MQTT_CLIENT_ID_2 = "Sparkplug-Tahu-Compatible-Impl-Two";
+	private static final MqttServerUrl MQTT_SERVER_URL_2 = new MqttServerUrl("tcp://localhost:1884");
+	private static final String USERNAME_2 = "admin";
+	private static final String PASSWORD_2 = "changeme";
+	private static final int KEEP_ALIVE_TIMEOUT = 30;
 	private static final Topic NDEATH_TOPIC =
 			new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, GROUP_ID, EDGE_NODE_ID, MessageType.NDEATH);
+
+	private static final List<MqttServerDefinition> mqttServerDefinitions = new ArrayList<>();
+
+	private CommandListener commandListener;
 
 	/*
 	 * Next Birth BD sequence number - same as last deathBdSeq
 	 */
-	private long birthBdSeq = 0;
+	private long birthBdSeq;
 
 	/*
 	 * Next Death BD sequence number
 	 */
-	private long deathBdSeq = 0;
+	private long deathBdSeq;
 
 	private final DataSimulator dataSimulator =
 			new RandomDataSimulator(10, new HashMap<SparkplugDescriptor, Integer>() {
@@ -79,8 +105,6 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 				{
 					put(new DeviceDescriptor("G1/E1/D1"), 50);
-					put(new DeviceDescriptor("G1/E1/D2"), 50);
-					put(new DeviceDescriptor("G1/E1/D3"), 50);
 				}
 			});
 
@@ -91,12 +115,36 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 	public static void main(String[] arg) {
 		try {
+			mqttServerDefinitions
+					.add(new MqttServerDefinition(MQTT_SERVER_NAME_1, new MqttClientId(MQTT_CLIENT_ID_1, false),
+							MQTT_SERVER_URL_1, USERNAME_1, PASSWORD_1, KEEP_ALIVE_TIMEOUT, NDEATH_TOPIC));
+//			mqttServerDefinitions
+//					.add(new MqttServerDefinition(MQTT_SERVER_NAME_2, new MqttClientId(MQTT_CLIENT_ID_2, false),
+//							MQTT_SERVER_URL_2, USERNAME_2, PASSWORD_2, KEEP_ALIVE_TIMEOUT, NDEATH_TOPIC));
+
+			System.out.println("Starting the Sparkplug Edge Node");
+			System.out.println("\tGroup ID: " + GROUP_ID);
+			System.out.println("\tEdge Node ID: " + EDGE_NODE_ID);
+			System.out.println("\tDevice IDs: " + DEVICE_IDS);
+			System.out.println("\tPrimary Host ID: " + PRIMARY_HOST_ID);
+			System.out.println("\tUsing Aliases: " + USE_ALIASES);
+			System.out.println("\tRebirth Debounce Delay: " + REBIRTH_DEBOUNCE_DELAY);
+
+			for (MqttServerDefinition mqttServerDefinition : mqttServerDefinitions) {
+				System.out.println("\tMQTT Server Name: " + mqttServerDefinition.getMqttServerName());
+				System.out.println("\tMQTT Client ID: " + mqttServerDefinition.getMqttClientId());
+				System.out.println("\tMQTT Server URL: " + mqttServerDefinition.getMqttServerUrl());
+				System.out.println("\tUsername: " + mqttServerDefinition.getUsername());
+				System.out.println("\tPassword: ********");
+				System.out.println("\tKeep Alive Timeout: " + mqttServerDefinition.getKeepAliveTimeout());
+			}
+
 			SparkplugEdgeNode sparkplugEdgeNode = new SparkplugEdgeNode();
 			Thread edgeNodeThread = new Thread(sparkplugEdgeNode);
 			edgeNodeThread.start();
 
 			// Run for a while and shutdown
-			Thread.sleep(30000);
+			Thread.sleep(360000);
 			sparkplugEdgeNode.shutdown();
 		} catch (Exception e) {
 			logger.error("Failed to run the Edge Node", e);
@@ -106,13 +154,17 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	private EdgeClient edgeClient;
 	private Thread edgeClientThread;
 	private PeriodicPublisher periodicPublisher;
+	private DefaultBdSeqManager defaultBdSeqManager;
 	private Thread periodicPublisherThread;
 
 	public SparkplugEdgeNode() {
 		try {
-			edgeClient = new EdgeClient(this, EDGE_NODE_DESCRIPTOR, DEVICE_IDS, PRIMARY_HOST_ID, REBIRTH_DEBOUNCE_DELAY,
-					new MqttClientId(MQTT_CLIENT_ID, false), MQTT_SERVER_NAME, MQTT_SERVER_URL, USERNAME, PASSWORD,
-					KEEP_ALIVE, this, null);
+			defaultBdSeqManager = new DefaultBdSeqManager("SparkplugEdgeNode");
+			deathBdSeq = defaultBdSeqManager.getNextDeathBdSeqNum();
+			birthBdSeq = deathBdSeq;
+
+			edgeClient = new EdgeClient(this, EDGE_NODE_DESCRIPTOR, DEVICE_IDS, PRIMARY_HOST_ID, USE_ALIASES,
+					REBIRTH_DEBOUNCE_DELAY, mqttServerDefinitions, this, null);
 		} catch (Exception e) {
 			logger.error("Failed to create the Sparkplug Edge Client", e);
 		}
@@ -120,8 +172,15 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 	@Override
 	public void run() {
-		edgeClientThread = new Thread(edgeClient);
-		edgeClientThread.start();
+		try {
+			commandListener = new CommandListener(this, COMMAND_LISTENER_DIRECTORY, COMMAND_LISTENER_POLL_RATE);
+			commandListener.start();
+
+			edgeClientThread = new Thread(edgeClient);
+			edgeClientThread.start();
+		} catch (Exception e) {
+			logger.error("Failed to start", e);
+		}
 	}
 
 	// MetricHandler API
@@ -135,7 +194,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	public byte[] getDeathPayloadBytes() throws Exception {
 		SparkplugBPayload nDeathPayload = new SparkplugBPayloadBuilder().setTimestamp(new Date()).createPayload();
 		addDeathSeqNum(nDeathPayload);
-		return new SparkplugBPayloadEncoder().getBytes(nDeathPayload);
+		return new SparkplugBPayloadEncoder().getBytes(nDeathPayload, true);
 	}
 
 	// MetricHandler API
@@ -153,10 +212,8 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			}
 
 			// The BIRTH sequence has been published - set up a periodic publisher
-			periodicPublisher = new PeriodicPublisher(5000, dataSimulator, edgeClient,
-					Arrays.asList(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D1"),
-							new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D2"),
-							new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D3")));
+			periodicPublisher = new PeriodicPublisher(5000, dataSimulator, edgeClient, EDGE_NODE_DESCRIPTOR,
+					Arrays.asList(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D1")));
 			periodicPublisherThread = new Thread(periodicPublisher);
 			periodicPublisherThread.start();
 		} catch (Exception e) {
@@ -174,14 +231,25 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	@Override
 	public void shutdown() {
 		logger.info("ClientCallback shutdown");
-		periodicPublisher.shutdown();
-		periodicPublisherThread.interrupt();
-		periodicPublisher = null;
-		periodicPublisherThread = null;
 
-		edgeClient.shutdwon();
-		edgeClient = null;
-		edgeClientThread = null;
+		if (commandListener != null) {
+			commandListener.shutdown();
+			commandListener = null;
+		}
+		if (periodicPublisher != null) {
+			periodicPublisher.shutdown();
+			periodicPublisher = null;
+		}
+		if (periodicPublisherThread != null) {
+			periodicPublisherThread.interrupt();
+			periodicPublisherThread = null;
+		}
+
+		if (edgeClient != null) {
+			edgeClient.shutdown();
+			edgeClient = null;
+			edgeClientThread = null;
+		}
 	}
 
 	// ClientCallback API
@@ -190,23 +258,31 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			String rawTopic, MqttMessage message) {
 		logger.info("{}: ClientCallback messageArrived on topic={}", clientId, rawTopic);
 
-		if (rawTopic.startsWith("STATE/")) {
-			logger.info("Got STATE message: {} :: {}", rawTopic, new String(message.getPayload()));
-			edgeClient.handleStateMessage(rawTopic.substring(6), new String(message.getPayload()));
+		final Topic topic;
+		try {
+			topic = TopicUtil.parseTopic(rawTopic);
+		} catch (SparkplugParsingException e) {
+			logger.error("Error parsing Sparkplug topic {}", rawTopic, e);
+			return;
+		}
+
+		if (rawTopic.startsWith("spBv1.0/STATE/")) {
+			try {
+				logger.info("Got STATE message: {} :: {}", rawTopic, new String(message.getPayload()));
+				ObjectMapper mapper = new ObjectMapper();
+				StatePayload statePayload = mapper.readValue(message.getPayload(), StatePayload.class);
+				edgeClient.handleStateMessage(topic.getHostApplicationId(), statePayload);
+			} catch (Exception e) {
+				logger.error("Failed to handle STATE message with topic={} and payload={}", rawTopic,
+						new String(message.getPayload()));
+			}
 			return;
 		} else if (!SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX.equals(TopicUtil.getSplitTopic(rawTopic)[0])) {
 			logger.warn("Message received on erroneous topic: {}", rawTopic);
 			return;
 		} else {
 			// Sparkplug message!
-			final Topic topic;
 			final SparkplugBPayload payload;
-			try {
-				topic = TopicUtil.parseTopic(rawTopic);
-			} catch (SparkplugParsingException e) {
-				logger.error("Error parsing Sparkplug topic {}", rawTopic, e);
-				return;
-			}
 
 			try {
 				// Handling case where the MQTT Server publishes an LWT on our behalf but we're actually online.
@@ -354,6 +430,20 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 		logger.info("{}: ClientCallback connectComplete", clientId);
 	}
 
+	// CommandCallback API
+	@Override
+	public void setDeviceOffline(String deviceId) {
+		edgeClient.publishDeviceDeath(deviceId);
+	}
+
+	// CommandCallback API
+	@Override
+	public void setDeviceOnline(String deviceId) {
+		SparkplugBPayload dBirthPayload =
+				dataSimulator.getDeviceBirthPayload(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, deviceId));
+		edgeClient.publishDeviceBirth(deviceId, dBirthPayload);
+	}
+
 	/*
 	 * Used to add the death sequence number
 	 */
@@ -373,6 +463,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 				// Increment sequence numbers in preparation for the next new connect
 				birthBdSeq = deathBdSeq;
 				deathBdSeq++;
+				defaultBdSeqManager.storeNextDeathBdSeqNum(deathBdSeq);
 			} catch (SparkplugInvalidTypeException e) {
 				logger.error("Failed to create death payload", e);
 				return null;

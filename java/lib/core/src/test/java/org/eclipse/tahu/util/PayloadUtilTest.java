@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2016, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2016-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -71,7 +71,7 @@ public class PayloadUtilTest {
 	public void testCompression(CompressionAlgorithm algorithm, SparkplugBPayload payload) throws Exception {
 
 		// Compress the payload
-		SparkplugBPayload compressedPayload = PayloadUtil.compress(payload, algorithm);
+		SparkplugBPayload compressedPayload = PayloadUtil.compress(payload, algorithm, false);
 
 		// Test that there is a body (the compressed bytes)
 		assertThat(compressedPayload.getBody() != null).isTrue();

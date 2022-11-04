@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014-2020 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -49,11 +49,15 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 
 	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadEncoder.class.getName());
 
+	/**
+	 * Default Constructor
+	 */
 	public SparkplugBPayloadEncoder() {
 		super();
 	}
 
-	public byte[] getBytes(SparkplugBPayload payload) throws IOException {
+	@Override
+	public byte[] getBytes(SparkplugBPayload payload, boolean stripDataTypes) throws IOException {
 
 		SparkplugBProto.Payload.Builder protoMsg = SparkplugBProto.Payload.newBuilder();
 
@@ -75,9 +79,9 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		// Set the metrics
 		for (Metric metric : payload.getMetrics()) {
 			try {
-				protoMsg.addMetrics(convertMetric(metric));
+				protoMsg.addMetrics(convertMetric(metric, stripDataTypes));
 			} catch (Exception e) {
-				logger.error("Failed to add metric: " + metric.getName());
+				logger.error("Failed to add metric: " + metric.getName(), e);
 				throw new RuntimeException(e);
 			}
 		}
@@ -90,14 +94,17 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		return protoMsg.build().toByteArray();
 	}
 
-	private SparkplugBProto.Payload.Metric.Builder convertMetric(Metric metric) throws Exception {
+	private SparkplugBProto.Payload.Metric.Builder convertMetric(Metric metric, boolean stripDataTypes)
+			throws Exception {
 
 		// build a metric
 		SparkplugBProto.Payload.Metric.Builder builder = SparkplugBProto.Payload.Metric.newBuilder();
 
 		// set the basic parameters
-		builder.setDatatype(metric.getDataType().toIntValue());
-		builder = setMetricValue(builder, metric);
+		if (!stripDataTypes) {
+			builder.setDatatype(metric.getDataType().toIntValue());
+		}
+		builder = setMetricValue(builder, metric, stripDataTypes);
 
 		// Set the name, data type, and value
 		if (metric.hasName()) {
@@ -209,7 +216,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						builder.setIntValue((int) Integer.toUnsignedLong((Integer) value.getValue()));
 						break;
 					case UInt32:
-						builder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) value.getValue())));
+						builder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) value.getValue())));
 						break;
 					case UInt64:
 						builder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value.getValue()));
@@ -302,10 +309,12 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 	}
 
 	private SparkplugBProto.Payload.Metric.Builder setMetricValue(SparkplugBProto.Payload.Metric.Builder metricBuilder,
-			Metric metric) throws Exception {
+			Metric metric, boolean stripDataTypes) throws Exception {
 
 		// Set the data type
-		metricBuilder.setDatatype(metric.getDataType().toIntValue());
+		if (!stripDataTypes) {
+			metricBuilder.setDatatype(metric.getDataType().toIntValue());
+		}
 
 		if (metric.getValue() == null) {
 			metricBuilder.setIsNull(true);
@@ -349,7 +358,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					metricBuilder.setIntValue((int) Integer.toUnsignedLong((Integer) metric.getValue()));
 					break;
 				case UInt32:
-					metricBuilder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) metric.getValue())));
+					metricBuilder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) metric.getValue())));
 					break;
 				case UInt64:
 					metricBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) metric.getValue()));
@@ -429,7 +438,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					// Set the template metrics
 					if (template.getMetrics() != null) {
 						for (Metric templateMetric : template.getMetrics()) {
-							templateBuilder.addMetrics(convertMetric(templateMetric));
+							templateBuilder.addMetrics(convertMetric(templateMetric, stripDataTypes));
 						}
 					}
 
@@ -698,7 +707,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				if (value == null || value.getValue() == null) {
 					return protoValueBuilder;
 				}
-				protoValueBuilder.setLongValue(Long.parseLong(Long.toUnsignedString((Long) value.getValue())));
+				protoValueBuilder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) value.getValue())));
 				break;
 			case UInt64:
 				if (value == null || value.getValue() == null) {

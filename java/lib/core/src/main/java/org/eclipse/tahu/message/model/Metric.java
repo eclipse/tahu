@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -70,21 +70,29 @@ public class Metric {
 
 	private Boolean isNull = null;
 
+	/**
+	 * Default Constructor
+	 */
 	public Metric() {
 	};
 
 	/**
-	 * @param name
-	 * @param alias
-	 * @param timestamp
-	 * @param dataType
-	 * @param isHistorical
-	 * @param isTransient
-	 * @param isNull
-	 * @param metaData
-	 * @param properties
-	 * @param value
-	 * @throws SparkplugInvalidTypeException
+	 * Constructor
+	 *
+	 * @param name the name of the {@link Metric}
+	 * @param alias the alias of the {@link Metric}
+	 * @param timestamp the timestamp of the {@link Metric} representing the time at which the {@link Metric} changed in
+	 *            UDT time
+	 * @param dataType the {@link MetricDataType} of the {@link Metric}
+	 * @param isHistorical whether or not this {@link Metric} is a historical value
+	 * @param isTransient whether or not this {@link Metric} is a transient value
+	 * @param metaData the {@link MetaData} assocated with this {@link Metric}
+	 * @param properties the {@link PropertySet} associated with this {@link Metric}
+	 * @param value the {@link Object} value of this {@link Metric} that must be a {@link Object} type for the
+	 *            {@link MetricDataType}
+	 *
+	 * @throws SparkplugInvalidTypeException if the value is not a valid {@link Object} type for the supplied
+	 *             {@link MetricDataType}
 	 */
 	public Metric(String name, Long alias, Date timestamp, MetricDataType dataType, Boolean isHistorical,
 			Boolean isTransient, MetaData metaData, PropertySet properties, Object value)
@@ -103,111 +111,307 @@ public class Metric {
 		this.dataType.checkType(value);
 	}
 
+	/**
+	 * Gets the name of the {@link Metric}
+	 *
+	 * @return the name of the {@link Metric}
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Sets the name of the {@link Metric}
+	 *
+	 * @param name the name of the {@link Metric}
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Whether or not this {@link Metric} has a name
+	 *
+	 * @return true if the name is not null, otherwise false
+	 */
 	public boolean hasName() {
 		return !(name == null);
 	}
 
+	/**
+	 * Whether or not this {@link Metric} has an alias
+	 *
+	 * @return true if the {@link Metric} has an alias, otherwise false
+	 */
 	public boolean hasAlias() {
 		return !(alias == null);
 	}
 
+	/**
+	 * Gets the alias associated with the {@link Metric}
+	 *
+	 * @return the alias associated with the {@link Metric}
+	 */
 	public Long getAlias() {
 		return alias;
 	}
 
+	/**
+	 * Sets the alias for the {@link Metric}
+	 *
+	 * @param alias the alias to set for the {@link Metric}
+	 */
 	public void setAlias(long alias) {
 		this.alias = alias;
 	}
 
+	/**
+	 * Gets the timestamp associated with the {@link Metric}
+	 *
+	 * @return the timestamp associated with the {@link Metric}
+	 */
 	public Date getTimestamp() {
 		return timestamp;
 	}
 
+	/**
+	 * Sets the timestamp associated with the {@link Metric}
+	 *
+	 * @param timestamp the timestamp associated with the {@link Metric}
+	 */
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
 
+	/**
+	 * Gets the {@link MetricDataType} associated with the {@link Metric}
+	 *
+	 * @return the {@link MetricDataType} associated with the {@link Metric}
+	 */
 	public MetricDataType getDataType() {
 		return dataType;
 	}
 
+	/**
+	 * Sets the {@link MetricDataType} associated with the {@link Metric}
+	 *
+	 * @param dataType the {@link MetricDataType} associated with the {@link Metric}
+	 */
 	public void setDataType(MetricDataType dataType) {
 		this.dataType = dataType;
 	}
 
+	/**
+	 * Gets the {@link MetaData} associated with the {@link Metric}
+	 *
+	 * @return the {@link MetaData} associated with the {@link Metric}
+	 */
 	@JsonGetter("metaData")
 	public MetaData getMetaData() {
 		return metaData;
 	}
 
+	/**
+	 * Sets the {@link MetaData} associated with the {@link Metric}
+	 *
+	 * @param metadata the {@link MetaData} associated with the {@link Metric}
+	 */
 	@JsonSetter("metaData")
 	public void setMetaData(MetaData metaData) {
 		this.metaData = metaData;
 	}
 
+	/**
+	 * Gets the {@link Object} value associated with the {@link Metric}
+	 *
+	 * @return the {@link Object} value associated with the {@link Metric}
+	 */
 	public Object getValue() {
 		return value;
 	}
 
+	/**
+	 * Sets the {@link Object} value associated with the {@link Metric}
+	 *
+	 * @param value the {@link Object} value associated with the {@link Metric}
+	 */
 	public void setValue(Object value) {
 		this.value = value;
 		isNull = (value == null);
 	}
 
+	/**
+	 * Gets the {@link PropertySet} associated with the {@link Metric}
+	 *
+	 * @return the {@link PropertySet} associated with the {@link Metric}
+	 */
 	public PropertySet getProperties() {
 		return this.properties;
 	}
 
+	/**
+	 * Sets the {@link PropertySet} associated with the {@link Metric}
+	 *
+	 * @param metadata the {@link PropertySet} associated with the {@link Metric}
+	 */
 	public void setProperties(PropertySet properties) {
 		this.properties = properties;
 	}
 
+	/**
+	 * Whether or not this {@link Metric} is historical
+	 *
+	 * @return true if this is a historical {@link Metric}, otherwise false
+	 */
 	@JsonIgnore
 	public Boolean isHistorical() {
 		return isHistorical == null ? false : isHistorical;
 	}
 
+	/**
+	 * Whether or not this {@link Metric} is historical
+	 *
+	 * @return true if this is a historical {@link Metric}, otherwise false
+	 */
 	@JsonGetter("isHistorical")
 	public Boolean getIsHistorical() {
 		return isHistorical;
 	}
 
+	/**
+	 * Sets the historical flag for this {@link Metric}
+	 *
+	 * @param isHistorical true if this is a historical {@link Metric}, otherwise false
+	 */
 	@JsonSetter("isHistorical")
 	public void setHistorical(Boolean isHistorical) {
 		this.isHistorical = isHistorical;
 	}
 
+	/**
+	 * Whether or not this {@link Metric} is transient
+	 *
+	 * @return true if this is a transient {@link Metric}, otherwise false
+	 */
 	@JsonIgnore
 	public Boolean isTransient() {
 		return isTransient == null ? false : isTransient;
 	}
 
+	/**
+	 * Whether or not this {@link Metric} is transient
+	 *
+	 * @return true if this is a transient {@link Metric}, otherwise false
+	 */
 	@JsonGetter("isTransient")
 	public Boolean getIsTransient() {
 		return isTransient;
 	}
 
+	/**
+	 * Sets the transient flag for this {@link Metric}
+	 *
+	 * @param transient true if this is a transient {@link Metric}, otherwise false
+	 */
 	@JsonSetter("isTransient")
 	public void setTransient(Boolean isTransient) {
 		this.isTransient = isTransient;
 	}
 
+	/**
+	 * Return true if this value is null, otherwise false
+	 *
+	 * @return true if this value is null, otherwise false
+	 */
 	@JsonIgnore
 	public Boolean isNull() {
 		return isNull == null ? false : isNull;
 	}
 
+	/**
+	 * Return true if this value is null, otherwise false
+	 *
+	 * @return true if this value is null, otherwise false
+	 */
 	@JsonIgnore
 	public Boolean getIsNull() {
 		return isNull;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
+		result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+		result = prime * result + ((isHistorical == null) ? 0 : isHistorical.hashCode());
+		result = prime * result + ((isNull == null) ? 0 : isNull.hashCode());
+		result = prime * result + ((isTransient == null) ? 0 : isTransient.hashCode());
+		result = prime * result + ((metaData == null) ? 0 : metaData.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Metric other = (Metric) obj;
+		if (alias == null) {
+			if (other.alias != null)
+				return false;
+		} else if (!alias.equals(other.alias))
+			return false;
+		if (dataType != other.dataType)
+			return false;
+		if (isHistorical == null) {
+			if (other.isHistorical != null)
+				return false;
+		} else if (!isHistorical.equals(other.isHistorical))
+			return false;
+		if (isNull == null) {
+			if (other.isNull != null)
+				return false;
+		} else if (!isNull.equals(other.isNull))
+			return false;
+		if (isTransient == null) {
+			if (other.isTransient != null)
+				return false;
+		} else if (!isTransient.equals(other.isTransient))
+			return false;
+		if (metaData == null) {
+			if (other.metaData != null)
+				return false;
+		} else if (!metaData.equals(other.metaData))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (properties == null) {
+			if (other.properties != null)
+				return false;
+		} else if (!properties.equals(other.properties))
+			return false;
+		if (timestamp == null) {
+			if (other.timestamp != null)
+				return false;
+		} else if (!timestamp.equals(other.timestamp))
+			return false;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
 	}
 
 	@Override

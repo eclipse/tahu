@@ -15,5 +15,10 @@ package org.eclipse.tahu.message.model;
 
 public interface SparkplugDescriptor {
 
+	/**
+	 * Returns the String representation of this {@link SparkplugDescriptor}
+	 *
+	 * @return the String representation of this {@link SparkplugDescriptor}
+	 */
 	public String getDescriptorString();
 }

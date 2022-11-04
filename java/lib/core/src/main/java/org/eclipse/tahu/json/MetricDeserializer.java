@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2013-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -33,6 +33,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  * A custom JSON deserializer for {@link Metric} instances.
  */
 public class MetricDeserializer extends StdDeserializer<Metric> implements ResolvableDeserializer {
+
+	private static final long serialVersionUID = 1L;
 
 	private final JsonDeserializer<?> defaultDeserializer;
 

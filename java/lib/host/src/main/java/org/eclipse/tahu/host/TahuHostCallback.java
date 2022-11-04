@@ -1,9 +1,16 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.host;
 
 import java.util.Map;
@@ -18,6 +25,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.seq.SequenceReorderManager;
 import org.eclipse.tahu.message.model.SparkplugMeta;
+import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
@@ -26,6 +34,8 @@ import org.eclipse.tahu.mqtt.TahuClient;
 import org.eclipse.tahu.util.TopicUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TahuHostCallback implements ClientCallback {
 
@@ -52,6 +62,7 @@ public class TahuHostCallback implements ClientCallback {
 		if (sequenceReorderManager != null) {
 			this.enableSequenceReordering = true;
 			this.sequenceReorderManager = sequenceReorderManager;
+			this.sequenceReorderManager.start();
 		} else {
 			this.enableSequenceReordering = false;
 			this.sequenceReorderManager = null;
@@ -117,36 +128,49 @@ public class TahuHostCallback implements ClientCallback {
 
 			final long arrivedTime = System.nanoTime();
 			if (topic.startsWith(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX)) {
-				// Get the proper executor
-				String key = splitTopic[1] + "/" + splitTopic[3];
-				int index = getThreadPoolExecutorIndex(key, DEFAULT_NUM_OF_THREADS);
-				logger.debug("Adding Sparkplug B message to ThreadPoolExecutor {} :: {}", index,
-						sparkplugBExecutors[index].getQueue().size());
-				ThreadPoolExecutor executor = sparkplugBExecutors[index];
-
-				if (enableSequenceReordering) {
-					// Sequence reordering is required
-					logger.trace("Sending the message on {} to the SequenceReorderManager", topic);
-					sequenceReorderManager.handlePayload(this, executor, topic, splitTopic, message, server, clientId,
-							arrivedTime);
+				if (splitTopic.length == 3 && splitTopic[1].equals("STATE")) {
+					// This is a STATE message - handle as needed
+					ObjectMapper mapper = new ObjectMapper();
+					StatePayload statePayload = mapper.readValue(new String(message.getPayload()), StatePayload.class);
+					if (!statePayload.isOnline()) {
+						// Make sure this isn't an OFFLINE message
+						logger.info(
+								"This is a offline STATE message from {} - correcting with new online STATE message",
+								splitTopic[2]);
+						client.publishBirthMessage();
+					}
 				} else {
-					executor.execute(() -> {
-						try {
-							// No sequence reordering required - just push the message through and handle the Sparkplug
-							// B Payload
-							logger.trace("Sending the message on {} directly to the TahuPayloadHandler", topic);
-							new TahuPayloadHandler(eventHandler, commandPublisher).handlePayload(topic, splitTopic,
-									message, server, clientId);
-						} catch (Throwable t) {
-							logger.error("Failed to handle Sparkplug B message on topic {}", topic, t);
-						} finally {
-							// Update the message latency
-							long latency = System.nanoTime() - arrivedTime;
-							if (logger.isTraceEnabled()) {
-								logger.trace("Updating message processing latency {}", latency);
+					// Get the proper executor
+					String key = splitTopic[1] + "/" + splitTopic[3];
+					int index = getThreadPoolExecutorIndex(key, DEFAULT_NUM_OF_THREADS);
+					logger.debug("Adding Sparkplug B message to ThreadPoolExecutor {} :: {}", index,
+							sparkplugBExecutors[index].getQueue().size());
+					ThreadPoolExecutor executor = sparkplugBExecutors[index];
+
+					if (enableSequenceReordering) {
+						// Sequence reordering is required
+						logger.trace("Sending the message on {} to the SequenceReorderManager", topic);
+						sequenceReorderManager.handlePayload(this, executor, topic, splitTopic, message, server,
+								clientId, arrivedTime);
+					} else {
+						executor.execute(() -> {
+							try {
+								// No sequence reordering required - just push the message through and handle the
+								// Sparkplug B Payload
+								logger.trace("Sending the message on {} directly to the TahuPayloadHandler", topic);
+								new TahuPayloadHandler(eventHandler, commandPublisher).handlePayload(topic, splitTopic,
+										message, server, clientId);
+							} catch (Throwable t) {
+								logger.error("Failed to handle Sparkplug B message on topic {}", topic, t);
+							} finally {
+								// Update the message latency
+								long latency = System.nanoTime() - arrivedTime;
+								if (logger.isTraceEnabled()) {
+									logger.trace("Updating message processing latency {}", latency);
+								}
 							}
-						}
-					});
+						});
+					}
 				}
 			} else {
 				logger.debug("Received non-Sparkplug message on topic {}", topic);
@@ -184,9 +208,10 @@ public class TahuHostCallback implements ClientCallback {
 
 		// Update the Primary Host State tag to OFFLINE
 		String lwtTopic = tahuClients.get(mqttServerName).getLwtTopic();
-		if (lwtTopic != null && lwtTopic.startsWith("STATE/")) {
-			String primaryHostId = lwtTopic.substring("STATE/".length(), lwtTopic.length());
-			logger.debug("Setting Primary Host ID info tag for {} to OFFLINE", primaryHostId);
+		if (lwtTopic != null && lwtTopic.startsWith(SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX)) {
+			String primaryHostId =
+					lwtTopic.substring(SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX.length() + 1, lwtTopic.length());
+			logger.debug("Setting Primary Host ID info tag for {} to offline", primaryHostId);
 //			String clientTagPath = join(EngineGwHook.MQTT_CLIENTS_PATH, mqttServerName, "/",
 //					EngineTag.PRIMARY_HOST_STATE, "/", primaryHostId, "/");
 //			ModuleTagUtils.updateModuleTagValue(EngineSettings.getInstance().getContext(),

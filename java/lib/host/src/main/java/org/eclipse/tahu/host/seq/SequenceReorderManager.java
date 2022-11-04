@@ -1,9 +1,16 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.host.seq;
 
 import java.util.Calendar;
@@ -165,6 +172,11 @@ public class SequenceReorderManager {
 		}
 		MessageType messageType = topic.getType();
 
+		// Early return for commands
+		if (messageType == MessageType.NCMD || messageType == MessageType.DCMD) {
+			return;
+		}
+
 		// Parse the payload
 		PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();
 		SparkplugBPayload payload = decoder.buildFromByteArray(message.getPayload());
@@ -246,23 +258,9 @@ public class SequenceReorderManager {
 				SequenceReorderContext sequenceReorderContext = new SequenceReorderContext(topicString, topic, message,
 						payload, messageType, mqttServerName, mqttClientId, arrivedTime);
 				sequenceReorderMap.put(payload.getSeq(), sequenceReorderContext);
-
-				// Increment the reordered mesg count
-//				updateReorderCount();
 			}
 		}
 	}
-
-	public void resetReorderCount() {
-//		reorderedMesgCount = 0;
-//		updateReorderCount();
-	}
-
-//	public void updateReorderCount() {
-//		ModuleTagUtils.updateModuleTagValue(EngineSettings.getInstance().getContext(),
-//				EngineSettings.getInstance().getManagedTagProvider(), managedTagProviderName,
-//				EngineGwHook.SYSTEM_INFO_REORDERED_MESG_COUNT, DataType.Int8, reorderedMesgCount);
-//	}
 
 	/**
 	 * Removes and Edge Node from the {@link SequenceReorderManager}. This should be used any time an Edge Node goes

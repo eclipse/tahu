@@ -33,8 +33,11 @@ import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.internal.NetworkModuleService;
 import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
+import org.eclipse.tahu.message.model.StatePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * An Custom MQTT client.
@@ -45,10 +48,12 @@ public class TahuClient implements MqttCallbackExtended {
 
 	private static final long DEFAULT_CONNECT_RETRY_INTERVAL = 1000;
 	private static final long DEFAULT_CONNECT_MONITOR_INTERVAL = 10000;
+	private static final long DEFAULT_CONNECT_ATTEMPT_TIMEOUT = 30000;
 
 	private Thread connectRunnableThread;
 	private ConnectRunnable connectRunnable;
 	private long connectRetryInterval;
+	private long connectAttemptTimeout;
 
 	/*
 	 * Tracks the state of the connection attempts.
@@ -58,6 +63,8 @@ public class TahuClient implements MqttCallbackExtended {
 	/*
 	 * birth/death properties
 	 */
+	private boolean useSparkplugStatePayload;
+	private Long lastStateDeathPayloadTimestamp;
 	private String birthTopic;
 	private byte[] birthPayload;
 	private boolean birthRetain;
@@ -114,7 +121,7 @@ public class TahuClient implements MqttCallbackExtended {
 	private Date offlineDate;
 	private double totalUptime;
 	private double totalDowntime;
-	private int connectionCount = 0; // # of Directors connected to this MQTT Client's Broker
+	private int connectionCount = 0; // # of Edge Nodes connected to this MQTT Client's Broker
 	private boolean doLatencyCheck = false;
 	private long numMesgsArrived = 0;
 	private long lastNumMesgsArrived = 0;
@@ -143,6 +150,7 @@ public class TahuClient implements MqttCallbackExtended {
 		this.birthRetain = false;
 		this.autoReconnect = true;
 		this.setConnectRetryInterval(DEFAULT_CONNECT_RETRY_INTERVAL);
+		this.setConnectAttemptTimeout(DEFAULT_CONNECT_ATTEMPT_TIMEOUT);
 		this.renewDisconnectTime();
 		this.renewOnlineDate();
 		this.renewOfflineDate();
@@ -150,20 +158,23 @@ public class TahuClient implements MqttCallbackExtended {
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
-			ClientCallback callback, RandomStartupDelay randomStartupDelay, String birthTopic, byte[] birthPayload,
-			String lwtTopic, byte[] lwtPayload, int lwtQoS) {
+			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
+			String birthTopic, byte[] birthPayload, String lwtTopic, byte[] lwtPayload, int lwtQoS) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
 				randomStartupDelay);
-		this.setLifecycleProps(birthTopic, birthPayload, false, lwtTopic, lwtPayload, lwtQoS, false);
+		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, false, lwtTopic, lwtPayload, lwtQoS,
+				false);
 	}
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
-			ClientCallback callback, RandomStartupDelay randomStartupDelay, String birthTopic, byte[] birthPayload,
-			boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
+			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
+			String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS,
+			boolean lwtRetain) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
 				randomStartupDelay);
-		this.setLifecycleProps(birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload, lwtQoS, lwtRetain);
+		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload,
+				lwtQoS, lwtRetain);
 	}
 
 	/**
@@ -176,8 +187,9 @@ public class TahuClient implements MqttCallbackExtended {
 	 * @param lwtPayload the payload of an LWT
 	 * @param lwtRetain whether to retain LWT messages
 	 */
-	private void setLifecycleProps(String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic,
-			byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
+	private void setLifecycleProps(boolean useSparkplugStatePayload, String birthTopic, byte[] birthPayload,
+			boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
+		this.useSparkplugStatePayload = useSparkplugStatePayload;
 		this.birthTopic = birthTopic;
 		this.birthPayload = birthPayload;
 		this.birthRetain = birthRetain;
@@ -678,7 +690,18 @@ public class TahuClient implements MqttCallbackExtended {
 							 * the publish() call is fully completed and the lwtDeliveryToken is set before
 							 * it is being nullified in the Paho callback.
 							*/
-							lwtDeliveryToken = publish(lwtTopic, lwtPayload, lwtQoS, lwtRetain);
+							if (useSparkplugStatePayload) {
+								try {
+									ObjectMapper mapper = new ObjectMapper();
+									StatePayload statePayload = new StatePayload(false, new Date().getTime());
+									byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+									lwtDeliveryToken = publish(lwtTopic, payload, lwtQoS, lwtRetain);
+								} catch (Exception e) {
+									logger.error("Failed to publish the LWT message on {}", lwtTopic, e);
+								}
+							} else {
+								lwtDeliveryToken = publish(lwtTopic, lwtPayload, lwtQoS, lwtRetain);
+							}
 							logger.debug("published on LWT Topic={}, messageId={}", lwtTopic,
 									lwtDeliveryToken.getMessageId());
 						}
@@ -725,12 +748,12 @@ public class TahuClient implements MqttCallbackExtended {
 	/*
 	 * Attempt to connect.
 	 */
-	private void attemptConnect(MqttAsyncClient client, MqttConnectOptions options, String ctx)
+	private IMqttToken attemptConnect(MqttAsyncClient client, MqttConnectOptions options, String ctx)
 			throws MqttSecurityException, MqttException {
 		synchronized (clientLock) {
 			if (isConnected()) {
 				logger.trace("{} is already connected - not trying again", getClientId());
-				return;
+				return null;
 			}
 			if (randomStartupDelay != null && randomStartupDelay.isValid()) {
 				long randomDelay = randomStartupDelay.getRandomDelay();
@@ -747,7 +770,7 @@ public class TahuClient implements MqttCallbackExtended {
 					Thread.currentThread().getId());
 
 			// Make the call to connect (this is asynchronous)
-			client.connect(options, ctx, new IMqttActionListener() {
+			return client.connect(options, ctx, new IMqttActionListener() {
 
 				@Override
 				public void onSuccess(IMqttToken token) {
@@ -847,7 +870,15 @@ public class TahuClient implements MqttCallbackExtended {
 				connectOptions.setKeepAliveInterval(keepAlive);
 				if (lwtTopic != null) {
 					logger.debug("{}: Setting WILL on {} with retain {}", getClientId(), lwtTopic, lwtRetain);
-					connectOptions.setWill(lwtTopic, lwtPayload, MqttOperatorDefs.QOS1, lwtRetain);
+					if (useSparkplugStatePayload) {
+						ObjectMapper mapper = new ObjectMapper();
+						lastStateDeathPayloadTimestamp = new Date().getTime();
+						StatePayload statePayload = new StatePayload(false, lastStateDeathPayloadTimestamp);
+						byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+						connectOptions.setWill(lwtTopic, payload, MqttOperatorDefs.QOS1, lwtRetain);
+					} else {
+						connectOptions.setWill(lwtTopic, lwtPayload, MqttOperatorDefs.QOS1, lwtRetain);
+					}
 				}
 				connectOptions.setMaxInflight(getMaxInflightMessages());
 
@@ -858,6 +889,10 @@ public class TahuClient implements MqttCallbackExtended {
 
 				// Set the callback handler
 				client.setCallback(callback);
+				IMqttToken connectToken = null;
+
+				// A time stamp to track the current attempt in case the underlying client is stuck attempting forever
+				long attemptTimestamp = System.currentTimeMillis();
 
 				if (autoReconnect) {
 					try {
@@ -869,7 +904,10 @@ public class TahuClient implements MqttCallbackExtended {
 										return;
 									}
 
-									attemptConnect(client, connectOptions, "connect with retry");
+									connectToken = attemptConnect(client, connectOptions, "connect with retry");
+
+									// Update time stamp for current attempt
+									attemptTimestamp = System.currentTimeMillis();
 								}
 
 								// Sleep for the connect retry interval
@@ -880,8 +918,22 @@ public class TahuClient implements MqttCallbackExtended {
 								return;
 							} catch (MqttException e) {
 								if (e.getReasonCode() == MqttException.REASON_CODE_CONNECT_IN_PROGRESS) {
-									logger.debug("{}: Still trying to connect", getClientId());
-									Thread.sleep(500);
+									if (connectToken != null) {
+										logger.debug("{}: Still trying to connect - isComplete? {}, sessionPresent? {}",
+												getClientId(), connectToken.isComplete(),
+												connectToken.getSessionPresent());
+									} else {
+										logger.debug("{}: Still trying to connect", getClientId());
+									}
+
+									// Check if the connect attempt has timed out
+									if (System.currentTimeMillis() - attemptTimestamp > connectAttemptTimeout) {
+										logger.warn("{}: Connect attempt has timed out");
+										// Forcibly disconnect the client
+										client.disconnectForcibly(500);
+									} else {
+										Thread.sleep(500);
+									}
 								} else {
 									logger.debug("{}: Unable to connect due to {}, next connect attempt in {} ms",
 											getClientId(), e.getMessage(), getConnectRetryInterval());
@@ -1090,7 +1142,7 @@ public class TahuClient implements MqttCallbackExtended {
 
 	@Override
 	public void connectComplete(boolean reconnect, String serverURI) {
-		
+
 		// Check if we are in the process of disconnecting
 		if (disconnectInProgress) {
 			logger.warn("Ignoring connect complete to {}, disconnect in progress", serverURI);
@@ -1098,7 +1150,7 @@ public class TahuClient implements MqttCallbackExtended {
 			// is in progress and waiting on the client.disconnect() call
 			return;
 		}
-		
+
 		synchronized (clientLock) {
 			if (reconnect) {
 				logger.debug("{}: SUCCESSFULLY RECONNECTED to {}", getClientId(), getMqttServerUrl());
@@ -1173,19 +1225,8 @@ public class TahuClient implements MqttCallbackExtended {
 			}
 
 			// Publish a standard Birth/Death Certificate if a baseTopic has been defined.
-			if (birthTopic != null) {
-				try {
-					logger.debug("{}: Publishing BIRTH on {} with retain {}", getClientId(), birthTopic, birthRetain);
-					publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
-				} catch (TahuException ce) {
-					logger.error("{}: Error in birth topic publish on connect", getClientId(), ce);
-					try {
-						client.disconnectForcibly(0, 1, false);
-					} catch (Exception e) {
-						logger.error("{}: Failed to disconnect after failed BIRTH publish", getClientId(), e);
-					}
-				}
-			}
+			publishBirthMessage();
+
 			firstConnection = false;
 		}
 	}
@@ -1198,6 +1239,33 @@ public class TahuClient implements MqttCallbackExtended {
 	public void setTrackFirstConnection(boolean trackFirstConnection) {
 		synchronized (clientLock) {
 			this.trackFirstConnection = trackFirstConnection;
+		}
+	}
+
+	public void publishBirthMessage() {
+		if (birthTopic != null) {
+			try {
+				logger.debug("{}: Publishing BIRTH on {} with retain {}", getClientId(), birthTopic, birthRetain);
+				if (useSparkplugStatePayload) {
+					try {
+						ObjectMapper mapper = new ObjectMapper();
+						StatePayload statePayload = new StatePayload(true, lastStateDeathPayloadTimestamp);
+						byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+						publish(birthTopic, payload, MqttOperatorDefs.QOS1, birthRetain);
+					} catch (Exception e) {
+						logger.error("Failed to publish the BIRTH message on {}", birthTopic, e);
+					}
+				} else {
+					publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
+				}
+			} catch (TahuException ce) {
+				logger.error("{}: Error in birth topic publish on connect", getClientId(), ce);
+				try {
+					client.disconnectForcibly(0, 1, false);
+				} catch (Exception e) {
+					logger.error("{}: Failed to disconnect after failed BIRTH publish", getClientId(), e);
+				}
+			}
 		}
 	}
 
@@ -1231,6 +1299,14 @@ public class TahuClient implements MqttCallbackExtended {
 
 	public void setConnectRetryInterval(long connectRetryInterval) {
 		this.connectRetryInterval = connectRetryInterval;
+	}
+
+	private long getConnectAttemptTimeout() {
+		return connectAttemptTimeout;
+	}
+
+	public void setConnectAttemptTimeout(long connectAttemptTimeout) {
+		this.connectAttemptTimeout = connectAttemptTimeout;
 	}
 
 	public boolean isAttemptingConnect() {

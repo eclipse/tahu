@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -22,9 +22,9 @@ import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * A class representing a template associated with a metric
@@ -85,52 +85,111 @@ public class Template {
 		this.parameters = parameters;
 	}
 
+	/**
+	 * Gets the version of this {@link Template}
+	 *
+	 * @return the version of this {@link Template}
+	 */
 	public String getVersion() {
 		return version;
 	}
 
+	/**
+	 * Sets the version of this {@link Template}
+	 *
+	 * @param version the version to set for this {@link Template}
+	 */
 	public void setVersion(String version) {
 		this.version = version;
 	}
 
+	/**
+	 * Gets the template reference of this {@link Template}
+	 *
+	 * @return the template reference of this {@link Template}
+	 */
 	public String getTemplateRef() {
 		return templateRef;
 	}
 
+	/**
+	 * Sets the template reference of this {@link Template}
+	 *
+	 * @param templateRef the template reference to set for this {@link Template}
+	 */
 	public void setTemplateRef(String templateRef) {
 		this.templateRef = templateRef;
 	}
 
+	/**
+	 * Gets whether or not this {@link Template} is a definition or not
+	 *
+	 * @return true if this is a definition, otherwise false (meaning it is an instance)
+	 */
 	@JsonGetter("isDefinition")
 	public boolean isDefinition() {
 		return isDefinition;
 	}
 
+	/**
+	 * Sets whether or not this {@link Template} is a definition or not
+	 *
+	 * @param isDefinition a boolean donoting if this is a {@link Template} definition or instance
+	 */
 	@JsonSetter("isDefinition")
 	public void setDefinition(boolean isDefinition) {
 		this.isDefinition = isDefinition;
 	}
 
+	/**
+	 * Gets the {@link List} of {@link Metric}s associated with the {@link Template}
+	 *
+	 * @return the {@link List} of {@link Metric}s associated with the {@link Template}
+	 */
 	public List<Metric> getMetrics() {
 		return metrics;
 	}
 
+	/**
+	 * Sets the {@link List} of {@link Metric}s for this {@link Template}
+	 *
+	 * @param metrics the {@link List} of {@link Metric}s to set for this {@link Template}
+	 */
 	public void setMetrics(List<Metric> metrics) {
 		this.metrics = metrics;
 	}
 
+	/**
+	 * Adds a {@link Metric} to the end of the {@link List} of Sparkplug metrics
+	 *
+	 * @param metric a {@link Metric} to add to the end of the {@link List} of Sparkplug metrics
+	 */
 	public void addMetric(Metric metric) {
 		this.metrics.add(metric);
 	}
 
+	/**
+	 * Gets the {@link List} of {@link Parameter}s associated with the {@link Template}
+	 *
+	 * @return the {@link List} of {@link Parameter}s associated with the {@link Template}
+	 */
 	public List<Parameter> getParameters() {
 		return parameters;
 	}
 
+	/**
+	 * Sets the {@link List} of {@link Parameter}s for this {@link Template}
+	 *
+	 * @param metrics the {@link List} of {@link Parameter}s to set for this {@link Template}
+	 */
 	public void setParameters(List<Parameter> parameters) {
 		this.parameters = parameters;
 	}
 
+	/**
+	 * Adds a {@link Parameter} to this {@link Template}
+	 * @param parameter a {@link Parameter} to add to this {@link Template}
+	 */
 	public void addParameter(Parameter parameter) {
 		this.parameters.add(parameter);
 	}

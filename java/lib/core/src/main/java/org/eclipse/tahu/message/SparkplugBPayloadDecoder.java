@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -55,10 +55,14 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 
 	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadDecoder.class.getName());
 
+	/**
+	 * Default Constructor
+	 */
 	public SparkplugBPayloadDecoder() {
 		super();
 	}
 
+	@Override
 	public SparkplugBPayload buildFromByteArray(byte[] bytes) throws Exception {
 		SparkplugBProto.Payload protoPayload = SparkplugBProto.Payload.parseFrom(bytes);
 		SparkplugBPayloadBuilder builder = new SparkplugBPayloadBuilder();
@@ -195,7 +199,8 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		}
 		// Otherwise convert the value based on the type
 		int metricType = protoMetric.getDatatype();
-		logger.trace("For metric={} - handling metric type in decoder: {}", protoMetric.getName(), metricType);
+		logger.trace("For metricName={} and alias={} - handling metric type in decoder: {}", protoMetric.getName(),
+				protoMetric.getAlias(), metricType);
 		switch (MetricDataType.fromInteger(metricType)) {
 			case Boolean:
 				return protoMetric.getBooleanValue();

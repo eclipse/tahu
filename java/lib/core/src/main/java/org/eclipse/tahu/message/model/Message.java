@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -23,8 +23,16 @@ public class Message {
 	private SparkplugBPayload payload;
 
 	/**
-	 * @param topic
-	 * @param payload
+	 * Default Constructor
+	 */
+	public Message() {
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @param topic the {@link Topic} associated with the {@link Message}
+	 * @param payload the {@link SparkplugBPayload} associated with the {@link Message}
 	 */
 	private Message(Topic topic, SparkplugBPayload payload) {
 		super();
@@ -32,12 +40,33 @@ public class Message {
 		this.payload = payload;
 	}
 
+	/**
+	 * Gets the {@link Topic} of this {@link Message}
+	 *
+	 * @return the {@link Topic} of this {@link Message}
+	 */
 	public Topic getTopic() {
 		return topic;
 	}
 
+	/**
+	 * Gets the {@link SparkplugBPayload} of this {@link Message}
+	 *
+	 * @return the {@link SparkplugBPayload} of this {@link Message}
+	 */
 	public SparkplugBPayload getPayload() {
 		return payload;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Message [topic=");
+		builder.append(topic);
+		builder.append(", payload=");
+		builder.append(payload);
+		builder.append("]");
+		return builder.toString();
 	}
 
 	/**

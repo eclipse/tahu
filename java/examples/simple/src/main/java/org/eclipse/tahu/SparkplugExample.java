@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014-2020 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -121,10 +121,10 @@ public class SparkplugExample implements MqttCallbackExtended {
 			byte[] deathBytes;
 			if (USING_COMPRESSION) {
 				// Compress payload (optional)
-				deathBytes = new SparkplugBPayloadEncoder()
-						.getBytes(PayloadUtil.compress(deathPayload.createPayload(), compressionAlgorithm));
+				deathBytes = new SparkplugBPayloadEncoder().getBytes(
+						PayloadUtil.compress(deathPayload.createPayload(), compressionAlgorithm, false), false);
 			} else {
-				deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload());
+				deathBytes = new SparkplugBPayloadEncoder().getBytes(deathPayload.createPayload(), false);
 			}
 
 			MqttConnectOptions options = new MqttConnectOptions();
@@ -166,12 +166,12 @@ public class SparkplugExample implements MqttCallbackExtended {
 						// Compress payload (optional)
 						if (USING_COMPRESSION) {
 							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
-									new SparkplugBPayloadEncoder()
-											.getBytes(PayloadUtil.compress(payload, compressionAlgorithm)),
+									new SparkplugBPayloadEncoder().getBytes(
+											PayloadUtil.compress(payload, compressionAlgorithm, false), false),
 									0, false);
 						} else {
 							client.publish(NAMESPACE + "/" + groupId + "/DDATA/" + edgeNode + "/" + deviceId,
-									new SparkplugBPayloadEncoder().getBytes(payload), 0, false);
+									new SparkplugBPayloadEncoder().getBytes(payload, false), 0, false);
 						}
 					}
 				} else {
@@ -207,10 +207,16 @@ public class SparkplugExample implements MqttCallbackExtended {
 				payload.addMetric(new MetricBuilder("bdSeq", Int64, (long) bdSeq).createMetric());
 				payload.addMetric(new MetricBuilder("Node Control/Rebirth", Boolean, false).createMetric());
 
+				PropertySet nestedPropertySet = new PropertySetBuilder()
+						.addProperty("custom", new PropertyValue(PropertyDataType.String, "Custom Value"))
+						.createPropertySet();
+
 				PropertySet propertySet = new PropertySetBuilder()
 						.addProperty("engUnit", new PropertyValue(PropertyDataType.String, "My Units"))
 						.addProperty("engLow", new PropertyValue(PropertyDataType.Double, 1.0))
 						.addProperty("engHigh", new PropertyValue(PropertyDataType.Double, 10.0))
+						.addProperty("Custom nested node prop",
+								new PropertyValue(PropertyDataType.PropertySet, nestedPropertySet))
 						/*
 						 * .addProperty("CustA", new PropertyValue(PropertyDataType.String, "Custom A"))
 						 * .addProperty("CustB", new PropertyValue(PropertyDataType.Double, 10.0)) .addProperty("CustC",
@@ -259,10 +265,16 @@ public class SparkplugExample implements MqttCallbackExtended {
 				payload.addMetric(new MetricBuilder("Properties/hw_version", String, HW_VERSION).createMetric());
 				payload.addMetric(new MetricBuilder("Properties/sw_version", String, SW_VERSION).createMetric());
 
+				PropertySet nestedPropertySet = new PropertySetBuilder()
+						.addProperty("custom", new PropertyValue(PropertyDataType.String, "Custom Value"))
+						.createPropertySet();
+
 				PropertySet propertySet = new PropertySetBuilder()
 						.addProperty("engUnit", new PropertyValue(PropertyDataType.String, "My Units"))
 						.addProperty("engLow", new PropertyValue(PropertyDataType.Double, 1.0))
 						.addProperty("engHigh", new PropertyValue(PropertyDataType.Double, 10.0))
+						.addProperty("Custom nested device prop",
+								new PropertyValue(PropertyDataType.PropertySet, nestedPropertySet))
 						/*
 						 * .addProperty("CustA", new PropertyValue(PropertyDataType.String, "Custom A"))
 						 * .addProperty("CustB", new PropertyValue(PropertyDataType.Double, 10.0)) .addProperty("CustC",
@@ -624,10 +636,11 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 				// Compress payload (optional)
 				if (USING_COMPRESSION) {
-					client.publish(topic, encoder.getBytes(PayloadUtil.compress(outboundPayload, compressionAlgorithm)),
+					client.publish(topic,
+							encoder.getBytes(PayloadUtil.compress(outboundPayload, compressionAlgorithm, false), false),
 							0, false);
 				} else {
-					client.publish(topic, encoder.getBytes(outboundPayload), 0, false);
+					client.publish(topic, encoder.getBytes(outboundPayload, false), 0, false);
 				}
 			} catch (MqttPersistenceException e) {
 				e.printStackTrace();

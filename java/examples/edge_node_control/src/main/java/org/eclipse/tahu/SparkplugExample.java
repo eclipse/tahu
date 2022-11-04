@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -25,15 +25,14 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-import org.eclipse.tahu.SparkplugException;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.MessageType;
+import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
-import org.eclipse.tahu.message.model.Topic;
-import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.util.TopicUtil;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +43,9 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
 public class SparkplugExample implements MqttCallbackExtended {
-	
+
 	private static final String NAMESPACE = "spBv1.0";
-	
+
 	static {
 		((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).setLevel(Level.OFF);
 	}
@@ -59,17 +58,17 @@ public class SparkplugExample implements MqttCallbackExtended {
 	private String username = "admin";
 	private String password = "changeme";
 	private MqttClient client;
-	
+
 	public SparkplugExample(String groupId, String edgeNodeId) {
 		this.groupId = groupId;
 		this.edgeNode = edgeNodeId;
 	}
-	
+
 	public static void main(String[] args) {
 		SparkplugExample example = new SparkplugExample(args[0], args[1]);
 		example.run();
 	}
-	
+
 	public void run() {
 		try {
 			// Connect to the MQTT Server
@@ -81,32 +80,32 @@ public class SparkplugExample implements MqttCallbackExtended {
 			options.setUserName(username);
 			options.setPassword(password.toCharArray());
 			client = new MqttClient(serverUrl, clientId);
-			client.setTimeToWait(2000);	
+			client.setTimeToWait(2000);
 			client.setCallback(this);
 			client.connect(options);
-			
+
 			// Subscribe to control/command messages for both the edge of network node and the attached devices
 			client.subscribe(NAMESPACE + "/" + groupId + "/+/" + edgeNode, 0);
 			client.subscribe(NAMESPACE + "/" + groupId + "/+/" + edgeNode + "/*", 0);
-			
+
 			// Loop to receive input commands
 			while (true) {
 				System.out.print("\n> ");
-				
+
 				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 				String line = br.readLine();
 
 				handleCommand(line);
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private void handleCommand(String command) 
+
+	private void handleCommand(String command)
 			throws SparkplugException, MqttPersistenceException, MqttException, IOException {
-		String [] tokens = command.split(" ");
-		
+		String[] tokens = command.split(" ");
+
 		if (tokens.length > 0) {
 			String cmd = tokens[0];
 			if (cmd.equals("")) {
@@ -120,20 +119,19 @@ public class SparkplugExample implements MqttCallbackExtended {
 				return;
 			} else if (cmd.toLowerCase().equals("rebirth")) {
 				// Issue a rebirth
-				client.publish(NAMESPACE + "/" + groupId + "/NCMD/" + edgeNode, 
-						new SparkplugBPayloadEncoder().getBytes(new SparkplugBPayloadBuilder()
-								.addMetric(new MetricBuilder("Node Control/Rebirth", MetricDataType.Boolean, true)
-										.createMetric())
-								.createPayload()), 
+				client.publish(NAMESPACE + "/" + groupId + "/NCMD/" + edgeNode,
+						new SparkplugBPayloadEncoder().getBytes(new SparkplugBPayloadBuilder().addMetric(
+								new MetricBuilder("Node Control/Rebirth", MetricDataType.Boolean, true).createMetric())
+								.createPayload(), false),
 						0, false);
 				return;
 			}
-			
+
 		}
-		
+
 		System.out.println("\nInvalid command: " + command);
 	}
-	
+
 	@Override
 	public void connectComplete(boolean reconnect, String serverURI) {
 		System.out.println("Connected!");
@@ -141,13 +139,13 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 	public void connectionLost(Throwable cause) {
 		System.out.println("The MQTT Connection was lost! - will auto-reconnect");
-    }
+	}
 
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		Topic sparkplugTopic = TopicUtil.parseTopic(topic);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
-		
+
 		SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
 		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload());
 
@@ -163,6 +161,6 @@ public class SparkplugExample implements MqttCallbackExtended {
 	}
 
 	public void deliveryComplete(IMqttDeliveryToken token) {
-		//System.out.println("Published message: " + token);
+		// System.out.println("Published message: " + token);
 	}
 }

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2016, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2016-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -76,6 +76,10 @@ public class TopicUtil {
 		String namespace, edgeNodeId, groupId;
 		int length = splitTopic.length;
 
+		if (length == 3 && MessageType.STATE.toString().equals(splitTopic[1])) {
+			return new Topic(splitTopic[0], splitTopic[2], MessageType.STATE);
+		}
+
 		if (length < 4 || length > 5) {
 			throw new SparkplugParsingException("Invalid number of topic elements: " + length);
 		}
@@ -88,7 +92,6 @@ public class TopicUtil {
 		if (length == 4) {
 			// A node topic
 			switch (type) {
-				case STATE:
 				case NBIRTH:
 				case NCMD:
 				case NDATA:
@@ -99,7 +102,6 @@ public class TopicUtil {
 		} else {
 			// A device topic
 			switch (type) {
-				case STATE:
 				case DBIRTH:
 				case DCMD:
 				case DDATA:

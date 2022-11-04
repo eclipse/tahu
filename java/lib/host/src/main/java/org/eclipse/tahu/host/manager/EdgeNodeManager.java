@@ -1,9 +1,16 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.host.manager;
 
 import java.util.Date;
@@ -16,20 +23,21 @@ import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EdgeNodeManager {
+
+	private static Logger logger = LoggerFactory.getLogger(EdgeNodeManager.class.getName());
 
 	private static EdgeNodeManager instance;
 
 	private Map<EdgeNodeDescriptor, SparkplugEdgeNode> edgeNodeMap;
 
-	private Map<DeviceDescriptor, SparkplugDevice> deviceMap;
-
 	private final Object lock = new Object();
 
 	private EdgeNodeManager() {
 		edgeNodeMap = new ConcurrentHashMap<>();
-		deviceMap = new ConcurrentHashMap<>();
 	}
 
 	public static EdgeNodeManager getInstance() {
@@ -56,23 +64,32 @@ public class EdgeNodeManager {
 		}
 	}
 
-	public SparkplugDevice getSparkplugDevice(DeviceDescriptor deviceDescriptor) {
+	public SparkplugDevice getSparkplugDevice(EdgeNodeDescriptor edgeNodeDescriptor,
+			DeviceDescriptor deviceDescriptor) {
 		synchronized (lock) {
-			return deviceMap.get(deviceDescriptor);
+			SparkplugEdgeNode sparkplugEdgeNode = edgeNodeMap.get(edgeNodeDescriptor);
+			if (sparkplugEdgeNode != null) {
+				return sparkplugEdgeNode.getSparkplugDevice(deviceDescriptor);
+			} else {
+				return null;
+			}
 		}
 	}
 
-	public SparkplugDevice addSparkplugDevice(SparkplugEdgeNode sparkplugEdgeNode, DeviceDescriptor deviceDescriptor,
+	public SparkplugDevice addSparkplugDevice(EdgeNodeDescriptor edgeNodeDescriptor, DeviceDescriptor deviceDescriptor,
 			Date onlineTimestamp) throws TahuException {
 		synchronized (lock) {
 			// Make sure there is a SparkplugEdgeNode already
-			if (edgeNodeMap.get(sparkplugEdgeNode.getEdgeNodeDescriptor()) == null) {
+			SparkplugEdgeNode sparkplugEdgeNode = edgeNodeMap.get(edgeNodeDescriptor);
+			if (sparkplugEdgeNode == null) {
 				throw new TahuException(TahuErrorCode.INITIALIZATION_ERROR,
 						"The SparkplugEdgeNode must already exist before adding a device");
+			} else {
+				SparkplugDevice sparkplugDevice =
+						new SparkplugDevice(sparkplugEdgeNode, deviceDescriptor, onlineTimestamp);
+				sparkplugEdgeNode.addDevice(deviceDescriptor, sparkplugDevice);
+				return sparkplugDevice;
 			}
-			SparkplugDevice sparkplugDevice = new SparkplugDevice(sparkplugEdgeNode, deviceDescriptor, onlineTimestamp);
-			deviceMap.put(deviceDescriptor, sparkplugDevice);
-			return sparkplugDevice;
 		}
 	}
 }

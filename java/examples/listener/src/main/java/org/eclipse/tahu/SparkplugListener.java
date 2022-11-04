@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014, 2018 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2022 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -34,12 +34,12 @@ public class SparkplugListener implements MqttCallbackExtended {
 	private String username = "admin";
 	private String password = "changeme";
 	private MqttClient client;
-	
+
 	public static void main(String[] args) {
 		SparkplugListener listener = new SparkplugListener();
 		listener.run();
 	}
-	
+
 	public void run() {
 		try {
 			// Connect to the MQTT Server
@@ -51,17 +51,17 @@ public class SparkplugListener implements MqttCallbackExtended {
 			options.setUserName(username);
 			options.setPassword(password.toCharArray());
 			client = new MqttClient(serverUrl, clientId);
-			client.setTimeToWait(5000);						// short timeout on failure to connect
+			client.setTimeToWait(5000); // short timeout on failure to connect
 			client.connect(options);
 			client.setCallback(this);
-			
+
 			// Just listen to all DDATA messages on spAv1.0 topics and wait for inbound messages
 			client.subscribe("spBv1.0/#", 0);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void connectComplete(boolean reconnect, String serverURI) {
 		System.out.println("Connected!");
@@ -70,19 +70,19 @@ public class SparkplugListener implements MqttCallbackExtended {
 	@Override
 	public void connectionLost(Throwable cause) {
 		System.out.println("The MQTT Connection was lost! - will auto-reconnect");
-    }
+	}
 
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		Topic sparkplugTopic = TopicUtil.parseTopic(topic);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
-		
+
 		System.out.println("Message Arrived on Sparkplug topic " + sparkplugTopic.toString());
-		
+
 		SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
 		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload());
-		
+
 		// Convert the message to JSON and print to system.out
 		try {
 			String payloadString = mapper.writeValueAsString(inboundPayload);

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--/********************************************************************************
+ * Copyright (c) 2014-2020 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <main.basedir>${project.basedir}</main.basedir>
+    <paho.version>1.2.5</paho.version>
+    <jackson.version>2.13.4</jackson.version>
+    <jackson.databind.version>2.13.4.2</jackson.databind.version>
+    <logback.version>1.2.9</logback.version>
+    <protobuf.version>3.16.3</protobuf.version>
+  </properties>
+
+  <groupId>org.eclipse.tahu</groupId>
+  <artifactId>tahu-examples</artifactId>
+  <version>1.0.0-rc1</version>
+  <packaging>pom</packaging>
+
+  <name>Eclipse Tahu</name>
+  <url>http://www.eclipse.org/tahu</url>
+  <description>
+    The Tahu project provides open-source implementations of Eclipse Sparkplug
+  </description>
+
+  <organization>
+    <name>Eclipse Tahu</name>
+    <url>http://www.eclipse.org/tahu</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <id>ibinshtok</id>
+      <name>Ilya Binshtok</name>
+      <organization>Cirrus Link Solutions</organization>
+      <organizationUrl>http://www.cirrus-link.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>nathandavenport</id>
+      <name>Nathan Davenport</name>
+      <organization>Cirrus Link Solutions</organization>
+      <organizationUrl>http://www.cirrus-link.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>wes-johnson</id>
+      <name>Wes Johnson</name>
+      <organization>Cirrus Link Solutions</organization>
+      <organizationUrl>http://www.cirrus-link.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ckienle</id>
+      <name>Chad Kienle</name>
+      <organization>Cirrus Link Solutions</organization>
+      <organizationUrl>http://www.cirrus-link.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>Eclipse Public License - Version 2.0</name>
+      <url>https://www.eclipse.org/legal/epl-2.0</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/eclipse/tahu.git</url>
+    <connection>scm:git:git@github.com:eclipse/tahu.git</connection>
+  </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <modules>
+    <module>records/pom.xml</module>
+    <module>listener/pom.xml</module>
+    <module>edge_node_control/pom.xml</module>
+    <module>simple/pom.xml</module>
+    <module>device_timestamp/pom.xml</module>
+    <module>udt/pom.xml</module>
+    <module>raspberry_pi/pom.xml</module>
+    <module>host_file/pom.xml</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.9.10</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.5.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.paho</groupId>
+      <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+      <version>${paho.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.11.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.databind.version}</version>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.32</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <configuration>
+                <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                </gpgArguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          Use the Nexus Staging plugin as a full replacement for the standard
+          Maven Deploy plugin.
+          See https://github.com/sonatype/nexus-maven-plugins/tree/master/staging/maven-plugin
+          why this makes sense :-)
+          We can control whether we want to deploy to the Eclipse repo or Maven Central
+          by a combination of the version being a SNAPHOT or release version and property
+          skipStaging=true/false.
+          In any case we can take advantage of the plugin's "deferred deploy" feature which
+          makes sure that all artifacts of a multi-module project are deployed as a whole
+          at the end of the build process instead of deploying each module's artifacts
+          individually as part of building the module.
+        -->
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.8</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+          <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
+        </configuration>
+      </plugin>
+    </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.kuali.maven.wagons</groupId>
+        <artifactId>maven-s3-wagon</artifactId>
+        <version>1.2.1</version>
+      </extension>
+    </extensions>
+  </build>
+</project>

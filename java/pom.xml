@@ -20,14 +20,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.basedir>${project.basedir}</main.basedir>
     <paho.version>1.2.5</paho.version>
-    <jackson.version>2.13.2</jackson.version>
+    <jackson.version>2.13.4</jackson.version>
+    <jackson.databind.version>2.13.4.2</jackson.databind.version>
     <logback.version>1.2.9</logback.version>
-    <protobuf.version>3.16.1</protobuf.version>
+    <protobuf.version>3.16.3</protobuf.version>
   </properties>
 
   <groupId>org.eclipse.tahu</groupId>
   <artifactId>tahu</artifactId>
-  <version>0.5.18</version>
+  <version>1.0.0-rc1</version>
   <packaging>pom</packaging>
 
   <name>Eclipse Tahu</name>
@@ -104,14 +105,6 @@
 
   <modules>
     <module>lib/core/pom.xml</module>
-    <module>examples/records/pom.xml</module>
-    <module>examples/listener/pom.xml</module>
-    <module>examples/edge_node_control/pom.xml</module>
-    <module>examples/simple/pom.xml</module>
-    <module>examples/device_timestamp/pom.xml</module>
-    <module>examples/udt/pom.xml</module>
-    <module>examples/raspberry_pi/pom.xml</module>
-    <module>examples/host_file/pom.xml</module>
 
     <!--
       Do no change the order of these modules below - the last module MUST be deployed to Maven Central per this
@@ -170,7 +163,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson.databind.version}</version>
     </dependency>
 
     <!-- Logging -->

@@ -1,18 +1,26 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.host.manager;
 
 import java.util.Date;
 
 import org.eclipse.tahu.message.model.DeviceDescriptor;
+import org.eclipse.tahu.message.model.SparkplugDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SparkplugDevice {
+public class SparkplugDevice extends MetricManager {
 
 	private static Logger logger = LoggerFactory.getLogger(SparkplugDevice.class.getName());
 
@@ -44,6 +52,11 @@ public class SparkplugDevice {
 		this.onlineTimestamp = onlineTimestamp;
 	}
 
+	@Override
+	public SparkplugDescriptor getSparkplugDescriptor() {
+		return deviceDescriptor;
+	}
+
 	public SparkplugEdgeNode getSparkplugEdgeNode() {
 		return sparkplugEdgeNode;
 	}
@@ -71,8 +84,10 @@ public class SparkplugDevice {
 	public void setOnline(boolean online, Date timestamp) {
 		this.online = online;
 		if (online) {
+			logger.info("Device {} set online at {}", deviceDescriptor, timestamp);
 			this.onlineTimestamp = timestamp;
 		} else {
+			logger.info("Device {} set offline at {}", deviceDescriptor, timestamp);
 			this.offlineTimestamp = timestamp;
 		}
 	}

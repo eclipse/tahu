@@ -1,36 +1,47 @@
-/*
- * Licensed Materials - Property of Cirrus Link Solutions
- * Copyright (c) 2022 Cirrus Link Solutions LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- */
+/********************************************************************************
+ * Copyright (c) 2022 Cirrus Link Solutions and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Cirrus Link Solutions - initial implementation
+ ********************************************************************************/
+
 package org.eclipse.tahu.edge;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.eclipse.tahu.alias.EdgeNodeAliasMap;
 import org.eclipse.tahu.edge.api.MetricHandler;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.MessageType;
+import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayloadMap;
 import org.eclipse.tahu.message.model.SparkplugBPayloadMap.SparkplugBPayloadMapBuilder;
 import org.eclipse.tahu.message.model.SparkplugMeta;
+import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.message.model.Topic;
+import org.eclipse.tahu.model.MqttServerDefinition;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttOperatorDefs;
-import org.eclipse.tahu.mqtt.MqttServerName;
-import org.eclipse.tahu.mqtt.MqttServerUrl;
 import org.eclipse.tahu.mqtt.RandomStartupDelay;
 import org.eclipse.tahu.mqtt.TahuClient;
 import org.slf4j.Logger;
@@ -40,18 +51,14 @@ public class EdgeClient implements Runnable {
 
 	private static Logger logger = LoggerFactory.getLogger(EdgeClient.class.getName());
 
-	private final MqttClientId clientId;
-	private final MqttServerName mqttServerName;
-	private final MqttServerUrl mqttServerUrl;
-	private final String username;
-	private final String password;
-	private final int keepAlive;
+	private final List<MqttServerDefinition> mqttServerDefinitions;
 	private final ClientCallback callback;
 
 	private final MetricHandler metricHandler;
 	private final EdgeNodeDescriptor edgeNodeDescriptor;
-	private final List<String> deviceIds;
+	private final Map<String, Boolean> deviceStatusMap;
 	private final String primaryHostId;
+	private final EdgeNodeAliasMap edgeNodeAliasMap;
 	private final long rebirthDebounceDelay; // The user specified Rebirth Debounce Delay
 	private final RandomStartupDelay randomStartupDelay;
 
@@ -61,43 +68,45 @@ public class EdgeClient implements Runnable {
 
 	private int seq;
 
+	private int currentMqttClientIndex;
+
 	// Tracking variables
 	private volatile boolean stayRunning;
-	private boolean connectedToMqttServer;
 	private boolean connectedToPrimaryHost; // Whether or not this client is connected to Primary Host ID
+	private Long lastStatePayloadTimestamp;
 	private Timer primaryHostIdResponseTimer; // The Primary Host ID response timer
 	private Timer rebirthDelayTimer; // A Timer used to prevent multiple rebirth requests while the timer is running
 
 	public EdgeClient(MetricHandler metricHandler, EdgeNodeDescriptor edgeNodeDescriptor, List<String> deviceIds,
-			String primaryHostId, Long rebirthDebounceDelay, MqttClientId clientId, MqttServerName mqttServerName,
-			MqttServerUrl mqttServerUrl, String username, String password, int keepAlive, ClientCallback callback,
+			String primaryHostId, boolean useAliases, Long rebirthDebounceDelay,
+			List<MqttServerDefinition> mqttServerDefinitions, ClientCallback callback,
 			RandomStartupDelay randomStartupDelay) {
 
-		this.clientId = clientId;
-		this.mqttServerName = mqttServerName;
-		this.mqttServerUrl = mqttServerUrl;
-		this.username = username;
-		this.password = password;
-		this.keepAlive = keepAlive;
+		this.mqttServerDefinitions = mqttServerDefinitions;
 		this.callback = callback;
 
 		this.metricHandler = metricHandler;
 		this.edgeNodeDescriptor = edgeNodeDescriptor;
-		this.deviceIds = deviceIds;
+		this.deviceStatusMap = new ConcurrentHashMap<>();
+		if (deviceIds != null) {
+			for (String deviceId : deviceIds) {
+				deviceStatusMap.put(deviceId, new Boolean(false));
+			}
+		}
 		this.primaryHostId = primaryHostId;
+		this.edgeNodeAliasMap = useAliases ? new EdgeNodeAliasMap() : null;
 		this.rebirthDebounceDelay = rebirthDebounceDelay;
 		this.randomStartupDelay = randomStartupDelay;
 
 		stayRunning = true;
-		connectedToMqttServer = false;
 		connectedToPrimaryHost = false;
+		currentMqttClientIndex = -1;
 	}
 
-	public void shutdwon() {
+	public void shutdown() {
+		disconnect(true);
 		stayRunning = false;
 		connectedToPrimaryHost = false;
-		connectedToMqttServer = false;
-		disconnect(true);
 	}
 
 	public boolean isDisconnectedOrDisconnecting() {
@@ -118,7 +127,8 @@ public class EdgeClient implements Runnable {
 
 	public void disconnect(boolean publishLwt) {
 		synchronized (clientLock) {
-			logger.debug("{} Attempting to disconnect from target server", clientId);
+			logger.debug("{} Attempting to disconnect from target server",
+					mqttServerDefinitions.get(currentMqttClientIndex).getMqttClientId());
 
 			// Cancel the primaryHostId if it is running
 			if (primaryHostIdResponseTimer != null) {
@@ -135,37 +145,32 @@ public class EdgeClient implements Runnable {
 				logger.info("Attempting disconnect {}", connectionId);
 				try {
 					if (publishLwt) {
-						for (String deviceId : deviceIds) {
+						for (String deviceId : deviceStatusMap.keySet()) {
 							// Publish all of the DDEATHs since we're shutting down cleanly
 							publishDeviceDeath(deviceId);
 						}
 
-						tahuClient.disconnect(50, 50, false, true, false);
+						tahuClient.disconnect(50, 50, true, true, false);
 					} else {
-						tahuClient.disconnect(0, 1, true, false, false);
+						tahuClient.disconnect(0, 1, false, false, false);
 					}
 					logger.info("Successfully disconnected {}", connectionId);
 				} catch (Throwable t) {
 					logger.error("Error while attempting to close client: {}", connectionId, t);
 				}
 			}
-
-			connectedToMqttServer = false;
-		}
-	}
-
-	private void publishSparkplugMessage(Topic topic, SparkplugBPayload payload, int qos, boolean retained) {
-		synchronized (clientLock) {
-			try {
-				payload.setSeq(getNextSeqNum());
-				tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload), qos, retained);
-			} catch (Exception e) {
-				logger.error("Failed to publish message on topic={}", topic, e);
-			}
 		}
 	}
 
 	public void publishNodeBirth(SparkplugBPayloadMap payload) throws SparkplugInvalidTypeException {
+		if (edgeNodeAliasMap != null) {
+			// Aliasing is enabled so reinitialize the alias map and add the new NBIRTH metrics
+			edgeNodeAliasMap.clear();
+			for (Metric metric : payload.getMetrics()) {
+				metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+			}
+		}
+
 		// Ensure the 'Node Control/Rebirth' metric is present
 		if (payload.getMetric("Node Control/Rebirth") == null) {
 			payload.addMetric(new MetricBuilder("Node Control/Rebirth", MetricDataType.Boolean, false).createMetric());
@@ -177,19 +182,48 @@ public class EdgeClient implements Runnable {
 	}
 
 	public void publishNodeData(SparkplugBPayload payload) {
-		publishSparkplugMessage(
-				new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, edgeNodeDescriptor, MessageType.NDATA), payload, 0,
-				false);
+		if (connectedToPrimaryHost) {
+			if (edgeNodeAliasMap != null) {
+				// Aliasing is enabled so replace metric names with aliases
+				for (Metric metric : payload.getMetrics()) {
+					metric.setAlias(edgeNodeAliasMap.getAlias(metric.getName()));
+					metric.setName(null);
+				}
+			}
+
+			publishSparkplugMessage(
+					new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX, edgeNodeDescriptor, MessageType.NDATA), payload,
+					0, false);
+		}
 	}
 
 	public void publishDeviceBirth(String deviceId, SparkplugBPayload payload) {
+		if (edgeNodeAliasMap != null) {
+			// Aliasing is enabled so add the new DBIRTH metrics
+			for (Metric metric : payload.getMetrics()) {
+				metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+			}
+		}
+
 		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
 				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DBIRTH), payload, 0, false);
+		deviceStatusMap.put(deviceId, new Boolean(true));
 	}
 
 	public void publishDeviceData(String deviceId, SparkplugBPayload payload) {
-		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
-				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDATA), payload, 0, false);
+		if (connectedToPrimaryHost) {
+			if (edgeNodeAliasMap != null && deviceStatusMap.get(deviceId) != null
+					&& deviceStatusMap.get(deviceId).booleanValue()) {
+				// Aliasing is enabled so replace metric names with aliases
+				for (Metric metric : payload.getMetrics()) {
+					metric.setAlias(edgeNodeAliasMap.getAlias(metric.getName()));
+					metric.setName(null);
+				}
+			}
+
+			publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
+					new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDATA), payload, 0, false);
+		}
 	}
 
 	public void publishDeviceDeath(String deviceId) {
@@ -198,6 +232,25 @@ public class EdgeClient implements Runnable {
 		publishSparkplugMessage(new Topic(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX,
 				new DeviceDescriptor(edgeNodeDescriptor, deviceId), MessageType.DDEATH), payloadBuilder.createPayload(),
 				0, false);
+		deviceStatusMap.put(deviceId, new Boolean(false));
+	}
+
+	private void publishSparkplugMessage(Topic topic, SparkplugBPayload payload, int qos, boolean retained) {
+		synchronized (clientLock) {
+			try {
+				payload.setSeq(getNextSeqNum());
+				if (topic.isType(MessageType.DCMD) || topic.isType(MessageType.DDATA) || topic.isType(MessageType.NCMD)
+						|| topic.isType(MessageType.NDATA)) {
+					tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload, true), qos,
+							retained);
+				} else {
+					tahuClient.publish(topic.toString(), new SparkplugBPayloadEncoder().getBytes(payload, false), qos,
+							retained);
+				}
+			} catch (Exception e) {
+				logger.error("Failed to publish message on topic={}", topic, e);
+			}
+		}
 	}
 
 	public long getNextSeqNum() {
@@ -223,9 +276,13 @@ public class EdgeClient implements Runnable {
 					boolean tryToConnect = false;
 					boolean transitionToOnline = false;
 					if (tahuClient == null || !tahuClient.isConnected()) {
-						logger.warn("{} Not connected - attempting connect with isStayRunning={}", edgeNodeDescriptor,
-								stayRunning);
-						tryToConnect = true;
+						if (!stayRunning) {
+							return;
+						} else {
+							logger.warn("{} Not connected - attempting connect with isStayRunning={}",
+									edgeNodeDescriptor, stayRunning);
+							tryToConnect = true;
+						}
 					}
 
 					if (stayRunning && tryToConnect) {
@@ -248,8 +305,8 @@ public class EdgeClient implements Runnable {
 								subQos.add(1);
 
 								// Subscribe to DCMDs
-								if (deviceIds != null && !deviceIds.isEmpty()) {
-									for (String deviceId : deviceIds) {
+								if (deviceStatusMap != null && !deviceStatusMap.isEmpty()) {
+									for (String deviceId : deviceStatusMap.keySet()) {
 										subTopics.add(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX + "/"
 												+ edgeNodeDescriptor.getGroupId() + "/DCMD/"
 												+ edgeNodeDescriptor.getEdgeNodeId() + "/" + deviceId);
@@ -264,7 +321,8 @@ public class EdgeClient implements Runnable {
 								subQos.add(1);
 
 								if (primaryHostId != null && !primaryHostId.isEmpty()) {
-									subTopics.add("STATE/" + primaryHostId);
+									subTopics
+											.add(SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + primaryHostId);
 									subQos.add(1);
 								}
 
@@ -288,7 +346,6 @@ public class EdgeClient implements Runnable {
 					if (transitionToOnline) {
 						// In a transition to an MQTT session, publish the NBIRTH and DBIRTH messages.
 						transitionToOnline = false;
-						connectedToMqttServer = true;
 
 						// Check if the server type is NOT JSON and we have specified a primary host ID
 						if (primaryHostId != null && !primaryHostId.isEmpty()) {
@@ -305,9 +362,10 @@ public class EdgeClient implements Runnable {
 							primaryHostIdResponseTimer.schedule(new PrimaryHostIdResponseTask(), 30000);
 
 							// Subscribe to the STATE topic for primary host ID notifications
-							int grantedQos = tahuClient.subscribe("STATE/" + primaryHostId, MqttOperatorDefs.QOS1);
+							String subHostTopic = SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX + "/" + primaryHostId;
+							int grantedQos = tahuClient.subscribe(subHostTopic, MqttOperatorDefs.QOS1);
 							if (grantedQos != 1) {
-								logger.error("Failed to subscribe to 'STATE/{}'", primaryHostId);
+								logger.error("Failed to subscribe to '{}'", subHostTopic);
 								// Cancel the timer and disconnect
 								if (primaryHostIdResponseTimer != null) {
 									primaryHostIdResponseTimer.cancel();
@@ -338,6 +396,7 @@ public class EdgeClient implements Runnable {
 				return false;
 			}
 
+			MqttClientId mqttClientId = null;
 			try {
 				Topic deathTopic = metricHandler.getDeathTopic();
 				byte[] deathPayloadBytes = null;
@@ -356,13 +415,21 @@ public class EdgeClient implements Runnable {
 					return false;
 				}
 
-				tahuClient = new TahuClient(clientId, mqttServerName, mqttServerUrl, username, password, true,
-						keepAlive, callback, randomStartupDelay, null, null, false, deathTopic.toString(),
-						deathPayloadBytes, 1, false);
+				currentMqttClientIndex++;
+				if (currentMqttClientIndex >= mqttServerDefinitions.size()) {
+					currentMqttClientIndex = 0;
+				}
+				MqttServerDefinition mqttServerDefinition = mqttServerDefinitions.get(currentMqttClientIndex);
+				mqttClientId = mqttServerDefinition.getMqttClientId();
+				tahuClient = new TahuClient(mqttClientId, mqttServerDefinition.getMqttServerName(),
+						mqttServerDefinition.getMqttServerUrl(), mqttServerDefinition.getUsername(),
+						mqttServerDefinition.getPassword(), true, mqttServerDefinition.getKeepAliveTimeout(), callback,
+						randomStartupDelay, false, null, null, false, deathTopic.toString(), deathPayloadBytes, 1,
+						false);
 				tahuClient.setTrackFirstConnection(true);
 				tahuClient.setAutoReconnect(false);
 
-				logger.info("{} Attempting to connect", clientId);
+				logger.info("{} Attempting to connect", mqttClientId);
 				tahuClient.connect();
 
 				// Loop for 1.5 times the keep-alive timeout + randomStartupDelay + rebirthDebounceDelay, waiting for
@@ -372,14 +439,14 @@ public class EdgeClient implements Runnable {
 				logger.debug("Total timeout to connect is {} seconds", totalTimeout);
 				for (int i = 0; i < totalTimeout; i++) {
 					if (tahuClient.isAttemptingConnect()) {
-						logger.info("{} is attempting to connect", clientId);
+						logger.info("{} is attempting to connect", mqttClientId);
 					} else {
-						logger.info("{} is not attempting to connect", clientId);
+						logger.info("{} is not attempting to connect", mqttClientId);
 					}
 
 					if (!stayRunning) {
 						// Attempt to disconnect from the target server
-						logger.debug("{} Shutting down", clientId);
+						logger.debug("{} Shutting down", mqttServerDefinition.getMqttClientId());
 						disconnect(true);
 						return false;
 					} else if (tahuClient.isAttemptingConnect()) {
@@ -389,22 +456,22 @@ public class EdgeClient implements Runnable {
 							logger.error("Error occured while sleeping", e);
 						}
 					} else if (tahuClient.isConnected()) {
-						logger.info("{} Connected to the MQTT Server", clientId);
+						logger.info("{} Connected to the MQTT Server", mqttClientId);
 						return true;
 					} else {
-						logger.info("{} No longer attempting to connect", clientId);
+						logger.info("{} No longer attempting to connect", mqttClientId);
 						break;
 					}
 				}
 
 				// Attempt to disconnect from the target server
-				logger.error("{} Failed to achieve connected state", clientId);
+				logger.error("{} Failed to achieve connected state", mqttClientId);
 				disconnect(true);
 
 				// Return false to indicate a failed connect attempt
 				return false;
 			} catch (Throwable t) {
-				logger.error("{} Error while attempting to connect to target server for {}", clientId,
+				logger.error("{} Error while attempting to connect to target server for {}", mqttClientId,
 						edgeNodeDescriptor, t);
 				logger.info("\ttahuClient: {}", tahuClient);
 
@@ -450,18 +517,27 @@ public class EdgeClient implements Runnable {
 	 * @param primaryHostId the primary host ID
 	 * @param state the state
 	 */
-	public void handleStateMessage(String primaryHostId, String state) {
+	public void handleStateMessage(String primaryHostId, StatePayload statePayload) {
 		synchronized (clientLock) {
 			if (this.primaryHostId != null && this.primaryHostId.equals(primaryHostId)) {
-				if (state.equals("ONLINE") && !connectedToPrimaryHost) {
-					logger.info("Critical/Primary app is ONLINE - cancelling disconnect timer");
+				Long payloadTimestamp = statePayload.getTimestamp();
+				if (lastStatePayloadTimestamp != null && payloadTimestamp.compareTo(lastStatePayloadTimestamp) < 0) {
+					logger.info("Reveived a stale STATE message - ignoring hostId={} and payload={}", primaryHostId,
+							statePayload);
+					return;
+				} else {
+					lastStatePayloadTimestamp = payloadTimestamp;
+				}
+
+				if (statePayload.isOnline() && !connectedToPrimaryHost) {
+					logger.info("Critical/Primary app is online - cancelling disconnect timer");
 					if (primaryHostIdResponseTimer != null) {
 						primaryHostIdResponseTimer.cancel();
 						primaryHostIdResponseTimer = null;
 					}
 					handleOnlineTransition("STATE CHANGE");
-				} else if (state.equals("OFFLINE")) {
-					logger.error("Critical/Primary app went OFFLINE - disconnecting from this server");
+				} else if (!statePayload.isOnline()) {
+					logger.error("Critical/Primary app went offline - disconnecting from this server");
 					// Check if currently connected to primary host
 					if (connectedToPrimaryHost) {
 						connectedToPrimaryHost = false;
@@ -500,7 +576,7 @@ public class EdgeClient implements Runnable {
 
 	private class PrimaryHostIdResponseTask extends TimerTask {
 		public void run() {
-			logger.error("Failed to validate the Primary Host is ONLINE");
+			logger.error("Failed to validate the Primary Host is online");
 			disconnect(true);
 		}
 	}
