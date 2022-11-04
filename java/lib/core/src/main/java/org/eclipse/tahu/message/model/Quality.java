@@ -13,8 +13,14 @@
 
 package org.eclipse.tahu.message.model;
 
+/**
+ * The Sparkplug quality value associated with a {@link Metric}
+ */
 public class Quality {
 
+	/**
+	 * Default Constructor
+	 */
 	public Quality() {
 		// TODO Auto-generated constructor stub
 	}

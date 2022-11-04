@@ -29,6 +29,9 @@ import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A class representing a {@link Map} of {@link Template} {@link Metric}s
+ */
 public class TemplateMap extends Template {
 
 	private static Logger logger = LoggerFactory.getLogger(TemplateMap.class.getName());
@@ -57,18 +60,32 @@ public class TemplateMap extends Template {
 		this.metricMap = metricMap;
 	}
 
+	/**
+	 * Gets an unmodifiable {@link Map} of the {@link Metric}s
+	 *
+	 * @return an unmodifiable {@link Map} of the {@link Metric}s
+	 */
 	public Map<String, Metric> getMetricMap() {
 		synchronized (mapLock) {
 			return Collections.unmodifiableMap(metricMap);
 		}
 	}
 
+	/**
+	 * Updates a {@link Metric} in the {@link TemplateMap}
+	 *
+	 * @param metricName the name of the {@link Metric} to update
+	 * @param metric the {@link Metric} to place in the {@link Map}
+	 */
 	public void updateMetric(String metricName, Metric metric) {
 		synchronized (mapLock) {
 			metricMap.put(metricName, metric);
 		}
 	}
 
+	/**
+	 * Gets the {@link List} of {@link Metric}s in this {@link TemplateMap}
+	 */
 	@Override
 	public List<Metric> getMetrics() {
 		synchronized (mapLock) {
@@ -76,6 +93,10 @@ public class TemplateMap extends Template {
 		}
 	}
 
+	/**
+	 * Sets the {@link Map} of {@link Metric}s using a {@link List}. If any metric names are duplicated in the list,
+	 * only the last one will be placed in the map.
+	 */
 	@Override
 	public void setMetrics(List<Metric> metrics) {
 		synchronized (mapLock) {
@@ -85,6 +106,11 @@ public class TemplateMap extends Template {
 		}
 	}
 
+	/**
+	 * Adds an {@link Metric} to the end of the {@link TemplateMap}
+	 *
+	 * @param metric the {@link Metric} to add to the {@link TemplateMap}
+	 */
 	@Override
 	public void addMetric(Metric metric) {
 		synchronized (mapLock) {

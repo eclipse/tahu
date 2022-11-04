@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 
 /**
- * 
+ * A {@link BeanDeserializerModifier} for Sparkplug
  */
 public class DeserializerModifier extends BeanDeserializerModifier {
 

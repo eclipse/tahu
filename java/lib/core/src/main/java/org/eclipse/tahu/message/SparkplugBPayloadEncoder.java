@@ -49,10 +49,14 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 
 	private static final Logger logger = LoggerFactory.getLogger(SparkplugBPayloadEncoder.class.getName());
 
+	/**
+	 * Default Constructor
+	 */
 	public SparkplugBPayloadEncoder() {
 		super();
 	}
 
+	@Override
 	public byte[] getBytes(SparkplugBPayload payload, boolean stripDataTypes) throws IOException {
 
 		SparkplugBProto.Payload.Builder protoMsg = SparkplugBProto.Payload.newBuilder();

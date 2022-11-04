@@ -73,11 +73,25 @@ public enum MetricDataType {
 	private Class<?> clazz = null;
 	private int intValue = 0;
 
+	/**
+	 * Constructor
+	 *
+	 * @param intValue the integer value of this {@link MetricDataType}
+	 *
+	 * @param clazz the {@link Class} type associated with this {@link MetricDataType}
+	 */
 	private MetricDataType(int intValue, Class<?> clazz) {
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
 
+	/**
+	 * Checks the type of a specified value against the specified {@link MetricDataType}
+	 *
+	 * @param value the {@link Object} value to check against the {@link MetricDataType}
+	 *
+	 * @throws SparkplugInvalidTypeException if the value is not a valid type for the given {@link MetricDataType}
+	 */
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
 			logger.warn(

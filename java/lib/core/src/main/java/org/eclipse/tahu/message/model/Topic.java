@@ -67,6 +67,9 @@ public class Topic {
 	 */
 	private final MessageType type;
 
+	/**
+	 * Default Constructor
+	 */
 	public Topic() {
 		this.namespace = null;
 		this.sparkplugDescriptor = null;
@@ -85,7 +88,6 @@ public class Topic {
 	 * @param groupId the Group ID
 	 * @param edgeNodeId the Edge Node ID
 	 * @param deviceId the Device ID
-	 * @param hostApplicationId the Host Application ID
 	 * @param type the message type
 	 */
 	public Topic(String namespace, String groupId, String edgeNodeId, String deviceId, MessageType type) {
@@ -150,6 +152,7 @@ public class Topic {
 	 *
 	 * @param namespace the namespace
 	 * @param hostApplicationId the Host Application ID
+	 * @param type the message type
 	 */
 	public Topic(String namespace, String hostApplicationId, MessageType type) {
 		super();
@@ -163,6 +166,13 @@ public class Topic {
 		this.deviceId = null;
 	}
 
+	/**
+	 * Parses a Sparkplug topic from an MQTT topic string
+	 *
+	 * @param topicString the MQTT topic string to convert to a {@link Topic}
+	 * @return the {@link Topic} that represents the input MQTT topic string
+	 * @throws TahuException if the MQTT topic string can not be parsed
+	 */
 	public static Topic parseTopic(String topicString) throws TahuException {
 		try {
 			if (topicString == null || topicString.isEmpty()

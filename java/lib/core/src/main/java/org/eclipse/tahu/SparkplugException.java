@@ -28,7 +28,7 @@ public class SparkplugException extends Exception {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param message an error message
 	 */
 	public SparkplugException(String message) {
@@ -37,7 +37,7 @@ public class SparkplugException extends Exception {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param message an error message
 	 * @param exception an underlying exception
 	 */

@@ -64,28 +64,58 @@ public class Parameter {
 		}
 	}
 
+	/**
+	 * Gets the name of this {@link Parameter}
+	 *
+	 * @return the name of this {@link Parameter}
+	 */
 	@JsonGetter("name")
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Sets the name of this {@link Parameter}
+	 *
+	 * @param name the name of this {@link Parameter}
+	 */
 	@JsonSetter("name")
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Gets the {@link ParameterDataType} of this {@link Parameter}
+	 *
+	 * @return the {@link ParameterDataType} of this {@link Parameter}
+	 */
 	public ParameterDataType getType() {
 		return type;
 	}
 
+	/**
+	 * Sets the {@link ParameterDataType} of this {@link Parameter}
+	 *
+	 * @param type the {@link ParameterDataType} of this {@link Parameter}
+	 */
 	public void setType(ParameterDataType type) {
 		this.type = type;
 	}
 
+	/**
+	 * Gets the {@link Object} value of this {@link Parameter}
+	 *
+	 * @return the {@link Object} value of this {@link Parameter}
+	 */
 	public Object getValue() {
 		return value;
 	}
 
+	/**
+	 * Sets the {@link Object} value of this {@link Parameter}
+	 *
+	 * @param type the {@link Object} value of this {@link Parameter}
+	 */
 	public void setValue(Object value) {
 		this.value = value;
 	}
