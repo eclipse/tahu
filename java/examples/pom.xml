@@ -28,7 +28,7 @@
 
   <groupId>org.eclipse.tahu</groupId>
   <artifactId>tahu-examples</artifactId>
-  <version>0.5.19-SNAPSHOT</version>
+  <version>1.0.0-rc1</version>
   <packaging>pom</packaging>
 
   <name>Eclipse Tahu</name>
