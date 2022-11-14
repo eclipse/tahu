@@ -45,7 +45,8 @@ public class DefaultBdSeqManager implements BdSeqManager {
 			logger.info("bdSeqNumFileName: {}", bdSeqNumFileName);
 			File bdSeqNumFile = new File(bdSeqNumFileName);
 			if (bdSeqNumFile.exists()) {
-				int bdSeqNum = Integer.parseInt(FileUtils.readFileToString(bdSeqNumFile, Charset.defaultCharset()));
+				int bdSeqNum =
+						Integer.parseInt(FileUtils.readFileToString(bdSeqNumFile, Charset.defaultCharset().toString()));
 				logger.info("Next Death bdSeq number: {}", bdSeqNum);
 				return bdSeqNum;
 			} else {
@@ -63,7 +64,8 @@ public class DefaultBdSeqManager implements BdSeqManager {
 	public void storeNextDeathBdSeqNum(long bdSeqNum) {
 		try {
 			File bdSeqNumFile = new File(bdSeqNumFileName);
-			FileUtils.write(bdSeqNumFile, Long.toString(bdSeqNum), Charset.defaultCharset(), false);
+			FileUtils.writeStringToFile(bdSeqNumFile, Long.toString(bdSeqNum), Charset.defaultCharset().toString(),
+					false);
 		} catch (Exception e) {
 			logger.error("Failed to write the bdSeq number to the persistent directory", e);
 		}
