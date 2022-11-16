@@ -337,6 +337,10 @@ public class TahuClient implements MqttCallbackExtended {
 		return lwtRetain;
 	}
 
+	public Long getLastStateDeathPayloadTimestamp() {
+		return lastStateDeathPayloadTimestamp;
+	}
+
 	public boolean isConnected() {
 		if (client != null) {
 			return client.isConnected();
@@ -462,12 +466,12 @@ public class TahuClient implements MqttCallbackExtended {
 						logger.debug("{}: on connection to {} - Attempting to subscribe on topic {} with QoS={}",
 								getClientId(), getMqttServerName(), topic, qos);
 						IMqttToken token = client.subscribe(topic, qos);
-						logger.trace("Waiting for subscription on {}", topic);
+						logger.trace("{}: Waiting for subscription on {}", getClientId(), topic);
 						token.waitForCompletion();
-						logger.trace("Done waiting for subscription on {}", topic);
+						logger.trace("{}: Done waiting for subscription on {}", getClientId(), topic);
 						subscriptions.put(topic, qos);
 						int[] grantedQos = token.getGrantedQos();
-						logger.debug("Granted QoS for subcription on {}: {}", topic, grantedQos[0]);
+						logger.debug("{}: Granted QoS for subcription on {}: {}", getClientId(), topic, grantedQos[0]);
 						if (grantedQos != null && grantedQos.length == 1) {
 							return grantedQos[0];
 						} else {
@@ -483,7 +487,8 @@ public class TahuClient implements MqttCallbackExtended {
 					}
 				}
 			}
-			logger.debug("Not connected and not subscribing to {} - just storing the subscription for now", topic);
+			logger.debug("{}: Not connected and not subscribing to {} - just storing the subscription for now",
+					getClientId(), topic);
 			subscriptions.put(topic, qos);
 			return qos;
 		}
@@ -506,9 +511,9 @@ public class TahuClient implements MqttCallbackExtended {
 						logger.debug("{}: Attempting to subscribe on topics {} with QoS={}", getClientId(), topics,
 								qos);
 						IMqttToken token = client.subscribe(topics, qos);
-						logger.trace("Waiting for subscription on {}", Arrays.toString(topics));
+						logger.trace("{}: Waiting for subscription on {}", getClientId(), Arrays.toString(topics));
 						token.waitForCompletion();
-						logger.trace("Done waiting for subscription on {}", Arrays.toString(topics));
+						logger.trace("{}: Done waiting for subscription on {}", getClientId(), Arrays.toString(topics));
 						int[] grantedQos = token.getGrantedQos();
 						if (grantedQos != null && grantedQos.length > 0) {
 							for (int i = 0; i < topics.length; i++) {
@@ -530,8 +535,8 @@ public class TahuClient implements MqttCallbackExtended {
 				for (int i = 0; i < topics.length; i++) {
 					subscriptions.put(topics[i], qos[i]);
 				}
-				logger.debug("Not connected and not subscribing to {} - just storing the subscription for now",
-						Arrays.asList(topics));
+				logger.debug("{}: Not connected and not subscribing to {} - just storing the subscription for now",
+						getClientId(), Arrays.asList(topics));
 				return qos;
 			} catch (Exception e) {
 				throw new TahuException(TahuErrorCode.INTERNAL_ERROR, e);
@@ -607,7 +612,7 @@ public class TahuClient implements MqttCallbackExtended {
 		try {
 			NetworkModuleService.validateURI(mqttServerUrl.getMqttServerUrl());
 		} catch (Exception e) {
-			logger.error("Invalid MQTT Server URL: {}", mqttServerUrl.getMqttServerUrl());
+			logger.error("{}: Invalid MQTT Server URL: {}", getClientId(), mqttServerUrl.getMqttServerUrl());
 			return;
 		}
 
@@ -665,7 +670,7 @@ public class TahuClient implements MqttCallbackExtended {
 			try {
 				shutdownConnectionMonitorThread();
 			} catch (Exception e) {
-				logger.error("Failed to shutdown connection monitor thread");
+				logger.error("{}: Failed to shutdown connection monitor thread", getClientId());
 			}
 
 			try {
@@ -674,7 +679,7 @@ public class TahuClient implements MqttCallbackExtended {
 					connectRunnableThread.interrupt();
 				}
 			} catch (Exception e) {
-				logger.error("Failed to shut down the connect runnable");
+				logger.error("{}: Failed to shut down the connect runnable", getClientId());
 			}
 
 			if (client != null) {
@@ -697,31 +702,32 @@ public class TahuClient implements MqttCallbackExtended {
 									byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
 									lwtDeliveryToken = publish(lwtTopic, payload, lwtQoS, lwtRetain);
 								} catch (Exception e) {
-									logger.error("Failed to publish the LWT message on {}", lwtTopic, e);
+									logger.error("{}: Failed to publish the LWT message on {}", getClientId(), lwtTopic,
+											e);
 								}
 							} else {
 								lwtDeliveryToken = publish(lwtTopic, lwtPayload, lwtQoS, lwtRetain);
 							}
-							logger.debug("published on LWT Topic={}, messageId={}", lwtTopic,
+							logger.debug("{}: published on LWT Topic={}, messageId={}", getClientId(), lwtTopic,
 									lwtDeliveryToken.getMessageId());
 						}
 
 						if (waitForLwt) {
 							lwtDeliveryComplete = isLwtDeliveryComplete();
-							logger.trace("Completed LWT Delivery? {}", lwtDeliveryComplete);
+							logger.trace("{}: Completed LWT Delivery? {}", getClientId(), lwtDeliveryComplete);
 						} else {
-							logger.trace("Not waiting for LWT");
+							logger.trace("{}: Not waiting for LWT", getClientId());
 						}
 					} else {
 						logger.debug("{}: Not publishing LWT, client connected state: {}", getClientId(),
 								clientConnected);
 					}
 
-					logger.debug("Disconnecting...");
+					logger.debug("{}: Disconnecting...", getClientId());
 					client.disconnectForcibly(disconnectQuieseTime, disconnectTimeout, sendDisconnect);
-					logger.debug("Done disconecting");
+					logger.debug("{}: Done disconecting", getClientId());
 					client.close();
-					logger.debug("Client closed");
+					logger.debug("{}: Client closed", getClientId());
 				} catch (MqttException e) {
 					throw new TahuException(TahuErrorCode.INTERNAL_ERROR, e);
 				} finally {
@@ -731,7 +737,7 @@ public class TahuClient implements MqttCallbackExtended {
 					lwtDeliveryToken = null;
 				}
 			} else {
-				logger.debug("Disconnect: Client is already null");
+				logger.debug("{}: Disconnect: Client is already null", getClientId());
 			}
 
 			// reset the timers if needed
@@ -757,11 +763,11 @@ public class TahuClient implements MqttCallbackExtended {
 			}
 			if (randomStartupDelay != null && randomStartupDelay.isValid()) {
 				long randomDelay = randomStartupDelay.getRandomDelay();
-				logger.debug("Waiting random delay of {} ms before reconnect attempt", randomDelay);
+				logger.debug("{}: Waiting random delay of {} ms before reconnect attempt", getClientId(), randomDelay);
 				try {
 					Thread.sleep(randomDelay);
 				} catch (InterruptedException e) {
-					logger.warn("Sleep interrupted", e);
+					logger.warn("{}: Sleep interrupted", getClientId(), e);
 				}
 			}
 
@@ -782,7 +788,7 @@ public class TahuClient implements MqttCallbackExtended {
 				public void onFailure(IMqttToken token, Throwable throwable) {
 					logger.warn("{}: {} failed due to {}", getClientId(), token.getUserContext(),
 							throwable != null ? throwable.getMessage() : "?", throwable);
-					logger.warn("MQTT Client details: {}", getTahuClientDetails());
+					logger.warn("{}: MQTT Client details: {}", getClientId(), getTahuClientDetails());
 					state.setInProgress(false);
 				}
 
@@ -977,7 +983,7 @@ public class TahuClient implements MqttCallbackExtended {
 					try {
 						if (randomStartupDelay != null && randomStartupDelay.isValid()) {
 							long randomDelay = randomStartupDelay.getRandomDelay();
-							logger.info("Sleeping {} before reconnect attempt", randomDelay);
+							logger.info("{}: Sleeping {} before reconnect attempt", getClientId(), randomDelay);
 							Thread.sleep(randomDelay);
 						} else {
 							Thread.sleep(getConnectRetryInterval());
@@ -1145,7 +1151,7 @@ public class TahuClient implements MqttCallbackExtended {
 
 		// Check if we are in the process of disconnecting
 		if (disconnectInProgress) {
-			logger.warn("Ignoring connect complete to {}, disconnect in progress", serverURI);
+			logger.warn("{}: Ignoring connect complete to {}, disconnect in progress", getClientId(), serverURI);
 			// This potentially prevents a deadlock situation upon synchronizing on the clientLock below if a disconnect
 			// is in progress and waiting on the client.disconnect() call
 			return;
@@ -1190,9 +1196,9 @@ public class TahuClient implements MqttCallbackExtended {
 						getMqttServerName(), Arrays.toString(topics), Arrays.toString(qosLevels));
 				try {
 					IMqttToken token = client.subscribe(topics, qosLevels);
-					logger.trace("Waiting for subscription on {}", Arrays.toString(topics));
+					logger.trace("{}: Waiting for subscription on {}", getClientId(), Arrays.toString(topics));
 					token.waitForCompletion();
-					logger.trace("Done waiting for subscription on {}", Arrays.toString(topics));
+					logger.trace("{}: Done waiting for subscription on {}", getClientId(), Arrays.toString(topics));
 					int[] grantedQos = token.getGrantedQos();
 					if (Arrays.equals(qosLevels, grantedQos)) {
 						logger.debug("{}: on connection to {} - Successfully subscribed to {} on QoS={}", getClientId(),
@@ -1220,7 +1226,7 @@ public class TahuClient implements MqttCallbackExtended {
 				}
 			} else {
 				if (trackFirstConnection && !firstConnection) {
-					logger.warn("No subscriptions for {}", getClientId());
+					logger.warn("{}: No subscriptions for {}", getClientId(), getClientId());
 				}
 			}
 
@@ -1253,7 +1259,7 @@ public class TahuClient implements MqttCallbackExtended {
 						byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
 						publish(birthTopic, payload, MqttOperatorDefs.QOS1, birthRetain);
 					} catch (Exception e) {
-						logger.error("Failed to publish the BIRTH message on {}", birthTopic, e);
+						logger.error("{}: Failed to publish the BIRTH message on {}", getClientId(), birthTopic, e);
 					}
 				} else {
 					publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
@@ -1346,17 +1352,17 @@ public class TahuClient implements MqttCallbackExtended {
 		for (int i = 0; i < counter; i++) {
 			try {
 				if (lwtDeliveryToken == null) {
-					logger.info("LWT delivery confirmation - done waiting");
+					logger.info("{}: LWT delivery confirmation - done waiting", getClientId());
 					return true;
 				} else {
 					Thread.sleep(250);
 				}
 			} catch (InterruptedException e) {
-				logger.warn("Interrupted while waiting for LWT");
+				logger.warn("{}: Interrupted while waiting for LWT", getClientId());
 			}
 		}
 		lwtDeliveryToken = null;
-		logger.warn("LWT delivery confirmation - timeout");
+		logger.warn("{}: LWT delivery confirmation - timeout", getClientId());
 		return false;
 	}
 }
