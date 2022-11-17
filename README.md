@@ -24,11 +24,9 @@ that were not possible in the original Kura payload definition.  These features 
 * Historical data
 * File data
 
-Sparkplug B Specification:
-https://www.eclipse.org/tahu/spec/Sparkplug%20Topic%20Namespace%20and%20State%20ManagementV2.2-with%20appendix%20B%20format%20-%20Eclipse.pdf
-
-Tutorials showing how to use this reference code can be found here:
-https://docs.chariot.io/display/CLD79/Sparkplug+Developer+Docs
+Sparkplug Specification v3.0.0: https://www.eclipse.org/tahu/spec/sparkplug_spec.pdf
+Eclipse Sparkplug Project: https://projects.eclipse.org/projects/iot.sparkplug
+Eclipse Sparkplug & TCK Github Repository: https://github.com/eclipse-sparkplug/sparkplug
 
 # Contributing
 Contributing to the Sparkplug Tahu Project is easy and contributions are welcome. In order to submit a pull request (PR) you must follow these steps. Failure to follow these steps will likely lead to the PR being rejected.
