@@ -22,8 +22,9 @@ import enum
 import paho.mqtt.client as mqtt
 import tahu
 from . import sparkplug_b_pb2
+from typing import *
 
-def _rebirth_command_handler(tag, context, value):
+def _rebirth_command_handler(tag: Metric, context: Any, value: Any) -> None:
     """
     Metric command handler for "Node Control/Rebirth"
 
@@ -41,7 +42,7 @@ def _rebirth_command_handler(tag, context, value):
     # We don't care what value the server wrote to the tag, any write is considered a trigger.
     tag._parent_device._needs_to_send_birth = True
 
-def _next_server_command_handler(tag, context, value):
+def _next_server_command_handler(tag: Metric, context: Any, value: Any) -> None:
     """
     Metric command handler for "Node Control/Next Server"
 
@@ -70,8 +71,8 @@ class Metric(object):
     The change_value is used to report new values over Sparkplug, and the cmd_handler provided when created will be called if a new value is received from Sparkplug.
 
     """
-    def __init__(self, parent_device, name, datatype=None, value=None,
-                 cmd_handler=None, cmd_context=None):
+    def __init__(self, parent_device: Union[Node, Device], name: Text, datatype: Optional[tahu.DataType] = None, value: Optional[Any] = None,
+                 cmd_handler: Optional[Callable[[Metric, Optional[Any], Any], None]] = None, cmd_context: Optional[Any] = None) -> None:
         """
         Initialize a Metric object
 
@@ -95,18 +96,15 @@ class Metric(object):
             self._datatype = tahu.DataType(datatype)
         else:
             self._datatype = tahu._get_datatype_from_type(type(value))
-            if self._datatype is None:
-                raise ValueError('Need explicit datatype for Python type {}'.format(type(value)))
-
         self._value = value
         self._last_received = None
         self._last_sent = None
         self._cmd_handler = cmd_handler
         self._cmd_context = cmd_context
-        self._properties = []
+        self._properties: List[MetricProperty] = []
         self.alias = parent_device._attach_tag(self)
 
-    def _attach_property(self, property):
+    def _attach_property(self, property: MetricProperty) -> int:
         """
         Attach a Sparkplug property object to this metric
 
@@ -120,7 +118,7 @@ class Metric(object):
         # TODO - Add checking/handling depending if we're connected
         return next_index
 
-    def _fill_in_payload_metric(self, new_metric, birth=False):
+    def _fill_in_payload_metric(self, new_metric: sparkplug_b_pb2.Payload.Metric, birth: bool = False) -> None:
         """
         Fill in the Metric message object provided with the metrics most recent values
 
@@ -140,7 +138,7 @@ class Metric(object):
             if birth or p._report_with_data:
                 new_metric.properties.keys.append(p._name)
                 pvalue = new_metric.properties.values.add()
-                pvalue.type = p._datatype
+                pvalue.type = tahu.DataType(p._datatype)
                 tahu.value_to_sparkplug(pvalue, pvalue.type,
                                         p._value,
                                         self._u32_in_long)
@@ -154,7 +152,7 @@ class Metric(object):
                                     self._u32_in_long)
         self._last_sent = self._value
 
-    def change_value(self, value, send_immediate=True):
+    def change_value(self, value: Any, send_immediate: bool = True) -> int:
         """
         Update the known value of the metric and optionally cause a payload to be sent immediately
 
@@ -169,7 +167,7 @@ class Metric(object):
             self._parent_device.send_data([self.alias])
         return self.alias
 
-    def _handle_sparkplug_command(self, Metric):
+    def _handle_sparkplug_command(self, Metric: sparkplug_b_pb2.Payload.Metric) -> None:
         """
         Stub for handling received metrics and calling out to cmd_handler hooks as needed
 
@@ -178,21 +176,18 @@ class Metric(object):
         """
         # Note that we enforce OUR expected datatype on the value as we pull it from the metric
         try:
-            value = tahu.value_from_sparkplug(Metric,
-                                              self._datatype)
+            value = tahu.value_from_sparkplug(Metric, self._datatype)
         except tahu.SparkplugDecodeError as errmsg:
-            self._logger.warning('Sparkplug decode error for tag {}: {}'.format(self.name,
-                                                                                errmsg))
+            self._logger.warning('Sparkplug decode error for tag {}: {}'.format(self.name, errmsg))
             return
-        self._logger.debug('Command received for tag {} = {}'.format(self.name,
-                                                                     value))
+        self._logger.debug('Command received for tag {} = {}'.format(self.name, value))
         if self._cmd_handler:
             self._cmd_handler(self, self._cmd_context, value)
         else:
             self._logger.info('Received command for tag {} with no handler. No action taken.'.format(self.name))
         self._last_received = value
 
-    def changed_since_last_sent(self):
+    def changed_since_last_sent(self) -> bool:
         """If the metric value or any of the dynamic properties have changed since the most recent publish, returns true"""
         for p in self._properties:
             if p._report_with_data and p.changed_since_last_sent():
@@ -204,8 +199,8 @@ class MetricProperty(object):
     """
     The MetricProperty object manages all aspects of a single metric property
     """
-    def __init__(self, parent_metric, name, datatype, value,
-                 report_with_data=False):
+    def __init__(self, parent_metric: Metric, name: Text, datatype: Optional[tahu.DataType], value: Optional[Any],
+                 report_with_data: bool = False) -> None:
         """
         Initialize a MetricProperty object
 
@@ -230,11 +225,11 @@ class MetricProperty(object):
         self._last_sent = None
         self._parent_metric._attach_property(self)
 
-    def changed_since_last_sent(self):
+    def changed_since_last_sent(self) -> bool:
         """If the preoprty value has changed since the most recent publish, returns true"""
         return (self._value != self._last_sent)
 
-    def change_value(self, value, send_immediate=False):
+    def change_value(self, value: Any, send_immediate: bool = False) -> int:
         """
         Update the value of the property and optionally cause a payload to be sent immediately
 
@@ -251,7 +246,7 @@ class MetricProperty(object):
         return self._parent_metric.alias
 
 
-def bulk_properties(parent_metric, property_dict):
+def bulk_properties(parent_metric: Metric, property_dict: Dict[str, Any]) -> List[MetricProperty]:
     """
     Create multiple property objects and attach them all to the same metric quickly and easily
 
@@ -273,20 +268,21 @@ class _AbstractBaseDevice(object):
 
     The _AbstractBaseDevice should not be instantiated directly. Use Node or Device instead.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self._mqtt_client = None
-        self._tags = []
+        self._tags: List[Metric] = []
         self._needs_to_send_birth = True
+        self._logger = logging.getLogger('_AbstractBaseDevice')
 
-    def get_tag_names(self):
+    def get_tag_names(self) -> List[str]:
         """Return a list of the names of all metrics on this device"""
         return [m.name for m in self._tags]
 
-    def _get_next_seq(self):
+    def _get_next_seq(self) -> int:
         """Returns the Sparkplug `seq` number to use on the next publish"""
         raise NotImplementedError('_get_next_seq not implemented on this class')
 
-    def _attach_tag(self, tag):
+    def _attach_tag(self, tag: Metric) -> int:
         """
         Attach a Metric object to this device
 
@@ -304,7 +300,7 @@ class _AbstractBaseDevice(object):
 
     # TODO - Add another function to remove a tag
 
-    def _get_payload(self, alias_list, birth):
+    def _get_payload(self, alias_list: Iterable[int], birth: bool) -> sparkplug_b_pb2.Payload:
         """
         Create and return a Sparkplug Payload message for this device and the given metric aliases
 
@@ -324,7 +320,7 @@ class _AbstractBaseDevice(object):
             self._tags[m]._fill_in_payload_metric(new_metric, birth=birth)
         return tx_payload
 
-    def _get_topic(self, cmd_type):
+    def _get_topic(self, cmd_type: str) -> str:
         """
         Return the topic string to use for a command of the type given on this device object
 
@@ -335,7 +331,7 @@ class _AbstractBaseDevice(object):
         """
         raise NotImplementedError('_get_topic not implemented on this class')
 
-    def send_birth(self):
+    def send_birth(self) -> Any:
         """
         Generate and send a birth message for this device.
 
@@ -346,7 +342,7 @@ class _AbstractBaseDevice(object):
         """
         raise NotImplementedError('send_birth not implemented on this class')
 
-    def send_death(self):
+    def send_death(self) -> Any:
         """
         Generate and send a death message for this device.
 
@@ -357,7 +353,7 @@ class _AbstractBaseDevice(object):
         """
         raise NotImplementedError('send_death not implemented on this class')
 
-    def send_data(self, aliases=None, changed_only=False):
+    def send_data(self, aliases: Optional[List[int]] = None, changed_only: bool = False) -> Any:
         """
         Generate and send a data message for this device.
 
@@ -367,13 +363,16 @@ class _AbstractBaseDevice(object):
         :param changed_only: whether to filter the metrics to only include those that have changed since the prior publish (Default value = False)
 
         """
+        if self._mqtt_client is None:
+            raise RunTimeError('Trying to send data without an MQTT client connection')
+            return
         if not self.is_connected():
             self._logger.warning('Trying to send data when not connected. Skipping.')
             return
         if self._needs_to_send_birth:
             return self.send_birth()
         if aliases is None:
-            aliases = range(len(self._tags))
+            aliases = list(range(len(self._tags)))
         if changed_only:
             aliases = [x for x in aliases if self._tags[x].changed_since_last_sent()]
         if len(aliases) == 0:
@@ -384,11 +383,11 @@ class _AbstractBaseDevice(object):
         return self._mqtt_client.publish(topic,
                                          tx_payload.SerializeToString())
 
-    def get_watched_topic(self):
+    def get_watched_topic(self) -> str:
         """Return the MQTT topic string on which this device expects to receive messages"""
         return self._get_topic('CMD')
 
-    def _handle_payload(self, topic, payload):
+    def _handle_payload(self, topic: str, payload: sparkplug_b_pb2.Payload) -> bool:
         """
         Handle a received Sparkplug payload
 

@@ -19,6 +19,7 @@ Core SparkplugB/MQTT library from Eclipse
 import time
 import enum
 from . import sparkplug_b_pb2
+from typing import *
 
 class SparkplugDecodeError(ValueError):
     """Exception type for all errors related to decoding SparkplugB payloads"""
@@ -51,8 +52,8 @@ class DataType(enum.IntEnum):
     PropertySetList = sparkplug_b_pb2.PropertySetList
 
 
-def _get_type_from_datatype(datatype):
-    """Return the best Python type to handle a SparkplugB DataType if one exists, None otherwise"""
+def _get_type_from_datatype(datatype: DataType) -> Type:
+    """Return the best Python type to handle a SparkplugB DataType if one exists, raises ValueError otherwise"""
     # TODO - Figure out the best way to handle the complex types in this list.
     # For now, they are commented out to indicate there is no native Python type.
     PYTHON_TYPE_PER_DATATYPE = {
@@ -79,10 +80,12 @@ def _get_type_from_datatype(datatype):
         #DataType.PropertySet : lambda x : x,
         #DataType.PropertySetList : lambda x : x,
     }
-    return PYTHON_TYPE_PER_DATATYPE.get(datatype, None)
+    if datatype not in PYTHON_TYPE_PER_DATATYPE:
+        raise ValueError(f'DataType {datatype} not fully supported')
+    return PYTHON_TYPE_PER_DATATYPE[datatype]
 
-def _get_datatype_from_type(pytype):
-    """Return the best SparkplugB DataType type to handle a Python type if one exists, None otherwise"""
+def _get_datatype_from_type(pytype: Type) -> DataType:
+    """Return the best SparkplugB DataType type to handle a Python type if one exists, raises ValueError otherwise"""
     DATATYPE_PER_PYTHON_TYPE = {
         int: DataType.Int64,
         float: DataType.Double,
@@ -90,9 +93,11 @@ def _get_datatype_from_type(pytype):
         str: DataType.String,
         bytes: DataType.Bytes,
     }
-    return DATATYPE_PER_PYTHON_TYPE.get(pytype, None)
+    if pytype not in DATATYPE_PER_PYTHON_TYPE:
+        raise ValueError(f'No good Sparkplug type for Python type {pytype}')
+    return DATATYPE_PER_PYTHON_TYPE[pytype]
 
-def _get_usable_value_fields_for_datatype(datatype):
+def _get_usable_value_fields_for_datatype(datatype: DataType) -> Set[str]:
     """Return a set of "oneof value" field names that we are willing to read a value from for a given SparkplugB DataType"""
     # NOTE: This is not normative by spec, but is useful when talking to an imperfect
     # implementation on the other side.  It lists for each expected datatype
@@ -122,13 +127,13 @@ def _get_usable_value_fields_for_datatype(datatype):
     }
     return CONVERTIBLE_VALUE_FIELD_PER_DATATYPE.get(datatype, set())
 
-def _is_int_datatype(datatype):
+def _is_int_datatype(datatype: DataType) -> bool:
     """Return whether SparkplugB DataType is an integer type"""
     return (datatype in (DataType.Int8, DataType.UInt8, DataType.Int16,
                          DataType.UInt16, DataType.Int32, DataType.UInt32,
                          DataType.Int64, DataType.UInt64))
 
-def _get_min_max_limits_per_int_datatype(datatype):
+def _get_min_max_limits_per_int_datatype(datatype: DataType) -> Tuple[int, int]:
     """Return a tuple with "allowable" (min, max) range for a given integer SparkplugB DataType"""
     # I could not find these constant limits in Python ...
     # It's not in ctypes or anywhere else AFAIK!
@@ -144,7 +149,7 @@ def _get_min_max_limits_per_int_datatype(datatype):
     }
     return MIN_MAX_LIMITS_PER_INTEGER_DATATYPE[datatype]
 
-def timestamp_to_sparkplug(utc_seconds=None):
+def timestamp_to_sparkplug(utc_seconds: Optional[float] = None) -> int:
     """
     Convert a timestamp to SparkplugB DateTime value
 
@@ -162,7 +167,7 @@ def timestamp_to_sparkplug(utc_seconds=None):
         utc_seconds = time.clock_gettime(time.CLOCK_REALTIME)
     return int(utc_seconds * 1000)
 
-def timestamp_from_sparkplug(sparkplug_time):
+def timestamp_from_sparkplug(sparkplug_time: float) -> float:
     """
     Convert a SparkplugB DateTime value to a timestamp
 
@@ -175,7 +180,9 @@ def timestamp_from_sparkplug(sparkplug_time):
     """
     return (float(sparkplug_time) / 1000.0)
 
-def value_to_sparkplug(container, datatype, value, u32_in_long=False):
+SparkplugValueContainer = Union[sparkplug_b_pb2.Payload.Template.Parameter, sparkplug_b_pb2.Payload.DataSet.DataSetValue, sparkplug_b_pb2.Payload.PropertyValue, sparkplug_b_pb2.Payload.Metric]
+
+def value_to_sparkplug(container: SparkplugValueContainer, datatype: DataType, value: Any, u32_in_long: bool = False) -> None:
     """
     Help pass a value into a payload container in preparation of protobuf packing
 
@@ -214,16 +221,16 @@ def value_to_sparkplug(container, datatype, value, u32_in_long=False):
         container.boolean_value = value
     elif datatype in [DataType.String, DataType.Text, DataType.UUID]:
         container.string_value = value
-    elif datatype in [DataType.Bytes, DataType.File]:
+    elif isinstance(container, sparkplug_b_pb2.Payload.Metric) and (datatype in [DataType.Bytes, DataType.File]):
         container.bytes_value = value
-    elif datatype == DataType.Template:
+    elif isinstance(container, sparkplug_b_pb2.Payload.Metric) and (datatype == DataType.Template):
         value.to_sparkplug_template(container.template_value, u32_in_long)
-    elif datatype == DataType.DataSet:
+    elif isinstance(container, sparkplug_b_pb2.Payload.Metric) and (datatype == DataType.DataSet):
         value.to_sparkplug_dataset(container.dataset_value, u32_in_long)
     else:
-        raise ValueError('Unhandled datatype={} in value_to_sparkplug'.format(datatype))
+        raise ValueError(f'Unhandled datatype={datatype} for container={type(container)} in value_to_sparkplug')
 
-def value_from_sparkplug(container, datatype):
+def value_from_sparkplug(container: SparkplugValueContainer, datatype: DataType) -> Any:
     """
     Help read a value out of a payload container after protobuf unpacking
 
@@ -244,18 +251,14 @@ def value_from_sparkplug(container, datatype):
     # implementations out there that might use the wrong value field.
     # We clamp values on any incoming integers larger than the datatype supports.
     # Tests well against Ignition 8.1.1
-    try:
-        has_null = container.HasField('is_null')
-    except ValueError:
-        has_null = False
-    if has_null and container.is_null:
-        return None
+    if isinstance(container, sparkplug_b_pb2.Payload.PropertyValue) or isinstance(container, sparkplug_b_pb2.Payload.Metric):
+        if container.HasField('is_null') and container.is_null:
+            return None
     value_field = container.WhichOneof('value')
     if value_field is None:
         raise SparkplugDecodeError('No value field present')
     if value_field not in _get_usable_value_fields_for_datatype(datatype):
-        raise SparkplugDecodeError('Unexpected value field {} for datatype {}'.format(value_field,
-                                                                                      datatype))
+        raise SparkplugDecodeError(f'Unexpected value field {value_field} for datatype {datatype}')
     value = getattr(container, value_field)
     if _is_int_datatype(datatype):
         value_min, value_max = _get_min_max_limits_per_int_datatype(datatype)
@@ -273,20 +276,23 @@ def value_from_sparkplug(container, datatype):
             value = value_min
         elif value > value_max:
             value = value_max
-    if datatype == DataType.Template:
-        return Template.from_sparkplug_template(value)
     if datatype == DataType.DataSet:
         return DataSet.from_sparkplug_dataset(value)
     pytype = _get_type_from_datatype(datatype)
     if pytype is not None:
         return pytype(value)
-    raise SparkplugDecodeError('Unhandled datatype={} in value_from_sparkplug'.format(datatype))
+    raise SparkplugDecodeError(f'Unhandled datatype={datatype} in value_from_sparkplug')
 
-def mqtt_params(server, port=None,
-                username=None, password=None,
-                client_id=None, keepalive=60,
-                tls_enabled=False, ca_certs=None, certfile=None,
-                keyfile=None):
+def mqtt_params(server: str, 
+                port: Optional[int] = None,
+                username: Optional[str] = None, 
+                password: Optional[str] = None, 
+                client_id: Optional[str] = None, 
+                keepalive: int = 60,
+                tls_enabled: bool = False, 
+                ca_certs: Optional[str] = None, 
+                certfile: Optional[str] = None, 
+                keyfile: Optional[str] = None) -> Dict[str, Any]:
     """
     Collect all setup parameters for a single MQTT connection into a object to be used when initializing a Node
 
@@ -304,7 +310,7 @@ def mqtt_params(server, port=None,
     :param certfile: strings pointing to the PEM encoded client certificate (optional, defaults to None)
     :param keyfile: strings pointing to the PEM encoded client private keys (optional, defaults to None)
     """
-    mqtt_params = {}
+    mqtt_params: Dict[str, Any] = {}
     mqtt_params['client_id'] = client_id
     mqtt_params['server'] = server
     mqtt_params['port'] = port if port else (8883 if tls_enabled else 1883)
@@ -325,16 +331,19 @@ class DataSet(object):
 
     # TODO - Add methods to allow easy value access by indices, e.g. with DataSet D you could just reference D[0][0] or D[0][column_name]
 
-    def __init__(self, name_datatype_tuples):
+    def __init__(self, name_datatype_tuples: Dict[str, int]) -> None:
         self._num_columns = len(name_datatype_tuples)
         if self._num_columns == 0:
             raise ValueError('dataset must have at least one column')
         self._column_names = [str(n) for n in name_datatype_tuples.keys()]
         self._column_datatypes = [DataType(d) for d in name_datatype_tuples.values()]
-        self._data = []
+        self._data: List[List] = []
 
-    def add_rows(self, data, keyed=False, in_columns=False,
-                 insert_index=None):
+    def add_rows(self, 
+                 data: Union[List, Dict], 
+                 keyed: bool = False, 
+                 in_columns: bool = False,
+                 insert_index: Optional[int] = None) -> None:
         """
         Add rows to an existing DataSet object
 
@@ -369,7 +378,7 @@ class DataSet(object):
         if ((data is None) or (len(data) == 0)):
             return
         new_data = []
-        col_keys = self._columns_names if keyed else range(self._num_columns)
+        col_keys = self._column_names if keyed else range(self._num_columns)
         col_python_types = [_get_type_from_datatype(self._column_datatypes[x]) for x in range(self._num_columns)]
         col_helper = tuple(zip(col_keys, col_python_types))
         if not in_columns:
@@ -379,14 +388,14 @@ class DataSet(object):
                     new_row.append(t(row[k]))
                 new_data.append(new_row)
         else:
-            num_rows = len(data[col_keys[0]])
+            num_rows = len(data[col_keys[0]]) # type: ignore
             for k in col_keys[1:]:
-                if len(data[k]) != num_rows:
-                    raise ValueError('data does not have {} rows in all columns'.format(num_rows))
+                if len(data[k]) != num_rows: # type: ignore
+                    raise ValueError(f'data does not have {num_rows} rows in all columns')
             for row_index in range(num_rows):
                 new_row = []
                 for k,t in col_helper:
-                    new_row.append(t(data[k][row_index]))
+                    new_row.append(t(data[k][row_index])) # type: ignore
                 new_data.append(new_row)
         if insert_index:
             # This is a neat Python trick.
@@ -397,15 +406,18 @@ class DataSet(object):
         else:
             self._data.extend(new_data)
 
-    def get_num_columns(self):
+    def get_num_columns(self) -> int:
         """Return the number of columns in the DataSet"""
         return self._num_columns
 
-    def get_num_rows(self):
+    def get_num_rows(self) -> int:
         """Return the number of rows in the DataSet"""
         return len(self._data)
 
-    def remove_rows(self, start_index=0, end_index=None, num_rows=None):
+    def remove_rows(self, 
+                    start_index: int = 0, 
+                    end_index: Optional[int] = None, 
+                    num_rows: Optional[int] = None) -> None:
         """
         Remove a contiguous set of rows from the DataSet
 
@@ -420,8 +432,12 @@ class DataSet(object):
                          + num_rows) if num_rows else len(self._data)
         self._data[start_index:end_index] = []
 
-    def get_rows(self, start_index=0, end_index=None, num_rows=None,
-                 in_columns=False, keyed=False):
+    def get_rows(self, 
+                 start_index: int = 0, 
+                 end_index: Optional[int] = None, 
+                 num_rows: Optional[int] = None, 
+                 in_columns: bool = False, 
+                 keyed: bool = False) -> Union[List, Dict]:
         """
         Returns a copy of the data from one or more rows in the DataSet
 
@@ -445,18 +461,16 @@ class DataSet(object):
                                  row)) for row in self._data[start_index:end_index]]
             return self._data[start_index:end_index]
         if not keyed:
-            data = []
+            listdata = []
             for k in range(self._num_columns):
-                data.append([self._data[r][k] for r in range(start_index,
-                                                             end_index)])
-            return data
-        data = {}
+                listdata.append([self._data[r][k] for r in range(start_index, end_index)])
+            return listdata
+        dictdata = {}
         for k in range(len(self._column_names)):
-            data[self._column_names[k]] = [self._data[r][k] for r in range(start_index,
-                                                                           end_index)]
-        return data
+            dictdata[self._column_names[k]] = [self._data[r][k] for r in range(start_index, end_index)]
+        return dictdata
 
-    def to_sparkplug_dataset(self, sp_dataset, u32_in_long=False):
+    def to_sparkplug_dataset(self, sp_dataset: sparkplug_b_pb2.Payload.DataSet, u32_in_long: bool = False) -> sparkplug_b_pb2.Payload.DataSet:
         """
         Copy the DataSet into a SparkplugB Payload.DataSet
 
@@ -475,7 +489,7 @@ class DataSet(object):
         return sp_dataset
 
     @classmethod
-    def from_sparkplug_dataset(cls, sp_dataset):
+    def from_sparkplug_dataset(cls, sp_dataset: sparkplug_b_pb2.Payload.DataSet) -> DataSet:
         """
         Create a new DataSet object from a SparkplugB Payload.DataSet
 
