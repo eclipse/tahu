@@ -37,3 +37,38 @@ def encode_json_as_sparkplug_payload(json_data, use_datasets=False):
     # Serialize the payload
     serialized_payload = payload.SerializeToString()
     return serialized_payload
+
+def decode_sparkplug_payload(serialized_payload, use_datasets=False):
+    """Convert serialized Sparkplug B payload to JSON.
+
+    Args:
+        serialized_payload (bytes): Serialized Sparkplug B payload.
+        use_datasets (bool, optional): Whether the payload contains
+            datasets. If False (default), the payload will be assumed
+            to contain metrics. If True, the payload will be assumed to
+            contain a dataset.
+
+    Returns:
+        str: JSON.
+    """
+    payload = sparkplug_pb2.Payload()
+    payload.ParseFromString(serialized_payload)
+
+    if use_datasets:
+        # Extract the dataset from payload
+        dataset = payload.metrics[0].dataset_value
+        data = []
+        for row in dataset.rows:
+            row_data = {}
+            for i, column in enumerate(dataset.columns):
+                row_data[column] = row.values[i]
+            data.append(row_data)
+    else:
+        # Extract the metrics from payload
+        data = {}
+        for metric in payload.metrics:
+            data[metric.name] = metric.value
+
+    # Convert data to JSON
+    json_data = json.dumps(data)
+    return json_data
