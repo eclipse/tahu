@@ -133,6 +133,7 @@ public class TahuClient implements MqttCallbackExtended {
 
 	private boolean trackFirstConnection = false;
 	private boolean firstConnection = true;
+	private boolean resubscribed = false;
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, final String username, final String password, boolean cleanSession,
@@ -344,6 +345,14 @@ public class TahuClient implements MqttCallbackExtended {
 	public boolean isConnected() {
 		if (client != null) {
 			return client.isConnected();
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isConnectedAndResubscribed() {
+		if (client != null) {
+			return client.isConnected() && resubscribed;
 		} else {
 			return false;
 		}
@@ -576,6 +585,9 @@ public class TahuClient implements MqttCallbackExtended {
 			this.renewDisconnectTime();
 			this.renewOfflineDate();
 		}
+		
+		// Reset re-subscribed flag
+		resubscribed = false;
 
 		if (cause != null) {
 			// We don't need to see all of the connection lost callbacks for clients
@@ -735,6 +747,8 @@ public class TahuClient implements MqttCallbackExtended {
 					state.setInProgress(false);
 					disconnectInProgress = false;
 					lwtDeliveryToken = null;
+					// Reset re-subscribed flag
+					resubscribed = false;
 				}
 			} else {
 				logger.debug("{}: Disconnect: Client is already null", getClientId());
@@ -859,6 +873,9 @@ public class TahuClient implements MqttCallbackExtended {
 			}
 
 			try {
+				// Reset re-subscribed flag
+				resubscribed = false;
+				
 				if (connectOptions == null) {
 					connectOptions = new MqttConnectOptions();
 				}
@@ -1229,6 +1246,9 @@ public class TahuClient implements MqttCallbackExtended {
 					logger.warn("{}: No subscriptions for {}", getClientId(), getClientId());
 				}
 			}
+			
+			// Mark that the client has finished re-subscribing
+			resubscribed = true;
 
 			// Publish a standard Birth/Death Certificate if a baseTopic has been defined.
 			publishBirthMessage();
