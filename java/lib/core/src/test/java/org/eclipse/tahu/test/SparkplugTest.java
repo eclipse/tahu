@@ -53,13 +53,8 @@ import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
 import org.eclipse.tahu.message.model.Value;
 import org.eclipse.tahu.util.PayloadUtil;
-import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 
 /**
  * Sparkplug Test class for encoding and decoding sparkplug payloads
@@ -73,12 +68,6 @@ public class SparkplugTest {
 
 	public SparkplugTest() {
 		validator = JsonValidator.getInstance();
-	}
-
-	@BeforeClass
-	public void beforeClass() {
-		Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		rootLogger.setLevel(Level.ALL);
 	}
 
 	@DataProvider
