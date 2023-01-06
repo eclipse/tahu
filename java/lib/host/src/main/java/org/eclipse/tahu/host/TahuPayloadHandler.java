@@ -308,7 +308,7 @@ public class TahuPayloadHandler {
 
 			// Update the metric in the cache and notify
 			sparkplugDevice.updateValue(metric.getName(), metric.getValue());
-			eventHandler.onBirthMetric(deviceDescriptor, metric);
+			eventHandler.onDataMetric(deviceDescriptor, metric);
 		}
 		eventHandler.onDeviceDataComplete(deviceDescriptor);
 	}

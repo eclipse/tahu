@@ -25,13 +25,8 @@ import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
 import org.eclipse.tahu.message.model.Topic;
-import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 
 public class MessageUtilTest {
 
@@ -39,12 +34,6 @@ public class MessageUtilTest {
 
 	public MessageUtilTest() {
 		this.testTime = new Date();
-	}
-
-	@BeforeClass
-	public void beforeClass() {
-		Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		rootLogger.setLevel(Level.ALL);
 	}
 
 	@DataProvider
