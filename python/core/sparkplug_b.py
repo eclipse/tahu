@@ -108,7 +108,7 @@ def getNodeBirthPayload():
     payload = sparkplug_b_pb2.Payload()
     payload.timestamp = int(round(time.time() * 1000))
     payload.seq = getSeqNum()
-    addMetric(payload, "bdSeq", None, MetricDataType.Int64, --bdSeq)
+    addMetric(payload, "bdSeq", None, MetricDataType.Int64, bdSeq - 1)
     return payload
 ######################################################################
 
