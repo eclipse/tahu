@@ -265,8 +265,8 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("SparkplugBPayload [timestamp=");
-		builder.append(super.getTimestamp());
+		builder.append("SparkplugBPayloadMap [timestamp=");
+		builder.append(super.getTimestamp() != null ? super.getTimestamp().getTime() : "null");
 		builder.append(", metrics=");
 		builder.append(getMetrics());
 		builder.append(", seq=");
