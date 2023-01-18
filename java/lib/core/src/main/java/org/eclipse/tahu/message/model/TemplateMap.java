@@ -121,7 +121,7 @@ public class TemplateMap extends Template {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Template [version=");
+		builder.append("TemplateMap [version=");
 		builder.append(super.getVersion());
 		builder.append(", templateRef=");
 		builder.append(super.getTemplateRef());

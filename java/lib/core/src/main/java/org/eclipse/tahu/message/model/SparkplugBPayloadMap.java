@@ -201,38 +201,82 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 	 *            in the {@link Metric}
 	 * @param metric the {@link Metric} to update the value of
 	 */
-	public void updateMetricValue(String metricName, Metric metric) {
-		if (metric == null) {
-			logger.info("Metric '{}' is null during update - removing from cache", metricName);
-			metricMap.put(metricName, null);
+	public void updateMetricValue(String newMetricName, Metric newMetric, List<Property<?>> customProperties) {
+		if (newMetric == null) {
+			logger.info("Metric '{}' is null during update - removing from cache", newMetricName);
+			metricMap.put(newMetricName, null);
 			return;
 		}
 
-		Metric existingMetric = metricMap.get(metricName);
+		Metric existingMetric = metricMap.get(newMetricName);
 
 		// Update the 'qualified value' which is the value, quality, and timestamp
 		if (existingMetric != null) {
-			existingMetric.setValue(metric.getValue());
-			PropertySet props = existingMetric.getProperties();
-			if (metric.getProperties() != null
-					&& metric.getProperties().getPropertyValue(SparkplugMeta.QUALITY_PROP_NAME) != null) {
-				if (props == null) {
-					props = new PropertySet();
-					existingMetric.setProperties(props);
-				}
-				props.setProperty(SparkplugMeta.QUALITY_PROP_NAME,
-						metric.getProperties().getPropertyValue(SparkplugMeta.QUALITY_PROP_NAME));
+			if (newMetric.getDataType() == MetricDataType.Template && newMetric.getValue() != null) {
+				updateTemplateMetricValues((TemplateMap) (getMetric(newMetricName).getValue()), newMetric,
+						customProperties);
 			} else {
-				if (props != null) {
-					// If there is no quality - it is implied good and should be updated as such by simply removing it
-					props.remove(SparkplugMeta.QUALITY_PROP_NAME);
-				}
+				existingMetric.setValue(newMetric.getValue());
 			}
-			existingMetric.setTimestamp(metric.getTimestamp());
+
+			handleProps(existingMetric, newMetric, customProperties);
 			logger.trace("Updated metric in the map: {}", existingMetric);
 		} else {
-			logger.trace("Adding new metric to cache when updating: {}", metric);
-			metricMap.put(metricName, metric);
+			logger.trace("Adding new metric to cache when updating: {}", newMetric);
+			metricMap.put(newMetricName, newMetric);
+		}
+	}
+
+	private void updateTemplateMetricValues(TemplateMap existingTemplateMap, Metric newMetric,
+			List<Property<?>> customProperties) {
+		Template newTemplate = (Template) newMetric.getValue();
+		List<Metric> newMemberMetrics = newTemplate.getMetrics();
+		if (newMemberMetrics != null && !newMemberMetrics.isEmpty()) {
+			for (Metric newMemberMetric : newMemberMetrics) {
+				Metric existingMetric = existingTemplateMap.getMetricMap().get(newMemberMetric.getName());
+				if (newMemberMetric.getDataType() == MetricDataType.Template && newMemberMetric.getValue() != null) {
+					updateTemplateMetricValues((TemplateMap) existingMetric.getValue(), newMemberMetric,
+							customProperties);
+				} else {
+					existingTemplateMap.getMetricMap().get(newMemberMetric.getName())
+							.setValue(newMemberMetric.getValue());
+				}
+
+				handleProps(existingMetric, newMemberMetric, customProperties);
+			}
+		}
+	}
+
+	private void handleProps(Metric existingMetric, Metric newMetric, List<Property<?>> customProperties) {
+		PropertySet props = existingMetric.getProperties();
+		if (newMetric.getProperties() != null
+				&& newMetric.getProperties().getPropertyValue(SparkplugMeta.QUALITY_PROP_NAME) != null) {
+			if (props == null) {
+				props = new PropertySet();
+				existingMetric.setProperties(props);
+			}
+			props.setProperty(SparkplugMeta.QUALITY_PROP_NAME,
+					newMetric.getProperties().getPropertyValue(SparkplugMeta.QUALITY_PROP_NAME));
+		} else {
+			if (props != null) {
+				// If there is no quality - it is implied good and should be updated as such by simply removing it
+				props.remove(SparkplugMeta.QUALITY_PROP_NAME);
+			}
+		}
+		existingMetric.setTimestamp(newMetric.getTimestamp());
+
+		if (customProperties != null && !customProperties.isEmpty()) {
+			for (Property<?> customProperty : customProperties) {
+				if (newMetric.getProperties() != null
+						&& newMetric.getProperties().getPropertyValue(customProperty.getName()) != null) {
+					if (props == null) {
+						props = new PropertySet();
+						existingMetric.setProperties(props);
+					}
+					props.setProperty(customProperty.getName(),
+							newMetric.getProperties().getPropertyValue(customProperty.getName()));
+				}
+			}
 		}
 	}
 
@@ -265,7 +309,7 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("SparkplugBPayload [timestamp=");
+		builder.append("SparkplugBPayloadMap [timestamp=");
 		builder.append(super.getTimestamp());
 		builder.append(", metrics=");
 		builder.append(getMetrics());
