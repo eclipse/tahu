@@ -310,7 +310,7 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SparkplugBPayloadMap [timestamp=");
-		builder.append(super.getTimestamp());
+		builder.append(super.getTimestamp() != null ? super.getTimestamp().getTime() : "null");
 		builder.append(", metrics=");
 		builder.append(getMetrics());
 		builder.append(", seq=");
