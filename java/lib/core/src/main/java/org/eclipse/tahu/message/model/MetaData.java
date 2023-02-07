@@ -95,6 +95,16 @@ public class MetaData {
 	}
 
 	/**
+	 * Copy Constructor
+	 *
+	 * @param metaData the {@link MetaData} to copy
+	 */
+	public MetaData(MetaData metaData) {
+		this(metaData.isMultiPart(), metaData.getContentType(), metaData.getSize(), metaData.getSeq(),
+				metaData.getFileName(), metaData.getFileType(), metaData.getMd5(), metaData.getDescription());
+	}
+
+	/**
 	 * Whether or not this is a mult-part {@link MetaData}
 	 *
 	 * @return true if this is multi-part {@link MetaData} otherwise false

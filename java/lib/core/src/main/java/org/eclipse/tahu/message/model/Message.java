@@ -29,6 +29,16 @@ public class Message {
 	}
 
 	/**
+	 * Copy Constructor
+	 *
+	 * @param message the {@link Message} to copy
+	 */
+	public Message(Message message) {
+		this.topic = message.getTopic();
+		this.payload = new SparkplugBPayload(message.getPayload());
+	}
+
+	/**
 	 * Constructor
 	 *
 	 * @param topic the {@link Topic} associated with the {@link Message}
