@@ -62,52 +62,75 @@ public class HostApplication implements CommandPublisher {
 		this.tahuHostCallback = new TahuHostCallback(eventHandler, this, sequenceReorderManager);
 	}
 
+	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, TahuHostCallback tahuHostCallback,
+			Map<MqttServerName, TahuClient> tahuClients, RandomStartupDelay randomStartupDelay) {
+		logger.info("Creating the Host Application");
+
+		this.hostId = hostId;
+		this.tahuHostCallback = tahuHostCallback;
+		this.mqttServerDefinitions = null;
+		this.tahuClients.putAll(tahuClients);
+		this.randomStartupDelay = randomStartupDelay;
+		this.stateTopic = SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + hostId;
+	}
+
 	public void start() {
-		for (MqttServerDefinition mqttServerDefinition : mqttServerDefinitions) {
-			logger.debug("Starting up the MQTT Client to {}", mqttServerDefinition.getMqttServerName());
-			TahuClient tahuClient = tahuClients.get(mqttServerDefinition.getMqttServerName());
-			if (tahuClient == null) {
-				tahuClient = new TahuClient(mqttServerDefinition.getMqttClientId(),
-						mqttServerDefinition.getMqttServerName(), mqttServerDefinition.getMqttServerUrl(),
-						mqttServerDefinition.getUsername(), mqttServerDefinition.getPassword(), true,
-						mqttServerDefinition.getKeepAliveTimeout(), tahuHostCallback, randomStartupDelay, true,
-						stateTopic, null, true, stateTopic, null, MqttOperatorDefs.QOS1, true);
-			}
-
-			tahuClient.setMaxInflightMessages(MAX_INFLIGHT_MESSAGES);
-			tahuClients.put(mqttServerDefinition.getMqttServerName(), tahuClient);
-			tahuHostCallback.setMqttClients(tahuClients);
-
-			try {
-				tahuClient.setAutoReconnect(true);
-				tahuClient.connect();
-
-				// Subscribe to our own spBv1.0/STATE topic
-				logger.debug("PrimaryHostId is set. Subscribing on {}", stateTopic);
-				int grantedQos = tahuClient.subscribe(stateTopic, MqttOperatorDefs.QOS1);
-				if (grantedQos != 1) {
-					logger.error("Failed to subscribe to '{}'", stateTopic);
-					return;
+		if (mqttServerDefinitions != null) {
+			for (MqttServerDefinition mqttServerDefinition : mqttServerDefinitions) {
+				logger.debug("Starting up the MQTT Client to {}", mqttServerDefinition.getMqttServerName());
+				TahuClient tahuClient = tahuClients.get(mqttServerDefinition.getMqttServerName());
+				if (tahuClient == null) {
+					tahuClient = new TahuClient(mqttServerDefinition.getMqttClientId(),
+							mqttServerDefinition.getMqttServerName(), mqttServerDefinition.getMqttServerUrl(),
+							mqttServerDefinition.getUsername(), mqttServerDefinition.getPassword(), true,
+							mqttServerDefinition.getKeepAliveTimeout(), tahuHostCallback, randomStartupDelay, true,
+							stateTopic, null, true, stateTopic, null, MqttOperatorDefs.QOS1, true);
 				}
 
-				// Subscribe to the spBv1.0 namespace
-				String topic = "spBv1.0/#";
-				logger.debug("PrimaryHostId is set. Subscribing on {}", topic);
-				grantedQos = tahuClient.subscribe(topic, MqttOperatorDefs.QOS0);
-				if (grantedQos != 0) {
-					logger.error("Failed to subscribe to '{}'", topic);
-					return;
-				}
-
-				// Pub
-			} catch (Exception e) {
-				logger.error("Failed to start client {} connecting to {}", tahuClient.getClientId(),
-						tahuClient.getMqttServerUrl(), e);
-				return;
+				// Add it to the Map
+				tahuClients.put(mqttServerDefinition.getMqttServerName(), tahuClient);
 			}
 		}
 
+		// Start the clients
+		for (TahuClient client : tahuClients.values()) {
+			startClient(client);
+		}
+
 		logger.debug("MQTT Clients Started. Connection and subscriptions not verified yet");
+	}
+
+	private void startClient(TahuClient tahuClient) {
+		tahuClient.setMaxInflightMessages(MAX_INFLIGHT_MESSAGES);
+		tahuHostCallback.setMqttClients(tahuClients);
+
+		try {
+			tahuClient.setAutoReconnect(true);
+			tahuClient.connect();
+
+			// Subscribe to our own spBv1.0/STATE topic
+			logger.debug("PrimaryHostId is set. Subscribing on {}", stateTopic);
+			int grantedQos = tahuClient.subscribe(stateTopic, MqttOperatorDefs.QOS1);
+			if (grantedQos != 1) {
+				logger.error("Failed to subscribe to '{}'", stateTopic);
+				return;
+			}
+
+			// Subscribe to the spBv1.0 namespace
+			String topic = "spBv1.0/#";
+			logger.debug("PrimaryHostId is set. Subscribing on {}", topic);
+			grantedQos = tahuClient.subscribe(topic, MqttOperatorDefs.QOS0);
+			if (grantedQos != 0) {
+				logger.error("Failed to subscribe to '{}'", topic);
+				return;
+			}
+
+			// Pub
+		} catch (Exception e) {
+			logger.error("Failed to start client {} connecting to {}", tahuClient.getClientId(),
+					tahuClient.getMqttServerUrl(), e);
+			return;
+		}
 	}
 
 	public void shutdown() {
