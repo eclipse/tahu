@@ -23,6 +23,7 @@ import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
 import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
+import org.eclipse.tahu.protobuf.SparkplugBProto.DataType;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -109,6 +110,18 @@ public class Metric {
 		this.properties = properties;
 		this.value = value;
 		this.dataType.checkType(value);
+	}
+
+	/**
+	 * Copy Constructor
+	 *
+	 * @param metric the {@link Metric} to copy
+	 * @throws SparkplugInvalidTypeException if the {@link Metric} can not be copied due to an invalid {@link DataType}
+	 */
+	public Metric(Metric metric) throws SparkplugInvalidTypeException {
+		this(metric.getName(), metric.getAlias(), metric.getTimestamp(), metric.getDataType(), metric.getIsHistorical(),
+				metric.getIsTransient(), metric.getMetaData() != null ? new MetaData(metric.getMetaData()) : null,
+				metric.getProperties() != null ? new PropertySet(metric.getProperties()) : null, metric.getValue());
 	}
 
 	/**

@@ -13,6 +13,7 @@
 
 package org.eclipse.tahu.mqtt;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -115,6 +116,11 @@ public class TahuClient implements MqttCallbackExtended {
 	 */
 	private int maxInFlightMessages = 10;
 
+	/*
+	 * The maximum number of topics per individual subscribe message.
+	 */
+	private int maxTopicsPerSubscribe = 256;
+
 	private Date connectTime;
 	private Date disconnectTime;
 	private Date onlineDate;
@@ -133,6 +139,7 @@ public class TahuClient implements MqttCallbackExtended {
 
 	private boolean trackFirstConnection = false;
 	private boolean firstConnection = true;
+	private boolean resubscribed = false;
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, final String username, final String password, boolean cleanSession,
@@ -292,6 +299,14 @@ public class TahuClient implements MqttCallbackExtended {
 		return Collections.unmodifiableMap(subscriptions);
 	}
 
+	public int getMaxTopicsPerSubscribe() {
+		return maxTopicsPerSubscribe;
+	}
+
+	public void setMaxTopicsPerSubscribe(int maxTopicsPerSubscribe) {
+		this.maxTopicsPerSubscribe = maxTopicsPerSubscribe;
+	}
+
 	public ClientCallback getCallback() {
 		// If callback is null, return a no-op implementation
 		return this.callback != null ? this.callback : new ClientCallback() {
@@ -344,6 +359,14 @@ public class TahuClient implements MqttCallbackExtended {
 	public boolean isConnected() {
 		if (client != null) {
 			return client.isConnected();
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isConnectedAndResubscribed() {
+		if (client != null) {
+			return client.isConnected() && resubscribed;
 		} else {
 			return false;
 		}
@@ -577,6 +600,9 @@ public class TahuClient implements MqttCallbackExtended {
 			this.renewOfflineDate();
 		}
 
+		// Reset re-subscribed flag
+		resubscribed = false;
+
 		if (cause != null) {
 			// We don't need to see all of the connection lost callbacks for clients
 			logger.debug("{}: Connection lost due to {}", getClientId(), cause.getMessage(), cause);
@@ -735,6 +761,8 @@ public class TahuClient implements MqttCallbackExtended {
 					state.setInProgress(false);
 					disconnectInProgress = false;
 					lwtDeliveryToken = null;
+					// Reset re-subscribed flag
+					resubscribed = false;
 				}
 			} else {
 				logger.debug("{}: Disconnect: Client is already null", getClientId());
@@ -859,6 +887,9 @@ public class TahuClient implements MqttCallbackExtended {
 			}
 
 			try {
+				// Reset re-subscribed flag
+				resubscribed = false;
+
 				if (connectOptions == null) {
 					connectOptions = new MqttConnectOptions();
 				}
@@ -1182,53 +1213,72 @@ public class TahuClient implements MqttCallbackExtended {
 			// Subscribe (or re-subscribe)
 			if (!subscriptions.isEmpty()) {
 				// Build up the arrays of topics and QoS levels
-				int subscriptionSize = subscriptions.size();
-				String[] topics = new String[subscriptionSize];
-				int[] qosLevels = new int[subscriptionSize];
-				int i = 0;
-				for (String topic : subscriptions.keySet()) {
-					topics[i] = topic;
-					qosLevels[i] = subscriptions.get(topic);
-					i++;
-				}
+				int totalCount = subscriptions.size();
+				int subscribedCount = 0;
+				ArrayList<String> topicsList = new ArrayList<String>(subscriptions.keySet());
 
-				logger.debug("{}: on connection to {} - Attempting to subscribe on topic {} with QoS={}", getClientId(),
-						getMqttServerName(), Arrays.toString(topics), Arrays.toString(qosLevels));
-				try {
-					IMqttToken token = client.subscribe(topics, qosLevels);
-					logger.trace("{}: Waiting for subscription on {}", getClientId(), Arrays.toString(topics));
-					token.waitForCompletion();
-					logger.trace("{}: Done waiting for subscription on {}", getClientId(), Arrays.toString(topics));
-					int[] grantedQos = token.getGrantedQos();
-					if (Arrays.equals(qosLevels, grantedQos)) {
-						logger.debug("{}: on connection to {} - Successfully subscribed to {} on QoS={}", getClientId(),
-								getMqttServerName(), Arrays.toString(topics), Arrays.toString(qosLevels));
-					} else {
-						try {
-							logger.error("{}: on connection to {} - Failed to subscribe to {} - forcing disconnect",
-									getClientId(), getMqttServerName(), Arrays.toString(topics));
+				while (subscribedCount < totalCount) {
+					int topicsRemaining = totalCount - subscribedCount;
+					// Don't attempt to publish more that the max topics per subscribe
+					int size = topicsRemaining > maxTopicsPerSubscribe ? maxTopicsPerSubscribe : topicsRemaining;
 
-							// FIXME - remove This sleep is necessary due to:
-							// https://github.com/eclipse/paho.mqtt.java/issues/850
-							Thread.sleep(1000);
+					String[] topics = new String[size];
+					int[] qosLevels = new int[size];
 
-							// Force the disconnect and return
-							client.disconnectForcibly(0, 1, false);
-							return;
-						} catch (Exception e) {
-							logger.error("{}: on connection to {} - Failed to disconnect on failed subscription",
-									getClientId(), getMqttServerName(), e);
-						}
+					for (int i = 0; i < size; i++) {
+						String topic = topicsList.get(i + subscribedCount);
+						topics[i] = topic;
+						qosLevels[i] = subscriptions.get(topic);
 					}
-				} catch (MqttException e) {
-					logger.error("{}: on connection to {} - Failed to subscribe on topic {} with QoS={}", getClientId(),
-							getMqttServerName(), Arrays.toString(topics), Arrays.toString(qosLevels), e);
+
+					String topicStr = Arrays.toString(topics);
+					String qosStr = Arrays.toString(qosLevels);
+					logger.debug("{}: on connection to {} - Attempting to subscribe on topic {} with QoS={}",
+							getClientId(), getMqttServerName(), topicStr, qosStr);
+					try {
+						IMqttToken token = client.subscribe(topics, qosLevels);
+						logger.trace("{}: Waiting for subscription on {}", getClientId(), topicStr);
+						token.waitForCompletion();
+						logger.trace("{}: Done waiting for subscription on {}", getClientId(), topicStr);
+						int[] grantedQos = token.getGrantedQos();
+						if (Arrays.equals(qosLevels, grantedQos)) {
+							logger.debug("{}: on connection to {} - Successfully subscribed on {} on QoS={}",
+									getClientId(), getMqttServerName(), topicStr, qosStr);
+						} else {
+							try {
+								logger.error("{}: on connection to {} - Failed to subscribe on {} - forcing disconnect",
+										getClientId(), getMqttServerName(), topicStr);
+
+								// FIXME - remove This sleep is necessary due to:
+								// https://github.com/eclipse/paho.mqtt.java/issues/850
+								Thread.sleep(1000);
+
+								// Force the disconnect and return
+								client.disconnectForcibly(0, 1, false);
+								return;
+							} catch (Exception e) {
+								logger.error("{}: on connection to {} - Failed to disconnect on failed subscription",
+										getClientId(), getMqttServerName(), e);
+								break;
+							}
+						}
+					} catch (MqttException e) {
+						logger.error("{}: on connection to {} - Failed to subscribe on {} with QoS={}", getClientId(),
+								getMqttServerName(), topicStr, qosStr, e);
+						break;
+					}
+					
+					subscribedCount += size;
+
 				}
 			} else {
 				if (trackFirstConnection && !firstConnection) {
 					logger.warn("{}: No subscriptions for {}", getClientId(), getClientId());
 				}
 			}
+
+			// Mark that the client has finished re-subscribing
+			resubscribed = true;
 
 			// Publish a standard Birth/Death Certificate if a baseTopic has been defined.
 			publishBirthMessage();

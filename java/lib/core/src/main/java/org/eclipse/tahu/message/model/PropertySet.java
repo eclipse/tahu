@@ -38,6 +38,15 @@ public class PropertySet implements Map<String, PropertyValue> {
 	}
 
 	/**
+	 * Copy Constructor
+	 *
+	 * @param propertySet the {@link PropertySet} to copy
+	 */
+	public PropertySet(PropertySet propertySet) {
+		this.map = propertySet.getPropertyMap();
+	}
+
+	/**
 	 * Constructor
 	 *
 	 * @param propertyMap the {@link Map} of {@link String}s to {@link PropertyValie}s

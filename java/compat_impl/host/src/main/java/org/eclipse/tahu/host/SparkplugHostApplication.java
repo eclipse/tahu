@@ -20,6 +20,7 @@ import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
+import org.eclipse.tahu.message.model.Message;
 import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.SparkplugDescriptor;
 import org.eclipse.tahu.model.MqttServerDefinition;
@@ -115,90 +116,80 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 
 	@Override
 	public void onNodeBirthArrived(EdgeNodeDescriptor edgeNodeDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onNodeBirthArrived from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeBirthComplete(EdgeNodeDescriptor edgeNodeDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onNodeBirthComplete from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeDataArrived(EdgeNodeDescriptor edgeNodeDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onNodeDataArrived from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeDataComplete(EdgeNodeDescriptor edgeNodeDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onNodeDataComplete from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeDeath(EdgeNodeDescriptor edgeNodeDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onNodeDeath from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onNodeDeathComplete(EdgeNodeDescriptor edgeNodeDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onNodeDeathComplete from {}...", edgeNodeDescriptor);
 	}
 
 	@Override
 	public void onDeviceBirthArrived(DeviceDescriptor deviceDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onDeviceBirthArrived from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceBirthComplete(DeviceDescriptor deviceDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onDeviceBirthComplete from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceDataArrived(DeviceDescriptor deviceDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onDeviceDataArrived from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceDataComplete(DeviceDescriptor deviceDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onDeviceDataComplete from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceDeath(DeviceDescriptor deviceDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onDeviceDeath from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onDeviceDeathComplete(DeviceDescriptor deviceDescriptor) {
-		// TODO Auto-generated method stub
 		logger.info("onDeviceDeathComplete from {}...", deviceDescriptor);
 	}
 
 	@Override
 	public void onBirthMetric(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
-		// TODO Auto-generated method stub
 		logger.info("onBirthMetric from {} with metric={}...", sparkplugDescriptor, metric);
 	}
 
 	@Override
 	public void onDataMetric(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
-		// TODO Auto-generated method stub
 		logger.info("onDataMetric from {} with metric={}...", sparkplugDescriptor, metric);
 	}
 
 	public void onStale(SparkplugDescriptor sparkplugDescriptor, Metric metric) {
-		// TODO Auto-generated method stub
 		logger.info("onStale from {} for {}...", sparkplugDescriptor, metric.getName());
+	}
+
+	@Override
+	public void onMessage(SparkplugDescriptor sparkplugDescriptor, Message message) {
+		logger.info("onMessage from {} with message={}...", sparkplugDescriptor, message);
 	}
 }

@@ -15,10 +15,13 @@ package org.eclipse.tahu.host.api;
 
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
+import org.eclipse.tahu.message.model.Message;
 import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.SparkplugDescriptor;
 
 public interface HostApplicationEventHandler {
+
+	public void onMessage(SparkplugDescriptor sparkplugDescriptor, Message message);
 
 	public void onNodeBirthArrived(EdgeNodeDescriptor edgeNodeDescriptor);
 
