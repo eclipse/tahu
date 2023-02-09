@@ -24,11 +24,12 @@
     <jackson.databind.version>2.13.4.2</jackson.databind.version>
     <logback.version>1.2.9</logback.version>
     <protobuf.version>3.16.3</protobuf.version>
+    <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
   <groupId>org.eclipse.tahu</groupId>
   <artifactId>tahu-examples</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
 
   <name>Eclipse Tahu</name>
