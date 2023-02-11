@@ -13,6 +13,8 @@
 
 package org.eclipse.tahu.host.model;
 
+import org.eclipse.tahu.message.model.Message;
+import org.eclipse.tahu.message.model.Message.MessageBuilder;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.Topic;
 import org.eclipse.tahu.mqtt.MqttClientId;
@@ -25,18 +27,16 @@ public class MessageContext {
 
 	private final MqttServerName mqttServerName;
 	private final MqttClientId hostAppMqttClientId;
-	private final Topic topic;
+	private final Message message;
 	private final int payloadLength;
-	private final SparkplugBPayload payload;
 	private final long seqNum;
 
 	public MessageContext(MqttServerName mqttServerName, MqttClientId hostAppMqttClientId, Topic topic,
-			int payloadLength, SparkplugBPayload payload, long seqNum) {
+			SparkplugBPayload payload, int payloadLength, long seqNum) {
 		this.mqttServerName = mqttServerName;
 		this.hostAppMqttClientId = hostAppMqttClientId;
-		this.topic = topic;
+		this.message = new MessageBuilder(topic, payload).build();
 		this.payloadLength = payloadLength;
-		this.payload = payload;
 		this.seqNum = seqNum;
 	}
 
@@ -48,16 +48,20 @@ public class MessageContext {
 		return hostAppMqttClientId;
 	}
 
+	public Message getMessage() {
+		return message;
+	}
+
 	public Topic getTopic() {
-		return topic;
+		return message.getTopic();
+	}
+
+	public SparkplugBPayload getPayload() {
+		return message.getPayload();
 	}
 
 	public int getPayloadLength() {
 		return payloadLength;
-	}
-
-	public SparkplugBPayload getPayload() {
-		return payload;
 	}
 
 	public long getSeqNum() {

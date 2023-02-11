@@ -19,6 +19,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -28,6 +31,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 @JsonInclude(Include.NON_NULL)
 public class SparkplugBPayload {
+
+	private static Logger logger = LoggerFactory.getLogger(SparkplugBPayload.class.getName());
 
 	private Date timestamp;
 	private List<Metric> metrics;
@@ -77,6 +82,28 @@ public class SparkplugBPayload {
 	public SparkplugBPayload(Date timestamp, List<Metric> metrics) {
 		this.timestamp = timestamp;
 		this.metrics = metrics;
+	}
+
+	/**
+	 * Copy Constructor
+	 *
+	 * @param payload the {@link SparkplugBPayload} to copy
+	 */
+	public SparkplugBPayload(SparkplugBPayload payload) {
+		this.timestamp = payload.getTimestamp();
+		if (payload.getMetrics() != null) {
+			metrics = new ArrayList<>();
+			for (Metric metric : payload.getMetrics()) {
+				try {
+					metrics.add(new Metric(metric));
+				} catch (Exception e) {
+					logger.error("Failed to copy metric: {}", metric, e);
+				}
+			}
+		}
+		this.seq = payload.getSeq();
+		this.uuid = payload.getUuid();
+		this.body = payload.getBody();
 	}
 
 	/**
