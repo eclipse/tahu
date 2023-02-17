@@ -36,9 +36,10 @@ $(SNAME): $(OBJ)
 
 $(DNAME): LDFLAGS += -shared
 $(DNAME): $(OBJ)
+	mkdir -p lib
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-$(TEST):
+$(TEST): $(SNAME) $(DNAME)
 	$(CC) $(CFLAGS) -o test/test_static $(TEST_OBJ) $(SNAME) -lmosquitto
 	$(CC) $(CFLAGS) $(LD_TEST) -o test/test_dynamic $(TEST_OBJ) -l$(NAME) -lmosquitto
 
