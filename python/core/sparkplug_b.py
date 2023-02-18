@@ -13,6 +13,7 @@
 import sparkplug_b_pb2
 import time
 from sparkplug_b_pb2 import Payload
+from array_packer import *
 
 seqNum = 0
 bdSeq = 0
@@ -324,6 +325,32 @@ def addNullMetric(container, name, alias, type):
         metric.datatype = MetricDataType.File
     elif type == MetricDataType.Template:
         metric.datatype = MetricDataType.Template
+    elif type == MetricDataType.Int8Array:
+        metric.datatype = MetricDataType.Int8Array
+    elif type == MetricDataType.Int16Array:
+        metric.datatype = MetricDataType.Int16Array
+    elif type == MetricDataType.Int32Array:
+        metric.datatype = MetricDataType.Int32Array
+    elif type == MetricDataType.Int64Array:
+        metric.datatype = MetricDataType.Int64Array
+    elif type == MetricDataType.UInt8Array:
+        metric.datatype = MetricDataType.UInt8Array
+    elif type == MetricDataType.UInt16Array:
+        metric.datatype = MetricDataType.UInt16Array
+    elif type == MetricDataType.UInt32Array:
+        metric.datatype = MetricDataType.UInt32Array
+    elif type == MetricDataType.UInt64Array:
+        metric.datatype = MetricDataType.UInt64Array
+    elif type == MetricDataType.FloatArray:
+        metric.datatype = MetricDataType.FloatArray
+    elif type == MetricDataType.DoubleArray:
+        metric.datatype = MetricDataType.DoubleArray
+    elif type == MetricDataType.BooleanArray:
+        metric.datatype = MetricDataType.BooleanArray
+    elif type == MetricDataType.StringArray:
+        metric.datatype = MetricDataType.StringArray
+    elif type == MetricDataType.DateTimeArray:
+        metric.datatype = MetricDataType.DateTimeArray
     else:
         print( "Invalid: " + str(type))
 
