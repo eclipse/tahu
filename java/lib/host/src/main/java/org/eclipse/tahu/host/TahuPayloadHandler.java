@@ -33,7 +33,6 @@ import org.eclipse.tahu.host.manager.SparkplugEdgeNode;
 import org.eclipse.tahu.host.model.HostMetric;
 import org.eclipse.tahu.host.model.MessageContext;
 import org.eclipse.tahu.message.PayloadDecoder;
-import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.model.DeviceDescriptor;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.MessageType;
@@ -60,9 +59,13 @@ public class TahuPayloadHandler {
 
 	private final CommandPublisher commandPublisher;
 
-	public TahuPayloadHandler(HostApplicationEventHandler eventHandler, CommandPublisher commandPublisher) {
+	private final PayloadDecoder<SparkplugBPayload> payloadDecoder;
+
+	public TahuPayloadHandler(HostApplicationEventHandler eventHandler, CommandPublisher commandPublisher,
+			PayloadDecoder<SparkplugBPayload> payloadDecoder) {
 		this.eventHandler = eventHandler;
 		this.commandPublisher = commandPublisher;
+		this.payloadDecoder = payloadDecoder;
 	}
 
 	public void handlePayload(String topicString, String[] splitTopic, MqttMessage message,
@@ -89,8 +92,7 @@ public class TahuPayloadHandler {
 		SparkplugBPayload payload = null;
 		try {
 			// Parse the payload
-			PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();
-			payload = decoder.buildFromByteArray(message.getPayload());
+			payload = payloadDecoder.buildFromByteArray(message.getPayload());
 			logger.trace("On topic={}: Incoming payload: {}", topic, payload);
 		} catch (Exception e) {
 			logger.error("Failed to decode the payload", e);
