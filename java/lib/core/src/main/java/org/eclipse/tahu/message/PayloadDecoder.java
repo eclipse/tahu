@@ -13,6 +13,8 @@
 
 package org.eclipse.tahu.message;
 
+import org.eclipse.tahu.model.MetricDataTypeMap;
+
 /**
  * An interface for decoding payloads.
  * 
@@ -22,10 +24,11 @@ public interface PayloadDecoder<P> {
 
 	/**
 	 * Builds a payload from a supplied byte array.
-	 * 
+	 *
 	 * @param bytes the bytes representing the payload
+	 * @param metricDataTypeMap the {@link MetricDataTypeMap} to be used in decoding
 	 * @return a payload object built from the byte array
 	 * @throws Exception
 	 */
-	public P buildFromByteArray(byte[] bytes) throws Exception;
+	public P buildFromByteArray(byte[] bytes, MetricDataTypeMap metricDataTypeMap) throws Exception;
 }
