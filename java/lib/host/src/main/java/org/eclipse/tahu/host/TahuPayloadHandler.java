@@ -24,12 +24,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
-import org.eclipse.tahu.host.alias.HostApplicationAliasMap;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.manager.EdgeNodeManager;
 import org.eclipse.tahu.host.manager.MetricManager;
 import org.eclipse.tahu.host.manager.SparkplugDevice;
 import org.eclipse.tahu.host.manager.SparkplugEdgeNode;
+import org.eclipse.tahu.host.model.HostApplicationMetricMap;
 import org.eclipse.tahu.host.model.HostMetric;
 import org.eclipse.tahu.host.model.MessageContext;
 import org.eclipse.tahu.message.PayloadDecoder;
@@ -92,7 +92,8 @@ public class TahuPayloadHandler {
 		SparkplugBPayload payload = null;
 		try {
 			// Parse the payload
-			payload = payloadDecoder.buildFromByteArray(message.getPayload());
+			payload = payloadDecoder.buildFromByteArray(message.getPayload(), HostApplicationMetricMap.getInstance()
+					.getMetricDataTypeMap(topic.getEdgeNodeDescriptor(), topic.getSparkplugDescriptor()));
 			logger.trace("On topic={}: Incoming payload: {}", topic, payload);
 		} catch (Exception e) {
 			logger.error("Failed to decode the payload", e);
@@ -175,8 +176,8 @@ public class TahuPayloadHandler {
 		}
 
 		// Reset the alias map
-		HostApplicationAliasMap hostApplicationAliasMap = HostApplicationAliasMap.getInstance();
-		hostApplicationAliasMap.clear();
+		HostApplicationMetricMap hostApplicationMetricMap = HostApplicationMetricMap.getInstance();
+		hostApplicationMetricMap.clear(sparkplugEdgeNode.getEdgeNodeDescriptor());
 
 		// Set online
 		sparkplugEdgeNode.setOnline(true, messageContext.getPayload().getTimestamp(),
@@ -187,19 +188,21 @@ public class TahuPayloadHandler {
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
 			if (metric.hasAlias()) {
 				// Make sure the alias doesn't already exist
-				if (hostApplicationAliasMap.aliasExists(edgeNodeDescriptor, metric.getAlias())) {
+				if (hostApplicationMetricMap.aliasExists(edgeNodeDescriptor,
+						messageContext.getTopic().getSparkplugDescriptor(), metric.getAlias())) {
 					String errorMessage = "Not adding duplicated alias for edgeNode=" + edgeNodeDescriptor + " - alias="
 							+ metric.getAlias() + " and metric name=" + metric.getName() + " - with existing alias for "
-							+ hostApplicationAliasMap.getMetricName(edgeNodeDescriptor, metric.getAlias());
+							+ hostApplicationMetricMap.getMetricName(edgeNodeDescriptor,
+									messageContext.getTopic().getSparkplugDescriptor(), metric.getAlias());
 					logger.error(errorMessage);
 
 					requestRebirth(messageContext.getMqttServerName(), messageContext.getHostAppMqttClientId(),
 							messageContext.getTopic().getEdgeNodeDescriptor());
 					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT, errorMessage);
-				} else {
-					hostApplicationAliasMap.addAlias(edgeNodeDescriptor, metric.getName(), metric.getAlias());
 				}
 			}
+
+			hostApplicationMetricMap.addMetric(edgeNodeDescriptor, edgeNodeDescriptor, metric.getName(), metric);
 
 			// Update the cache and notify
 			sparkplugEdgeNode.putMetric(metric.getName(), new HostMetric(metric, false));
@@ -230,22 +233,23 @@ public class TahuPayloadHandler {
 
 		eventHandler.onDeviceBirthArrived(deviceDescriptor);
 		eventHandler.onMessage(deviceDescriptor, messageContext.getMessage());
-		HostApplicationAliasMap hostApplicationAliasMap = HostApplicationAliasMap.getInstance();
+		HostApplicationMetricMap hostApplicationMetricMap = HostApplicationMetricMap.getInstance();
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
 			if (metric.hasAlias()) {
-				if (hostApplicationAliasMap.aliasExists(edgeNodeDescriptor, metric.getAlias())) {
+				if (hostApplicationMetricMap.aliasExists(edgeNodeDescriptor, deviceDescriptor, metric.getAlias())) {
 					String errorMessage = "Not adding duplicated alias for device=" + deviceDescriptor + " - alias="
 							+ metric.getAlias() + " and metric name=" + metric.getName() + " - with existing alias for "
-							+ hostApplicationAliasMap.getMetricName(edgeNodeDescriptor, metric.getAlias());
+							+ hostApplicationMetricMap.getMetricName(edgeNodeDescriptor, deviceDescriptor,
+									metric.getAlias());
 					logger.error(errorMessage);
 
 					requestRebirth(messageContext.getMqttServerName(), messageContext.getHostAppMqttClientId(),
 							messageContext.getTopic().getEdgeNodeDescriptor());
 					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT, errorMessage);
-				} else {
-					hostApplicationAliasMap.addAlias(edgeNodeDescriptor, metric.getName(), metric.getAlias());
 				}
 			}
+
+			hostApplicationMetricMap.addMetric(edgeNodeDescriptor, deviceDescriptor, metric.getName(), metric);
 
 			// Update the cache and notify
 			sparkplugDevice.putMetric(metric.getName(), new HostMetric(metric, false));
@@ -274,8 +278,8 @@ public class TahuPayloadHandler {
 		eventHandler.onMessage(edgeNodeDescriptor, messageContext.getMessage());
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
 			if (!metric.hasName() && metric.hasAlias()) {
-				metric.setName(
-						HostApplicationAliasMap.getInstance().getMetricName(edgeNodeDescriptor, metric.getAlias()));
+				metric.setName(HostApplicationMetricMap.getInstance().getMetricName(edgeNodeDescriptor,
+						edgeNodeDescriptor, metric.getAlias()));
 			}
 
 			// Update the metric in the cache and notify
@@ -307,8 +311,8 @@ public class TahuPayloadHandler {
 		eventHandler.onMessage(deviceDescriptor, messageContext.getMessage());
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
 			if (!metric.hasName() && metric.hasAlias()) {
-				metric.setName(
-						HostApplicationAliasMap.getInstance().getMetricName(edgeNodeDescriptor, metric.getAlias()));
+				metric.setName(HostApplicationMetricMap.getInstance().getMetricName(edgeNodeDescriptor, deviceDescriptor,
+						metric.getAlias()));
 			}
 
 			// Update the metric in the cache and notify

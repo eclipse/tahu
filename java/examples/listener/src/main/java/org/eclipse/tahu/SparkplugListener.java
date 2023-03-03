@@ -81,7 +81,7 @@ public class SparkplugListener implements MqttCallbackExtended {
 		System.out.println("Message Arrived on Sparkplug topic " + sparkplugTopic.toString());
 
 		SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
-		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload());
+		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload(), null);
 
 		// Convert the message to JSON and print to system.out
 		try {

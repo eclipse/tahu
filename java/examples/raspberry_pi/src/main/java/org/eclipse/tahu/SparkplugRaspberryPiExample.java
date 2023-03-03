@@ -431,7 +431,8 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 		if (splitTopic[0].equals(NAMESPACE) && splitTopic[1].equals(groupId) && splitTopic[2].equals("NCMD")
 				&& splitTopic[3].equals(edgeNode)) {
 
-			SparkplugBPayload inboundPayload = new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload());
+			SparkplugBPayload inboundPayload =
+					new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload(), null);
 
 			for (Metric metric : inboundPayload.getMetrics()) {
 				System.out.println("Metric: " + metric.getName() + " :: " + metric.getValue());
@@ -466,7 +467,7 @@ public class SparkplugRaspberryPiExample implements MqttCallbackExtended {
 
 				// Get the incoming metric key and value
 				SparkplugBPayload inboundPayload =
-						new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload());
+						new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload(), null);
 
 				for (Metric metric : inboundPayload.getMetrics()) {
 					System.out.println("Metric: " + metric.getName() + " :: " + metric.getValue());

@@ -248,7 +248,7 @@ public class SparkplugTest {
 		PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();
 		SparkplugBPayload decodedPayload = null;
 		try {
-			decodedPayload = decoder.buildFromByteArray(bytes);
+			decodedPayload = decoder.buildFromByteArray(bytes, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -315,7 +315,7 @@ public class SparkplugTest {
 				new SparkplugBPayloadBuilder().setTimestamp(new Date()).addMetric(metric).createPayload(), false);
 
 		// Decode and test
-		SparkplugBPayload payload = new SparkplugBPayloadDecoder().buildFromByteArray(bytes);
+		SparkplugBPayload payload = new SparkplugBPayloadDecoder().buildFromByteArray(bytes, null);
 		Metric decodedMetric = payload.getMetrics().get(0);
 		assertThat(decodedMetric.getAlias()).isEqualTo(alias);
 		assertThat(decodedMetric.getTimestamp()).isEqualTo(timestamp);
@@ -350,7 +350,7 @@ public class SparkplugTest {
 
 			// Decode
 			PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();
-			SparkplugBPayload decodedPayload = decoder.buildFromByteArray(bytes);
+			SparkplugBPayload decodedPayload = decoder.buildFromByteArray(bytes, null);
 
 			for (Metric metric : decodedPayload.getMetrics()) {
 				if (metric.getDataType().equals(MetricDataType.Template)) {

@@ -147,7 +147,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 		mapper.setSerializationInclusion(Include.NON_NULL);
 
 		SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
-		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload());
+		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload(), null);
 
 		if (sparkplugTopic.isType(MessageType.NBIRTH)) {
 			try {

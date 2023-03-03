@@ -44,6 +44,7 @@ import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder
 import org.eclipse.tahu.message.model.Template;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
 import org.eclipse.tahu.message.model.Value;
+import org.eclipse.tahu.model.MetricDataTypeMap;
 import org.eclipse.tahu.protobuf.SparkplugBProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 	}
 
 	@Override
-	public SparkplugBPayload buildFromByteArray(byte[] bytes) throws Exception {
+	public SparkplugBPayload buildFromByteArray(byte[] bytes, MetricDataTypeMap metricDataTypeMap) throws Exception {
 		SparkplugBProto.Payload protoPayload = SparkplugBProto.Payload.parseFrom(bytes);
 		SparkplugBPayloadBuilder builder = new SparkplugBPayloadBuilder();
 
@@ -79,7 +80,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 
 		// Set the Metrics
 		for (SparkplugBProto.Payload.Metric protoMetric : protoPayload.getMetricsList()) {
-			builder.addMetric(convertMetric(protoMetric));
+			builder.addMetric(convertMetric(protoMetric, metricDataTypeMap, null));
 		}
 
 		// Set the body
@@ -95,13 +96,30 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		return builder.createPayload();
 	}
 
-	private Metric convertMetric(SparkplugBProto.Payload.Metric protoMetric) throws Exception {
+	private Metric convertMetric(SparkplugBProto.Payload.Metric protoMetric, MetricDataTypeMap metricDataTypeMap,
+			String prefix) throws Exception {
 		// Convert the dataType
 		MetricDataType dataType = MetricDataType.fromInteger((protoMetric.getDatatype()));
+		if (dataType == MetricDataType.Unknown) {
+			if (metricDataTypeMap != null && !metricDataTypeMap.isEmpty()) {
+				if (protoMetric.hasName()) {
+					dataType = metricDataTypeMap
+							.getMetricDataType(prefix != null ? prefix + protoMetric.getName() : protoMetric.getName());
+				} else if (protoMetric.hasAlias()) {
+					dataType = metricDataTypeMap.getMetricDataType(protoMetric.getAlias());
+				} else {
+					logger.error("Failed to decode the payload on metric: {}", protoMetric);
+					return null;
+				}
+			} else {
+				logger.error("Failed to decode the payload on metric datatype: {}", protoMetric);
+				return null;
+			}
+		}
 
 		// Build and return the Metric
 		return new MetricBuilder(protoMetric.hasName() ? protoMetric.getName() : null, dataType,
-				getMetricValue(protoMetric))
+				getMetricValue(protoMetric, metricDataTypeMap, prefix))
 						.isHistorical(protoMetric.hasIsHistorical() ? protoMetric.getIsHistorical() : null)
 						.isTransient(
 								protoMetric.hasIsTransient() ? protoMetric.getIsTransient() : null)
@@ -192,13 +210,33 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		}
 	}
 
-	private Object getMetricValue(SparkplugBProto.Payload.Metric protoMetric) throws Exception {
+	private Object getMetricValue(SparkplugBProto.Payload.Metric protoMetric, MetricDataTypeMap metricDataTypeMap,
+			String prefix) throws Exception {
 		// Check if the null flag has been set indicating that the value is null
 		if (protoMetric.getIsNull()) {
 			return null;
 		}
-		// Otherwise convert the value based on the type
+
+		// Get the MetricDataType
 		int metricType = protoMetric.getDatatype();
+		if (metricType == 0) {
+			if (metricDataTypeMap != null && !metricDataTypeMap.isEmpty()) {
+				if (protoMetric.hasName()) {
+					metricType = metricDataTypeMap
+							.getMetricDataType(prefix != null ? prefix + protoMetric.getName() : protoMetric.getName())
+							.toIntValue();
+				} else if (protoMetric.hasAlias()) {
+					metricType = metricDataTypeMap.getMetricDataType(protoMetric.getAlias()).toIntValue();
+				} else {
+					logger.error("Failed to decode the payload on metric: {}", protoMetric);
+					return null;
+				}
+			} else {
+				logger.error("Failed to decode the payload on metric datatype: {}", protoMetric);
+				return null;
+			}
+		}
+
 		logger.trace("For metricName={} and alias={} - handling metric type in decoder: {}", protoMetric.getName(),
 				protoMetric.getAlias(), metricType);
 		switch (MetricDataType.fromInteger(metricType)) {
@@ -265,7 +303,8 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 				}
 
 				for (SparkplugBProto.Payload.Metric protoTemplateMetric : protoTemplate.getMetricsList()) {
-					Metric templateMetric = convertMetric(protoTemplateMetric);
+					Metric templateMetric = convertMetric(protoTemplateMetric, metricDataTypeMap,
+							prefix != null ? prefix + protoMetric.getName() + "/" : protoMetric.getName() + "/");
 					if (logger.isTraceEnabled()) {
 						logger.trace("Setting template parameter name: " + templateMetric.getName() + ", type: "
 								+ templateMetric.getDataType() + ", value: " + templateMetric.getValue());
