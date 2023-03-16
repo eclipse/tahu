@@ -74,12 +74,12 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 
 	private static final MqttServerName MQTT_SERVER_NAME_1 = new MqttServerName("Mqtt Server One");
 	private static final String MQTT_CLIENT_ID_1 = "Sparkplug-Tahu-Compatible-Impl-One";
-	private static final MqttServerUrl MQTT_SERVER_URL_1 = new MqttServerUrl("tcp://localhost:1883");
+	private static final MqttServerUrl MQTT_SERVER_URL_1 = MqttServerUrl.getMqttServerUrlSafe("tcp://localhost:1883");
 	private static final String USERNAME_1 = "admin";
 	private static final String PASSWORD_1 = "changeme";
 	private static final MqttServerName MQTT_SERVER_NAME_2 = new MqttServerName("Mqtt Server Two");
 	private static final String MQTT_CLIENT_ID_2 = "Sparkplug-Tahu-Compatible-Impl-Two";
-	private static final MqttServerUrl MQTT_SERVER_URL_2 = new MqttServerUrl("tcp://localhost:1884");
+	private static final MqttServerUrl MQTT_SERVER_URL_2 = MqttServerUrl.getMqttServerUrlSafe("tcp://localhost:1884");
 	private static final String USERNAME_2 = "admin";
 	private static final String PASSWORD_2 = "changeme";
 	private static final int KEEP_ALIVE_TIMEOUT = 30;
