@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -587,14 +588,18 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					break;
 				case StringArray:
 					String[] stringArrayValue = (String[]) metric.getValue();
+
 					int size = 0;
+					List<byte[]> bytesArrays = new ArrayList<>();
 					for (String string : stringArrayValue) {
-						size = size + string.length() + 1;
+						byte[] stringBytes = string.getBytes(StandardCharsets.UTF_8);
+						size = size + stringBytes.length + 1;
+						bytesArrays.add(stringBytes);
 					}
+
 					ByteBuffer stringByteBuffer = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
-					for (String value : stringArrayValue) {
-						byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
-						stringByteBuffer.put(stringBytes);
+					for (byte[] bytesArray : bytesArrays) {
+						stringByteBuffer.put(bytesArray);
 						stringByteBuffer.put((byte) 0);
 					}
 					if (stringByteBuffer.hasArray()) {

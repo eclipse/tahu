@@ -16,6 +16,7 @@ package org.eclipse.tahu.message;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -441,14 +442,18 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 				ByteBuffer stringByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
 				List<String> stringList = new ArrayList<>();
 				stringByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				StringBuilder sb = new StringBuilder();
+				ByteBuffer subByteBuffer = ByteBuffer.allocate(protoMetric.getBytesValue().toByteArray().length);
 				while (stringByteBuffer.hasRemaining()) {
 					byte b = stringByteBuffer.get();
 					if (b == (byte) 0) {
-						stringList.add(sb.toString());
-						sb = new StringBuilder();
+						String string = new String(subByteBuffer.array(), StandardCharsets.UTF_8);
+						if (string != null && string.lastIndexOf("\0") == string.length() - 1) {
+							string = string.replace("\0", "");
+						}
+						stringList.add(string);
+						subByteBuffer = ByteBuffer.allocate(protoMetric.getBytesValue().toByteArray().length);
 					} else {
-						sb.append((char) b);
+						subByteBuffer.put(b);
 					}
 				}
 				return stringList.toArray(new String[0]);
