@@ -21,6 +21,7 @@ import org.eclipse.tahu.exception.TahuErrorCode;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.seq.SequenceReorderManager;
+import org.eclipse.tahu.message.PayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugMeta;
@@ -49,7 +50,8 @@ public class HostApplication implements CommandPublisher {
 	private final Map<MqttServerName, TahuClient> tahuClients = new HashMap<>();
 
 	public HostApplication(HostApplicationEventHandler eventHandler, String hostId,
-			List<MqttServerDefinition> mqttServerDefinitions, RandomStartupDelay randomStartupDelay) {
+			List<MqttServerDefinition> mqttServerDefinitions, RandomStartupDelay randomStartupDelay,
+			PayloadDecoder<SparkplugBPayload> payloadDecoder) {
 		logger.info("Creating the Host Application");
 
 		this.hostId = hostId;
@@ -58,8 +60,8 @@ public class HostApplication implements CommandPublisher {
 		this.stateTopic = SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + hostId;
 
 		SequenceReorderManager sequenceReorderManager = SequenceReorderManager.getInstance();
-		sequenceReorderManager.init(eventHandler, this, 5000L);
-		this.tahuHostCallback = new TahuHostCallback(eventHandler, this, sequenceReorderManager);
+		sequenceReorderManager.init(eventHandler, this, payloadDecoder, 5000L);
+		this.tahuHostCallback = new TahuHostCallback(eventHandler, this, sequenceReorderManager, payloadDecoder);
 	}
 
 	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, TahuHostCallback tahuHostCallback,

@@ -444,6 +444,7 @@ void publish_node_birth(struct mosquitto *mosq) {
     row_data[1].elements[2].which_value = org_eclipse_tahu_protobuf_Payload_DataSet_DataSetValue_int_value_tag;
     row_data[1].elements[2].value.int_value = 5;
     init_dataset(&dataset, 2, 3, datatypes, column_keys, row_data);
+    free(row_data);
 
     // Create the a Metric with the DataSet value and add it to the payload
     fprintf(stdout, "Adding metric: 'DataSet'\n");

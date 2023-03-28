@@ -62,22 +62,24 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 	private static final String COMMAND_LISTENER_DIRECTORY = "/tmp/commands";
 	private static final long COMMAND_LISTENER_POLL_RATE = 50L;
 
-	private static final String GROUP_ID = "G1";
-	private static final String EDGE_NODE_ID = "E1";
+	private static final String GROUP_ID = "G2";
+	private static final String EDGE_NODE_ID = "E2";
 	private static final EdgeNodeDescriptor EDGE_NODE_DESCRIPTOR = new EdgeNodeDescriptor(GROUP_ID, EDGE_NODE_ID);
-	private static final List<String> DEVICE_IDS = Arrays.asList("D1");
+	private static final List<String> DEVICE_IDS = Arrays.asList("D2");
+	private static final List<DeviceDescriptor> DEVICE_DESCRIPTORS =
+			Arrays.asList(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D2"));
 	private static final String PRIMARY_HOST_ID = "IamHost";
-	private static final boolean USE_ALIASES = true;
+	private static final boolean USE_ALIASES = false;
 	private static final Long REBIRTH_DEBOUNCE_DELAY = 5000L;
 
 	private static final MqttServerName MQTT_SERVER_NAME_1 = new MqttServerName("Mqtt Server One");
 	private static final String MQTT_CLIENT_ID_1 = "Sparkplug-Tahu-Compatible-Impl-One";
-	private static final MqttServerUrl MQTT_SERVER_URL_1 = new MqttServerUrl("tcp://localhost:1883");
+	private static final MqttServerUrl MQTT_SERVER_URL_1 = MqttServerUrl.getMqttServerUrlSafe("tcp://localhost:1883");
 	private static final String USERNAME_1 = "admin";
 	private static final String PASSWORD_1 = "changeme";
 	private static final MqttServerName MQTT_SERVER_NAME_2 = new MqttServerName("Mqtt Server Two");
 	private static final String MQTT_CLIENT_ID_2 = "Sparkplug-Tahu-Compatible-Impl-Two";
-	private static final MqttServerUrl MQTT_SERVER_URL_2 = new MqttServerUrl("tcp://localhost:1884");
+	private static final MqttServerUrl MQTT_SERVER_URL_2 = MqttServerUrl.getMqttServerUrlSafe("tcp://localhost:1884");
 	private static final String USERNAME_2 = "admin";
 	private static final String PASSWORD_2 = "changeme";
 	private static final int KEEP_ALIVE_TIMEOUT = 30;
@@ -104,7 +106,9 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 				private static final long serialVersionUID = 1L;
 
 				{
-					put(new DeviceDescriptor("G1/E1/D1"), 50);
+					for (DeviceDescriptor deviceDescriptor : DEVICE_DESCRIPTORS) {
+						put(deviceDescriptor, 50);
+					}
 				}
 			});
 
@@ -212,8 +216,8 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			}
 
 			// The BIRTH sequence has been published - set up a periodic publisher
-			periodicPublisher = new PeriodicPublisher(5000, dataSimulator, edgeClient, EDGE_NODE_DESCRIPTOR,
-					Arrays.asList(new DeviceDescriptor(EDGE_NODE_DESCRIPTOR, "D1")));
+			periodicPublisher =
+					new PeriodicPublisher(5000, dataSimulator, edgeClient, EDGE_NODE_DESCRIPTOR, DEVICE_DESCRIPTORS);
 			periodicPublisherThread = new Thread(periodicPublisher);
 			periodicPublisherThread.start();
 		} catch (Exception e) {
@@ -291,7 +295,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 					if (!edgeClient.isDisconnectedOrDisconnecting()) {
 						if (edgeClient.isConnectedToPrimaryHost()) {
 							// Parse out the bdSeq number
-							payload = new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload());
+							payload = new SparkplugBPayloadDecoder().buildFromByteArray(message.getPayload(), null);
 							// SparkplugUtils.decodePayload(message.getPayload());
 							long incomingBdSeq = SparkplugUtil.getBdSequenceNumber(payload);
 							try {
@@ -328,7 +332,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 			try {
 				logger.debug("Decoding Sparkplug Payload");
 				PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();
-				payload = decoder.buildFromByteArray(message.getPayload());
+				payload = decoder.buildFromByteArray(message.getPayload(), null);
 				logger.debug("Message Timestamp: {}", payload.getTimestamp());
 			} catch (Exception e) {
 				logger.error("Failed to parse message - not acting on it", e);

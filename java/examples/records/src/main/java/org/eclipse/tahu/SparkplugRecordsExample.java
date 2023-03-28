@@ -259,7 +259,7 @@ public class SparkplugRecordsExample implements MqttCallbackExtended {
 		System.out.println("Message Arrived on topic " + topic);
 
 		SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
-		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload());
+		SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload(), null);
 
 		// Debug
 		for (Metric metric : inboundPayload.getMetrics()) {

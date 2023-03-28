@@ -28,6 +28,7 @@ import org.eclipse.tahu.host.TahuPayloadHandler;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.manager.EdgeNodeManager;
 import org.eclipse.tahu.host.manager.SparkplugEdgeNode;
+import org.eclipse.tahu.host.model.HostApplicationMetricMap;
 import org.eclipse.tahu.message.PayloadDecoder;
 import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
@@ -58,6 +59,8 @@ public class SequenceReorderManager {
 
 	private CommandPublisher commandPublisher;
 
+	private PayloadDecoder<SparkplugBPayload> payloadDecoder;
+
 	private Long timeout;
 
 	private SequenceReorderManager() {
@@ -71,10 +74,12 @@ public class SequenceReorderManager {
 		return instance;
 	}
 
-	public void init(HostApplicationEventHandler eventHandler, CommandPublisher commandPublisher, Long timeout) {
+	public void init(HostApplicationEventHandler eventHandler, CommandPublisher commandPublisher,
+			PayloadDecoder<SparkplugBPayload> payloadDecoder, Long timeout) {
 		if (eventHandler != null && timeout != null) {
 			instance.eventHandler = eventHandler;
 			instance.commandPublisher = commandPublisher;
+			instance.payloadDecoder = payloadDecoder;
 			instance.timeout = timeout;
 		} else {
 			logger.error("Not re-initializing the SequenceReorderManager timer");
@@ -98,7 +103,7 @@ public class SequenceReorderManager {
 											sequenceReorderMap.getExpiredSequenceReorderContext(timeout);
 									if (sequenceReorderContext != null) {
 										TahuPayloadHandler handler =
-												new TahuPayloadHandler(eventHandler, commandPublisher);
+												new TahuPayloadHandler(eventHandler, commandPublisher, payloadDecoder);
 										SparkplugEdgeNode edgeNode = EdgeNodeManager.getInstance()
 												.getSparkplugEdgeNode(sequenceReorderMap.getEdgeNodeDescriptor());
 
@@ -179,7 +184,8 @@ public class SequenceReorderManager {
 
 		// Parse the payload
 		PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();
-		SparkplugBPayload payload = decoder.buildFromByteArray(message.getPayload());
+		SparkplugBPayload payload = decoder.buildFromByteArray(message.getPayload(), HostApplicationMetricMap
+				.getInstance().getMetricDataTypeMap(topic.getEdgeNodeDescriptor(), topic.getSparkplugDescriptor()));
 		logger.trace("Incoming payload: {}", payload);
 
 		synchronized (edgeNodeMapLock) {
@@ -287,7 +293,7 @@ public class SequenceReorderManager {
 		executor.execute(() -> {
 			try {
 				// Handle the SparkplugBPayload
-				new TahuPayloadHandler(eventHandler, commandPublisher).handlePayload(
+				new TahuPayloadHandler(eventHandler, commandPublisher, payloadDecoder).handlePayload(
 						sequenceReorderContext.getTopicString(), sequenceReorderContext.getSplitTopic(),
 						sequenceReorderContext.getMessage(), sequenceReorderContext.getMqttServerName(),
 						sequenceReorderContext.getHostAppMqttClientId());

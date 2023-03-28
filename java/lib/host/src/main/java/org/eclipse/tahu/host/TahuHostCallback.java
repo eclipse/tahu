@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.tahu.host.api.HostApplicationEventHandler;
 import org.eclipse.tahu.host.seq.SequenceReorderManager;
+import org.eclipse.tahu.message.PayloadDecoder;
+import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugMeta;
 import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.mqtt.ClientCallback;
@@ -55,8 +57,10 @@ public class TahuHostCallback implements ClientCallback {
 
 	private final SequenceReorderManager sequenceReorderManager;
 
+	private final PayloadDecoder<SparkplugBPayload> payloadDecoder;
+
 	public TahuHostCallback(HostApplicationEventHandler eventHandler, CommandPublisher commandPublisher,
-			SequenceReorderManager sequenceReorderManager) {
+			SequenceReorderManager sequenceReorderManager, PayloadDecoder<SparkplugBPayload> payloadDecoder) {
 		this.eventHandler = eventHandler;
 		this.commandPublisher = commandPublisher;
 		if (sequenceReorderManager != null) {
@@ -67,6 +71,7 @@ public class TahuHostCallback implements ClientCallback {
 			this.enableSequenceReordering = false;
 			this.sequenceReorderManager = null;
 		}
+		this.payloadDecoder = payloadDecoder;
 
 		this.sparkplugBExecutors = new ThreadPoolExecutor[DEFAULT_NUM_OF_THREADS];
 		for (int i = 0; i < DEFAULT_NUM_OF_THREADS; i++) {
@@ -158,8 +163,8 @@ public class TahuHostCallback implements ClientCallback {
 								// No sequence reordering required - just push the message through and handle the
 								// Sparkplug B Payload
 								logger.trace("Sending the message on {} directly to the TahuPayloadHandler", topic);
-								new TahuPayloadHandler(eventHandler, commandPublisher).handlePayload(topic, splitTopic,
-										message, server, clientId);
+								new TahuPayloadHandler(eventHandler, commandPublisher, payloadDecoder)
+										.handlePayload(topic, splitTopic, message, server, clientId);
 							} catch (Throwable t) {
 								logger.error("Failed to handle Sparkplug B message on topic {}", topic, t);
 							} finally {

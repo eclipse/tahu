@@ -72,7 +72,7 @@ public class PayloadUtilTest {
 		assertThat(compressedPayload.getUuid()).isEqualTo(PayloadUtil.UUID_COMPRESSED);
 
 		// Decompress the payload
-		SparkplugBPayload decompressedPayload = PayloadUtil.decompress(compressedPayload);
+		SparkplugBPayload decompressedPayload = PayloadUtil.decompress(compressedPayload, null);
 
 		// Test that the decompressed payload matches the original
 		assertThat(decompressedPayload.getTimestamp()).isEqualTo(payload.getTimestamp());

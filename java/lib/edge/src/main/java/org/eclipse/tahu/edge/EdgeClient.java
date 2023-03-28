@@ -22,7 +22,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
-import org.eclipse.tahu.alias.EdgeNodeAliasMap;
 import org.eclipse.tahu.edge.api.MetricHandler;
 import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.message.SparkplugBPayloadEncoder;
@@ -38,6 +37,7 @@ import org.eclipse.tahu.message.model.SparkplugBPayloadMap.SparkplugBPayloadMapB
 import org.eclipse.tahu.message.model.SparkplugMeta;
 import org.eclipse.tahu.message.model.StatePayload;
 import org.eclipse.tahu.message.model.Topic;
+import org.eclipse.tahu.model.MetricMap;
 import org.eclipse.tahu.model.MqttServerDefinition;
 import org.eclipse.tahu.mqtt.ClientCallback;
 import org.eclipse.tahu.mqtt.MqttClientId;
@@ -58,7 +58,7 @@ public class EdgeClient implements Runnable {
 	private final EdgeNodeDescriptor edgeNodeDescriptor;
 	private final Map<String, Boolean> deviceStatusMap;
 	private final String primaryHostId;
-	private final EdgeNodeAliasMap edgeNodeAliasMap;
+	private final MetricMap metricMap;
 	private final long rebirthDebounceDelay; // The user specified Rebirth Debounce Delay
 	private final RandomStartupDelay randomStartupDelay;
 
@@ -94,7 +94,7 @@ public class EdgeClient implements Runnable {
 			}
 		}
 		this.primaryHostId = primaryHostId;
-		this.edgeNodeAliasMap = useAliases ? new EdgeNodeAliasMap() : null;
+		this.metricMap = useAliases ? new MetricMap() : null;
 		this.rebirthDebounceDelay = rebirthDebounceDelay;
 		this.randomStartupDelay = randomStartupDelay;
 
@@ -163,11 +163,11 @@ public class EdgeClient implements Runnable {
 	}
 
 	public void publishNodeBirth(SparkplugBPayloadMap payload) throws SparkplugInvalidTypeException {
-		if (edgeNodeAliasMap != null) {
+		if (metricMap != null) {
 			// Aliasing is enabled so reinitialize the alias map and add the new NBIRTH metrics
-			edgeNodeAliasMap.clear();
+			metricMap.clear();
 			for (Metric metric : payload.getMetrics()) {
-				metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+				metric.setAlias(metricMap.addGeneratedAlias(metric.getName(), metric.getDataType()));
 			}
 		}
 
@@ -183,10 +183,10 @@ public class EdgeClient implements Runnable {
 
 	public void publishNodeData(SparkplugBPayload payload) {
 		if (connectedToPrimaryHost) {
-			if (edgeNodeAliasMap != null) {
+			if (metricMap != null) {
 				// Aliasing is enabled so replace metric names with aliases
 				for (Metric metric : payload.getMetrics()) {
-					metric.setAlias(edgeNodeAliasMap.getAlias(metric.getName()));
+					metric.setAlias(metricMap.getAlias(metric.getName()));
 					metric.setName(null);
 				}
 			}
@@ -198,10 +198,10 @@ public class EdgeClient implements Runnable {
 	}
 
 	public void publishDeviceBirth(String deviceId, SparkplugBPayload payload) {
-		if (edgeNodeAliasMap != null) {
+		if (metricMap != null) {
 			// Aliasing is enabled so add the new DBIRTH metrics
 			for (Metric metric : payload.getMetrics()) {
-				metric.setAlias(edgeNodeAliasMap.addGeneratedAlias(metric.getName()));
+				metric.setAlias(metricMap.addGeneratedAlias(metric.getName(), metric.getDataType()));
 			}
 		}
 
@@ -212,11 +212,11 @@ public class EdgeClient implements Runnable {
 
 	public void publishDeviceData(String deviceId, SparkplugBPayload payload) {
 		if (connectedToPrimaryHost) {
-			if (edgeNodeAliasMap != null && deviceStatusMap.get(deviceId) != null
+			if (metricMap != null && deviceStatusMap.get(deviceId) != null
 					&& deviceStatusMap.get(deviceId).booleanValue()) {
 				// Aliasing is enabled so replace metric names with aliases
 				for (Metric metric : payload.getMetrics()) {
-					metric.setAlias(edgeNodeAliasMap.getAlias(metric.getName()));
+					metric.setAlias(metricMap.getAlias(metric.getName()));
 					metric.setName(null);
 				}
 			}

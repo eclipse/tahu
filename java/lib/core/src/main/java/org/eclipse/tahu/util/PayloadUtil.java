@@ -30,6 +30,7 @@ import org.eclipse.tahu.message.model.Metric.MetricBuilder;
 import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
 import org.eclipse.tahu.message.model.SparkplugBPayload.SparkplugBPayloadBuilder;
+import org.eclipse.tahu.model.MetricDataTypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +84,8 @@ public class PayloadUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static SparkplugBPayload decompress(SparkplugBPayload payload) throws Exception {
+	public static SparkplugBPayload decompress(SparkplugBPayload payload, MetricDataTypeMap metricDataTypeMap)
+			throws Exception {
 		if (UUID_COMPRESSED.equals(payload.getUuid())) {
 			logger.trace("Decompressing payload");
 			SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
@@ -111,7 +113,7 @@ public class PayloadUtil {
 			}
 
 			// Decode bytes and return
-			return decoder.buildFromByteArray(decompressedBytes);
+			return decoder.buildFromByteArray(decompressedBytes, metricDataTypeMap);
 		} else {
 			logger.trace("Not decompressing payload");
 			return payload;

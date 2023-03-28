@@ -13,16 +13,78 @@
 
 package org.eclipse.tahu.mqtt;
 
+import org.eclipse.tahu.exception.TahuErrorCode;
+import org.eclipse.tahu.exception.TahuException;
+
 public class MqttServerUrl {
 
-	private String mqttServerUrl;
+	private final String mqttServerUrl;
+	private final String protocol;
+	private final String fqdn;
+	private final Integer port;
 
-	public MqttServerUrl(String mqttServerUrl) {
+	public MqttServerUrl(String mqttServerUrl) throws TahuException {
 		this.mqttServerUrl = mqttServerUrl;
+
+		try {
+			String[] fqdnParts;
+			if (mqttServerUrl.contains("://")) {
+				String[] protocolParts = mqttServerUrl.split("://");
+				protocol = protocolParts[0];
+				fqdnParts = protocolParts[1].split(":");
+			} else {
+				protocol = "tcp";
+				fqdnParts = mqttServerUrl.split(":");
+			}
+
+			if (fqdnParts.length == 1) {
+				fqdn = fqdnParts[0];
+				port = 1883;
+			} else if (fqdnParts.length == 2) {
+				fqdn = fqdnParts[0];
+				port = Integer.parseInt(fqdnParts[1]);
+			} else {
+				throw new TahuException(TahuErrorCode.INVALID_ARGUMENT, "Invalid MQTT Server URL: " + mqttServerUrl);
+			}
+		} catch (Exception e) {
+			throw new TahuException(TahuErrorCode.INVALID_ARGUMENT, "Invalid MQTT Server URL: " + mqttServerUrl, e);
+		}
+	}
+
+	public MqttServerUrl(String protocol, String fqdn, Integer port) throws TahuException {
+		if (protocol == null || fqdn == null || port == null) {
+			throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+					"Invalid MQTT Server URL: protocol=" + protocol + " FQDN=" + fqdn + " port=" + port);
+		} else {
+			mqttServerUrl = protocol + "://" + fqdn + ":" + port;
+			this.protocol = protocol;
+			this.fqdn = fqdn;
+			this.port = port;
+		}
+	}
+
+	public static MqttServerUrl getMqttServerUrlSafe(String mqttServerUrl) {
+		try {
+			return new MqttServerUrl(mqttServerUrl);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public String getMqttServerUrl() {
 		return mqttServerUrl;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public String getFqdn() {
+		return fqdn;
+	}
+
+	public Integer getPort() {
+		return port;
 	}
 
 	@Override

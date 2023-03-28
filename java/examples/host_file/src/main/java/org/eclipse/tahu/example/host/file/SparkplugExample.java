@@ -164,7 +164,7 @@ public class SparkplugExample implements MqttCallbackExtended {
 
 			// Get the payload
 			SparkplugBPayloadDecoder decoder = new SparkplugBPayloadDecoder();
-			SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload());
+			SparkplugBPayload inboundPayload = decoder.buildFromByteArray(message.getPayload(), null);
 
 			// Get the EdgeNodeDescriptor
 			EdgeNodeDescriptor edgeNodeDescriptor = new EdgeNodeDescriptor(topic.getGroupId(), topic.getEdgeNodeId());
