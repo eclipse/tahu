@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2022 Cirrus Link Solutions and others
+ * Copyright (c) 2017-2023 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -14,6 +14,7 @@
 package org.eclipse.tahu.json;
 
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.Template;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationConfig;
@@ -30,8 +31,9 @@ public class DeserializerModifier extends BeanDeserializerModifier {
 			JsonDeserializer<?> deserializer) {
 		if (Metric.class.equals(beanDesc.getBeanClass())) {
 			return new MetricDeserializer(deserializer);
+		} else if (Template.class.equals(beanDesc.getBeanClass())) {
+			return new TemplateDeserializer(deserializer);
 		}
-
 		return super.modifyDeserializer(config, beanDesc, deserializer);
 	}
 }
