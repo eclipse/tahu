@@ -299,7 +299,11 @@ public class SequenceReorderManager {
 						sequenceReorderContext.getHostAppMqttClientId());
 
 			} catch (Throwable t) {
-				logger.error("Failed to handle Sparkplug B message on topic {}", sequenceReorderContext.getTopic(), t);
+				logger.error("Failed to handle Sparkplug B message on topic {} - requesting rebirth",
+						sequenceReorderContext.getTopic(), t);
+				new TahuPayloadHandler(eventHandler, commandPublisher, payloadDecoder).requestRebirth(
+						sequenceReorderContext.getMqttServerName(), sequenceReorderContext.getHostAppMqttClientId(),
+						sequenceReorderContext.getTopic().getEdgeNodeDescriptor());
 			} finally {
 				// Update the message latency
 				long latency = System.nanoTime() - sequenceReorderContext.getArrivedTime();
