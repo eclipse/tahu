@@ -14,6 +14,7 @@
 package org.eclipse.tahu.json;
 
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.PropertySet;
 import org.eclipse.tahu.message.model.Template;
 
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -33,6 +34,8 @@ public class DeserializerModifier extends BeanDeserializerModifier {
 			return new MetricDeserializer(deserializer);
 		} else if (Template.class.equals(beanDesc.getBeanClass())) {
 			return new TemplateDeserializer(deserializer);
+		} else if (PropertySet.class.equals(beanDesc.getBeanClass())) {
+			return new PropertySetDeserializer(deserializer);
 		}
 		return super.modifyDeserializer(config, beanDesc, deserializer);
 	}
