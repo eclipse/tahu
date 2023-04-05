@@ -14,7 +14,7 @@ package org.eclipse.tahu.json;
 
 import java.io.IOException;
 
-import org.eclipse.tahu.message.model.Template;
+import org.eclipse.tahu.message.model.PropertySet;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -25,9 +25,9 @@ import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 /**
- * Defines Template deserializer
+ * Defines PropertySet deserializer
  */
-public class TemplateDeserializer extends StdDeserializer<Template> implements ResolvableDeserializer {
+public class PropertySetDeserializer extends StdDeserializer<PropertySet> implements ResolvableDeserializer {
 
 	private static final long serialVersionUID = 1L;
 
@@ -36,8 +36,8 @@ public class TemplateDeserializer extends StdDeserializer<Template> implements R
 	/**
 	 * Constructor.
 	 */
-	protected TemplateDeserializer(JsonDeserializer<?> defaultDeserializer) {
-		super(Template.class);
+	protected PropertySetDeserializer(JsonDeserializer<?> defaultDeserializer) {
+		super(PropertySet.class);
 		this.defaultDeserializer = defaultDeserializer;
 	}
 
@@ -47,8 +47,9 @@ public class TemplateDeserializer extends StdDeserializer<Template> implements R
 	}
 
 	@Override
-	public Template deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JacksonException {
-		Template template = (Template) defaultDeserializer.deserialize(parser, ctxt);
-		return template;
+	public PropertySet deserialize(JsonParser parser, DeserializationContext ctxt)
+			throws IOException, JacksonException {
+		PropertySet propSet = (PropertySet) defaultDeserializer.deserialize(parser, ctxt);
+		return propSet;
 	}
 }
