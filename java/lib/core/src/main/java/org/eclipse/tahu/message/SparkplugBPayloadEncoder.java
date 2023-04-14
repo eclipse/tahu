@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014-2022 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2023 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -79,10 +79,14 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 
 		// Set the metrics
 		for (Metric metric : payload.getMetrics()) {
+			if (metric == null) {
+				logger.warn("Not adding NULL metric");
+				continue;
+			}
 			try {
 				protoMsg.addMetrics(convertMetric(metric, stripDataTypes));
 			} catch (Exception e) {
-				logger.error("Failed to add metric: " + metric.getName(), e);
+				logger.error("Failed to add metric: {}", metric.getName(), e);
 				throw new RuntimeException(e);
 			}
 		}
@@ -160,8 +164,8 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 				SparkplugBProto.Payload.Template.Parameter.newBuilder();
 
 		if (logger.isTraceEnabled()) {
-			logger.trace("Adding parameter: " + parameter.getName());
-			logger.trace("            type: " + parameter.getType());
+			logger.trace("Adding parameter: {}", parameter.getName());
+			logger.trace("            type: {}", parameter.getType());
 		}
 
 		// Set the name
@@ -240,7 +244,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						break;
 					case Unknown:
 					default:
-						logger.error("Unknown PropertyDataType: " + value.getType());
+						logger.error("Unknown PropertyDataType: {}", value.getType());
 						throw new Exception("Failed to convert value " + value.getType());
 				}
 			}
@@ -301,7 +305,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					break;
 				case Unknown:
 				default:
-					logger.error("Unknown Type: " + type);
+					logger.error("Unknown Type: {}", type);
 					throw new Exception("Failed to encode");
 
 			}
@@ -457,8 +461,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Byte[] int8ArrayValue = (Byte[]) metric.getValue();
 					ByteBuffer int8ByteBuffer =
 							ByteBuffer.allocate(int8ArrayValue.length).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullInt8ArrayElements = false;
 					for (Byte value : int8ArrayValue) {
-						int8ByteBuffer.put(value);
+						if (value != null) {
+							int8ByteBuffer.put(value);
+						} else {
+							hasNullInt8ArrayElements = true;
+							int8ByteBuffer.put((byte) 0);
+						}
+					}
+					if (hasNullInt8ArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} Int8Array. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (int8ByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(int8ByteBuffer.array()));
@@ -468,8 +483,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Short[] int16ArrayValue = (Short[]) metric.getValue();
 					ByteBuffer int16ByteBuffer =
 							ByteBuffer.allocate(int16ArrayValue.length * 2).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullInt16ArrayElements = false;
 					for (Short value : int16ArrayValue) {
-						int16ByteBuffer.putShort(value);
+						if (value != null) {
+							int16ByteBuffer.putShort(value);
+						} else {
+							hasNullInt16ArrayElements = true;
+							int16ByteBuffer.putShort((short) 0);
+						}
+					}
+					if (hasNullInt16ArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} Int16Array. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (int16ByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(int16ByteBuffer.array()));
@@ -479,8 +505,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Integer[] int32ArrayValue = (Integer[]) metric.getValue();
 					ByteBuffer int32ByteBuffer =
 							ByteBuffer.allocate(int32ArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullInt32ArrayElements = false;
 					for (Integer value : int32ArrayValue) {
-						int32ByteBuffer.putInt(value);
+						if (value != null) {
+							int32ByteBuffer.putInt(value);
+						} else {
+							hasNullInt32ArrayElements = true;
+							int32ByteBuffer.putInt(0);
+						}
+					}
+					if (hasNullInt32ArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} Int32Array. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (int32ByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(int32ByteBuffer.array()));
@@ -490,8 +527,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Long[] int64ArrayValue = (Long[]) metric.getValue();
 					ByteBuffer int64ByteBuffer =
 							ByteBuffer.allocate(int64ArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullInt64ArrayElements = false;
 					for (Long value : int64ArrayValue) {
-						int64ByteBuffer.putLong(value);
+						if (value != null) {
+							int64ByteBuffer.putLong(value);
+						} else {
+							hasNullInt64ArrayElements = true;
+							int64ByteBuffer.putLong(0L);
+						}
+					}
+					if (hasNullInt64ArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} Int64Array. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (int64ByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(int64ByteBuffer.array()));
@@ -501,8 +549,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Short[] uInt8ArrayValue = (Short[]) metric.getValue();
 					ByteBuffer uInt8ByteBuffer =
 							ByteBuffer.allocate(uInt8ArrayValue.length).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullUnt8ArrayElements = false;
 					for (Short value : uInt8ArrayValue) {
-						uInt8ByteBuffer.put((byte) (value & 0xffff));
+						if (value != null) {
+							uInt8ByteBuffer.put((byte) (value & 0xffff));
+						} else {
+							hasNullUnt8ArrayElements = true;
+							uInt8ByteBuffer.put((byte) 0);
+						}
+					}
+					if (hasNullUnt8ArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} UInt8Array. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (uInt8ByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(uInt8ByteBuffer.array()));
@@ -512,8 +571,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Integer[] uInt16ArrayValue = (Integer[]) metric.getValue();
 					ByteBuffer uInt16ByteBuffer =
 							ByteBuffer.allocate(uInt16ArrayValue.length * 2).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullUnt16ArrayElements = false;
 					for (Integer value : uInt16ArrayValue) {
-						uInt16ByteBuffer.putShort((short) (value & 0xffffffff));
+						if (value != null) {
+							uInt16ByteBuffer.putShort((short) (value & 0xffffffff));
+						} else {
+							hasNullUnt16ArrayElements = true;
+							uInt16ByteBuffer.putShort((short) 0);
+						}
+					}
+					if (hasNullUnt16ArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} UInt16Array. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (uInt16ByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(uInt16ByteBuffer.array()));
@@ -523,8 +593,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Long[] uInt32ArrayValue = (Long[]) metric.getValue();
 					ByteBuffer uInt32ByteBuffer =
 							ByteBuffer.allocate(uInt32ArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullUnt32ArrayElements = false;
 					for (Long value : uInt32ArrayValue) {
-						uInt32ByteBuffer.putInt((int) (value & 0xffffffffffffffffL));
+						if (value != null) {
+							uInt32ByteBuffer.putInt((int) (value & 0xffffffffffffffffL));
+						} else {
+							hasNullUnt32ArrayElements = true;
+							uInt32ByteBuffer.putInt(0);
+						}
+					}
+					if (hasNullUnt32ArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} UInt32Array. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (uInt32ByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(uInt32ByteBuffer.array()));
@@ -534,8 +615,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					BigInteger[] uInt64ArrayValue = (BigInteger[]) metric.getValue();
 					ByteBuffer uInt64ByteBuffer =
 							ByteBuffer.allocate(uInt64ArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullUnt64ArrayElements = false;
 					for (BigInteger value : uInt64ArrayValue) {
-						uInt64ByteBuffer.putLong(bigIntegerToUnsignedLong(value));
+						if (value != null) {
+							uInt64ByteBuffer.putLong(bigIntegerToUnsignedLong(value));
+						} else {
+							hasNullUnt64ArrayElements = true;
+							uInt64ByteBuffer.putLong(0L);
+						}
+					}
+					if (hasNullUnt64ArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} UInt64Array. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (uInt64ByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(uInt64ByteBuffer.array()));
@@ -545,8 +637,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Float[] floatArrayValue = (Float[]) metric.getValue();
 					ByteBuffer floatByteBuffer =
 							ByteBuffer.allocate(floatArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullFloatArrayElements = false;
 					for (Float value : floatArrayValue) {
-						floatByteBuffer.putFloat(value);
+						if (value != null) {
+							floatByteBuffer.putFloat(value);
+						} else {
+							hasNullFloatArrayElements = true;
+							floatByteBuffer.putFloat(0);
+						}
+					}
+					if (hasNullFloatArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} FloatArray. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (floatByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(floatByteBuffer.array()));
@@ -556,8 +659,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Double[] doubleArrayValue = (Double[]) metric.getValue();
 					ByteBuffer doubleByteBuffer =
 							ByteBuffer.allocate(doubleArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullDoubleArrayElements = false;
 					for (Double value : doubleArrayValue) {
-						doubleByteBuffer.putDouble(value);
+						if (value != null) {
+							doubleByteBuffer.putDouble(value);
+						} else {
+							hasNullDoubleArrayElements = true;
+							doubleByteBuffer.putDouble(0);
+						}
+					}
+					if (hasNullDoubleArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} DoubleArray. All such elements will be set to 0.",
+								metric.getName());
 					}
 					if (doubleByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(doubleByteBuffer.array()));
@@ -573,17 +687,29 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					booleanByteBuffer.putInt(booleanArrayValue.length);
 
 					// Get the remaining bytes
+					boolean hasNullBooleanArrayElements = false;
 					for (int i = 0; i < numberOfBytes; i++) {
 						byte nextByte = 0;
 						for (int bit = 0; bit < 8; bit++) {
 							int index = i * 8 + bit;
-							if (index < booleanArrayValue.length && booleanArrayValue[index]) {
-								nextByte |= (128 >> bit);
+							if (index < booleanArrayValue.length) {
+								Boolean value = booleanArrayValue[index];
+								if (value == null) {
+									hasNullBooleanArrayElements = true;
+									value = Boolean.valueOf(false);
+								}
+								if (value.booleanValue()) {
+									nextByte |= (128 >> bit);
+								}
 							}
 						}
 						booleanByteBuffer.put(nextByte);
 					}
-
+					if (hasNullBooleanArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} BooleanArray. All such elements will be set to 'false'.",
+								metric.getName());
+					}
 					metricBuilder.setBytesValue(ByteString.copyFrom(booleanByteBuffer.array()));
 					break;
 				case StringArray:
@@ -591,12 +717,23 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 
 					int size = 0;
 					List<byte[]> bytesArrays = new ArrayList<>();
+					boolean hasNullStringArrayElements = false;
 					for (String string : stringArrayValue) {
-						byte[] stringBytes = string.getBytes(StandardCharsets.UTF_8);
+						byte[] stringBytes = null;
+						if (string != null) {
+							stringBytes = string.getBytes(StandardCharsets.UTF_8);
+						} else {
+							hasNullStringArrayElements = true;
+							stringBytes = new byte[0];
+						}
 						size = size + stringBytes.length + 1;
 						bytesArrays.add(stringBytes);
 					}
-
+					if (hasNullStringArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} StringArray. All such elements will be set to an empty string.",
+								metric.getName());
+					}
 					ByteBuffer stringByteBuffer = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
 					for (byte[] bytesArray : bytesArrays) {
 						stringByteBuffer.put(bytesArray);
@@ -610,8 +747,19 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					Date[] dateTimeArrayValue = (Date[]) metric.getValue();
 					ByteBuffer dateTimeByteBuffer =
 							ByteBuffer.allocate(dateTimeArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+					boolean hasNullDateTimeArrayElements = false;
 					for (Date value : dateTimeArrayValue) {
-						dateTimeByteBuffer.putLong(value.getTime());
+						if (value != null) {
+							dateTimeByteBuffer.putLong(value.getTime());
+						} else {
+							hasNullDateTimeArrayElements = true;
+							dateTimeByteBuffer.putLong(new Date(0L).getTime());
+						}
+					}
+					if (hasNullDateTimeArrayElements) {
+						logger.warn(
+								"SparkplugB doesn't support 'null' elements in the {} DateTimeArray. All such elements will be set to start of epoch.",
+								metric.getName());
 					}
 					if (dateTimeByteBuffer.hasArray()) {
 						metricBuilder.setBytesValue(ByteString.copyFrom(dateTimeByteBuffer.array()));
@@ -619,7 +767,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					break;
 				case Unknown:
 				default:
-					logger.error("Unsupported MetricDataType: " + metric.getDataType());
+					logger.error("Unsupported MetricDataType: {}", metric.getDataType());
 					throw new Exception("Failed to encode");
 
 			}
