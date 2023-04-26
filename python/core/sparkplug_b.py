@@ -131,6 +131,19 @@ def getDdataPayload():
 ######################################################################
 
 ######################################################################
+# Request a REBIRTH
+######################################################################
+def getReBirth():
+    global seqNum
+    seqNum = 0
+    payload = sparkplug_b_pb2.Payload()
+    payload.timestamp = int(round(time.time() * 1000))
+    payload.seq = getSeqNum()
+    addMetric(payload, "Node Control/Rebirth", None, MetricDataType.Boolean, True)
+    return payload
+######################################################################
+
+######################################################################
 # Helper method for adding dataset metrics to a payload
 ######################################################################
 def initDatasetMetric(payload, name, alias, columns, types):
