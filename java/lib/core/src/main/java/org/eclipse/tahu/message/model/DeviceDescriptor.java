@@ -77,6 +77,15 @@ public class DeviceDescriptor extends EdgeNodeDescriptor {
 	}
 
 	/**
+	 * Returns the {@link EdgeNodeDescriptor} associated with this DeviceDescriptor
+	 *
+	 * @return a {@link EdgeNodeDescriptor} representing the Device's parent Edge Node Descriptor.
+	 */
+	public EdgeNodeDescriptor getEdgeNodeDescriptor() {
+		return super.getEdgeNodeDescriptor();
+	}
+
+	/**
 	 * Returns a {@link String} representing the Device's parent Edge Node Descriptor of the form:
 	 * "<groupName>/<edgeNodeName>".
 	 *
