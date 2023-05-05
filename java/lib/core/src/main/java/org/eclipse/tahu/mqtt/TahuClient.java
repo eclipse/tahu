@@ -578,7 +578,8 @@ public class TahuClient implements MqttCallbackExtended {
 			if (client != null) {
 				if (client.isConnected()) {
 					try {
-						logger.debug("{}: Attempting to unsubscribe on topic {}", getClientId(), topic);
+						logger.debug("{}: {} attempting to unsubscribe on topic {}", getClientId(), mqttServerName,
+								topic);
 						client.unsubscribe(topic);
 					} catch (MqttException e) {
 						throw new TahuException(TahuErrorCode.INTERNAL_ERROR, e);
@@ -965,9 +966,9 @@ public class TahuClient implements MqttCallbackExtended {
 
 									// Check if the connect attempt has timed out
 									if (System.currentTimeMillis() - attemptTimestamp > connectAttemptTimeout) {
-										logger.warn("{}: Connect attempt has timed out");
-										// Forcibly disconnect the client
-										client.disconnectForcibly(500);
+										// Forcibly close the client
+										logger.warn("{}: Connect attempt has timed out - forcing close", getClientId());
+										client.close(true);
 									} else {
 										Thread.sleep(500);
 									}
@@ -1267,7 +1268,7 @@ public class TahuClient implements MqttCallbackExtended {
 								getMqttServerName(), topicStr, qosStr, e);
 						break;
 					}
-					
+
 					subscribedCount += size;
 
 				}
