@@ -306,6 +306,36 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 		}
 	}
 
+	public void uptickMetricTimestamps(Date birthTimestamp) {
+		for (Metric metric : metricMap.values()) {
+			Date uptickedTimestamp = new Date(metric.getTimestamp().getTime() + 1);
+			if (birthTimestamp.before(uptickedTimestamp)) {
+				metric.setTimestamp(birthTimestamp);
+			} else {
+				metric.setTimestamp(uptickedTimestamp);
+			}
+			if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
+				uptickTemplateTimestamps((Template) metric.getValue(), birthTimestamp);
+			}
+		}
+	}
+
+	private void uptickTemplateTimestamps(Template template, Date birthTimestamp) {
+		if (template != null && template.getMetrics() != null) {
+			for (Metric metric : template.getMetrics()) {
+				Date uptickedTimestamp = new Date(metric.getTimestamp().getTime() + 1);
+				if (birthTimestamp.before(uptickedTimestamp)) {
+					metric.setTimestamp(birthTimestamp);
+				} else {
+					metric.setTimestamp(uptickedTimestamp);
+				}
+				if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
+					updateTemplateTimestamps((Template) metric.getValue(), birthTimestamp);
+				}
+			}
+		}
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
