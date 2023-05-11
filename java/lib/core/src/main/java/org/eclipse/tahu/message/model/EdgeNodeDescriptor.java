@@ -72,7 +72,7 @@ public class EdgeNodeDescriptor implements SparkplugDescriptor {
 	 * @return the {@link EdgeNodeDescriptor}
 	 */
 	protected EdgeNodeDescriptor getEdgeNodeDescriptor() {
-		return this;
+		return new EdgeNodeDescriptor(groupId, edgeNodeId);
 	}
 
 	/**
