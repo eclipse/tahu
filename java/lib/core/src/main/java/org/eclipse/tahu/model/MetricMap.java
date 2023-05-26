@@ -74,6 +74,7 @@ public class MetricMap {
 			if (alias != null) {
 				metricNameToAliasMap.put(metricName, alias);
 				aliasToMetricNameMap.put(alias, metricName);
+				metricDataTypeMap.addMetricDataType(alias, metricDataType);
 			}
 			metricDataTypeMap.addMetricDataType(metricName, metricDataType);
 		}
