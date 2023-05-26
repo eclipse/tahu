@@ -117,7 +117,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
-	public void onNodeBirthArrived(EdgeNodeDescriptor edgeNodeDescriptor) {
+	public void onNodeBirthArrived(EdgeNodeDescriptor edgeNodeDescriptor, Message message) {
 		logger.info("onNodeBirthArrived from {}...", edgeNodeDescriptor);
 	}
 
@@ -127,7 +127,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
-	public void onNodeDataArrived(EdgeNodeDescriptor edgeNodeDescriptor) {
+	public void onNodeDataArrived(EdgeNodeDescriptor edgeNodeDescriptor, Message message) {
 		logger.info("onNodeDataArrived from {}...", edgeNodeDescriptor);
 	}
 
@@ -137,7 +137,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
-	public void onNodeDeath(EdgeNodeDescriptor edgeNodeDescriptor) {
+	public void onNodeDeath(EdgeNodeDescriptor edgeNodeDescriptor, Message message) {
 		logger.info("onNodeDeath from {}...", edgeNodeDescriptor);
 	}
 
@@ -147,7 +147,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
-	public void onDeviceBirthArrived(DeviceDescriptor deviceDescriptor) {
+	public void onDeviceBirthArrived(DeviceDescriptor deviceDescriptor, Message message) {
 		logger.info("onDeviceBirthArrived from {}...", deviceDescriptor);
 	}
 
@@ -157,7 +157,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
-	public void onDeviceDataArrived(DeviceDescriptor deviceDescriptor) {
+	public void onDeviceDataArrived(DeviceDescriptor deviceDescriptor, Message message) {
 		logger.info("onDeviceDataArrived from {}...", deviceDescriptor);
 	}
 
@@ -167,7 +167,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
-	public void onDeviceDeath(DeviceDescriptor deviceDescriptor) {
+	public void onDeviceDeath(DeviceDescriptor deviceDescriptor, Message message) {
 		logger.info("onDeviceDeath from {}...", deviceDescriptor);
 	}
 
