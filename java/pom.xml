@@ -25,6 +25,8 @@
     <slf4j.version>1.7.32</slf4j.version>
     <logback.version>1.2.11</logback.version>
     <protobuf.version>3.16.3</protobuf.version>
+    <maven.compiler.version>3.8.1</maven.compiler.version>
+    <maven.bundle.version>5.1.1</maven.bundle.version>
   </properties>
 
   <groupId>org.eclipse.tahu</groupId>
@@ -190,7 +192,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>${maven.compiler.version}</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
