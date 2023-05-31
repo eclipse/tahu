@@ -183,7 +183,7 @@ public class TahuPayloadHandler {
 		sparkplugEdgeNode.setOnline(true, messageContext.getPayload().getTimestamp(),
 				SparkplugUtil.getBdSequenceNumber(messageContext.getPayload()), messageContext.getSeqNum());
 
-		eventHandler.onNodeBirthArrived(edgeNodeDescriptor);
+		eventHandler.onNodeBirthArrived(edgeNodeDescriptor, messageContext.getMessage());
 		eventHandler.onMessage(edgeNodeDescriptor, messageContext.getMessage());
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
 			if (metric.hasAlias()) {
@@ -231,7 +231,7 @@ public class TahuPayloadHandler {
 		// Set online
 		sparkplugDevice.setOnline(true, messageContext.getPayload().getTimestamp());
 
-		eventHandler.onDeviceBirthArrived(deviceDescriptor);
+		eventHandler.onDeviceBirthArrived(deviceDescriptor, messageContext.getMessage());
 		eventHandler.onMessage(deviceDescriptor, messageContext.getMessage());
 		HostApplicationMetricMap hostApplicationMetricMap = HostApplicationMetricMap.getInstance();
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
@@ -274,7 +274,7 @@ public class TahuPayloadHandler {
 
 		sparkplugEdgeNode.handleSeq(messageContext.getPayload().getSeq());
 
-		eventHandler.onNodeDataArrived(edgeNodeDescriptor);
+		eventHandler.onNodeDataArrived(edgeNodeDescriptor, messageContext.getMessage());
 		eventHandler.onMessage(edgeNodeDescriptor, messageContext.getMessage());
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
 			if (!metric.hasName() && metric.hasAlias()) {
@@ -286,7 +286,7 @@ public class TahuPayloadHandler {
 			sparkplugEdgeNode.updateValue(metric.getName(), metric.getValue());
 			eventHandler.onDataMetric(edgeNodeDescriptor, metric);
 		}
-		eventHandler.onNodeDataArrived(edgeNodeDescriptor);
+		eventHandler.onNodeDataArrived(edgeNodeDescriptor, messageContext.getMessage());
 	}
 
 	protected void handleDeviceData(MessageContext messageContext) throws Exception {
@@ -307,12 +307,12 @@ public class TahuPayloadHandler {
 
 		sparkplugEdgeNode.handleSeq(messageContext.getPayload().getSeq());
 
-		eventHandler.onDeviceDataArrived(deviceDescriptor);
+		eventHandler.onDeviceDataArrived(deviceDescriptor, messageContext.getMessage());
 		eventHandler.onMessage(deviceDescriptor, messageContext.getMessage());
 		for (Metric metric : messageContext.getPayload().getMetrics()) {
 			if (!metric.hasName() && metric.hasAlias()) {
-				metric.setName(HostApplicationMetricMap.getInstance().getMetricName(edgeNodeDescriptor, deviceDescriptor,
-						metric.getAlias()));
+				metric.setName(HostApplicationMetricMap.getInstance().getMetricName(edgeNodeDescriptor,
+						deviceDescriptor, metric.getAlias()));
 			}
 
 			// Update the metric in the cache and notify
@@ -332,7 +332,7 @@ public class TahuPayloadHandler {
 			if (sparkplugEdgeNode != null && incomingBdSeqNum != null) {
 				if (sparkplugEdgeNode.isOnline()) {
 					if (sparkplugEdgeNode.getBirthBdSeqNum() == incomingBdSeqNum) {
-						eventHandler.onNodeDeath(edgeNodeDescriptor);
+						eventHandler.onNodeDeath(edgeNodeDescriptor, messageContext.getMessage());
 						eventHandler.onMessage(edgeNodeDescriptor, messageContext.getMessage());
 						staleTags(edgeNodeDescriptor, sparkplugEdgeNode);
 						sparkplugEdgeNode.setOnline(false, messageContext.getPayload().getTimestamp(), incomingBdSeqNum,
@@ -374,7 +374,7 @@ public class TahuPayloadHandler {
 		sparkplugEdgeNode.handleSeq(messageContext.getPayload().getSeq());
 
 		if (sparkplugEdgeNode.isOnline() && sparkplugDevice.isOnline()) {
-			eventHandler.onDeviceDeath(deviceDescriptor);
+			eventHandler.onDeviceDeath(deviceDescriptor, messageContext.getMessage());
 			eventHandler.onMessage(deviceDescriptor, messageContext.getMessage());
 			staleTags(deviceDescriptor, sparkplugDevice);
 			sparkplugDevice.setOnline(false, messageContext.getPayload().getTimestamp());
