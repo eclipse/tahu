@@ -966,9 +966,12 @@ public class TahuClient implements MqttCallbackExtended {
 
 									// Check if the connect attempt has timed out
 									if (System.currentTimeMillis() - attemptTimestamp > connectAttemptTimeout) {
-										// Forcibly close the client
-										logger.warn("{}: Connect attempt has timed out - forcing close", getClientId());
-										client.close(true);
+										synchronized (clientLock) {
+											// Forcibly close the client
+											logger.warn("{}: Connect attempt has timed out - forcing close",
+													getClientId());
+											client.close(true);
+										}
 									} else {
 										Thread.sleep(500);
 									}
@@ -982,14 +985,19 @@ public class TahuClient implements MqttCallbackExtended {
 
 						logger.info("{}: MQTT Client connected to {} on thread {}", getClientId(), getMqttServerUrl(),
 								Thread.currentThread().getName());
+						state.setInProgress(false);
 					} catch (InterruptedException ie) {
 						logger.info("{}: Connect thread 2 interrupted - giving up", getClientId());
+						state.setInProgress(false);
 						return;
 					} catch (Throwable throwable) {
-						logException("Error while attempting connect to " + getMqttServerUrl(), throwable);
-					} finally {
-						logger.debug("{}: Setting connectAttemptInProgress to false", getClientId());
+						logException(
+								"Error while attempting connect (with autoReconnect=true) to " + getMqttServerUrl(),
+								throwable);
 						state.setInProgress(false);
+						if (autoReconnect && !isConnected() && attemptConnects) {
+							attemptRecovery();
+						}
 					}
 				} else {
 					try {
@@ -1003,35 +1011,40 @@ public class TahuClient implements MqttCallbackExtended {
 							attemptConnect(client, connectOptions, "connect");
 						}
 					} catch (Throwable throwable) {
-						logException("Error while attempting connect to " + getMqttServerUrl(), throwable);
+						logException(
+								"Error while attempting connect (with autoReconnect=false) to " + getMqttServerUrl(),
+								throwable);
 					}
 				}
 			} catch (Exception e) {
 				logger.error("{}: Error while connecting client", getClientId(), e);
 				state.setInProgress(false);
-
-				if (autoReconnect) {
-					logger.warn("{}: Connect failed - retrying", getClientId());
-					try {
-						if (randomStartupDelay != null && randomStartupDelay.isValid()) {
-							long randomDelay = randomStartupDelay.getRandomDelay();
-							logger.info("{}: Sleeping {} before reconnect attempt", getClientId(), randomDelay);
-							Thread.sleep(randomDelay);
-						} else {
-							Thread.sleep(getConnectRetryInterval());
-						}
-					} catch (InterruptedException ie) {
-						logger.warn("{}: InterruptedException while preparing to reconnect", getClientId(), ie);
-						return;
-					}
-					if (autoReconnect) {
-						connect();
-					} else {
-						logger.warn("{}: AutoReconnect canceled - No longer going to retry", getClientId());
-						return;
-					}
+				if (autoReconnect && !isConnected() && attemptConnects) {
+					attemptRecovery();
 				}
 			}
+		}
+	}
+
+	private void attemptRecovery() {
+		logger.warn("{}: Connect failed - retrying", getClientId());
+		try {
+			if (randomStartupDelay != null && randomStartupDelay.isValid()) {
+				long randomDelay = randomStartupDelay.getRandomDelay();
+				logger.info("{}: Sleeping {} before reconnect attempt", getClientId(), randomDelay);
+				Thread.sleep(randomDelay);
+			} else {
+				Thread.sleep(getConnectRetryInterval());
+			}
+		} catch (InterruptedException ie) {
+			logger.warn("{}: InterruptedException while preparing to reconnect", getClientId(), ie);
+			return;
+		}
+		if (autoReconnect) {
+			connect();
+		} else {
+			logger.warn("{}: AutoReconnect canceled - No longer going to retry", getClientId());
+			return;
 		}
 	}
 
