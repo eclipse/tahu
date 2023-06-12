@@ -21,4 +21,32 @@ public interface SparkplugDescriptor {
 	 * @return the String representation of this {@link SparkplugDescriptor}
 	 */
 	public String getDescriptorString();
+
+	/**
+	 * Returns the Group ID for this {@link SparkplugDescriptor}
+	 *
+	 * @return the String representation of the Group ID for this {@link SparkplugDescriptor}
+	 */
+	public String getGroupId();
+
+	/**
+	 * Returns the Group ID for this {@link SparkplugDescriptor}
+	 *
+	 * @return the String representation of the Group ID for this {@link SparkplugDescriptor}
+	 */
+	public String getEdgeNodeId();
+
+	/**
+	 * Returns true if this is a DeviceDescriptor, otherwise false
+	 *
+	 * @return true if this is a DeviceDescriptor, otherwise false
+	 */
+	public boolean isDeviceDescriptor();
+
+	/**
+	 * Returns the Group ID for this {@link SparkplugDescriptor}
+	 *
+	 * @return the String representation of the Group ID for this {@link SparkplugDescriptor}
+	 */
+	public String getDeviceId();
 }

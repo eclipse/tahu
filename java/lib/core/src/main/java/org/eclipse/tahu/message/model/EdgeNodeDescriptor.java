@@ -53,6 +53,7 @@ public class EdgeNodeDescriptor implements SparkplugDescriptor {
 	 *
 	 * @return the Sparkplug Group ID associated with this {@link EdgeNodeDescriptor}
 	 */
+	@Override
 	public String getGroupId() {
 		return groupId;
 	}
@@ -62,8 +63,37 @@ public class EdgeNodeDescriptor implements SparkplugDescriptor {
 	 *
 	 * @return the Sparkplug Edge Node ID associated with this {@link EdgeNodeDescriptor}
 	 */
+	@Override
 	public String getEdgeNodeId() {
 		return edgeNodeId;
+	}
+
+	/**
+	 * Gets the Sparkplug Device ID for this {@link EdgeNodeDescriptor}. It is always null for an
+	 * {@link EdgeNodeDescriptor}.
+	 *
+	 * @return null
+	 */
+	@Override
+	public String getDeviceId() {
+		return null;
+	}
+
+	/**
+	 * Always returns false of an {@link EdgeNodeDescriptor}
+	 */
+	@Override
+	public boolean isDeviceDescriptor() {
+		return false;
+	}
+
+	/**
+	 * Returns the {@link EdgeNodeDescriptor}
+	 *
+	 * @return the {@link EdgeNodeDescriptor}
+	 */
+	protected EdgeNodeDescriptor getEdgeNodeDescriptor() {
+		return new EdgeNodeDescriptor(groupId, edgeNodeId);
 	}
 
 	/**

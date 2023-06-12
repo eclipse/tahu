@@ -57,10 +57,21 @@ public class DeviceDescriptor extends EdgeNodeDescriptor {
 	}
 
 	/**
+	 * Returns true because this is a {@link DeviceDescriptor}
+	 *
+	 * @return true because this is a {@link DeviceDescriptor}
+	 */
+	@Override
+	public boolean isDeviceDescriptor() {
+		return true;
+	}
+
+	/**
 	 * Gets the Sparkplug Device ID associated with this {@link DeviceDescriptor}
 	 *
 	 * @return the Sparkplug Device ID associated with this {@link DeviceDescriptor}
 	 */
+	@Override
 	public String getDeviceId() {
 		return deviceId;
 	}
@@ -74,6 +85,15 @@ public class DeviceDescriptor extends EdgeNodeDescriptor {
 	@Override
 	public String getDescriptorString() {
 		return descriptorString;
+	}
+
+	/**
+	 * Returns the {@link EdgeNodeDescriptor} associated with this DeviceDescriptor
+	 *
+	 * @return a {@link EdgeNodeDescriptor} representing the Device's parent Edge Node Descriptor.
+	 */
+	public EdgeNodeDescriptor getEdgeNodeDescriptor() {
+		return super.getEdgeNodeDescriptor();
 	}
 
 	/**
