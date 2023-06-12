@@ -29,7 +29,7 @@
 
   <groupId>org.eclipse.tahu</groupId>
   <artifactId>tahu-examples</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Eclipse Tahu</name>
@@ -111,7 +111,9 @@
     <module>simple/pom.xml</module>
     <module>device_timestamp/pom.xml</module>
     <module>udt/pom.xml</module>
+<!--
     <module>raspberry_pi/pom.xml</module>
+-->
     <module>host_file/pom.xml</module>
   </modules>
 

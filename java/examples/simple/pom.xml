@@ -18,12 +18,11 @@
   <parent>
     <groupId>org.eclipse.tahu</groupId>
     <artifactId>tahu-examples</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>example_simple</artifactId>
-  <version>1.0.4</version>
   <packaging>jar</packaging>
   <name>Sparkplug B Simple Example</name>
 
