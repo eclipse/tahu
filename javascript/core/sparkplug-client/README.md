@@ -432,14 +432,15 @@ client.on('close', function () {
         ping rescheduling within the client.
 * 3.2.1 Updated License and repo links, cleaned up logging.
 * 3.2.2 Bug Fixes
+* 3.2.3 Bug Fixes, added typescript
 
 ## License
 
-Copyright (c) 2016-2018 Cirrus Link Solutions
+Copyright (c) 2016-2023 Cirrus Link Solutions and others
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
 
-Contributors: Cirrus Link Solutions
+Contributors: Cirrus Link Solutions and others

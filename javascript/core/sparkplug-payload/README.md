@@ -50,14 +50,16 @@ var decoded = sparkplug.decodePayload(encoded);
 ## Release History
 
 * 1.0.0 Initial release
+* 1.0.1 Bug fixes
+* 1.0.2 Bug fixes, added typescript
 
 ## License
 
-Copyright (c) 2017 Cirrus Link Solutions
+Copyright (c) 2017-2023 Cirrus Link Solutions and others
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
 which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
 
-Contributors: Cirrus Link Solutions
+Contributors: Cirrus Link Solutions and others
