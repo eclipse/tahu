@@ -117,6 +117,16 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	}
 
 	@Override
+	public void onConnect() {
+		logger.info("onConnect...");
+	}
+
+	@Override
+	public void onDisconnect() {
+		logger.info("onDisconnect...");
+	}
+
+	@Override
 	public void onNodeBirthArrived(EdgeNodeDescriptor edgeNodeDescriptor, Message message) {
 		logger.info("onNodeBirthArrived from {}...", edgeNodeDescriptor);
 	}
