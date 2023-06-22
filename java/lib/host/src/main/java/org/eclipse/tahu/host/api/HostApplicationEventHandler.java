@@ -21,6 +21,10 @@ import org.eclipse.tahu.message.model.SparkplugDescriptor;
 
 public interface HostApplicationEventHandler {
 
+	public void onConnect();
+
+	public void onDisconnect();
+
 	public void onMessage(SparkplugDescriptor sparkplugDescriptor, Message message);
 
 	public void onNodeBirthArrived(EdgeNodeDescriptor edgeNodeDescriptor, Message message);

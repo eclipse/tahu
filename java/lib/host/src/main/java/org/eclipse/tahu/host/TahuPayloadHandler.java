@@ -331,7 +331,8 @@ public class TahuPayloadHandler {
 			incomingBdSeqNum = SparkplugUtil.getBdSequenceNumber(messageContext.getPayload());
 			if (sparkplugEdgeNode != null && incomingBdSeqNum != null) {
 				if (sparkplugEdgeNode.isOnline()) {
-					if (sparkplugEdgeNode.getBirthBdSeqNum() == incomingBdSeqNum) {
+					long birthBdSeqNum = sparkplugEdgeNode.getBirthBdSeqNum();
+					if (birthBdSeqNum == incomingBdSeqNum) {
 						eventHandler.onNodeDeath(edgeNodeDescriptor, messageContext.getMessage());
 						eventHandler.onMessage(edgeNodeDescriptor, messageContext.getMessage());
 						staleTags(edgeNodeDescriptor, sparkplugEdgeNode);
@@ -345,7 +346,7 @@ public class TahuPayloadHandler {
 					} else {
 						logger.error(
 								"Edge Node bdSeq number mismatch on incoming NDEATH from {} - received {}, expected {} - ignoring NDEATH",
-								edgeNodeDescriptor, incomingBdSeqNum, sparkplugEdgeNode.getBirthBdSeqNum());
+								edgeNodeDescriptor, incomingBdSeqNum, birthBdSeqNum);
 					}
 				} else {
 					logger.error("Edge Node '{}' is not online - ignoring NDEATH", edgeNodeDescriptor);
