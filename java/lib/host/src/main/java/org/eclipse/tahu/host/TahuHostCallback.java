@@ -196,6 +196,7 @@ public class TahuHostCallback implements ClientCallback {
 	public void connectionLost(MqttServerName mqttServerName, MqttServerUrl url, MqttClientId clientId,
 			Throwable cause) {
 		logger.warn("Connection Lost to - {} :: {} :: {}", mqttServerName, url, clientId);
+		eventHandler.onDisconnect();
 
 		if (cause != null) {
 			// We don't need to see all of the connection lost callbacks for clients
@@ -234,6 +235,7 @@ public class TahuHostCallback implements ClientCallback {
 	public void connectComplete(boolean reconnect, MqttServerName server, MqttServerUrl url, MqttClientId clientId) {
 //		// Update the ONLINE Engine Info tag for the client
 //		updateEngineInfoDateTag(server, DATE_ONLINE);
+		eventHandler.onConnect();
 	}
 
 	private void updateEngineInfoDateTag(MqttServerName server, String tagName) {

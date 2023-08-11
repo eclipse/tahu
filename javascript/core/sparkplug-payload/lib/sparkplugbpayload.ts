@@ -106,10 +106,10 @@ function setValue (type: number, value: UserValue, object: IMetric | IPropertyVa
         case 3: // Int32
         case 5: // UInt8
         case 6: // UInt16
-        case 7: // UInt32
             object.intValue = value as number;
             break;
         case 4: // Int64
+        case 7: // UInt32
         case 8: // UInt64
         case 13: // DateTime
             object.longValue = value as number | Long;
