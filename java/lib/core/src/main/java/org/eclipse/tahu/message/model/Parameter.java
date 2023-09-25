@@ -18,12 +18,15 @@ import java.util.Objects;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * A class to represent a parameter associated with a template.
  */
+@JsonInclude(Include.NON_NULL)
 public class Parameter {
 
 	/**
@@ -42,6 +45,7 @@ public class Parameter {
 	 * The value of the parameter
 	 */
 	@JsonProperty("value")
+	@JsonInclude(Include.NON_EMPTY)
 	private Object value;
 
 	public Parameter() {

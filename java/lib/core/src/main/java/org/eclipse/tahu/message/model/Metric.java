@@ -67,6 +67,7 @@ public class Metric {
 	private PropertySet properties;
 
 	@JsonProperty("value")
+	@JsonInclude(Include.NON_EMPTY)
 	private Object value;
 
 	private Boolean isNull = null;

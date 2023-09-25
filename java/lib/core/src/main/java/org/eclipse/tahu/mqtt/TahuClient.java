@@ -939,6 +939,7 @@ public class TahuClient implements MqttCallbackExtended {
 								synchronized (clientLock) {
 									if (!attemptConnects) {
 										logger.info("{}: No longer attempting to connect", getClientId());
+										state.setInProgress(false);
 										return;
 									}
 
@@ -1004,6 +1005,7 @@ public class TahuClient implements MqttCallbackExtended {
 						synchronized (clientLock) {
 							if (!attemptConnects) {
 								logger.info("{}: No longer attempting to connect", getClientId());
+								state.setInProgress(false);
 								return;
 							}
 
