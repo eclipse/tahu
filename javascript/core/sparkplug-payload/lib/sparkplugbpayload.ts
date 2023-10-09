@@ -147,6 +147,38 @@ function setValue (type: number, value: UserValue, object: IMetric | IPropertyVa
     } 
 }
 
+
+/**
+ * Sets the value of an object given it's type expressed as an integer
+ * 
+ * only used during encoding of dataSet values
+ */
+function setDataSetValue (type: number, value: UserValue, object: IMetric | IPropertyValue) {
+    switch (type) {
+        case 1: // UInt32
+            object.longValue = value as number | Long;
+            break;
+        case 2: // UInt64
+            object.longValue = value as number;
+            break;
+        case 3: // Float
+            object.floatValue = value as number;
+            break;
+        case 4: // Double
+            object.doubleValue = value as number;
+            break;
+        case 5: // Boolean
+            object.booleanValue = value as boolean;
+            break;
+        case 6: // String
+            object.stringValue = value as string;
+            break;
+        default:
+            throw new Error(`Error encoding value. Invalid DataSetValue: ${JSON.stringify(object)}`);
+    } 
+}
+
+
 /** only used during decode functions */
 function getValue<T extends UserValue> (type: number | null | undefined, object: IMetric | IPropertyValue): T | undefined | null {
     // TODO change type casts
@@ -205,18 +237,18 @@ function isSet<T> (value: T): value is Exclude<T, null | undefined> {
 
 function getDataSetValue (type: number | null | undefined, object: IDataSetValue): UDataSetValue {
     switch (type) {
-        case 7: // UInt32
+        case 1: // UInt32
             if (object.longValue instanceof Long) return object.longValue.toInt();
             else if (isSet(object.longValue)) return object.longValue;
-        case 4: // UInt64
+        case 2: // UInt64
             if (isSet(object.longValue)) return object.longValue;
-        case 9: // Float
+        case 3: // Float
             if (isSet(object.floatValue)) return object.floatValue;
-        case 10: // Double
+        case 4: // Double
             if (isSet(object.doubleValue)) return object.doubleValue;
-        case 11: // Boolean
+        case 5: // Boolean
             if (isSet(object.booleanValue)) return object.booleanValue;
-        case 12: // String
+        case 6: // String
             if (isSet(object.stringValue)) return object.stringValue;
         default:
             throw new Error(`Invalid DataSetValue: ${JSON.stringify(object)}`);
@@ -295,6 +327,26 @@ function encodeType (typeString: string): number {
     }
 }
 
+/** transforms a user friendly type and converts it to its corresponding type code */
+function encodeDataSetType (typeString: string): number {
+    switch (typeString.toUpperCase()) {
+        case "INT32":
+            return 1
+        case "UINT64":
+            return 2;
+        case "FLOAT":
+            return 3;
+        case "DOUBLE":
+            return 4;
+        case "BOOLEAN":
+            return 5;
+        case "STRING":
+            return 6;
+        default:
+            return 0;
+    }
+}
+
 /** transforms a type code into a user friendly type */
 // @ts-expect-error TODO no consistent return
 function decodeType (typeInt: number | null | undefined): TypeStr {
@@ -344,6 +396,25 @@ function decodeType (typeInt: number | null | undefined): TypeStr {
     }
 }
 
+/** transforms a type code into a user friendly type */
+// @ts-expect-error TODO no consistent return
+function decodeDataSetType (typeInt: number | null | undefined): TypeStr {
+    switch (typeInt) {
+        case 1:
+            return "UInt32";
+        case 2:
+            return "UInt64";
+        case 3:
+            return "Float";
+        case 4: 
+            return "Double";
+        case 5:
+            return "Boolean";
+        case 6:
+            return "String";
+    }
+}
+
 function encodeTypes (typeArray: string[]): number[]  {
     var types: number[] = [];
     for (var i = 0; i < typeArray.length; i++) {
@@ -352,6 +423,14 @@ function encodeTypes (typeArray: string[]): number[]  {
     return types;
 }
 
+
+function encodeDataSetTypes (typeArray: string []): number[] {
+    var types: number[] = [];
+    for (var i = 0; i < typeArray.length; i++) {
+        types.push(encodeDataSetType(typeArray[i]));
+    }
+    return types;
+}
 function decodeTypes (typeArray: number[]): TypeStr[] {
     var types: TypeStr[] = [];
     for (var i = 0; i < typeArray.length; i++) {
@@ -360,10 +439,20 @@ function decodeTypes (typeArray: number[]): TypeStr[] {
     return types;
 }
 
+
+function decodeDataSetTypes (typeArray: number[]): TypeStr[] {
+    var types: TypeStr[] = [];
+    for (var i = 0; i < typeArray.length; i++) {
+        types.push(decodeDataSetType(typeArray[i]));
+    }
+    return types;
+}
+
+
 function encodeDataSet (object: UDataSet): ProtoRoot.org.eclipse.tahu.protobuf.Payload.DataSet {
     const num = object.numOfColumns,
         names = object.columns,
-        types = encodeTypes(object.types),
+        types = encodeDataSetTypes(object.types),
         rows = object.rows,
         newDataSet = DataSet.create({
             "numOfColumns" : num, 
@@ -380,7 +469,7 @@ function encodeDataSet (object: UDataSet): ProtoRoot.org.eclipse.tahu.protobuf.P
         // @ts-expect-error TODO check if num is set
         for (let t = 0; t < num; t++) {
             const newValue = DataSetValue.create();
-            setValue(types[t], row[t], newValue);
+            setDataSetValue(types[t], row[t], newValue);
             elements.push(newValue);
         }
         newRow.elements = elements;
@@ -393,10 +482,10 @@ function encodeDataSet (object: UDataSet): ProtoRoot.org.eclipse.tahu.protobuf.P
 function decodeDataSet (protoDataSet: IDataSet): UDataSet {
     const protoTypes = protoDataSet.types!; // TODO check exists
     const dataSet: UDataSet = {
-        types: decodeTypes(protoTypes),
+        types: decodeDataSetTypes(protoTypes),
         rows: [],
     };
-    const types = decodeTypes(protoTypes),
+    const types = decodeDataSetTypes(protoTypes),
         protoRows = protoDataSet.rows || [], // TODO check exists
         num = protoDataSet.numOfColumns;
     
