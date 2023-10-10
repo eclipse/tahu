@@ -147,6 +147,43 @@ function setValue (type: number, value: UserValue, object: IMetric | IPropertyVa
     } 
 }
 
+/**
+ * Sets the value of an object given it's type expressed as an integer
+ * 
+ * only used during encode functions
+ */
+function setDataSetValue (type: number, value: UserValue, object: IMetric | IPropertyValue) {
+    // TODO not sure about type casts
+    switch (type) {
+        case 1: // Int8
+        case 2: // Int16
+        case 3: // Int32
+        case 5: // UInt8
+        case 6: // UInt16
+            object.intValue = value as number;
+            break;
+        case 4: // Int64
+        case 7: // UInt32
+        case 8: // UInt64
+        case 13: // DateTime
+            object.longValue = value as number | Long;
+            break;
+        case 9: // Float
+            object.floatValue = value as number;
+            break;
+        case 10: // Double
+            object.doubleValue = value as number;
+            break;
+        case 11: // Boolean
+            object.booleanValue = value as boolean;
+            break;
+        case 12: // String
+        case 14: // Text
+        case 15: // UUID
+            object.stringValue = value as string;
+            break;
+    } 
+}
 /** only used during decode functions */
 function getValue<T extends UserValue> (type: number | null | undefined, object: IMetric | IPropertyValue): T | undefined | null {
     // TODO change type casts
@@ -205,19 +242,38 @@ function isSet<T> (value: T): value is Exclude<T, null | undefined> {
 
 function getDataSetValue (type: number | null | undefined, object: IDataSetValue): UDataSetValue {
     switch (type) {
+        case 1: // Int8
+        case 2: // Int16
+        case 3: // Int32
+            return new Int32Array([object.intValue!])[0]
+        case 5: // UInt8
+        case 6: // UInt16
+            return object.intValue!
+        case 4: // Int64
+            if (object.longValue instanceof Long) {
+                return object.longValue.toSigned()
+            } else {
+                return object.longValue!
+            }
         case 7: // UInt32
-            if (object.longValue instanceof Long) return object.longValue.toInt();
-            else if (isSet(object.longValue)) return object.longValue;
+            if (object.longValue instanceof Long) {
+                return object.longValue.toInt()
+            } else {
+                return object.longValue!
+            }
         case 8: // UInt64
-            if (isSet(object.longValue)) return object.longValue;
+        case 13: // DateTime
+            return object.longValue!
         case 9: // Float
-            if (isSet(object.floatValue)) return object.floatValue;
+            return object.floatValue!
         case 10: // Double
-            if (isSet(object.doubleValue)) return object.doubleValue;
+            return object.doubleValue!
         case 11: // Boolean
-            if (isSet(object.booleanValue)) return object.booleanValue;
+            return object.booleanValue!
         case 12: // String
-            if (isSet(object.stringValue)) return object.stringValue;
+        case 14: // Text
+        case 15: // UUID
+            return object.stringValue!
         default:
             throw new Error(`Invalid DataSetValue: ${JSON.stringify(object)}`);
     }
@@ -380,7 +436,7 @@ function encodeDataSet (object: UDataSet): ProtoRoot.org.eclipse.tahu.protobuf.P
         // @ts-expect-error TODO check if num is set
         for (let t = 0; t < num; t++) {
             const newValue = DataSetValue.create();
-            setValue(types[t], row[t], newValue);
+            setDataSetValue(types[t], row[t], newValue);
             elements.push(newValue);
         }
         newRow.elements = elements;
@@ -392,14 +448,14 @@ function encodeDataSet (object: UDataSet): ProtoRoot.org.eclipse.tahu.protobuf.P
 
 function decodeDataSet (protoDataSet: IDataSet): UDataSet {
     const protoTypes = protoDataSet.types!; // TODO check exists
-    const dataSet: UDataSet = {
-        types: decodeTypes(protoTypes),
-        rows: [],
-    };
     const types = decodeTypes(protoTypes),
         protoRows = protoDataSet.rows || [], // TODO check exists
         num = protoDataSet.numOfColumns;
     
+    const dataSet: UDataSet = {
+        types,
+        rows: [],
+    };
     // Loop over all the rows
     for (var i = 0; i < protoRows.length; i++) {
         var protoRow = protoRows[i],
