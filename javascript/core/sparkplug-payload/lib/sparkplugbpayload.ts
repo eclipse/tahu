@@ -179,7 +179,6 @@ function setDataSetValue (type: number, value: UserValue, object: IMetric | IPro
             break;
         case 12: // String
         case 14: // Text
-        case 15: // UUID
             object.stringValue = value as string;
             break;
     } 
@@ -272,7 +271,6 @@ function getDataSetValue (type: number | null | undefined, object: IDataSetValue
             return object.booleanValue!
         case 12: // String
         case 14: // Text
-        case 15: // UUID
             return object.stringValue!
         default:
             throw new Error(`Invalid DataSetValue: ${JSON.stringify(object)}`);
