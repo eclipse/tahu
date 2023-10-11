@@ -244,34 +244,34 @@ function getDataSetValue (type: number | null | undefined, object: IDataSetValue
         case 1: // Int8
         case 2: // Int16
         case 3: // Int32
-            return new Int32Array([object.intValue!])[0]
+            return new Int32Array([object.intValue!])[0];
         case 5: // UInt8
         case 6: // UInt16
-            return object.intValue!
+            return object.intValue!;
         case 4: // Int64
             if (object.longValue instanceof Long) {
-                return object.longValue.toSigned()
+                return object.longValue.toSigned();
             } else {
-                return object.longValue!
+                return object.longValue!;
             }
         case 7: // UInt32
             if (object.longValue instanceof Long) {
-                return object.longValue.toInt()
+                return object.longValue.toInt();
             } else {
-                return object.longValue!
+                return object.longValue!;
             }
         case 8: // UInt64
         case 13: // DateTime
-            return object.longValue!
+            return object.longValue!;
         case 9: // Float
-            return object.floatValue!
+            return object.floatValue!;
         case 10: // Double
-            return object.doubleValue!
+            return object.doubleValue!;
         case 11: // Boolean
-            return object.booleanValue!
+            return object.booleanValue!;
         case 12: // String
         case 14: // Text
-            return object.stringValue!
+            return object.stringValue!;
         default:
             throw new Error(`Invalid DataSetValue: ${JSON.stringify(object)}`);
     }
