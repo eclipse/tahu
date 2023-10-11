@@ -74,7 +74,7 @@ public class HostApplication implements CommandPublisher {
 			RandomStartupDelay randomStartupDelay) {
 		logger.info("Creating the Host Application");
 
-		if (hostId != null) {
+		if (hostId != null && !hostId.trim().isEmpty()) {
 			this.hostId = hostId;
 			this.stateTopic = SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + hostId;
 		} else {
