@@ -66,7 +66,8 @@ public class HostApplication implements CommandPublisher {
 
 		SequenceReorderManager sequenceReorderManager = SequenceReorderManager.getInstance();
 		sequenceReorderManager.init(eventHandler, this, payloadDecoder, 5000L);
-		this.tahuHostCallback = new TahuHostCallback(eventHandler, this, sequenceReorderManager, payloadDecoder);
+		this.tahuHostCallback =
+				new TahuHostCallback(eventHandler, this, sequenceReorderManager, payloadDecoder, hostId);
 	}
 
 	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, List<String> sparkplugSubscriptons,
