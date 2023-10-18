@@ -15,6 +15,7 @@ package org.eclipse.tahu.edge.sim;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class RandomDataSimulator implements DataSimulator {
 	private final int numNodeMetrics;
 	private final Map<SparkplugDescriptor, Integer> numDeviceMetrics;
 
-	private final Random random = new Random();
+	private final Random random = new SecureRandom();
 	private final Map<SparkplugDescriptor, Map<String, Metric>> metricMaps = new HashMap<>();
 	private final Map<SparkplugDescriptor, Long> lastUpdateMap = new HashMap<>();
 
@@ -434,7 +435,7 @@ public class RandomDataSimulator implements DataSimulator {
 	}
 
 	private List<Parameter> newParams() throws SparkplugException {
-		Random random = new Random();
+		Random random = new SecureRandom();
 		List<Parameter> params = new ArrayList<Parameter>();
 		params.add(new Parameter("ParamInt32", ParameterDataType.Int32, random.nextInt()));
 		params.add(new Parameter("ParamFloat", ParameterDataType.Float, random.nextFloat()));
