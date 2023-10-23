@@ -244,7 +244,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 						break;
 					case Unknown:
 					default:
-						logger.error("Unknown PropertyDataType: {}", value.getType());
+						logger.error("Unsupported PropertyDataType: '{}' for the '{}' property", value.getType(), key);
 						throw new Exception("Failed to convert value " + value.getType());
 				}
 			}
@@ -767,7 +767,8 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					break;
 				case Unknown:
 				default:
-					logger.error("Unsupported MetricDataType: {}", metric.getDataType());
+					logger.error("Unsupported MetricDataType: {} for the {} metric", metric.getDataType(),
+							metric.getName());
 					throw new Exception("Failed to encode");
 
 			}
