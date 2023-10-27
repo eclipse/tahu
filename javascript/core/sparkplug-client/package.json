@@ -1,6 +1,6 @@
 {
   "name": "sparkplug-client",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "A client module for MQTT communication using the Sparkplug specification from Cirrus Link Solutions",
   "main": "index.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "debug": "^4.3.4",
     "mqtt": "^4.2.8",
     "pako": "^2.0.4",
-    "sparkplug-payload": "^1.0.2"
+    "sparkplug-payload": "^1.0.3"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

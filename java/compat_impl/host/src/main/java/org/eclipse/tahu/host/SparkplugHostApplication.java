@@ -14,6 +14,7 @@
 package org.eclipse.tahu.host;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.tahu.exception.TahuException;
@@ -24,6 +25,7 @@ import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.Message;
 import org.eclipse.tahu.message.model.Metric;
 import org.eclipse.tahu.message.model.SparkplugDescriptor;
+import org.eclipse.tahu.message.model.SparkplugMeta;
 import org.eclipse.tahu.model.MqttServerDefinition;
 import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
@@ -97,8 +99,9 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 
 	public SparkplugHostApplication() {
 		try {
-			hostApplication =
-					new HostApplication(this, HOST_ID, mqttServerDefinitions, null, new SparkplugBPayloadDecoder());
+			hostApplication = new HostApplication(this, HOST_ID,
+					new ArrayList<>(Arrays.asList(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX + "/#")),
+					mqttServerDefinitions, null, new SparkplugBPayloadDecoder());
 		} catch (Exception e) {
 			logger.error("Failed to create the HostApplication", e);
 		}

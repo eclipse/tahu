@@ -43,37 +43,51 @@ public class HostApplication implements CommandPublisher {
 	private final String hostId;
 	private final RandomStartupDelay randomStartupDelay;
 	private final String stateTopic;
-
+	private final List<String> sparkplugSubscriptons;
 	private final TahuHostCallback tahuHostCallback;
-
 	private final List<MqttServerDefinition> mqttServerDefinitions;
 	private final Map<MqttServerName, TahuClient> tahuClients = new HashMap<>();
 
-	public HostApplication(HostApplicationEventHandler eventHandler, String hostId,
+	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, List<String> sparkplugSubscriptons,
 			List<MqttServerDefinition> mqttServerDefinitions, RandomStartupDelay randomStartupDelay,
 			PayloadDecoder<SparkplugBPayload> payloadDecoder) {
 		logger.info("Creating the Host Application");
 
-		this.hostId = hostId;
+		if (hostId != null) {
+			this.hostId = hostId;
+			this.stateTopic = SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + hostId;
+		} else {
+			this.hostId = null;
+			this.stateTopic = null;
+		}
+		this.sparkplugSubscriptons = sparkplugSubscriptons;
 		this.mqttServerDefinitions = mqttServerDefinitions;
 		this.randomStartupDelay = randomStartupDelay;
-		this.stateTopic = SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + hostId;
 
 		SequenceReorderManager sequenceReorderManager = SequenceReorderManager.getInstance();
 		sequenceReorderManager.init(eventHandler, this, payloadDecoder, 5000L);
-		this.tahuHostCallback = new TahuHostCallback(eventHandler, this, sequenceReorderManager, payloadDecoder);
+		this.tahuHostCallback =
+				new TahuHostCallback(eventHandler, this, sequenceReorderManager, payloadDecoder, hostId);
 	}
 
-	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, TahuHostCallback tahuHostCallback,
-			Map<MqttServerName, TahuClient> tahuClients, RandomStartupDelay randomStartupDelay) {
+	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, List<String> sparkplugSubscriptons,
+			TahuHostCallback tahuHostCallback, Map<MqttServerName, TahuClient> tahuClients,
+			RandomStartupDelay randomStartupDelay) {
 		logger.info("Creating the Host Application");
 
-		this.hostId = hostId;
+		if (hostId != null && !hostId.trim().isEmpty()) {
+			this.hostId = hostId;
+			this.stateTopic = SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + hostId;
+		} else {
+			this.hostId = null;
+			this.stateTopic = null;
+		}
+
+		this.sparkplugSubscriptons = sparkplugSubscriptons;
 		this.tahuHostCallback = tahuHostCallback;
 		this.mqttServerDefinitions = null;
 		this.tahuClients.putAll(tahuClients);
 		this.randomStartupDelay = randomStartupDelay;
-		this.stateTopic = SparkplugMeta.SPARKPLUG_TOPIC_HOST_STATE_PREFIX + "/" + hostId;
 	}
 
 	public void start() {
@@ -110,21 +124,24 @@ public class HostApplication implements CommandPublisher {
 			tahuClient.setAutoReconnect(true);
 			tahuClient.connect();
 
-			// Subscribe to our own spBv1.0/STATE topic
-			logger.debug("PrimaryHostId is set. Subscribing on {}", stateTopic);
-			int grantedQos = tahuClient.subscribe(stateTopic, MqttOperatorDefs.QOS1);
-			if (grantedQos != 1) {
-				logger.error("Failed to subscribe to '{}'", stateTopic);
-				return;
+			// Subscribe to our own STATE topic
+			if (stateTopic != null) {
+				logger.debug("PrimaryHostId is set. Subscribing on {}", stateTopic);
+				int grantedQos = tahuClient.subscribe(stateTopic, MqttOperatorDefs.QOS1);
+				if (grantedQos != 1) {
+					logger.error("Failed to subscribe to '{}'", stateTopic);
+					return;
+				}
 			}
 
-			// Subscribe to the spBv1.0 namespace
-			String topic = "spBv1.0/#";
-			logger.debug("PrimaryHostId is set. Subscribing on {}", topic);
-			grantedQos = tahuClient.subscribe(topic, MqttOperatorDefs.QOS0);
-			if (grantedQos != 0) {
-				logger.error("Failed to subscribe to '{}'", topic);
-				return;
+			for (String subscriptionTopic : sparkplugSubscriptons) {
+				// Subscribe to the Sparkplug namespace(s)
+				logger.debug("Subscribing on {}", subscriptionTopic);
+				int grantedQos = tahuClient.subscribe(subscriptionTopic, MqttOperatorDefs.QOS0);
+				if (grantedQos != 0) {
+					logger.error("Failed to subscribe to '{}'", subscriptionTopic);
+					return;
+				}
 			}
 
 			// Pub
@@ -144,14 +161,17 @@ public class HostApplication implements CommandPublisher {
 					// Unsubscribe
 					// removeMqttClientSubscriptions(tahuClient, unsubscribe);
 
-					// Clean up spBv1.0/STATE subscriptions
-					logger.debug("Unsubscribing from {}", stateTopic);
-					tahuClient.unsubscribe(stateTopic);
+					if (stateTopic != null) {
+						// Clean up STATE subscriptions
+						logger.debug("Unsubscribing from {}", stateTopic);
+						tahuClient.unsubscribe(stateTopic);
+					}
 
-					// Clean up the Sparkplug subscription
-					String topic = "spBv1.0/#";
-					logger.debug("Unsubscribing from {}", topic);
-					tahuClient.unsubscribe(topic);
+					for (String subscriptionTopic : sparkplugSubscriptons) {
+						// Clean up the Sparkplug subscription(s)
+						logger.debug("Unsubscribing from {}", subscriptionTopic);
+						tahuClient.unsubscribe(subscriptionTopic);
+					}
 
 					// Shut down the client after the MQTT client is disconnected to prevent RejectedExecutionExceptions
 					tahuHostCallback.shutdown();
@@ -173,6 +193,10 @@ public class HostApplication implements CommandPublisher {
 				logger.trace("Cannot shutdown null client");
 			}
 		}
+	}
+
+	public String getHostId() {
+		return hostId;
 	}
 
 	@Override
