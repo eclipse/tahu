@@ -486,8 +486,8 @@ public class TahuClient implements MqttCallbackExtended {
 			if (client != null) {
 				if (client.isConnected()) {
 					try {
-						logger.debug("{}: on connection to {} - Attempting to subscribe on topic {} with QoS={}",
-								getClientId(), getMqttServerName(), topic, qos);
+						logger.debug("{}: server {} - Attempting to subscribe on topic {} with QoS={}", getClientId(),
+								getMqttServerName(), topic, qos);
 						IMqttToken token = client.subscribe(topic, qos);
 						logger.trace("{}: Waiting for subscription on {}", getClientId(), topic);
 						token.waitForCompletion();
@@ -498,14 +498,14 @@ public class TahuClient implements MqttCallbackExtended {
 						if (grantedQos != null && grantedQos.length == 1) {
 							return grantedQos[0];
 						} else {
-							String errorMessage = getClientId() + ": on connection to " + getMqttServerName()
+							String errorMessage = getClientId() + ": server " + getMqttServerName()
 									+ " - Failed to subscribe to " + topic;
 							logger.error(errorMessage);
 							throw new TahuException(TahuErrorCode.NOT_AUTHORIZED, errorMessage);
 						}
 					} catch (MqttException e) {
-						logger.error(getClientId() + ": on connection to " + getMqttServerName()
-								+ " - Failed to subscribe to " + topic);
+						logger.error(getClientId() + ": server " + getMqttServerName() + " - Failed to subscribe to "
+								+ topic);
 						throw new TahuException(TahuErrorCode.INTERNAL_ERROR, e);
 					}
 				}
@@ -593,6 +593,11 @@ public class TahuClient implements MqttCallbackExtended {
 	@Override
 	public void connectionLost(Throwable cause) {
 		logger.debug("{}: MQTT connectionLost() to {} :: {}", getClientId(), getMqttServerName(), getMqttServerUrl());
+		if (logger.isTraceEnabled()) {
+			if (client != null) {
+				client.getDebug().dumpClientDebug();
+			}
+		}
 
 		// reset the timers if needed
 		if (getDisconnectTime() == null) {
@@ -1249,37 +1254,56 @@ public class TahuClient implements MqttCallbackExtended {
 
 					String topicStr = Arrays.toString(topics);
 					String qosStr = Arrays.toString(qosLevels);
-					logger.debug("{}: on connection to {} - Attempting to subscribe on topic {} with QoS={}",
-							getClientId(), getMqttServerName(), topicStr, qosStr);
+					logger.debug("{}: server {} - Attempting to subscribe on topic {} with QoS={}", getClientId(),
+							getMqttServerName(), topicStr, qosStr);
 					try {
-						IMqttToken token = client.subscribe(topics, qosLevels);
-						logger.trace("{}: Waiting for subscription on {}", getClientId(), topicStr);
-						token.waitForCompletion();
-						logger.trace("{}: Done waiting for subscription on {}", getClientId(), topicStr);
-						int[] grantedQos = token.getGrantedQos();
-						if (Arrays.equals(qosLevels, grantedQos)) {
-							logger.debug("{}: on connection to {} - Successfully subscribed on {} on QoS={}",
-									getClientId(), getMqttServerName(), topicStr, qosStr);
-						} else {
-							try {
-								logger.error("{}: on connection to {} - Failed to subscribe on {} - forcing disconnect",
-										getClientId(), getMqttServerName(), topicStr);
+						client.subscribe(topics, qosLevels, null, new IMqttActionListener() {
+							@Override
+							public void onSuccess(IMqttToken asyncActionToken) {
+								int[] grantedQos = asyncActionToken.getGrantedQos();
+								if (Arrays.equals(qosLevels, grantedQos)) {
+									logger.debug("{}: server {} - Successfully subscribed on {} on QoS={}",
+											getClientId(), getMqttServerName(), topicStr, qosStr);
+								} else {
+									try {
+										String grantedQosStr = Arrays.toString(grantedQos);
+										logger.error("{}: server {} - Failed subscribe on {} granted QoS {} != {}",
+												getClientId(), getMqttServerName(), topicStr, qosStr, grantedQosStr);
 
-								// FIXME - remove This sleep is necessary due to:
-								// https://github.com/eclipse/paho.mqtt.java/issues/850
-								Thread.sleep(1000);
+										// FIXME - remove This sleep is necessary due to:
+										// https://github.com/eclipse/paho.mqtt.java/issues/850
+										Thread.sleep(1000);
 
-								// Force the disconnect and return
-								client.disconnectForcibly(0, 1, false);
-								return;
-							} catch (Exception e) {
-								logger.error("{}: on connection to {} - Failed to disconnect on failed subscription",
-										getClientId(), getMqttServerName(), e);
-								break;
+										synchronized (clientLock) {
+											// Force the disconnect and return
+											client.disconnectForcibly(0, 1, false);
+										}
+										return;
+									} catch (Exception e) {
+										logger.error(
+												"{}: server {} - Failed disconnect on failed subscribe granted QoS",
+												getClientId(), getMqttServerName(), e);
+									}
+								}
 							}
-						}
+
+							@Override
+							public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+								synchronized (clientLock) {
+									try {
+										logger.error("{}: server {} - Failed to subscribe on {}",
+												getClientId(), getMqttServerName(), topicStr);
+										client.disconnectForcibly(0, 1, false);
+									} catch (MqttException e) {
+										logger.error("{}: server {} - Failed disconnect on failed subscribe",
+												getClientId(), getMqttServerName(), e);
+									}
+								}
+							}
+
+						});
 					} catch (MqttException e) {
-						logger.error("{}: on connection to {} - Failed to subscribe on {} with QoS={}", getClientId(),
+						logger.error("{}: server {} - Failed to subscribe on {} with QoS={}", getClientId(),
 								getMqttServerName(), topicStr, qosStr, e);
 						break;
 					}

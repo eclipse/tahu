@@ -48,11 +48,17 @@ public abstract class MetricManager {
 	}
 
 	public void updateValue(String metricName, Object value) {
-		metricMap.get(metricName).setValue(value);
+		HostMetric hostMetric = metricMap.get(metricName);
+		if (hostMetric != null) {
+			hostMetric.setValue(value);
+		}
 	}
 
 	public void setStale(String metricName, boolean stale) {
-		metricMap.get(metricName).setStale(stale);
+		HostMetric hostMetric = metricMap.get(metricName);
+		if (hostMetric != null) {
+			hostMetric.setStale(stale);
+		}
 	}
 
 	public void clearMetrics() {
