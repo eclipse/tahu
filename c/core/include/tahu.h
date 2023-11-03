@@ -13,10 +13,8 @@
 
 #include <tahu.pb.h>
 
-#include <sys/time.h>
 #include <time.h>
-
-#include <log/log.h>
+#include <sys/time.h>
 
 #ifdef __MACH__
 #include <mach/clock.h>
@@ -31,16 +29,12 @@ extern "C" {
 #endif
 
 // Enable/disable debug messages
-#if !defined(SPARKPLUG_DEBUG)
 #define SPARKPLUG_DEBUG 1
-#endif
 
-#if SPARKPLUG_DEBUG
-#define DEBUG_PRINT(...) log_debug(__VA_ARGS__)
+#ifdef SPARKPLUG_DEBUG
+#define DEBUG_PRINT(...) printf(__VA_ARGS__)
 #else
-#define DEBUG_PRINT(...) \
-    do {                 \
-    } while (0)
+#define DEBUG_PRINT(...) do {} while (0)
 #endif
 
 // Constants
@@ -455,3 +449,4 @@ void print_payload(org_eclipse_tahu_protobuf_Payload *payload);
 #endif
 
 #endif
+
