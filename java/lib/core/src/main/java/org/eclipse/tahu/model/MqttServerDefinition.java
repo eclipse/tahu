@@ -18,6 +18,8 @@ import org.eclipse.tahu.mqtt.MqttClientId;
 import org.eclipse.tahu.mqtt.MqttServerName;
 import org.eclipse.tahu.mqtt.MqttServerUrl;
 
+import javax.net.ssl.SSLSocketFactory;
+
 public class MqttServerDefinition {
 
 	private final MqttServerName mqttServerName;
@@ -27,9 +29,10 @@ public class MqttServerDefinition {
 	private final String password;
 	private final int keepAliveTimeout;
 	private final Topic ndeathTopic;
+	private final SSLSocketFactory socketFactory;
 
 	public MqttServerDefinition(MqttServerName mqttServerName, MqttClientId mqttClientId, MqttServerUrl mqttServerUrl,
-			String username, String password, int keepAliveTimeout, Topic ndeathTopic) {
+			String username, String password, int keepAliveTimeout, Topic ndeathTopic, SSLSocketFactory socketFactory) {
 		this.mqttServerName = mqttServerName;
 		this.mqttClientId = mqttClientId;
 		this.mqttServerUrl = mqttServerUrl;
@@ -37,6 +40,7 @@ public class MqttServerDefinition {
 		this.password = password;
 		this.keepAliveTimeout = keepAliveTimeout;
 		this.ndeathTopic = ndeathTopic;
+		this.socketFactory = socketFactory;
 	}
 
 	public MqttServerName getMqttServerName() {
@@ -65,5 +69,9 @@ public class MqttServerDefinition {
 
 	public Topic getNdeathTopic() {
 		return ndeathTopic;
+	}
+
+	public SSLSocketFactory getSocketFactory() {
+		return socketFactory;
 	}
 }

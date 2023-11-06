@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.net.ssl.SSLSocketFactory;
+
 /**
  * An Custom MQTT client.
  */
@@ -182,6 +184,18 @@ public class TahuClient implements MqttCallbackExtended {
 				randomStartupDelay);
 		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload,
 				lwtQoS, lwtRetain);
+	}
+
+	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
+			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
+			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
+			String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS,
+			boolean lwtRetain, SSLSocketFactory socketFactory) {
+		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback, randomStartupDelay,
+				useSparkplugStatePayload, birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload, lwtQoS, lwtRetain);
+
+		this.connectOptions = new MqttConnectOptions();
+		this.connectOptions.setSocketFactory(socketFactory);
 	}
 
 	/**

@@ -121,7 +121,7 @@ public class SparkplugEdgeNode implements Runnable, MetricHandler, ClientCallbac
 		try {
 			mqttServerDefinitions
 					.add(new MqttServerDefinition(MQTT_SERVER_NAME_1, new MqttClientId(MQTT_CLIENT_ID_1, false),
-							MQTT_SERVER_URL_1, USERNAME_1, PASSWORD_1, KEEP_ALIVE_TIMEOUT, NDEATH_TOPIC));
+							MQTT_SERVER_URL_1, USERNAME_1, PASSWORD_1, KEEP_ALIVE_TIMEOUT, NDEATH_TOPIC, null));
 //			mqttServerDefinitions
 //					.add(new MqttServerDefinition(MQTT_SERVER_NAME_2, new MqttClientId(MQTT_CLIENT_ID_2, false),
 //							MQTT_SERVER_URL_2, USERNAME_2, PASSWORD_2, KEEP_ALIVE_TIMEOUT, NDEATH_TOPIC));
