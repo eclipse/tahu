@@ -122,12 +122,10 @@ public class EdgeNodeMetricMaps {
 
 	public MetricDataTypeMap getMetricDataTypeMap(EdgeNodeDescriptor edgeNodeDescriptor,
 			SparkplugDescriptor sparkplugDescriptor) {
-		Map<SparkplugDescriptor, MetricMap> edgeNodeMetricMaps = allEdgeNodeMetricMaps.get(edgeNodeDescriptor);
-		if (edgeNodeMetricMaps != null && edgeNodeMetricMaps.get(sparkplugDescriptor) != null) {
-			return edgeNodeMetricMaps.get(sparkplugDescriptor).getMetricDataTypeMap();
-		} else {
-			return null;
-		}
+		Map<SparkplugDescriptor, MetricMap> edgeNodeMetricMaps =
+				allEdgeNodeMetricMaps.computeIfAbsent(edgeNodeDescriptor, (k) -> new ConcurrentHashMap<>());
+		edgeNodeMetricMaps.computeIfAbsent(sparkplugDescriptor, (k) -> new MetricMap());
+		return edgeNodeMetricMaps.get(sparkplugDescriptor).getMetricDataTypeMap();
 	}
 
 	public MetricDataType getDataType(EdgeNodeDescriptor edgeNodeDescriptor, SparkplugDescriptor sparkplugDescriptor,
