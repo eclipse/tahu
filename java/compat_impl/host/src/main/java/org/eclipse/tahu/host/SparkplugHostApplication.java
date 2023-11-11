@@ -62,7 +62,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 		try {
 			mqttServerDefinitions.add(new MqttServerDefinition(new MqttServerName(MQTT_SERVER_NAME_1),
 					new MqttClientId(MQTT_CLIENT_ID_1, false), new MqttServerUrl(MQTT_SERVER_URL_1), USERNAME_1,
-					PASSWORD_1, KEEP_ALIVE_TIMEOUT, null, null));
+					PASSWORD_1, KEEP_ALIVE_TIMEOUT, null));
 //			mqttServerDefinitions.add(new MqttServerDefinition(new MqttServerName(MQTT_SERVER_NAME_2),
 //					new MqttClientId(MQTT_CLIENT_ID_2, false), new MqttServerUrl(MQTT_SERVER_URL_2), USERNAME_2,
 //					PASSWORD_2, KEEP_ALIVE_TIMEOUT, null));

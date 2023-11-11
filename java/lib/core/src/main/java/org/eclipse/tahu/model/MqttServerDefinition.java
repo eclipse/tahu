@@ -32,7 +32,12 @@ public class MqttServerDefinition {
 	private final SSLSocketFactory socketFactory;
 
 	public MqttServerDefinition(MqttServerName mqttServerName, MqttClientId mqttClientId, MqttServerUrl mqttServerUrl,
-			String username, String password, int keepAliveTimeout, Topic ndeathTopic, SSLSocketFactory socketFactory) {
+			String username, String password, int keepAliveTimeout, Topic ndeathTopic) {
+		this(mqttServerName, mqttClientId, mqttServerUrl, username, password, keepAliveTimeout, ndeathTopic, null);
+	}
+
+	public MqttServerDefinition(MqttServerName mqttServerName, MqttClientId mqttClientId, MqttServerUrl mqttServerUrl,
+								String username, String password, int keepAliveTimeout, Topic ndeathTopic, SSLSocketFactory socketFactory) {
 		this.mqttServerName = mqttServerName;
 		this.mqttClientId = mqttClientId;
 		this.mqttServerUrl = mqttServerUrl;
