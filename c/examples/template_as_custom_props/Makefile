@@ -12,9 +12,9 @@
 # ********************************************************************************/
 
 TARGET = example
-LIBS = ../../../../client_libraries/c/lib/libtahu.a -Llib -L/usr/local/lib -lmosquitto
+LIBS = ../../core/lib/libtahu.a -Llib -L/usr/local/lib -lmosquitto
 CC = gcc
-CFLAGS = -g -Wall -I../../../../client_libraries/c/include/
+CFLAGS = -g -Wall -I../../core/include/
 
 .PHONY: default all clean
 
