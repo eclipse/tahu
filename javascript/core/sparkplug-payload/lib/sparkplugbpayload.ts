@@ -203,7 +203,9 @@ function isSet<T> (value: T): value is Exclude<T, null | undefined> {
     return value !== null && value !== undefined;
 }
 
-function getDataSetValue (type: number | null | undefined, object: IDataSetValue): UDataSetValue {
+function getDataValue (type: number | null | undefined, object: IDataSetValue): UDataSetValue;
+function getDataValue (type: number | null | undefined, object: IParameter): UParameter['value'];
+function getDataValue (type: number | null | undefined, object: IDataSetValue|IParameter): UDataSetValue|UParameter['value'] {
     switch (type) {
         case 7: // UInt32
             if (object.longValue instanceof Long) return object.longValue.toInt();
@@ -219,27 +221,7 @@ function getDataSetValue (type: number | null | undefined, object: IDataSetValue
         case 12: // String
             if (isSet(object.stringValue)) return object.stringValue;
         default:
-            throw new Error(`Invalid DataSetValue: ${JSON.stringify(object)}`);
-    }
-}
-
-function getTemplateParamValue (type: number | null | undefined, object: IParameter): UParameter['value'] {
-    switch (type) {
-        case 7: // UInt32
-            if (object.longValue instanceof Long) return object.longValue.toInt();
-            else if (isSet(object.longValue)) return object.longValue;
-        case 4: // UInt64
-            if (isSet(object.longValue)) return object.longValue;
-        case 9: // Float
-            if (isSet(object.floatValue)) return object.floatValue;
-        case 10: // Double
-            if (isSet(object.doubleValue)) return object.doubleValue;
-        case 11: // Boolean
-            if (isSet(object.booleanValue)) return object.booleanValue;
-        case 12: // String
-            if (isSet(object.stringValue)) return object.stringValue;
-        default:
-            throw new Error(`Invalid Parameter value: ${JSON.stringify(object)}`);
+            throw new Error(`Invalid value: ${JSON.stringify(object)}`);
     }
 }
 
@@ -408,7 +390,7 @@ function decodeDataSet (protoDataSet: IDataSet): UDataSet {
         // Loop over all the elements in each row
         // @ts-expect-error TODO check exists
         for (var t = 0; t < num; t++) {
-            rowElements.push(getDataSetValue(protoTypes[t], protoElements[t])!);
+            rowElements.push(getDataValue(protoTypes[t], protoElements[t])!);
         }
         dataSet.rows.push(rowElements);
     }
@@ -606,7 +588,7 @@ function encodeParameter (object: UParameter): ProtoRoot.org.eclipse.tahu.protob
 function decodeParameter (protoParameter: IParameter): UParameter {
     const protoType = protoParameter.type,
         parameter: UParameter = {
-            value: getTemplateParamValue(protoType, protoParameter),
+            value: getDataValue(protoType, protoParameter),
             type: decodeType(protoType),
         };
 
