@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2022 Cirrus Link Solutions and others
+ * Copyright (c) 2022-2023 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -755,6 +755,13 @@ public class TahuClient implements MqttCallbackExtended {
 								clientConnected);
 					}
 
+					// FIXME - remove This sleep is necessary due to:
+					// https://github.com/eclipse/paho.mqtt.java/issues/850
+					try {
+						Thread.sleep(1000L);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
 					logger.debug("{}: Disconnecting...", getClientId());
 					client.disconnectForcibly(disconnectQuieseTime, disconnectTimeout, sendDisconnect);
 					logger.debug("{}: Done disconecting", getClientId());
@@ -1291,8 +1298,8 @@ public class TahuClient implements MqttCallbackExtended {
 							public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
 								synchronized (clientLock) {
 									try {
-										logger.error("{}: server {} - Failed to subscribe on {}",
-												getClientId(), getMqttServerName(), topicStr);
+										logger.error("{}: server {} - Failed to subscribe on {}", getClientId(),
+												getMqttServerName(), topicStr);
 										client.disconnectForcibly(0, 1, false);
 									} catch (MqttException e) {
 										logger.error("{}: server {} - Failed disconnect on failed subscribe",
