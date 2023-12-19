@@ -204,40 +204,56 @@ function isSet<T> (value: T): value is Exclude<T, null | undefined> {
 }
 
 function getDataSetValue (type: number | null | undefined, object: IDataSetValue): UDataSetValue {
+    // sparkplug spec says that any normal metric value type can be used, but the `proto` definition only allows for a subset of these types
     switch (type) {
-        case 7: // UInt32
-            if (object.longValue instanceof Long) return object.longValue.toInt();
-            else if (isSet(object.longValue)) return object.longValue;
-        case 4: // UInt64
-            if (isSet(object.longValue)) return object.longValue;
-        case 9: // Float
-            if (isSet(object.floatValue)) return object.floatValue;
-        case 10: // Double
-            if (isSet(object.doubleValue)) return object.doubleValue;
-        case 11: // Boolean
-            if (isSet(object.booleanValue)) return object.booleanValue;
-        case 12: // String
-            if (isSet(object.stringValue)) return object.stringValue;
+        // all the types that can be encoded in a datasetvalue
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15: {
+            const val = getValue<UDataSetValue>(type, object);
+            if (isSet(val)) return val;
+        }
+
         default:
             throw new Error(`Invalid DataSetValue: ${JSON.stringify(object)}`);
     }
 }
 
 function getTemplateParamValue (type: number | null | undefined, object: IParameter): UParameter['value'] {
+    // sparkplug spec says that any normal metric value type can be used, but the `proto` definition only allows for a subset of these types
     switch (type) {
-        case 7: // UInt32
-            if (object.longValue instanceof Long) return object.longValue.toInt();
-            else if (isSet(object.longValue)) return object.longValue;
-        case 4: // UInt64
-            if (isSet(object.longValue)) return object.longValue;
-        case 9: // Float
-            if (isSet(object.floatValue)) return object.floatValue;
-        case 10: // Double
-            if (isSet(object.doubleValue)) return object.doubleValue;
-        case 11: // Boolean
-            if (isSet(object.booleanValue)) return object.booleanValue;
-        case 12: // String
-            if (isSet(object.stringValue)) return object.stringValue;
+        // all the types that can be encoded in a template parameter value
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15: {
+            const val = getValue<UParameter['value']>(type, object);
+            if (isSet(val)) return val;
+        }
+
         default:
             throw new Error(`Invalid Parameter value: ${JSON.stringify(object)}`);
     }
