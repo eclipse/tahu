@@ -71,15 +71,10 @@ def convert_to_packed_boolean_array(boolean_array):
     return struct.pack("<I", len(boolean_array)) + packed_bytes
 
 def convert_to_packed_string_array(array):
-    # convert strings to bytes and encode to hex
-    hex_string_array = [string.encode().hex() for string in array]
-    # convert hex string to bytes and terminate with null character
-    packed_bytes = [bytes(hex_string, 'utf-8') + b'\x00' for hex_string in hex_string_array]
-    # joining the bytes to form a null terminated byte string
-    return b''.join(packed_bytes)
+    return '\0'.join(array + ['']).encode('utf-8')
 
 def convert_to_packed_datetime_array(array):
-    # convert receievd epoch time to 8-byte (int64) array
+    # convert received epoch time to 8-byte (int64) array
     packed_bytes = convert_to_packed_int64_array(array)
     return packed_bytes
 
@@ -131,13 +126,7 @@ def convert_from_packed_boolean_array(packed_bytes):
     return boolean_array
 
 def convert_from_packed_string_array(packed_bytes):
-    string_array = []
-    # packed bytes are decoded and stripped of null characters
-    decoded_hex_string = packed_bytes.decode('utf-8').split('\x00')
-    for hex_string in decoded_hex_string:
-        # resulting hex string is converted to byte and then to decoded to strings
-        string_array.append(bytes.fromhex(hex_string).decode())
-    return string_array
+    return packed_bytes.decode('utf-8').strip('\0').split('\0')
 
 def convert_from_packed_datetime_array(packed_bytes):
     # unpack the packed bytes the result will be epoch values
