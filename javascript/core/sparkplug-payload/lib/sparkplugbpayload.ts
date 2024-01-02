@@ -358,16 +358,12 @@ function encodeType(typeString: string): number {
             return 23;
         case "INT32ARRAY":
             return 24;
-        case "INT64ARRAY":
-            return 25;
         case "UINT8ARRAY":
             return 26;
         case "UINT16ARRAY":
             return 27;
         case "UINT32ARRAY":
             return 28;
-        case "UINT64ARRAY":
-            return 29;
         case "FLOATARRAY":
             return 30;
         case "DOUBLEARRAY":
@@ -433,16 +429,12 @@ function decodeType (typeInt: number | null | undefined): TypeStr {
             return "Int16Array";
         case 24:
             return "Int32Array";
-        case 25:
-            return "Int64Array";
         case 26:
             return "UInt8Array";
         case 27:
             return "UInt16Array";
         case 28:
             return "UInt32Array";
-        case 29:
-            return "UInt64Array";
         case 30:
             return "FloatArray";
         case 31:
