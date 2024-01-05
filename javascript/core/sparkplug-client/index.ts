@@ -30,9 +30,9 @@ const logger = {
     info: (formatter: string, ...args: unknown[]) => infoLog(formatter, ...args),
 }
 
-function getRequiredProperty<C extends Record<string, unknown>, P extends keyof C & string>(config: C, propName: P): C[P] {
+function getRequiredProperty<C, P extends keyof C & string>(config: C, propName: P): Exclude<C[P], undefined> {
     if (config[propName] !== undefined) {
-        return config[propName];
+        return config[propName] as Exclude<C[P], undefined>;
     }
     throw new Error("Missing required configuration property '" + propName + "'");
 }
@@ -45,17 +45,20 @@ function getProperty<C, P extends keyof C, DEFAULT extends C[P]>(config: C, prop
     }
 }
 
-export type ISparkplugClientOptions = {
-    serverUrl: string;
-    username: string;
-    password: string;
+export interface ISparkplugClientOptions {
     groupId: string;
     edgeNode: string;
-    clientId: string;
     publishDeath?: boolean;
     version?: string;
+
+    serverUrl?: string;
+    username?: string;
+    password?: string;
+    clientId?: string;
     keepalive?: number;
     mqttOptions?: Omit<IClientOptions, 'clientId' | 'clean' | 'keepalive' | 'reschedulePings' | 'connectTimeout' | 'username' | 'password' | 'will'>;
+
+    mqttClient?: MqttClient;
 }
 
 export type PayloadOptions = {
@@ -99,17 +102,17 @@ class SparkplugClient extends events.EventEmitter {
     private readonly versionB: string = "spBv1.0";
 
     // Config Variables
-    private serverUrl: string;
+    private serverUrl: string | null = null;
     private groupId: string;
     private edgeNode: string;
     private publishDeath: boolean;
     private version: string;
-    private mqttOptions: IClientOptions;
+    private mqttOptions: null | IClientOptions = null;
 
     // MQTT Client Variables
     private bdSeq = 0;
     private seq = 0;
-    private client: null | MqttClient = null;
+    private client: MqttClient;
     private connecting = false;
     private connected = false;
 
@@ -120,28 +123,39 @@ class SparkplugClient extends events.EventEmitter {
         this.publishDeath = getProperty(config, "publishDeath", false);
         this.version = getProperty(config, "version", this.versionB);
 
-        // Client connection options
-        this.serverUrl = getRequiredProperty(config, "serverUrl");
-        const username = getRequiredProperty(config, "username");
-        const password = getRequiredProperty(config, "password");
-        const clientId = getRequiredProperty(config, "clientId");
-        const keepalive = getProperty(config, "keepalive", 5);
-        this.mqttOptions = {
-            ...config.mqttOptions || {}, // allow additional options
-            clientId,
-            clean: true,
-            keepalive,
-            reschedulePings: false,
-            connectTimeout: 30000,
-            username,
-            password,
-            will: {
-                topic: this.version + "/" + this.groupId + "/NDEATH/" + this.edgeNode,
-                payload: Buffer.from(this.encodePayload(this.getDeathPayload())),
-                qos: 0,
-                retain: false,
-            },
-        };
+        // Client options
+        if (config.mqttClient) {
+            this.client = getRequiredProperty(config, 'mqttClient');
+        } else {
+            this.serverUrl = getRequiredProperty(config, "serverUrl");
+            const username = getRequiredProperty(config, "username");
+            const password = getRequiredProperty(config, "password");
+            const clientId = getRequiredProperty(config, "clientId");
+            const keepalive = getProperty(config, "keepalive", 5);
+            this.mqttOptions = {
+                ...config.mqttOptions || {}, // allow additional options
+                clientId,
+                clean: true,
+                keepalive,
+                reschedulePings: false,
+                connectTimeout: 30000,
+                username,
+                password,
+                will: {
+                    topic: this.version + "/" + this.groupId + "/NDEATH/" + this.edgeNode,
+                    payload: Buffer.from(this.encodePayload(this.getDeathPayload())),
+                    qos: 0,
+                    retain: false,
+                },
+            };
+
+            // Connect to the MQTT server
+            this.connecting = true;
+            logger.debug("Attempting to connect: " + this.serverUrl);
+            logger.debug("              options: " + JSON.stringify(this.mqttOptions));
+            this.client = mqtt.connect(this.serverUrl, this.mqttOptions);
+            logger.debug("Finished attempting to connect");
+        }
 
         this.init();
     }
@@ -369,24 +383,17 @@ class SparkplugClient extends events.EventEmitter {
         this.client!.end();
     }
 
-    // Configures and connects the client
+    // Configures the client
     private init() {
-
-        // Connect to the MQTT server
-        this.connecting = true;
-        logger.debug("Attempting to connect: " + this.serverUrl);
-        logger.debug("              options: " + JSON.stringify(this.mqttOptions));
-        this.client = mqtt.connect(this.serverUrl, this.mqttOptions);
-        logger.debug("Finished attempting to connect");
 
         /*
          * 'connect' handler
          */
-        this.client.on('connect', () => {
+        const afterConnected = () => {
             logger.info("Client has connected");
             this.connecting = false;
             this.connected = true;
-            this.emit("connect");
+            this.emit('connect');
 
             // Subscribe to control/command messages for both the edge node and the attached devices
             logger.info("Subscribing to control/command messages for both the edge node and the attached devices");
@@ -395,7 +402,16 @@ class SparkplugClient extends events.EventEmitter {
 
             // Emit the "birth" event to notify the application to send a births
             this.emit("birth");
-        });
+        };
+
+        if (this.client.connected) {
+            this.connecting = false;
+            this.connected = true;
+            afterConnected(); // call immediately, already connected
+        } else {
+            this.connecting = true;
+            this.client.on('connect', afterConnected); // call after connected.
+        }
 
         /*
          * 'error' handler
