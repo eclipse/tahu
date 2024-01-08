@@ -78,6 +78,8 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		}
 
 		// Set the metrics
+		logger.debug("{} metric DataTypes from the payload: {}", stripDataTypes ? "Stripping" : "Not stripping",
+				payload.toString());
 		for (Metric metric : payload.getMetrics()) {
 			if (metric == null) {
 				logger.warn("Not adding NULL metric");
