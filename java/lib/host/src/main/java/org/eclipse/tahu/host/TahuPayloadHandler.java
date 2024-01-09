@@ -447,11 +447,11 @@ public class TahuPayloadHandler {
 					sparkplugEdgeNode.setMqttServerName(mqttServerName);
 					sparkplugEdgeNode.setHostAppMqttClientId(hostAppMqttClientId);
 
-					publishCommand(mqttServerName, hostAppMqttClientId, cmdTopic, cmdPayload);
+					publishCommand(mqttServerName, cmdTopic, cmdPayload);
 				} else {
 					logger.debug("Current Engine MQTT Server Name for unknown Edge Node: {}", mqttServerName);
 					logger.debug("Current Engine MQTT Client ID for unknown Edge Node: {}", hostAppMqttClientId);
-					publishCommand(mqttServerName, hostAppMqttClientId, cmdTopic, cmdPayload);
+					publishCommand(mqttServerName, cmdTopic, cmdPayload);
 				}
 			} else {
 				logger.debug("Not requesting Rebirth since we have in the last 5 seconds");
@@ -480,8 +480,8 @@ public class TahuPayloadHandler {
 		}
 	}
 
-	private void publishCommand(MqttServerName mqttServerName, MqttClientId hostAppMqttClientId, Topic topic,
-			SparkplugBPayload payload) throws Exception {
-		commandPublisher.publishCommand(topic, payload);
+	private void publishCommand(MqttServerName mqttServerName, Topic topic, SparkplugBPayload payload)
+			throws Exception {
+		commandPublisher.publishCommand(mqttServerName, topic, payload);
 	}
 }
