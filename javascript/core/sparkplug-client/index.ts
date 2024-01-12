@@ -475,10 +475,18 @@ class SparkplugClient extends events.EventEmitter {
                 return;
             }
 
-            let payload = this.maybeDecompressPayload(this.decodePayload(message)),
-                timestamp = payload.timestamp,
-                splitTopic,
-                metrics;
+            let payload: UPayload;
+            let timestamp: number | Long.Long | null | undefined;
+            let splitTopic: string[];
+
+            // catch any errors thrown by the decodePayload function
+            try {
+                payload = this.maybeDecompressPayload(this.decodePayload(message));
+                timestamp = payload.timestamp;
+            } catch (err) {
+                this.emit("error", err as Error);
+                return;
+            }
 
             this.messageAlert("arrived", topic, payload);
 
