@@ -385,7 +385,8 @@ class SparkplugClient extends events.EventEmitter {
 
     // Configures the client
     private init() {
-
+        const sparkplugTopicPatterns: string[] = [];
+        
         /*
          * 'connect' handler
          */
@@ -397,8 +398,12 @@ class SparkplugClient extends events.EventEmitter {
 
             // Subscribe to control/command messages for both the edge node and the attached devices
             logger.info("Subscribing to control/command messages for both the edge node and the attached devices");
-            this.client!.subscribe(this.version + "/" + this.groupId + "/NCMD/" + this.edgeNode + "/#", { "qos": 0 });
-            this.client!.subscribe(this.version + "/" + this.groupId + "/DCMD/" + this.edgeNode + "/#", { "qos": 0 });
+            const ncmdTopicBase = this.version + "/" + this.groupId + "/NCMD/" + this.edgeNode;
+            const dcmdTopicBase = this.version + "/" + this.groupId + "/DCMD/" + this.edgeNode;
+            sparkplugTopicPatterns.push(ncmdTopicBase);
+            sparkplugTopicPatterns.push(dcmdTopicBase);
+            this.client!.subscribe(ncmdTopicBase + "/#", { "qos": 0 });
+            this.client!.subscribe(dcmdTopicBase + "/#", { "qos": 0 });
 
             // Emit the "birth" event to notify the application to send a births
             this.emit("birth");
@@ -465,6 +470,11 @@ class SparkplugClient extends events.EventEmitter {
          * 'message' handler
          */
         this.client.on('message', (topic, message) => {
+            // ensure the topic is relevant to the sparkplug client
+            if (!sparkplugTopicPatterns.some(pattern => topic.startsWith(pattern))) {
+                return;
+            }
+
             let payload = this.maybeDecompressPayload(this.decodePayload(message)),
                 timestamp = payload.timestamp,
                 splitTopic,
