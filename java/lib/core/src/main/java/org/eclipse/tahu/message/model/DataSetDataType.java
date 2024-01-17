@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2014-2022 Cirrus Link Solutions and others
+ * Copyright (c) 2014-2024 Cirrus Link Solutions and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -52,7 +52,8 @@ public enum DataSetDataType {
 
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
-			throw new SparkplugInvalidTypeException(value.getClass());
+			throw new SparkplugInvalidTypeException("Value of type " + clazz.toString() + " is not assignable from "
+					+ value.getClass().toString() + " where value is " + value, value.getClass());
 		}
 	}
 
