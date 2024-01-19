@@ -100,7 +100,8 @@ public class HostApplication implements CommandPublisher {
 							mqttServerDefinition.getMqttServerName(), mqttServerDefinition.getMqttServerUrl(),
 							mqttServerDefinition.getUsername(), mqttServerDefinition.getPassword(), true,
 							mqttServerDefinition.getKeepAliveTimeout(), tahuHostCallback, randomStartupDelay, true,
-							stateTopic, null, true, stateTopic, null, MqttOperatorDefs.QOS1, true);
+							stateTopic, null, true, stateTopic, null, MqttOperatorDefs.QOS1, true,
+							mqttServerDefinition.getSocketFactory());
 				}
 
 				// Add it to the Map
