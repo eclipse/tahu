@@ -223,6 +223,9 @@ int set_metric_value(org_eclipse_tahu_protobuf_Payload_Metric *metric, uint32_t 
         memcpy(&metric->value.template_value, value, sizeof(metric->value.template_value));
         break;
     case METRIC_DATA_TYPE_BYTES:
+        metric->which_value = org_eclipse_tahu_protobuf_Payload_Metric_bytes_value_tag;
+        metric->value.bytes_value = (pb_bytes_array_t *)value;
+        break;
     case METRIC_DATA_TYPE_FILE:
     case METRIC_DATA_TYPE_UNKNOWN:
     default:
