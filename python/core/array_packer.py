@@ -133,7 +133,7 @@ def convert_from_packed_boolean_array(packed_bytes):
 def convert_from_packed_string_array(packed_bytes):
     string_array = []
     # packed bytes are decoded and stripped of null characters
-    decoded_hex_string = packed_bytes.decode('utf-8').split('\x00')
+    decoded_hex_string = packed_bytes.decode('utf-8').split('\x00')[:-1]
     for hex_string in decoded_hex_string:
         # resulting hex string is converted to byte and then to decoded to strings
         string_array.append(bytes.fromhex(hex_string).decode())
