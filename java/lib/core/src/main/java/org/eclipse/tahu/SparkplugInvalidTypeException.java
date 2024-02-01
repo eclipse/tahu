@@ -28,4 +28,14 @@ public class SparkplugInvalidTypeException extends SparkplugException {
 	public SparkplugInvalidTypeException(Class<?> type) {
 		super("Invalid type " + type);
 	}
+
+	/**
+	 * An Exception for handling invalid types with a message
+	 *
+	 * @param message the message
+	 * @param type the class type
+	 */
+	public SparkplugInvalidTypeException(String message, Class<?> type) {
+		super("Invalid type " + type + ": " + message);
+	}
 }
