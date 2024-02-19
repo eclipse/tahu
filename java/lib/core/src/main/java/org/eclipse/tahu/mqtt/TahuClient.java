@@ -141,9 +141,12 @@ public class TahuClient implements MqttCallbackExtended {
 	private boolean firstConnection = true;
 	private boolean resubscribed = false;
 
+	// Whether or not the BIRTH should be published on connect and controls the STATE of the client
+	private boolean onlineState;
+
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, final String username, final String password, boolean cleanSession,
-			int keepAlive, ClientCallback callback, RandomStartupDelay randomStartupDelay) {
+			int keepAlive, ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean onlineState) {
 		this.mqttServerUrl = mqttServerUrl;
 		this.mqttServerName = mqttServerName;
 		this.clientId = clientId;
@@ -161,25 +164,27 @@ public class TahuClient implements MqttCallbackExtended {
 		this.renewDisconnectTime();
 		this.renewOnlineDate();
 		this.renewOfflineDate();
+		this.onlineState = onlineState;
 	}
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
 			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
-			String birthTopic, byte[] birthPayload, String lwtTopic, byte[] lwtPayload, int lwtQoS) {
+			String birthTopic, byte[] birthPayload, String lwtTopic, byte[] lwtPayload, int lwtQoS,
+			boolean onlineState) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
-				randomStartupDelay);
+				randomStartupDelay, onlineState);
 		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, false, lwtTopic, lwtPayload, lwtQoS,
 				false);
 	}
 
 	public TahuClient(final MqttClientId clientId, final MqttServerName mqttServerName,
 			final MqttServerUrl mqttServerUrl, String username, String password, boolean cleanSession, int keepAlive,
-			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean useSparkplugStatePayload,
-			String birthTopic, byte[] birthPayload, boolean birthRetain, String lwtTopic, byte[] lwtPayload, int lwtQoS,
-			boolean lwtRetain) {
+			ClientCallback callback, RandomStartupDelay randomStartupDelay, boolean onlineState,
+			boolean useSparkplugStatePayload, String birthTopic, byte[] birthPayload, boolean birthRetain,
+			String lwtTopic, byte[] lwtPayload, int lwtQoS, boolean lwtRetain) {
 		this(clientId, mqttServerName, mqttServerUrl, username, password, cleanSession, keepAlive, callback,
-				randomStartupDelay);
+				randomStartupDelay, onlineState);
 		this.setLifecycleProps(useSparkplugStatePayload, birthTopic, birthPayload, birthRetain, lwtTopic, lwtPayload,
 				lwtQoS, lwtRetain);
 	}
@@ -716,43 +721,8 @@ public class TahuClient implements MqttCallbackExtended {
 
 			if (client != null) {
 				try {
-					boolean clientConnected = client.isConnected();
-					boolean lwtDeliveryComplete = false;
-					if (publishLwt && lwtTopic != null && clientConnected) {
-						logger.info("{}: Publishing LWT on {} with qos={} and retain={}", getClientId(), lwtTopic,
-								lwtQoS, lwtRetain);
-						synchronized (lwtDeliveryLock) {
-							/* 
-							 * Synchronization with the deliveryComplete() callback is needed to ensure that
-							 * the publish() call is fully completed and the lwtDeliveryToken is set before
-							 * it is being nullified in the Paho callback.
-							*/
-							if (useSparkplugStatePayload) {
-								try {
-									ObjectMapper mapper = new ObjectMapper();
-									StatePayload statePayload = new StatePayload(false, new Date().getTime());
-									byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
-									lwtDeliveryToken = publish(lwtTopic, payload, lwtQoS, lwtRetain);
-								} catch (Exception e) {
-									logger.error("{}: Failed to publish the LWT message on {}", getClientId(), lwtTopic,
-											e);
-								}
-							} else {
-								lwtDeliveryToken = publish(lwtTopic, lwtPayload, lwtQoS, lwtRetain);
-							}
-							logger.debug("{}: published on LWT Topic={}, messageId={}", getClientId(), lwtTopic,
-									lwtDeliveryToken.getMessageId());
-						}
-
-						if (waitForLwt) {
-							lwtDeliveryComplete = isLwtDeliveryComplete();
-							logger.trace("{}: Completed LWT Delivery? {}", getClientId(), lwtDeliveryComplete);
-						} else {
-							logger.trace("{}: Not waiting for LWT", getClientId());
-						}
-					} else {
-						logger.debug("{}: Not publishing LWT, client connected state: {}", getClientId(),
-								clientConnected);
+					if (publishLwt) {
+						this.publishLwt(waitForLwt);
 					}
 
 					// FIXME - remove This sleep is necessary due to:
@@ -1328,7 +1298,15 @@ public class TahuClient implements MqttCallbackExtended {
 			resubscribed = true;
 
 			// Publish a standard Birth/Death Certificate if a baseTopic has been defined.
-			publishBirthMessage();
+			if (onlineState) {
+				publishBirthMessage();
+			} else {
+				try {
+					this.publishLwt(true);
+				} catch (Exception e) {
+					logger.error("Failed to publish the LWT", e);
+				}
+			}
 
 			firstConnection = false;
 		}
@@ -1345,29 +1323,92 @@ public class TahuClient implements MqttCallbackExtended {
 		}
 	}
 
-	public void publishBirthMessage() {
-		if (birthTopic != null) {
-			try {
-				logger.debug("{}: Publishing BIRTH on {} with retain {}", getClientId(), birthTopic, birthRetain);
-				if (useSparkplugStatePayload) {
-					try {
-						ObjectMapper mapper = new ObjectMapper();
-						StatePayload statePayload = new StatePayload(true, lastStateDeathPayloadTimestamp);
-						byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
-						publish(birthTopic, payload, MqttOperatorDefs.QOS1, birthRetain);
-					} catch (Exception e) {
-						logger.error("{}: Failed to publish the BIRTH message on {}", getClientId(), birthTopic, e);
-					}
+	public void setOnlineState(boolean newOnlineState) {
+		synchronized (clientLock) {
+			if (this.onlineState == newOnlineState) {
+				return;
+			} else {
+				this.onlineState = newOnlineState;
+
+				if (onlineState) {
+					publishBirthMessage();
 				} else {
-					publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
+					try {
+						this.publishLwt(true);
+					} catch (Exception e) {
+						logger.error("Failed to publish the LWT when setting the online state", e);
+					}
 				}
-			} catch (TahuException ce) {
-				logger.error("{}: Error in birth topic publish on connect", getClientId(), ce);
+			}
+		}
+	}
+
+	public void publishBirthMessage() {
+		synchronized (clientLock) {
+			if (birthTopic != null && client.isConnected()) {
 				try {
-					client.disconnectForcibly(0, 1, false);
-				} catch (Exception e) {
-					logger.error("{}: Failed to disconnect after failed BIRTH publish", getClientId(), e);
+					logger.debug("{}: Publishing BIRTH on {} with retain {}", getClientId(), birthTopic, birthRetain);
+					if (useSparkplugStatePayload) {
+						try {
+							ObjectMapper mapper = new ObjectMapper();
+							StatePayload statePayload = new StatePayload(true, lastStateDeathPayloadTimestamp);
+							byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+							publish(birthTopic, payload, MqttOperatorDefs.QOS1, birthRetain);
+						} catch (Exception e) {
+							logger.error("{}: Failed to publish the BIRTH message on {}", getClientId(), birthTopic, e);
+						}
+					} else {
+						publish(birthTopic, birthPayload, MqttOperatorDefs.QOS1, birthRetain);
+					}
+				} catch (TahuException ce) {
+					logger.error("{}: Error in birth topic publish on connect", getClientId(), ce);
+					try {
+						client.disconnectForcibly(0, 1, false);
+					} catch (Exception e) {
+						logger.error("{}: Failed to disconnect after failed BIRTH publish", getClientId(), e);
+					}
 				}
+			}
+		}
+	}
+
+	public void publishLwt(boolean waitForLwt) throws MqttException, TahuException {
+		synchronized (clientLock) {
+			boolean clientConnected = client.isConnected();
+			boolean lwtDeliveryComplete = false;
+			if (lwtTopic != null && clientConnected) {
+				logger.info("{}: Publishing LWT on {} with qos={} and retain={}", getClientId(), lwtTopic, lwtQoS,
+						lwtRetain);
+				synchronized (lwtDeliveryLock) {
+					/*
+					 * Synchronization with the deliveryComplete() callback is needed to ensure that
+					 * the publish() call is fully completed and the lwtDeliveryToken is set before
+					 * it is being nullified in the Paho callback.
+					*/
+					if (useSparkplugStatePayload) {
+						try {
+							ObjectMapper mapper = new ObjectMapper();
+							StatePayload statePayload = new StatePayload(false, new Date().getTime());
+							byte[] payload = mapper.writeValueAsString(statePayload).getBytes();
+							lwtDeliveryToken = publish(lwtTopic, payload, lwtQoS, lwtRetain);
+						} catch (Exception e) {
+							logger.error("{}: Failed to publish the LWT message on {}", getClientId(), lwtTopic, e);
+						}
+					} else {
+						lwtDeliveryToken = publish(lwtTopic, lwtPayload, lwtQoS, lwtRetain);
+					}
+					logger.debug("{}: published on LWT Topic={}, messageId={}", getClientId(), lwtTopic,
+							lwtDeliveryToken.getMessageId());
+				}
+
+				if (waitForLwt) {
+					lwtDeliveryComplete = isLwtDeliveryComplete();
+					logger.trace("{}: Completed LWT Delivery? {}", getClientId(), lwtDeliveryComplete);
+				} else {
+					logger.trace("{}: Not waiting for LWT", getClientId());
+				}
+			} else {
+				logger.debug("{}: Not publishing LWT, client connected state: {}", getClientId(), clientConnected);
 			}
 		}
 	}

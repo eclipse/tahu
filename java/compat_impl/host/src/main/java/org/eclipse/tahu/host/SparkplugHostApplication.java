@@ -101,7 +101,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 		try {
 			hostApplication = new HostApplication(this, HOST_ID,
 					new ArrayList<>(Arrays.asList(SparkplugMeta.SPARKPLUG_B_TOPIC_PREFIX + "/#")),
-					mqttServerDefinitions, null, new SparkplugBPayloadDecoder());
+					mqttServerDefinitions, null, new SparkplugBPayloadDecoder(), true);
 		} catch (Exception e) {
 			logger.error("Failed to create the HostApplication", e);
 		}
@@ -110,7 +110,7 @@ public class SparkplugHostApplication implements HostApplicationEventHandler {
 	public void start() throws TahuException {
 		commandListener = new CommandListener(hostApplication, COMMAND_LISTENER_DIRECTORY, COMMAND_LISTENER_POLL_RATE);
 		commandListener.start();
-		hostApplication.start();
+		hostApplication.start(true);
 	}
 
 	public void shutdown() {
