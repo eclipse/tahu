@@ -37,6 +37,39 @@ extern "C" {
 #define DEBUG_PRINT(...) do {} while (0)
 #endif
 
+// Inttype format specifiers
+#if defined(PB_FIELD_32BIT)
+#define PRI_b_PB_SIZE   PRIb32
+#define PRI_B_PB_SIZE   PRIB32
+#define PRI_d_PB_SIZE   PRId32
+#define PRI_i_PB_SIZE   PRIi32
+#define PRI_o_PB_SIZE   PRIo32
+#define PRI_u_PB_SIZE   PRIu32
+#define PRI_x_PB_SIZE   PRIx32
+#define PRI_X_PB_SIZE   PRIX32
+#define SCN_b_PB_SIZE   SCNb32
+#define SCN_d_PB_SIZE   SCNd32
+#define SCN_i_PB_SIZE   SCNi32
+#define SCN_o_PB_SIZE   SCNo32
+#define SCN_u_PB_SIZE   SCNu32
+#define SCN_x_PB_SIZE   SCNx32
+#else
+#define PRI_b_PB_SIZE   PRIbLEAST16
+#define PRI_B_PB_SIZE   PRIBLEAST16
+#define PRI_d_PB_SIZE   PRIdLEAST16
+#define PRI_i_PB_SIZE   PRIiLEAST16
+#define PRI_o_PB_SIZE   PRIoLEAST16
+#define PRI_u_PB_SIZE   PRIuLEAST16
+#define PRI_x_PB_SIZE   PRIxLEAST16
+#define PRI_X_PB_SIZE   PRIXLEAST16
+#define SCN_b_PB_SIZE   SCNbLEAST16
+#define SCN_d_PB_SIZE   SCNdLEAST16
+#define SCN_i_PB_SIZE   SCNiLEAST16
+#define SCN_o_PB_SIZE   SCNoLEAST16
+#define SCN_u_PB_SIZE   SCNuLEAST16
+#define SCN_x_PB_SIZE   SCNxLEAST16
+#endif
+
 // Constants
 #define DATA_SET_DATA_TYPE_UNKNOWN 0
 #define DATA_SET_DATA_TYPE_INT8 1
