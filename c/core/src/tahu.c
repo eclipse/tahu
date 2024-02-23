@@ -127,13 +127,17 @@ int add_property_to_set(org_eclipse_tahu_protobuf_Payload_PropertySet *propertys
     void *key_allocation_result = realloc(propertyset->keys, key_allocation_size);
     void *value_allocation_result = realloc(propertyset->values, value_allocation_size);
     //DEBUG_PRINT("key=%p value=%p\n", key_allocation_result, value_allocation_result);
+    if (key_allocation_result != NULL) {
+        propertyset->keys = key_allocation_result;
+    }
+    if (value_allocation_result != NULL) {
+        propertyset->values = value_allocation_result;
+    }
     if ((key_allocation_result == NULL) || (value_allocation_result == NULL)) {
         fprintf(stderr, "realloc failed in add_metric_to_payload\n");
         return -1;
     }
-    propertyset->keys = key_allocation_result;
     propertyset->keys_count = new_count;
-    propertyset->values = value_allocation_result;
     propertyset->values_count = new_count;
     propertyset->keys[old_count] = strdup(key);
     if (propertyset->keys[old_count] == NULL) {
