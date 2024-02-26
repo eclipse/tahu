@@ -23,7 +23,7 @@
     <jackson.version>2.13.4</jackson.version>
     <jackson.databind.version>2.13.4.2</jackson.databind.version>
     <slf4j.version>1.7.32</slf4j.version>
-    <logback.version>1.2.11</logback.version>
+    <logback.version>1.2.13</logback.version>
     <protobuf.version>3.16.3</protobuf.version>
     <maven.compiler.version>3.8.1</maven.compiler.version>
     <maven.bundle.version>5.1.1</maven.bundle.version>
