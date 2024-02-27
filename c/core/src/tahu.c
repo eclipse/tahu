@@ -387,6 +387,10 @@ int init_dataset(org_eclipse_tahu_protobuf_Payload_DataSet *dataset,
     for (int i = 0; i < num_of_columns; i++) {
         dataset->columns[i] = strdup(column_keys[i]);
         if (dataset->columns[i] == NULL) {
+            // Initialize remaining columns[] pointers.
+            while (i++ < num_of_columns) {
+                dataset->columns[i] = NULL;
+            }
             fprintf(stderr, "strdup failed in init_dataset\n");
             return -1;
         }
