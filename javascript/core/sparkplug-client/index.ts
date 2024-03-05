@@ -296,12 +296,12 @@ class SparkplugClient extends events.EventEmitter {
 
     subscribeTopic(topic: string, options: mqtt.IClientSubscribeOptions = { "qos": 0 }, callback?: mqtt.ClientSubscribeCallback) {
         logger.info("Subscribing to topic:", topic);
-        this.client!.subscribe(topic, options, callback);
+        this.client.subscribe(topic, options, callback);
     }
 
     unsubscribeTopic(topic: string, options?: any, callback?: mqtt.PacketCallback) {
         logger.info("Unsubscribing topic:", topic);
-        this.client!.unsubscribe(topic, options, callback);
+        this.client.unsubscribe(topic, options, callback);
     }
 
     // Publishes Node BIRTH certificates for the edge node
@@ -324,7 +324,7 @@ class SparkplugClient extends events.EventEmitter {
         // Publish BIRTH certificate for edge node
         logger.info("Publishing Edge Node Birth");
         let p = this.maybeCompressPayload(payload, options);
-        this.client!.publish(topic, Buffer.from(this.encodePayload(p)));
+        this.client.publish(topic, Buffer.from(this.encodePayload(p)));
         this.messageAlert("published", topic, p);
     }
 
@@ -335,7 +335,7 @@ class SparkplugClient extends events.EventEmitter {
         this.addSeqNumber(payload);
         // Publish
         logger.info("Publishing NDATA");
-        this.client!.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
+        this.client.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
         this.messageAlert("published", topic, payload);
     }
 
@@ -346,7 +346,7 @@ class SparkplugClient extends events.EventEmitter {
         this.addSeqNumber(payload);
         // Publish
         logger.info("Publishing DDATA for device " + deviceId);
-        this.client!.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
+        this.client.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
         this.messageAlert("published", topic, payload);
     };
 
@@ -358,7 +358,7 @@ class SparkplugClient extends events.EventEmitter {
         // Publish
         logger.info("Publishing DBIRTH for device " + deviceId);
         let p = this.maybeCompressPayload(payload, options);
-        this.client!.publish(topic, Buffer.from(this.encodePayload(p)));
+        this.client.publish(topic, Buffer.from(this.encodePayload(p)));
         this.messageAlert("published", topic, p);
     }
 
@@ -370,7 +370,7 @@ class SparkplugClient extends events.EventEmitter {
         this.addSeqNumber(payload);
         // Publish
         logger.info("Publishing DDEATH for device " + deviceId);
-        this.client!.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
+        this.client.publish(topic, Buffer.from(this.encodePayload(this.maybeCompressPayload(payload, options))));
         this.messageAlert("published", topic, payload);
     }
 
@@ -378,9 +378,9 @@ class SparkplugClient extends events.EventEmitter {
         logger.debug("publishDeath: " + this.publishDeath);
         if (this.publishDeath) {
             // Publish the DEATH certificate
-            this.publishNDeath(this.client!);
+            this.publishNDeath(this.client);
         }
-        this.client!.end();
+        this.client.end();
     }
 
     // Configures the client
@@ -402,8 +402,8 @@ class SparkplugClient extends events.EventEmitter {
             const dcmdTopicBase = this.version + "/" + this.groupId + "/DCMD/" + this.edgeNode;
             sparkplugTopicPatterns.push(ncmdTopicBase);
             sparkplugTopicPatterns.push(dcmdTopicBase);
-            this.client!.subscribe(ncmdTopicBase + "/#", { "qos": 0 });
-            this.client!.subscribe(dcmdTopicBase + "/#", { "qos": 0 });
+            this.client.subscribe(ncmdTopicBase + "/#", { "qos": 0 });
+            this.client.subscribe(dcmdTopicBase + "/#", { "qos": 0 });
 
             // Emit the "birth" event to notify the application to send a births
             this.emit("birth");
@@ -424,7 +424,7 @@ class SparkplugClient extends events.EventEmitter {
         this.client.on('error', (error) => {
             if (this.connecting) {
                 this.emit("error", error);
-                this.client!.end();
+                this.client.end();
             }
         });
 
