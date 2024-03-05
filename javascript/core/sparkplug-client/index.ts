@@ -115,6 +115,7 @@ class SparkplugClient extends events.EventEmitter {
     private client: MqttClient;
     private connecting = false;
     private connected = false;
+    private clientProvided;
 
     constructor(config: ISparkplugClientOptions) {
         super();
@@ -122,9 +123,10 @@ class SparkplugClient extends events.EventEmitter {
         this.edgeNode = getRequiredProperty(config, "edgeNode");
         this.publishDeath = getProperty(config, "publishDeath", false);
         this.version = getProperty(config, "version", this.versionB);
+        this.clientProvided = Boolean(config.mqttClient);
 
         // Client options
-        if (config.mqttClient) {
+        if (this.clientProvided) {
             this.client = getRequiredProperty(config, 'mqttClient');
         } else {
             this.serverUrl = getRequiredProperty(config, "serverUrl");
@@ -380,7 +382,11 @@ class SparkplugClient extends events.EventEmitter {
             // Publish the DEATH certificate
             this.publishNDeath(this.client);
         }
-        this.client.end();
+        if (!this.clientProvided) {
+            // only end the client if it was created by this class,
+            // otherwise it could still be used elsewhere and closing it would cause problems
+            this.client.end();
+        }
     }
 
     // Configures the client
@@ -424,7 +430,11 @@ class SparkplugClient extends events.EventEmitter {
         this.client.on('error', (error) => {
             if (this.connecting) {
                 this.emit("error", error);
-                this.client.end();
+                if (!this.clientProvided) {
+                    // only end the client if it was created by this class,
+                    // otherwise it could still be used elsewhere and closing it would cause problems
+                    this.client.end();
+                }
             }
         });
 
