@@ -924,64 +924,70 @@ function decodeDoubleArray(array: Uint8Array | null) {
   
 function unpackValues(packed_bytes: Uint8Array, format_specifier: string): number[] {
     const data_view = new DataView(packed_bytes.buffer, packed_bytes.byteOffset, packed_bytes.byteLength);
-    const decodeFunc = {
-        'b': data_view.getInt8.bind(data_view),
-        'B': data_view.getUint8.bind(data_view),
-        'h': data_view.getInt16.bind(data_view, 0, true),
-        'H': data_view.getUint16.bind(data_view, 0, true),
-        'i': data_view.getInt32.bind(data_view, 0, true),
-        'I': data_view.getUint32.bind(data_view, 0, true),
-        'f': data_view.getFloat32.bind(data_view, 0, true),
-        'd': data_view.getFloat64.bind(data_view, 0, true),
-    }[format_specifier];
-    if (!decodeFunc) {
-        throw new Error(`Unsupported format specifier: ${format_specifier}`);
-    }
     const values = [];
     const typeSize = getTypeSize(format_specifier);
-    for (let i = 0; i < packed_bytes.length / typeSize; i++) {
-        values.push(decodeFunc(i * typeSize));
+    for (let byteOffset = 0; byteOffset < packed_bytes.length; byteOffset += typeSize) {
+        switch (format_specifier) {
+            case 'b':
+                values.push(data_view.getInt8(byteOffset));
+                break;
+            case 'B':
+                values.push(data_view.getUint8(byteOffset));
+                break;
+            case 'h':
+                values.push(data_view.getInt16(byteOffset, true));
+                break;
+            case 'H':
+                values.push(data_view.getUint16(byteOffset, true));
+                break;
+            case 'i':
+                values.push(data_view.getInt32(byteOffset, true));
+                break;
+            case 'I':
+                values.push(data_view.getUint32(byteOffset, true));
+                break;
+            case 'f':
+                values.push(data_view.getFloat32(byteOffset, true));
+                break;
+            case 'd':
+                values.push(data_view.getFloat64(byteOffset, true));
+                break;
+            default:
+                throw new Error(`Unsupported format specifier: ${format_specifier}`);
+        }
     }
     return values;
 }
 
 function packValues(values: any[], format_specifier: string): Uint8Array {
-    const dataView = new DataView(new ArrayBuffer(values.length * getTypeSize(format_specifier)));
-    let byteOffset = 0;
-    for (let i = 0; i < values.length; i++) {
+    const typeSize = getTypeSize(format_specifier);
+    const dataView = new DataView(new ArrayBuffer(values.length * typeSize));
+    for (let i = 0, byteOffset = 0; i < values.length; i++, byteOffset += typeSize) {
         const value = values[i];
         switch (format_specifier) {
             case 'b':
                 dataView.setInt8(byteOffset, value);
-                byteOffset += 1;
                 break;
             case 'B':
                 dataView.setUint8(byteOffset, value);
-                byteOffset += 1;
                 break;
             case 'h':
                 dataView.setInt16(byteOffset, value, true);
-                byteOffset += 2;
                 break;
             case 'H':
                 dataView.setUint16(byteOffset, value, true);
-                byteOffset += 2;
                 break;
             case 'i':
                 dataView.setInt32(byteOffset, value, true);
-                byteOffset += 4;
                 break;
             case 'I':
                 dataView.setUint32(byteOffset, value, true);
-                byteOffset += 4;
                 break;
             case 'f':
                 dataView.setFloat32(byteOffset, value, true);
-                byteOffset += 4;
                 break;
             case 'd':
                 dataView.setFloat64(byteOffset, value, true);
-                byteOffset += 8;
                 break;
             default:
                 throw new Error(`Unsupported format specifier: ${format_specifier}`);
@@ -992,14 +998,14 @@ function packValues(values: any[], format_specifier: string): Uint8Array {
 
 function getTypeSize(format_specifier: string): number {
     const sizeMap: {[key: string]: number} = {
-        'b': 1,
-        'B': 1,
-        'h': 2,
-        'H': 2,
-        'i': 4,
-        'I': 4,
-        'f': 4,
-        'd': 8,
+        'b': Int8Array.BYTES_PER_ELEMENT,
+        'B': Uint8Array.BYTES_PER_ELEMENT,
+        'h': Int16Array.BYTES_PER_ELEMENT,
+        'H': Uint16Array.BYTES_PER_ELEMENT,
+        'i': Int32Array.BYTES_PER_ELEMENT,
+        'I': Uint32Array.BYTES_PER_ELEMENT,
+        'f': Float32Array.BYTES_PER_ELEMENT,
+        'd': Float64Array.BYTES_PER_ELEMENT,
     };
     const size = sizeMap[format_specifier];
     if (!size) {
