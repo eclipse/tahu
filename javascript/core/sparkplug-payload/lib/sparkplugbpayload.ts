@@ -1024,23 +1024,23 @@ function encodeBooleanArray(booleanArray: boolean[]): Uint8Array {
     for (let i = 0; i < booleanArray.length; i++) {
         const value = booleanArray[i];
         const byteIndex = Math.floor(i / 8);
-        const bitIndex = i % 8;
+        const bitIndex = 7 - i % 8;
         packedBytes[byteIndex] |= (value ? 1 : 0) << bitIndex;
     }
 
     // return the packed bytes preceded by a 4-byte integer representing the number of boolean values
-    const lengthBytes = new Uint8Array(new Uint32Array([booleanArray.length]).buffer);
-    const result = new Uint8Array(lengthBytes.length + packedBytes.length);
-    result.set(lengthBytes);
-    result.set(packedBytes, lengthBytes.length);
+    const result = new Uint8Array(4 + packedBytes.length);
+    const data_view = new DataView(result.buffer);
+    data_view.setUint32(0, booleanArray.length, true); // set the first 4 bytes
+    result.set(packedBytes, 4);
 
     return result;
 }
 
 function decodeBooleanArray(packedBytes: Uint8Array): boolean[] {
+    const data_view = new DataView(packedBytes.buffer, packedBytes.byteOffset, packedBytes.byteLength);
     // extract the length of the boolean array from the first 4 bytes of the packed bytes
-    const lengthBytes = packedBytes.slice(0, 4);
-    const length = new Uint32Array(lengthBytes.buffer)[0];
+    const length = data_view.getUint32(0, true);
 
     // create a boolean array of the appropriate length
     const booleanArray = new Array<boolean>(length);
@@ -1048,7 +1048,7 @@ function decodeBooleanArray(packedBytes: Uint8Array): boolean[] {
     // iterate over each bit in the packed bytes and set the corresponding boolean value in the boolean array
     for (let i = 0; i < length; i++) {
         const byteIndex = Math.floor(i / 8);
-        const bitIndex = i % 8;
+        const bitIndex = 7 - i % 8;
         const mask = 1 << bitIndex;
         booleanArray[i] = (packedBytes[byteIndex + 4] & mask) !== 0;
     }
