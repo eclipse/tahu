@@ -165,6 +165,9 @@ function setValue (type: number, value: UserValue, object: IMetric | IPropertyVa
         case 24:
             (object as IMetric).bytesValue = encodeInt32Array(value as Array<number>);
             break;
+        case 25:
+            (object as IMetric).bytesValue = encodeInt64Array(value as Array<number>);
+            break;    
         case 26:
             (object as IMetric).bytesValue = encodeUInt8Array(value as Array<number>);
             break;
@@ -173,6 +176,9 @@ function setValue (type: number, value: UserValue, object: IMetric | IPropertyVa
             break;
         case 28:
             (object as IMetric).bytesValue = encodeUInt32Array(value as Array<number>);
+            break;
+        case 29:
+            (object as IMetric).bytesValue = encodeUInt64Array(value as Array<number>);
             break;
         case 30:
             (object as IMetric).bytesValue = encodeFloatArray(value as Array<number>);
@@ -242,12 +248,16 @@ function getValue<T extends UserValue> (type: number | null | undefined, object:
             return decodeInt16Array((object as IMetric).bytesValue!) as T;
         case 24:
             return decodeInt32Array((object as IMetric).bytesValue!) as T;
+        case 25:
+            return decodeInt64Array((object as IMetric).bytesValue!) as T;
         case 26:
             return decodeUInt8Array((object as IMetric).bytesValue!) as T;
         case 27:
             return decodeUInt16Array((object as IMetric).bytesValue!) as T;
         case 28:
             return decodeUInt32Array((object as IMetric).bytesValue!) as T;
+        case 29:
+            return decodeUInt64Array((object as IMetric).bytesValue!) as T;
         case 30:
             return decodeFloatArray((object as IMetric).bytesValue!) as T;
         case 31:
@@ -374,12 +384,16 @@ function encodeType(typeString: string): number {
             return 23;
         case "INT32ARRAY":
             return 24;
+        case "INT64ARRAY":
+            return 25;
         case "UINT8ARRAY":
             return 26;
         case "UINT16ARRAY":
             return 27;
         case "UINT32ARRAY":
             return 28;
+        case "UINT64ARRAY":
+            return 29;
         case "FLOATARRAY":
             return 30;
         case "DOUBLEARRAY":
@@ -445,12 +459,16 @@ function decodeType (typeInt: number | null | undefined): TypeStr {
             return "Int16Array";
         case 24:
             return "Int32Array";
+        case 25:
+            return "Int64Array";
         case 26:
             return "UInt8Array";
         case 27:
             return "UInt16Array";
         case 28:
             return "UInt32Array";
+        case 29:
+            return "UInt64Array";    
         case 30:
             return "FloatArray";
         case 31:
@@ -900,6 +918,28 @@ function decodeUInt32Array(array: Uint8Array | null) {
     return unpackValues(array, 'I');
 }
 
+function encodeInt64Array(array: any[]) {
+    return packValues(array, 'l');
+}
+
+function decodeInt64Array(array: Uint8Array | null) {
+    if (array === null) {
+        return null;
+    }
+    return unpackValues(array, 'l');
+}
+
+function encodeUInt64Array(array: any[]) {
+    return packValues(array, 'L');
+}
+
+function decodeUInt64Array(array: Uint8Array | null) {
+    if (array === null) {
+        return null;
+    }
+    return unpackValues(array, 'L');
+}
+
 function encodeFloatArray(array: any[]) {
     return packValues(array, 'f');
 }
@@ -922,7 +962,7 @@ function decodeDoubleArray(array: Uint8Array | null) {
     return unpackValues(array, 'd');
 }
   
-function unpackValues(packed_bytes: Uint8Array, format_specifier: string): number[] {
+function unpackValues(packed_bytes: Uint8Array, format_specifier: string): (number | Long)[] {
     const data_view = new DataView(packed_bytes.buffer, packed_bytes.byteOffset, packed_bytes.byteLength);
     const values = [];
     const typeSize = getTypeSize(format_specifier);
@@ -945,6 +985,12 @@ function unpackValues(packed_bytes: Uint8Array, format_specifier: string): numbe
                 break;
             case 'I':
                 values.push(data_view.getUint32(byteOffset, true));
+                break;
+            case 'l':
+                values.push(Long.fromString(data_view.getBigInt64(byteOffset, true).toString(), false));
+                break;
+            case 'L':
+                values.push(Long.fromString(data_view.getBigUint64(byteOffset, true).toString(), true));
                 break;
             case 'f':
                 values.push(data_view.getFloat32(byteOffset, true));
@@ -983,6 +1029,12 @@ function packValues(values: any[], format_specifier: string): Uint8Array {
             case 'I':
                 dataView.setUint32(byteOffset, value, true);
                 break;
+            case 'l':
+                dataView.setBigInt64(byteOffset, BigInt(value), true);
+                break;
+            case 'L':
+                dataView.setBigUint64(byteOffset, BigInt(value), true);
+                break;
             case 'f':
                 dataView.setFloat32(byteOffset, value, true);
                 break;
@@ -1004,6 +1056,8 @@ function getTypeSize(format_specifier: string): number {
         'H': Uint16Array.BYTES_PER_ELEMENT,
         'i': Int32Array.BYTES_PER_ELEMENT,
         'I': Uint32Array.BYTES_PER_ELEMENT,
+        'l': BigInt64Array.BYTES_PER_ELEMENT,
+        'L': BigUint64Array.BYTES_PER_ELEMENT,
         'f': Float32Array.BYTES_PER_ELEMENT,
         'd': Float64Array.BYTES_PER_ELEMENT,
     };
