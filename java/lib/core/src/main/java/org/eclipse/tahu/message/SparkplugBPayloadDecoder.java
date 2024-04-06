@@ -162,52 +162,56 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		if (value.getIsNull()) {
 			return null;
 		}
-		switch (type) {
-			case Boolean:
-				return value.getBooleanValue();
-			case DateTime:
-				return new Date(value.getLongValue());
-			case Float:
-				return value.getFloatValue();
-			case Double:
-				return value.getDoubleValue();
-			case Int8:
-				return (byte) value.getIntValue();
-			case Int16:
-			case UInt8:
-				return (short) value.getIntValue();
-			case Int32:
-			case UInt16:
-				return value.getIntValue();
-			case UInt32:
-				if (value.hasIntValue()) {
-					return Integer.toUnsignedLong(value.getIntValue());
-				} else if (value.hasLongValue()) {
-					return value.getLongValue();
-				} else {
-					logger.error("Invalid value for UInt32 datatype");
-				}
-			case Int64:
+
+		if (type.toIntValue() == PropertyDataType.Boolean.toIntValue()) {
+			return value.getBooleanValue();
+		} else if (type.toIntValue() == PropertyDataType.DateTime.toIntValue()) {
+			return new Date(value.getLongValue());
+		} else if (type.toIntValue() == PropertyDataType.Double.toIntValue()) {
+			return value.getDoubleValue();
+		} else if (type.toIntValue() == PropertyDataType.Float.toIntValue()) {
+			return value.getFloatValue();
+		} else if (type.toIntValue() == PropertyDataType.Int8.toIntValue()) {
+			return (byte) value.getIntValue();
+		} else if (type.toIntValue() == PropertyDataType.Int16.toIntValue()) {
+			return (short) value.getIntValue();
+		} else if (type.toIntValue() == PropertyDataType.Int32.toIntValue()) {
+			return value.getIntValue();
+		} else if (type.toIntValue() == PropertyDataType.Int64.toIntValue()) {
+			return value.getLongValue();
+		} else if (type.toIntValue() == PropertyDataType.UInt8.toIntValue()) {
+			return (short) value.getIntValue();
+		} else if (type.toIntValue() == PropertyDataType.UInt16.toIntValue()) {
+			return value.getIntValue();
+		} else if (type.toIntValue() == PropertyDataType.UInt32.toIntValue()) {
+			if (value.hasIntValue()) {
+				return Integer.toUnsignedLong(value.getIntValue());
+			} else if (value.hasLongValue()) {
 				return value.getLongValue();
-			case UInt64:
-				return new BigInteger(Long.toUnsignedString(value.getLongValue()));
-			case String:
-			case Text:
-				return value.getStringValue();
-			case PropertySet:
-				return new PropertySetBuilder().addProperties(convertProperties(value.getPropertysetValue()))
-						.createPropertySet();
-			case PropertySetList:
-				List<PropertySet> propertySetList = new ArrayList<PropertySet>();
-				List<SparkplugBProto.Payload.PropertySet> list = value.getPropertysetsValue().getPropertysetList();
-				for (SparkplugBProto.Payload.PropertySet decodedPropSet : list) {
-					propertySetList.add(new PropertySetBuilder().addProperties(convertProperties(decodedPropSet))
-							.createPropertySet());
-				}
-				return propertySetList;
-			case Unknown:
-			default:
-				throw new Exception("Failed to decode: Unknown PropertyDataType " + type);
+			} else {
+				throw new Exception("Failed to decode: Invalid value for UInt32 datatype " + type);
+			}
+		} else if (type.toIntValue() == PropertyDataType.UInt64.toIntValue()) {
+			return new BigInteger(Long.toUnsignedString(value.getLongValue()));
+		} else if (type.toIntValue() == PropertyDataType.String.toIntValue()) {
+			return value.getStringValue();
+		} else if (type.toIntValue() == PropertyDataType.Text.toIntValue()) {
+			return value.getStringValue();
+		} else if (type.toIntValue() == PropertyDataType.PropertySet.toIntValue()) {
+			return new PropertySetBuilder().addProperties(convertProperties(value.getPropertysetValue()))
+					.createPropertySet();
+		} else if (type.toIntValue() == PropertyDataType.PropertySetList.toIntValue()) {
+			List<PropertySet> propertySetList = new ArrayList<PropertySet>();
+			List<SparkplugBProto.Payload.PropertySet> list = value.getPropertysetsValue().getPropertysetList();
+			for (SparkplugBProto.Payload.PropertySet decodedPropSet : list) {
+				propertySetList.add(
+						new PropertySetBuilder().addProperties(convertProperties(decodedPropSet)).createPropertySet());
+			}
+			return propertySetList;
+		} else if (type.toIntValue() == PropertyDataType.Unknown.toIntValue()) {
+			throw new Exception("Failed to decode: Unknown PropertyDataType " + type);
+		} else {
+			throw new Exception("Failed to decode: Unknown PropertyDataType " + type);
 		}
 	}
 
