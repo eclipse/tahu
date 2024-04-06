@@ -166,6 +166,21 @@ public class Topic {
 		this.deviceId = null;
 	}
 
+	public static Topic parseTopic(String[] splitTopic) throws TahuException {
+		StringBuilder sb = new StringBuilder();
+		if (splitTopic != null && splitTopic.length > 0) {
+			for (int i = 0; i < splitTopic.length; i++) {
+				sb.append(splitTopic[i]);
+				if (i - 1 < splitTopic.length) {
+					sb.append("/");
+				}
+			}
+			return parseTopic(sb.toString());
+		} else {
+			throw new TahuException(TahuErrorCode.INVALID_ARGUMENT, "Split topic is null or empty");
+		}
+	}
+
 	/**
 	 * Parses a Sparkplug topic from an MQTT topic string
 	 *

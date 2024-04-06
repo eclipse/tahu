@@ -24,30 +24,26 @@ import org.slf4j.LoggerFactory;
 /**
  * An enumeration of data types for values of a {@link PropertySet}
  */
-public enum PropertyDataType {
+public class PropertyDataType {
 
 	// Basic Types
-	Int8(1, Byte.class),
-	Int16(2, Short.class),
-	Int32(3, Integer.class),
-	Int64(4, Long.class),
-	UInt8(5, Short.class),
-	UInt16(6, Integer.class),
-	UInt32(7, Long.class),
-	UInt64(8, BigInteger.class),
-	Float(9, Float.class),
-	Double(10, Double.class),
-	Boolean(11, Boolean.class),
-	String(12, String.class),
-	DateTime(13, Date.class),
-	Text(14, String.class),
-
-	// Custom Types for PropertySets
-	PropertySet(20, PropertySet.class),
-	PropertySetList(21, List.class),
-
-	// Unknown
-	Unknown(0, Object.class);
+	public static final PropertyDataType Int8 = new PropertyDataType(1, Byte.class);
+	public static final PropertyDataType Int16 = new PropertyDataType(2, Short.class);
+	public static final PropertyDataType Int32 = new PropertyDataType(3, Integer.class);
+	public static final PropertyDataType Int64 = new PropertyDataType(4, Long.class);
+	public static final PropertyDataType UInt8 = new PropertyDataType(5, Short.class);
+	public static final PropertyDataType UInt16 = new PropertyDataType(6, Integer.class);
+	public static final PropertyDataType UInt32 = new PropertyDataType(7, Long.class);
+	public static final PropertyDataType UInt64 = new PropertyDataType(8, BigInteger.class);
+	public static final PropertyDataType Float = new PropertyDataType(9, Float.class);
+	public static final PropertyDataType Double = new PropertyDataType(10, Double.class);
+	public static final PropertyDataType Boolean = new PropertyDataType(11, Boolean.class);
+	public static final PropertyDataType String = new PropertyDataType(12, String.class);
+	public static final PropertyDataType DateTime = new PropertyDataType(13, Date.class);
+	public static final PropertyDataType Text = new PropertyDataType(14, String.class);
+	public static final PropertyDataType PropertySet = new PropertyDataType(20, PropertySet.class);
+	public static final PropertyDataType PropertySetList = new PropertyDataType(21, List.class);
+	public static final PropertyDataType Unknown = new PropertyDataType(0, Object.class);
 
 	private static final Logger logger = LoggerFactory.getLogger(PropertyDataType.class.getName());
 
