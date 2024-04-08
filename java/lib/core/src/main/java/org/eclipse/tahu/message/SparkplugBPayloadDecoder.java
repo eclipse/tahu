@@ -244,237 +244,235 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 
 		logger.trace("For metricName={} and alias={} - handling metric type in decoder: {}", protoMetric.getName(),
 				protoMetric.getAlias(), metricType);
-		switch (MetricDataType.fromInteger(metricType)) {
-			case Boolean:
-				return protoMetric.getBooleanValue();
-			case DateTime:
-				return new Date(protoMetric.getLongValue());
-			case File:
-				String filename = protoMetric.getMetadata().getFileName();
-				byte[] fileBytes = protoMetric.getBytesValue().toByteArray();
-				return new File(filename, fileBytes);
-			case Float:
-				return protoMetric.getFloatValue();
-			case Double:
-				return protoMetric.getDoubleValue();
-			case Int8:
-				return (byte) protoMetric.getIntValue();
-			case Int16:
-			case UInt8:
-				return (short) protoMetric.getIntValue();
-			case Int32:
-			case UInt16:
-				return protoMetric.getIntValue();
-			case UInt32:
-				if (protoMetric.hasIntValue()) {
-					return Integer.toUnsignedLong(protoMetric.getIntValue());
-				} else if (protoMetric.hasLongValue()) {
-					return protoMetric.getLongValue();
-				} else {
-					logger.error("Invalid value for UInt32 datatype");
-				}
-			case Int64:
+		if (metricType == MetricDataType.Boolean.toIntValue()) {
+			return protoMetric.getBooleanValue();
+		} else if (metricType == MetricDataType.DateTime.toIntValue()) {
+			return new Date(protoMetric.getLongValue());
+		} else if (metricType == MetricDataType.File.toIntValue()) {
+			String filename = protoMetric.getMetadata().getFileName();
+			byte[] fileBytes = protoMetric.getBytesValue().toByteArray();
+			return new File(filename, fileBytes);
+		} else if (metricType == MetricDataType.Float.toIntValue()) {
+			return protoMetric.getFloatValue();
+		} else if (metricType == MetricDataType.Double.toIntValue()) {
+			return protoMetric.getDoubleValue();
+		} else if (metricType == MetricDataType.Int8.toIntValue()) {
+			return (byte) protoMetric.getIntValue();
+		} else if (metricType == MetricDataType.Int16.toIntValue()) {
+			return (short) protoMetric.getIntValue();
+		} else if (metricType == MetricDataType.Int32.toIntValue()) {
+			return protoMetric.getIntValue();
+		} else if (metricType == MetricDataType.Int64.toIntValue()) {
+			return protoMetric.getLongValue();
+		} else if (metricType == MetricDataType.UInt8.toIntValue()) {
+			return (short) protoMetric.getIntValue();
+		} else if (metricType == MetricDataType.UInt16.toIntValue()) {
+			return protoMetric.getIntValue();
+		} else if (metricType == MetricDataType.UInt32.toIntValue()) {
+			if (protoMetric.hasIntValue()) {
+				return Integer.toUnsignedLong(protoMetric.getIntValue());
+			} else if (protoMetric.hasLongValue()) {
 				return protoMetric.getLongValue();
-			case UInt64:
-				return new BigInteger(Long.toUnsignedString(protoMetric.getLongValue()));
-			case String:
-			case Text:
-			case UUID:
-				return protoMetric.getStringValue();
-			case Bytes:
-				return protoMetric.getBytesValue().toByteArray();
-			case DataSet:
-				SparkplugBProto.Payload.DataSet protoDataSet = protoMetric.getDatasetValue();
-				// Build the and create the DataSet
-				return new DataSetBuilder(protoDataSet.getNumOfColumns()).addColumnNames(protoDataSet.getColumnsList())
-						.addTypes(convertDataSetDataTypes(protoDataSet.getTypesList()))
-						.addRows(convertDataSetRows(protoDataSet.getRowsList(), protoDataSet.getTypesList()))
-						.createDataSet();
-			case Template:
-				SparkplugBProto.Payload.Template protoTemplate = protoMetric.getTemplateValue();
-				List<Metric> metrics = new ArrayList<Metric>();
-				List<Parameter> parameters = new ArrayList<Parameter>();
+			} else {
+				logger.error("Invalid value for UInt32 datatype");
+				throw new Exception("Failed to decode: UInt32 MetricDataType " + metricType);
+			}
+		} else if (metricType == MetricDataType.UInt64.toIntValue()) {
+			return new BigInteger(Long.toUnsignedString(protoMetric.getLongValue()));
+		} else if (metricType == MetricDataType.String.toIntValue() || metricType == MetricDataType.Text.toIntValue()
+				|| metricType == MetricDataType.UUID.toIntValue()) {
+			return protoMetric.getStringValue();
+		} else if (metricType == MetricDataType.Bytes.toIntValue()) {
+			return protoMetric.getBytesValue().toByteArray();
+		} else if (metricType == MetricDataType.DataSet.toIntValue()) {
+			SparkplugBProto.Payload.DataSet protoDataSet = protoMetric.getDatasetValue();
+			// Build the and create the DataSet
+			return new DataSetBuilder(protoDataSet.getNumOfColumns()).addColumnNames(protoDataSet.getColumnsList())
+					.addTypes(convertDataSetDataTypes(protoDataSet.getTypesList()))
+					.addRows(convertDataSetRows(protoDataSet.getRowsList(), protoDataSet.getTypesList()))
+					.createDataSet();
+		} else if (metricType == MetricDataType.Template.toIntValue()) {
+			SparkplugBProto.Payload.Template protoTemplate = protoMetric.getTemplateValue();
+			List<Metric> metrics = new ArrayList<Metric>();
+			List<Parameter> parameters = new ArrayList<Parameter>();
 
-				for (SparkplugBProto.Payload.Template.Parameter protoParameter : protoTemplate.getParametersList()) {
-					String name = protoParameter.getName();
-					ParameterDataType type = ParameterDataType.fromInteger(protoParameter.getType());
-					Object value = getParameterValue(protoParameter);
-					if (logger.isTraceEnabled()) {
-						logger.trace("Setting template parameter name: " + name + ", type: " + type + ", value: "
-								+ value + ", valueType" + value.getClass());
-					}
-
-					parameters.add(new Parameter(name, type, value));
-				}
-
-				for (SparkplugBProto.Payload.Metric protoTemplateMetric : protoTemplate.getMetricsList()) {
-					Metric templateMetric = convertMetric(protoTemplateMetric, metricDataTypeMap,
-							prefix != null ? prefix + protoMetric.getName() + "/" : protoMetric.getName() + "/");
-					if (logger.isTraceEnabled()) {
-						logger.trace("Setting template parameter name: " + templateMetric.getName() + ", type: "
-								+ templateMetric.getDataType() + ", value: " + templateMetric.getValue());
-					}
-					metrics.add(templateMetric);
-				}
-
-				Template template = new TemplateBuilder().version(protoTemplate.getVersion())
-						.templateRef(protoTemplate.getTemplateRef()).definition(protoTemplate.getIsDefinition())
-						.addMetrics(metrics).addParameters(parameters).createTemplate();
-
+			for (SparkplugBProto.Payload.Template.Parameter protoParameter : protoTemplate.getParametersList()) {
+				String name = protoParameter.getName();
+				ParameterDataType type = ParameterDataType.fromInteger(protoParameter.getType());
+				Object value = getParameterValue(protoParameter);
 				if (logger.isTraceEnabled()) {
-					logger.trace(
-							"Setting template - name: " + protoMetric.getName() + ", version: " + template.getVersion()
-									+ ", ref: " + template.getTemplateRef() + ", isDef: " + template.isDefinition()
-									+ ", metrics: " + metrics.size() + ", params: " + parameters.size());
+					logger.trace("Setting template parameter name: " + name + ", type: " + type + ", value: " + value
+							+ ", valueType" + value.getClass());
 				}
 
-				return template;
-			case Int8Array:
-				ByteBuffer int8ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Byte> int8List = new ArrayList<>();
-				int8ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (int8ByteBuffer.hasRemaining()) {
-					byte value = int8ByteBuffer.get();
-					int8List.add(value);
-				}
-				return int8List.toArray(new Byte[0]);
-			case Int16Array:
-				ByteBuffer int16ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Short> int16List = new ArrayList<>();
-				int16ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (int16ByteBuffer.hasRemaining()) {
-					short value = int16ByteBuffer.getShort();
-					int16List.add(value);
-				}
-				return int16List.toArray(new Short[0]);
-			case Int32Array:
-				ByteBuffer int32ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Integer> int32List = new ArrayList<>();
-				int32ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (int32ByteBuffer.hasRemaining()) {
-					int value = int32ByteBuffer.getInt();
-					int32List.add(value);
-				}
-				return int32List.toArray(new Integer[0]);
-			case Int64Array:
-				ByteBuffer int64ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Long> int64List = new ArrayList<>();
-				int64ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (int64ByteBuffer.hasRemaining()) {
-					long value = int64ByteBuffer.getLong();
-					int64List.add(value);
-				}
-				return int64List.toArray(new Long[0]);
-			case UInt8Array:
-				ByteBuffer uInt8ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Short> uInt8List = new ArrayList<>();
-				uInt8ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (uInt8ByteBuffer.hasRemaining()) {
-					byte value = uInt8ByteBuffer.get();
-					uInt8List.add(value >= 0 ? (short) value : (short) (0x10000 + value));
-				}
-				return uInt8List.toArray(new Short[0]);
-			case UInt16Array:
-				ByteBuffer uInt16ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Integer> uInt16List = new ArrayList<>();
-				uInt16ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (uInt16ByteBuffer.hasRemaining()) {
-					short value = uInt16ByteBuffer.getShort();
-					uInt16List.add(Short.toUnsignedInt(value));
-				}
-				return uInt16List.toArray(new Integer[0]);
-			case UInt32Array:
-				ByteBuffer uInt32ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Long> uInt32List = new ArrayList<>();
-				uInt32ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (uInt32ByteBuffer.hasRemaining()) {
-					int value = uInt32ByteBuffer.getInt();
-					uInt32List.add(Integer.toUnsignedLong(value));
-				}
-				return uInt32List.toArray(new Long[0]);
-			case UInt64Array:
-				ByteBuffer uInt64ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<BigInteger> uInt64List = new ArrayList<>();
-				uInt64ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (uInt64ByteBuffer.hasRemaining()) {
-					long value = uInt64ByteBuffer.getLong();
-					uInt64List.add(new BigInteger(Long.toUnsignedString(value)));
-				}
-				return uInt64List.toArray(new BigInteger[0]);
-			case FloatArray:
-				ByteBuffer floatByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Float> floatList = new ArrayList<>();
-				floatByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (floatByteBuffer.hasRemaining()) {
-					float value = floatByteBuffer.getFloat();
-					floatList.add(value);
-				}
-				return floatList.toArray(new Float[0]);
-			case DoubleArray:
-				ByteBuffer doubleByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Double> doubleList = new ArrayList<>();
-				doubleByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (doubleByteBuffer.hasRemaining()) {
-					double value = doubleByteBuffer.getDouble();
-					doubleList.add(value);
-				}
-				return doubleList.toArray(new Double[0]);
-			case BooleanArray:
-				ByteBuffer booleanByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Boolean> booleanList = new ArrayList<>();
-				booleanByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				parameters.add(new Parameter(name, type, value));
+			}
 
-				// The first 4 bytes is the number of boolean bytes
-				int numberOfBooleans = booleanByteBuffer.getInt();
-				int numberOfBytes = (int) Math.ceil((double) numberOfBooleans / 8);
+			for (SparkplugBProto.Payload.Metric protoTemplateMetric : protoTemplate.getMetricsList()) {
+				Metric templateMetric = convertMetric(protoTemplateMetric, metricDataTypeMap,
+						prefix != null ? prefix + protoMetric.getName() + "/" : protoMetric.getName() + "/");
+				if (logger.isTraceEnabled()) {
+					logger.trace("Setting template parameter name: " + templateMetric.getName() + ", type: "
+							+ templateMetric.getDataType() + ", value: " + templateMetric.getValue());
+				}
+				metrics.add(templateMetric);
+			}
 
-				// Boolean[] booleanArray = new boolean[booleanBytes.length * 8];
-				for (int i = 0; i < numberOfBytes; i++) {
-					byte nextByte = booleanByteBuffer.get();
-					for (int j = 0; j < 8; j++) {
-						if (i * 8 + j < numberOfBooleans) {
-							if ((nextByte & (1 << (7 - j))) > 0) {
-								booleanList.add(true);
-							} else {
-								booleanList.add(false);
-							}
+			Template template = new TemplateBuilder().version(protoTemplate.getVersion())
+					.templateRef(protoTemplate.getTemplateRef()).definition(protoTemplate.getIsDefinition())
+					.addMetrics(metrics).addParameters(parameters).createTemplate();
+
+			if (logger.isTraceEnabled()) {
+				logger.trace("Setting template - name: " + protoMetric.getName() + ", version: " + template.getVersion()
+						+ ", ref: " + template.getTemplateRef() + ", isDef: " + template.isDefinition() + ", metrics: "
+						+ metrics.size() + ", params: " + parameters.size());
+			}
+
+			return template;
+		} else if (metricType == MetricDataType.Int8Array.toIntValue()) {
+			ByteBuffer int8ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Byte> int8List = new ArrayList<>();
+			int8ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (int8ByteBuffer.hasRemaining()) {
+				byte value = int8ByteBuffer.get();
+				int8List.add(value);
+			}
+			return int8List.toArray(new Byte[0]);
+		} else if (metricType == MetricDataType.Int16Array.toIntValue()) {
+			ByteBuffer int16ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Short> int16List = new ArrayList<>();
+			int16ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (int16ByteBuffer.hasRemaining()) {
+				short value = int16ByteBuffer.getShort();
+				int16List.add(value);
+			}
+			return int16List.toArray(new Short[0]);
+		} else if (metricType == MetricDataType.Int32Array.toIntValue()) {
+			ByteBuffer int32ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Integer> int32List = new ArrayList<>();
+			int32ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (int32ByteBuffer.hasRemaining()) {
+				int value = int32ByteBuffer.getInt();
+				int32List.add(value);
+			}
+			return int32List.toArray(new Integer[0]);
+		} else if (metricType == MetricDataType.Int64Array.toIntValue()) {
+			ByteBuffer int64ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Long> int64List = new ArrayList<>();
+			int64ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (int64ByteBuffer.hasRemaining()) {
+				long value = int64ByteBuffer.getLong();
+				int64List.add(value);
+			}
+			return int64List.toArray(new Long[0]);
+		} else if (metricType == MetricDataType.UInt8Array.toIntValue()) {
+			ByteBuffer uInt8ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Short> uInt8List = new ArrayList<>();
+			uInt8ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (uInt8ByteBuffer.hasRemaining()) {
+				byte value = uInt8ByteBuffer.get();
+				uInt8List.add(value >= 0 ? (short) value : (short) (0x10000 + value));
+			}
+			return uInt8List.toArray(new Short[0]);
+		} else if (metricType == MetricDataType.UInt16Array.toIntValue()) {
+			ByteBuffer uInt16ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Integer> uInt16List = new ArrayList<>();
+			uInt16ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (uInt16ByteBuffer.hasRemaining()) {
+				short value = uInt16ByteBuffer.getShort();
+				uInt16List.add(Short.toUnsignedInt(value));
+			}
+			return uInt16List.toArray(new Integer[0]);
+		} else if (metricType == MetricDataType.UInt32Array.toIntValue()) {
+			ByteBuffer uInt32ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Long> uInt32List = new ArrayList<>();
+			uInt32ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (uInt32ByteBuffer.hasRemaining()) {
+				int value = uInt32ByteBuffer.getInt();
+				uInt32List.add(Integer.toUnsignedLong(value));
+			}
+			return uInt32List.toArray(new Long[0]);
+		} else if (metricType == MetricDataType.UInt64Array.toIntValue()) {
+			ByteBuffer uInt64ByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<BigInteger> uInt64List = new ArrayList<>();
+			uInt64ByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (uInt64ByteBuffer.hasRemaining()) {
+				long value = uInt64ByteBuffer.getLong();
+				uInt64List.add(new BigInteger(Long.toUnsignedString(value)));
+			}
+			return uInt64List.toArray(new BigInteger[0]);
+		} else if (metricType == MetricDataType.FloatArray.toIntValue()) {
+			ByteBuffer floatByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Float> floatList = new ArrayList<>();
+			floatByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (floatByteBuffer.hasRemaining()) {
+				float value = floatByteBuffer.getFloat();
+				floatList.add(value);
+			}
+			return floatList.toArray(new Float[0]);
+		} else if (metricType == MetricDataType.DoubleArray.toIntValue()) {
+			ByteBuffer doubleByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Double> doubleList = new ArrayList<>();
+			doubleByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (doubleByteBuffer.hasRemaining()) {
+				double value = doubleByteBuffer.getDouble();
+				doubleList.add(value);
+			}
+			return doubleList.toArray(new Double[0]);
+		} else if (metricType == MetricDataType.BooleanArray.toIntValue()) {
+			ByteBuffer booleanByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Boolean> booleanList = new ArrayList<>();
+			booleanByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+			// The first 4 bytes is the number of boolean bytes
+			int numberOfBooleans = booleanByteBuffer.getInt();
+			int numberOfBytes = (int) Math.ceil((double) numberOfBooleans / 8);
+
+			// Boolean[] booleanArray = new boolean[booleanBytes.length * 8];
+			for (int i = 0; i < numberOfBytes; i++) {
+				byte nextByte = booleanByteBuffer.get();
+				for (int j = 0; j < 8; j++) {
+					if (i * 8 + j < numberOfBooleans) {
+						if ((nextByte & (1 << (7 - j))) > 0) {
+							booleanList.add(true);
+						} else {
+							booleanList.add(false);
 						}
 					}
 				}
-				return booleanList.toArray(new Boolean[0]);
-			case StringArray:
-				ByteBuffer stringByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<String> stringList = new ArrayList<>();
-				stringByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				ByteBuffer subByteBuffer = ByteBuffer.allocate(protoMetric.getBytesValue().toByteArray().length);
-				while (stringByteBuffer.hasRemaining()) {
-					byte b = stringByteBuffer.get();
-					if (b == (byte) 0) {
-						String string = new String(subByteBuffer.array(), StandardCharsets.UTF_8);
-						if (string != null && string.lastIndexOf("\0") == string.length() - 1) {
-							string = string.replace("\0", "");
-						}
-						stringList.add(string);
-						subByteBuffer = ByteBuffer.allocate(protoMetric.getBytesValue().toByteArray().length);
-					} else {
-						subByteBuffer.put(b);
+			}
+			return booleanList.toArray(new Boolean[0]);
+		} else if (metricType == MetricDataType.StringArray.toIntValue()) {
+			ByteBuffer stringByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<String> stringList = new ArrayList<>();
+			stringByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			ByteBuffer subByteBuffer = ByteBuffer.allocate(protoMetric.getBytesValue().toByteArray().length);
+			while (stringByteBuffer.hasRemaining()) {
+				byte b = stringByteBuffer.get();
+				if (b == (byte) 0) {
+					String string = new String(subByteBuffer.array(), StandardCharsets.UTF_8);
+					if (string != null && string.lastIndexOf("\0") == string.length() - 1) {
+						string = string.replace("\0", "");
 					}
+					stringList.add(string);
+					subByteBuffer = ByteBuffer.allocate(protoMetric.getBytesValue().toByteArray().length);
+				} else {
+					subByteBuffer.put(b);
 				}
-				return stringList.toArray(new String[0]);
-			case DateTimeArray:
-				ByteBuffer dateTimeByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
-				List<Date> dateTimeList = new ArrayList<>();
-				dateTimeByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				while (dateTimeByteBuffer.hasRemaining()) {
-					long value = dateTimeByteBuffer.getLong();
-					Date date = new Date(value);
-					dateTimeList.add(date);
-				}
-				return dateTimeList.toArray(new Date[0]);
-			case Unknown:
-			default:
-				throw new Exception("Failed to decode: Unknown MetricDataType " + metricType);
-
+			}
+			return stringList.toArray(new String[0]);
+		} else if (metricType == MetricDataType.DateTimeArray.toIntValue()) {
+			ByteBuffer dateTimeByteBuffer = ByteBuffer.wrap(protoMetric.getBytesValue().toByteArray());
+			List<Date> dateTimeList = new ArrayList<>();
+			dateTimeByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			while (dateTimeByteBuffer.hasRemaining()) {
+				long value = dateTimeByteBuffer.getLong();
+				Date date = new Date(value);
+				dateTimeList.add(date);
+			}
+			return dateTimeList.toArray(new Date[0]);
+		} else {
+			throw new Exception("Failed to decode: Unknown MetricDataType " + metricType);
 		}
 	}
 
@@ -507,133 +505,138 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 	private Object getParameterValue(SparkplugBProto.Payload.Template.Parameter protoParameter) throws Exception {
 		// Otherwise convert the value based on the type
 		int type = protoParameter.getType();
-		switch (MetricDataType.fromInteger(type)) {
-			case Boolean:
-				return protoParameter.getBooleanValue();
-			case DateTime:
-				return new Date(protoParameter.getLongValue());
-			case Float:
-				return protoParameter.getFloatValue();
-			case Double:
-				return protoParameter.getDoubleValue();
-			case Int8:
-				return (byte) protoParameter.getIntValue();
-			case Int16:
-			case UInt8:
-				return (short) protoParameter.getIntValue();
-			case Int32:
-			case UInt16:
-				return protoParameter.getIntValue();
-			case UInt32:
-				if (protoParameter.hasIntValue()) {
-					return Integer.toUnsignedLong(protoParameter.getIntValue());
-				} else if (protoParameter.hasLongValue()) {
-					return protoParameter.getLongValue();
-				} else {
-					logger.error("Invalid value for UInt32 datatype");
-				}
-			case Int64:
+		if (type == MetricDataType.Boolean.toIntValue()) {
+			return protoParameter.getBooleanValue();
+		} else if (type == MetricDataType.DateTime.toIntValue()) {
+			return new Date(protoParameter.getLongValue());
+		} else if (type == MetricDataType.Float.toIntValue()) {
+			return protoParameter.getFloatValue();
+		} else if (type == MetricDataType.Double.toIntValue()) {
+			return protoParameter.getDoubleValue();
+		} else if (type == MetricDataType.Int8.toIntValue()) {
+			return (byte) protoParameter.getIntValue();
+		} else if (type == MetricDataType.Int16.toIntValue()) {
+			return (short) protoParameter.getIntValue();
+		} else if (type == MetricDataType.Int32.toIntValue()) {
+			return protoParameter.getIntValue();
+		} else if (type == MetricDataType.Int64.toIntValue()) {
+			return protoParameter.getLongValue();
+		} else if (type == MetricDataType.UInt8.toIntValue()) {
+			return (short) protoParameter.getIntValue();
+		} else if (type == MetricDataType.UInt16.toIntValue()) {
+			return protoParameter.getIntValue();
+		} else if (type == MetricDataType.UInt32.toIntValue()) {
+			if (protoParameter.hasIntValue()) {
+				return Integer.toUnsignedLong(protoParameter.getIntValue());
+			} else if (protoParameter.hasLongValue()) {
 				return protoParameter.getLongValue();
-			case UInt64:
-				return new BigInteger(Long.toUnsignedString(protoParameter.getLongValue()));
-			case String:
-			case Text:
-				return protoParameter.getStringValue();
-			case Unknown:
-			default:
-				throw new Exception("Failed to decode: Unknown Parameter Type " + type);
+			} else {
+				logger.error("Invalid value for UInt32 datatype");
+				throw new Exception("Failed to decode: UInt32 Parameter Type " + type);
+			}
+		} else if (type == MetricDataType.UInt64.toIntValue()) {
+			return new BigInteger(Long.toUnsignedString(protoParameter.getLongValue()));
+		} else if (type == MetricDataType.String.toIntValue() || type == MetricDataType.Text.toIntValue()) {
+			return protoParameter.getStringValue();
+		} else {
+			throw new Exception("Failed to decode: Unknown Parameter Type " + type);
 		}
 	}
 
 	private Value<?> convertDataSetValue(int protoType, SparkplugBProto.Payload.DataSet.DataSetValue protoValue)
 			throws Exception {
-
 		DataSetDataType type = DataSetDataType.fromInteger(protoType);
-		switch (type) {
-			case Boolean:
-				if (protoValue.hasBooleanValue()) {
-					return new Value<Boolean>(type, protoValue.getBooleanValue());
-				} else {
-					return new Value<Boolean>(type, null);
-				}
-			case DateTime:
-				if (protoValue.hasLongValue()) {
-					if (protoValue.getLongValue() == -9223372036854775808L) {
-						return new Value<Date>(type, null);
-					} else {
-						return new Value<Date>(type, new Date(protoValue.getLongValue()));
-					}
-				} else {
+		if (protoType == DataSetDataType.Boolean.toIntValue()) {
+			if (protoValue.hasBooleanValue()) {
+				return new Value<Boolean>(type, protoValue.getBooleanValue());
+			} else {
+				return new Value<Boolean>(type, null);
+			}
+		} else if (protoType == DataSetDataType.DateTime.toIntValue()) {
+			if (protoValue.hasLongValue()) {
+				if (protoValue.getLongValue() == -9223372036854775808L) {
 					return new Value<Date>(type, null);
-				}
-			case Float:
-				if (protoValue.hasFloatValue()) {
-					return new Value<Float>(type, protoValue.getFloatValue());
 				} else {
-					return new Value<Float>(type, null);
+					return new Value<Date>(type, new Date(protoValue.getLongValue()));
 				}
-			case Double:
-				if (protoValue.hasDoubleValue()) {
-					return new Value<Double>(type, protoValue.getDoubleValue());
-				} else {
-					return new Value<Double>(type, null);
-				}
-			case Int8:
-				if (protoValue.hasIntValue()) {
-					return new Value<Byte>(type, (byte) protoValue.getIntValue());
-				} else {
-					return new Value<Byte>(type, null);
-				}
-			case UInt8:
-			case Int16:
-				if (protoValue.hasIntValue()) {
-					return new Value<Short>(type, (short) protoValue.getIntValue());
-				} else {
-					return new Value<Short>(type, null);
-				}
-			case UInt16:
-			case Int32:
-				if (protoValue.hasIntValue()) {
-					return new Value<Integer>(type, protoValue.getIntValue());
-				} else {
-					return new Value<Integer>(type, null);
-				}
-			case UInt32:
-				if (protoValue.hasIntValue()) {
-					return new Value<Long>(type, Integer.toUnsignedLong(protoValue.getIntValue()));
-				} else if (protoValue.hasLongValue()) {
-					return new Value<Long>(type, protoValue.getLongValue());
-				} else {
-					return new Value<Long>(type, null);
-				}
-			case Int64:
-				if (protoValue.hasLongValue()) {
-					return new Value<Long>(type, protoValue.getLongValue());
-				} else {
-					return new Value<Long>(type, null);
-				}
-			case UInt64:
-				if (protoValue.hasLongValue()) {
-					return new Value<BigInteger>(type,
-							new BigInteger(Long.toUnsignedString(protoValue.getLongValue())));
-				} else {
-					return new Value<BigInteger>(type, null);
-				}
-			case String:
-			case Text:
-				if (protoValue.hasStringValue()) {
-					if (protoValue.getStringValue().equals("null")) {
-						return new Value<String>(type, null);
-					} else {
-						return new Value<String>(type, protoValue.getStringValue());
-					}
-				} else {
+			} else {
+				return new Value<Date>(type, null);
+			}
+		} else if (protoType == DataSetDataType.Float.toIntValue()) {
+			if (protoValue.hasFloatValue()) {
+				return new Value<Float>(type, protoValue.getFloatValue());
+			} else {
+				return new Value<Float>(type, null);
+			}
+		} else if (protoType == DataSetDataType.Double.toIntValue()) {
+			if (protoValue.hasDoubleValue()) {
+				return new Value<Double>(type, protoValue.getDoubleValue());
+			} else {
+				return new Value<Double>(type, null);
+			}
+		} else if (protoType == DataSetDataType.Int8.toIntValue()) {
+			if (protoValue.hasIntValue()) {
+				return new Value<Byte>(type, (byte) protoValue.getIntValue());
+			} else {
+				return new Value<Byte>(type, null);
+			}
+		} else if (protoType == DataSetDataType.Int16.toIntValue()) {
+			if (protoValue.hasIntValue()) {
+				return new Value<Short>(type, (short) protoValue.getIntValue());
+			} else {
+				return new Value<Short>(type, null);
+			}
+		} else if (protoType == DataSetDataType.Int32.toIntValue()) {
+			if (protoValue.hasIntValue()) {
+				return new Value<Integer>(type, protoValue.getIntValue());
+			} else {
+				return new Value<Integer>(type, null);
+			}
+		} else if (protoType == DataSetDataType.Int64.toIntValue()) {
+			if (protoValue.hasLongValue()) {
+				return new Value<Long>(type, protoValue.getLongValue());
+			} else {
+				return new Value<Long>(type, null);
+			}
+		} else if (protoType == DataSetDataType.UInt8.toIntValue()) {
+			if (protoValue.hasIntValue()) {
+				return new Value<Short>(type, (short) protoValue.getIntValue());
+			} else {
+				return new Value<Short>(type, null);
+			}
+		} else if (protoType == DataSetDataType.UInt16.toIntValue()) {
+			if (protoValue.hasIntValue()) {
+				return new Value<Integer>(type, protoValue.getIntValue());
+			} else {
+				return new Value<Integer>(type, null);
+			}
+		} else if (protoType == DataSetDataType.UInt32.toIntValue()) {
+			if (protoValue.hasIntValue()) {
+				return new Value<Long>(type, Integer.toUnsignedLong(protoValue.getIntValue()));
+			} else if (protoValue.hasLongValue()) {
+				return new Value<Long>(type, protoValue.getLongValue());
+			} else {
+				return new Value<Long>(type, null);
+			}
+		} else if (protoType == DataSetDataType.UInt64.toIntValue()) {
+			if (protoValue.hasLongValue()) {
+				return new Value<BigInteger>(type, new BigInteger(Long.toUnsignedString(protoValue.getLongValue())));
+			} else {
+				return new Value<BigInteger>(type, null);
+			}
+		} else if (protoType == DataSetDataType.String.toIntValue() || protoType == DataSetDataType.Text.toIntValue()) {
+			if (protoValue.hasStringValue()) {
+				if (protoValue.getStringValue().equals("null")) {
 					return new Value<String>(type, null);
+				} else {
+					return new Value<String>(type, protoValue.getStringValue());
 				}
-			case Unknown:
-			default:
-				logger.error("Unknown DataSetDataType: " + protoType);
-				throw new Exception("Failed to decode");
+			} else {
+				return new Value<String>(type, null);
+			}
+		} else {
+			logger.error("Unknown DataSetDataType: " + protoType);
+			throw new Exception("Failed to decode");
 		}
 	}
 }

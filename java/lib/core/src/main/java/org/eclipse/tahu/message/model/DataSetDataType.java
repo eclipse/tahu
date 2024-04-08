@@ -15,39 +15,91 @@ package org.eclipse.tahu.message.model;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * A enumeration of data types of values in a {@link DataSet}
  */
-public enum DataSetDataType {
+public class DataSetDataType {
 
 	// Basic Types
-	Int8(1, Byte.class),
-	Int16(2, Short.class),
-	Int32(3, Integer.class),
-	Int64(4, Long.class),
-	UInt8(5, Short.class),
-	UInt16(6, Integer.class),
-	UInt32(7, Long.class),
-	UInt64(8, BigInteger.class),
-	Float(9, Float.class),
-	Double(10, Double.class),
-	Boolean(11, Boolean.class),
-	String(12, String.class),
-	DateTime(13, Date.class),
-	Text(14, String.class),
+	public static final DataSetDataType Int8 = new DataSetDataType("Int8", 1, Byte.class);
+	public static final DataSetDataType Int16 = new DataSetDataType("Int16", 2, Short.class);
+	public static final DataSetDataType Int32 = new DataSetDataType("Int32", 3, Integer.class);
+	public static final DataSetDataType Int64 = new DataSetDataType("Int64", 4, Long.class);
+	public static final DataSetDataType UInt8 = new DataSetDataType("UInt8", 5, Short.class);
+	public static final DataSetDataType UInt16 = new DataSetDataType("UInt16", 6, Integer.class);
+	public static final DataSetDataType UInt32 = new DataSetDataType("UInt32", 7, Long.class);
+	public static final DataSetDataType UInt64 = new DataSetDataType("UInt64", 8, BigInteger.class);
+	public static final DataSetDataType Float = new DataSetDataType("Float", 9, Float.class);
+	public static final DataSetDataType Double = new DataSetDataType("Double", 10, Double.class);
+	public static final DataSetDataType Boolean = new DataSetDataType("Boolean", 11, Boolean.class);
+	public static final DataSetDataType String = new DataSetDataType("String", 12, String.class);
+	public static final DataSetDataType DateTime = new DataSetDataType("DateTime", 13, Date.class);
+	public static final DataSetDataType Text = new DataSetDataType("Text", 14, String.class);
 
 	// Unknown
-	Unknown(0, Object.class);
+	public static final DataSetDataType Unknown = new DataSetDataType("Unknown", 0, Object.class);
 
-	private Class<?> clazz = null;
+	protected static final Map<String, DataSetDataType> types = new HashMap<>();
+	static {
+		types.put("Int8", Int8);
+		types.put("Int16", Int16);
+		types.put("Int32", Int32);
+		types.put("Int64", Int64);
+		types.put("UInt8", UInt8);
+		types.put("UInt16", UInt16);
+		types.put("UInt32", UInt32);
+		types.put("UInt64", UInt64);
+		types.put("Float", Float);
+		types.put("Double", Double);
+		types.put("Boolean", Boolean);
+		types.put("String", String);
+		types.put("DateTime", DateTime);
+		types.put("Text", Text);
+		types.put("Unknown", Unknown);
+	}
+
+	@JsonInclude
+	@JsonValue
+	private final String type;
+
+	@JsonIgnore
 	private int intValue = 0;
 
-	private DataSetDataType(int intValue, Class<?> clazz) {
+	@JsonIgnore
+	private Class<?> clazz = null;
+
+	public DataSetDataType() {
+		type = null;
+	}
+
+	public DataSetDataType(String type) {
+		this.type = type;
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @param intValue the integer value of this {@link DataSetDataType}
+	 *
+	 * @param clazz the {@link Class} type associated with this {@link DataSetDataType}
+	 */
+	protected DataSetDataType(String type, int intValue, Class<?> clazz) {
+		this.type = type;
 		this.intValue = intValue;
 		this.clazz = clazz;
+	}
+
+	public static DataSetDataType valueOf(String type) {
+		return types.get(type);
 	}
 
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
@@ -105,6 +157,10 @@ public enum DataSetDataType {
 			default:
 				return Unknown;
 		}
+	}
+
+	public String getType() {
+		return type;
 	}
 
 	/**

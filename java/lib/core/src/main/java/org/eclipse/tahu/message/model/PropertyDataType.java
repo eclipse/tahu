@@ -21,34 +21,53 @@ import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * An enumeration of data types for values of a {@link PropertySet}
  */
 public class PropertyDataType {
 
 	// Basic Types
-	public static final PropertyDataType Int8 = new PropertyDataType(1, Byte.class);
-	public static final PropertyDataType Int16 = new PropertyDataType(2, Short.class);
-	public static final PropertyDataType Int32 = new PropertyDataType(3, Integer.class);
-	public static final PropertyDataType Int64 = new PropertyDataType(4, Long.class);
-	public static final PropertyDataType UInt8 = new PropertyDataType(5, Short.class);
-	public static final PropertyDataType UInt16 = new PropertyDataType(6, Integer.class);
-	public static final PropertyDataType UInt32 = new PropertyDataType(7, Long.class);
-	public static final PropertyDataType UInt64 = new PropertyDataType(8, BigInteger.class);
-	public static final PropertyDataType Float = new PropertyDataType(9, Float.class);
-	public static final PropertyDataType Double = new PropertyDataType(10, Double.class);
-	public static final PropertyDataType Boolean = new PropertyDataType(11, Boolean.class);
-	public static final PropertyDataType String = new PropertyDataType(12, String.class);
-	public static final PropertyDataType DateTime = new PropertyDataType(13, Date.class);
-	public static final PropertyDataType Text = new PropertyDataType(14, String.class);
-	public static final PropertyDataType PropertySet = new PropertyDataType(20, PropertySet.class);
-	public static final PropertyDataType PropertySetList = new PropertyDataType(21, List.class);
-	public static final PropertyDataType Unknown = new PropertyDataType(0, Object.class);
+	public static final PropertyDataType Int8 = new PropertyDataType("Int8", 1, Byte.class);
+	public static final PropertyDataType Int16 = new PropertyDataType("Int16", 2, Short.class);
+	public static final PropertyDataType Int32 = new PropertyDataType("Int32", 3, Integer.class);
+	public static final PropertyDataType Int64 = new PropertyDataType("Int64", 4, Long.class);
+	public static final PropertyDataType UInt8 = new PropertyDataType("UInt8", 5, Short.class);
+	public static final PropertyDataType UInt16 = new PropertyDataType("UInt16", 6, Integer.class);
+	public static final PropertyDataType UInt32 = new PropertyDataType("UInt32", 7, Long.class);
+	public static final PropertyDataType UInt64 = new PropertyDataType("UInt64", 8, BigInteger.class);
+	public static final PropertyDataType Float = new PropertyDataType("Float", 9, Float.class);
+	public static final PropertyDataType Double = new PropertyDataType("Double", 10, Double.class);
+	public static final PropertyDataType Boolean = new PropertyDataType("Boolean", 11, Boolean.class);
+	public static final PropertyDataType String = new PropertyDataType("String", 12, String.class);
+	public static final PropertyDataType DateTime = new PropertyDataType("DateTime", 13, Date.class);
+	public static final PropertyDataType Text = new PropertyDataType("Text", 14, String.class);
+	public static final PropertyDataType PropertySet = new PropertyDataType("PropertySet", 20, PropertySet.class);
+	public static final PropertyDataType PropertySetList = new PropertyDataType("PropertySetList", 21, List.class);
+	public static final PropertyDataType Unknown = new PropertyDataType("Unknown", 0, Object.class);
 
 	private static final Logger logger = LoggerFactory.getLogger(PropertyDataType.class.getName());
 
-	private Class<?> clazz = null;
+	@JsonInclude
+	@JsonValue
+	private final String type;
+
+	@JsonIgnore
 	private int intValue = 0;
+
+	@JsonIgnore
+	private Class<?> clazz = null;
+
+	public PropertyDataType() {
+		type = null;
+	}
+
+	public PropertyDataType(String type) {
+		this.type = type;
+	}
 
 	/**
 	 * Constructor
@@ -57,7 +76,8 @@ public class PropertyDataType {
 	 *
 	 * @param clazz the {@link Class} type of this {@link PropertyDataType}
 	 */
-	private PropertyDataType(int intValue, Class<?> clazz) {
+	protected PropertyDataType(String type, int intValue, Class<?> clazz) {
+		this.type = type;
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}

@@ -163,34 +163,35 @@ public class DataSetDeserializer extends StdDeserializer<DataSet> {
 			logger.debug("Getting value: type={} and nodeValue={}", type, nodeValue);
 		}
 
-		switch (type) {
-			case Boolean:
-				return new Value<Boolean>(type, (boolean) nodeValue.asBoolean());
-			case DateTime:
-				return new Value<Date>(type, new Date(nodeValue.asLong()));
-			case Double:
-				return new Value<Double>(type, nodeValue.asDouble());
-			case Float:
-				return new Value<Float>(type, (float) nodeValue.asDouble());
-			case Int8:
-				return new Value<Byte>(type, (byte) nodeValue.asInt());
-			case UInt8:
-			case Int16:
-				return new Value<Short>(type, (short) nodeValue.asInt());
-			case UInt16:
-			case Int32:
-				return new Value<Integer>(type, nodeValue.asInt());
-			case UInt32:
-			case Int64:
-				return new Value<Long>(type, (long) nodeValue.asLong());
-			case Text:
-			case String:
-				return new Value<String>(type, nodeValue.asText());
-			case UInt64:
-				return new Value<BigInteger>(type, BigInteger.valueOf(nodeValue.asLong()));
-			case Unknown:
-			default:
-				return null;
+		if (type.toIntValue() == DataSetDataType.Boolean.toIntValue()) {
+			return new Value<Boolean>(type, (boolean) nodeValue.asBoolean());
+		} else if (type.toIntValue() == DataSetDataType.DateTime.toIntValue()) {
+			return new Value<Date>(type, new Date(nodeValue.asLong()));
+		} else if (type.toIntValue() == DataSetDataType.Double.toIntValue()) {
+			return new Value<Double>(type, nodeValue.asDouble());
+		} else if (type.toIntValue() == DataSetDataType.Float.toIntValue()) {
+			return new Value<Float>(type, (float) nodeValue.asDouble());
+		} else if (type.toIntValue() == DataSetDataType.Int8.toIntValue()) {
+			return new Value<Byte>(type, (byte) nodeValue.asInt());
+		} else if (type.toIntValue() == DataSetDataType.Int16.toIntValue()) {
+			return new Value<Short>(type, (short) nodeValue.asInt());
+		} else if (type.toIntValue() == DataSetDataType.Int32.toIntValue()) {
+			return new Value<Integer>(type, nodeValue.asInt());
+		} else if (type.toIntValue() == DataSetDataType.Int64.toIntValue()) {
+			return new Value<Long>(type, (long) nodeValue.asLong());
+		} else if (type.toIntValue() == DataSetDataType.UInt8.toIntValue()) {
+			return new Value<Short>(type, (short) nodeValue.asInt());
+		} else if (type.toIntValue() == DataSetDataType.UInt16.toIntValue()) {
+			return new Value<Integer>(type, nodeValue.asInt());
+		} else if (type.toIntValue() == DataSetDataType.UInt32.toIntValue()) {
+			return new Value<Long>(type, (long) nodeValue.asLong());
+		} else if (type.toIntValue() == DataSetDataType.UInt64.toIntValue()) {
+			return new Value<BigInteger>(type, BigInteger.valueOf(nodeValue.asLong()));
+		} else if (type.toIntValue() == DataSetDataType.String.toIntValue()
+				|| type.toIntValue() == DataSetDataType.Text.toIntValue()) {
+			return new Value<String>(type, nodeValue.asText());
+		} else {
+			return null;
 		}
 	}
 }

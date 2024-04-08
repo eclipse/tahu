@@ -20,58 +20,77 @@ import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * An enumeration of data types associated with the value of a {@link Metric}
  */
-public enum MetricDataType {
+public class MetricDataType {
 
 	// Basic Types
-	Int8(1, Byte.class),
-	Int16(2, Short.class),
-	Int32(3, Integer.class),
-	Int64(4, Long.class),
-	UInt8(5, Short.class),
-	UInt16(6, Integer.class),
-	UInt32(7, Long.class),
-	UInt64(8, BigInteger.class),
-	Float(9, Float.class),
-	Double(10, Double.class),
-	Boolean(11, Boolean.class),
-	String(12, String.class),
-	DateTime(13, Date.class),
-	Text(14, String.class),
+	public static final MetricDataType Int8 = new MetricDataType("Int8", 1, Byte.class);
+	public static final MetricDataType Int16 = new MetricDataType("Int16", 2, Short.class);
+	public static final MetricDataType Int32 = new MetricDataType("Int32", 3, Integer.class);
+	public static final MetricDataType Int64 = new MetricDataType("Int64", 4, Long.class);
+	public static final MetricDataType UInt8 = new MetricDataType("UInt8", 5, Short.class);
+	public static final MetricDataType UInt16 = new MetricDataType("UInt16", 6, Integer.class);
+	public static final MetricDataType UInt32 = new MetricDataType("UInt32", 7, Long.class);
+	public static final MetricDataType UInt64 = new MetricDataType("UInt64", 8, BigInteger.class);
+	public static final MetricDataType Float = new MetricDataType("Float", 9, Float.class);
+	public static final MetricDataType Double = new MetricDataType("Double", 10, Double.class);
+	public static final MetricDataType Boolean = new MetricDataType("Boolean", 11, Boolean.class);
+	public static final MetricDataType String = new MetricDataType("String", 12, String.class);
+	public static final MetricDataType DateTime = new MetricDataType("DateTime", 13, Date.class);
+	public static final MetricDataType Text = new MetricDataType("Text", 14, String.class);
 
 	// Custom Types for Metrics
-	UUID(15, String.class),
-	DataSet(16, DataSet.class),
-	Bytes(17, byte[].class),
-	File(18, File.class),
-	Template(19, Template.class),
+	public static final MetricDataType UUID = new MetricDataType("UUID", 15, String.class);
+	public static final MetricDataType DataSet = new MetricDataType("DataSet", 16, DataSet.class);
+	public static final MetricDataType Bytes = new MetricDataType("Bytes", 17, byte[].class);
+	public static final MetricDataType File = new MetricDataType("File", 18, File.class);
+	public static final MetricDataType Template = new MetricDataType("Template", 19, Template.class);
 
 	// PropertyValue Types (20 and 21) are NOT metric datatypes
 
 	// Array Types
-	Int8Array(22, Byte[].class),
-	Int16Array(23, Short[].class),
-	Int32Array(24, Integer[].class),
-	Int64Array(25, Long[].class),
-	UInt8Array(26, Short[].class),
-	UInt16Array(27, Integer[].class),
-	UInt32Array(28, Long[].class),
-	UInt64Array(29, BigInteger[].class),
-	FloatArray(30, Float[].class),
-	DoubleArray(31, Double[].class),
-	BooleanArray(32, Boolean[].class),
-	StringArray(33, String[].class),
-	DateTimeArray(34, Date[].class),
+	public static final MetricDataType Int8Array = new MetricDataType("Int8Array", 22, Byte[].class);
+	public static final MetricDataType Int16Array = new MetricDataType("Int16Array", 23, Short[].class);
+	public static final MetricDataType Int32Array = new MetricDataType("Int32Array", 24, Integer[].class);
+	public static final MetricDataType Int64Array = new MetricDataType("Int64Array", 25, Long[].class);
+	public static final MetricDataType UInt8Array = new MetricDataType("IUInt8Arraynt8", 26, Short[].class);
+	public static final MetricDataType UInt16Array = new MetricDataType("UInt16Array", 27, Integer[].class);
+	public static final MetricDataType UInt32Array = new MetricDataType("UInt32Array", 28, Long[].class);
+	public static final MetricDataType UInt64Array = new MetricDataType("UInt64Array", 29, BigInteger[].class);
+	public static final MetricDataType FloatArray = new MetricDataType("FloatArray", 30, Float[].class);
+	public static final MetricDataType DoubleArray = new MetricDataType("DoubleArray", 31, Double[].class);
+	public static final MetricDataType BooleanArray = new MetricDataType("BooleanArray", 32, Boolean[].class);
+	public static final MetricDataType StringArray = new MetricDataType("StringArray", 33, String[].class);
+	public static final MetricDataType DateTimeArray = new MetricDataType("DateTimeArray", 34, Date[].class);
 
 	// Unknown
-	Unknown(0, Object.class);
+	public static final MetricDataType Unknown = new MetricDataType("Unknown", 0, Object.class);
 
 	private static final Logger logger = LoggerFactory.getLogger(MetricDataType.class.getName());
 
-	private Class<?> clazz = null;
+	@JsonInclude
+	@JsonValue
+	private final String type;
+
+	@JsonIgnore
 	private int intValue = 0;
+
+	@JsonIgnore
+	private Class<?> clazz = null;
+
+	public MetricDataType() {
+		type = null;
+	}
+
+	public MetricDataType(String type) {
+		this.type = type;
+	}
 
 	/**
 	 * Constructor
@@ -80,7 +99,8 @@ public enum MetricDataType {
 	 *
 	 * @param clazz the {@link Class} type associated with this {@link MetricDataType}
 	 */
-	private MetricDataType(int intValue, Class<?> clazz) {
+	protected MetricDataType(String type, int intValue, Class<?> clazz) {
+		this.type = type;
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
@@ -184,6 +204,10 @@ public enum MetricDataType {
 			default:
 				return Unknown;
 		}
+	}
+
+	public String getType() {
+		return type;
 	}
 
 	/**

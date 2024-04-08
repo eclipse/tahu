@@ -248,19 +248,16 @@ public class TemplateMap extends Template {
 			this.properties = metric.getMetaData() != null
 					? new PropertySetBuilder(metric.getProperties()).createPropertySet()
 					: null;
-			switch (dataType) {
-				case DataSet:
-					this.value = metric.getValue() != null
-							? new DataSetBuilder((DataSet) metric.getValue()).createDataSet()
-							: null;
-					break;
-				case Template:
-					this.value = metric.getValue() != null
-							? new TemplateMapBuilder((TemplateMap) metric.getValue()).createTemplateMap()
-							: null;
-					break;
-				default:
-					this.value = metric.getValue();
+			if (dataType.toIntValue() == MetricDataType.DataSet.toIntValue()) {
+				this.value = metric.getValue() != null
+						? new DataSetBuilder((DataSet) metric.getValue()).createDataSet()
+						: null;
+			} else if (dataType.toIntValue() == MetricDataType.Template.toIntValue()) {
+				this.value = metric.getValue() != null
+						? new TemplateMapBuilder((TemplateMap) metric.getValue()).createTemplateMap()
+						: null;
+			} else {
+				this.value = metric.getValue();
 			}
 		}
 
