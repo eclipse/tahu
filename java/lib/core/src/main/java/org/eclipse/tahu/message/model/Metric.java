@@ -524,19 +524,17 @@ public class Metric {
 			this.properties = metric.getMetaData() != null
 					? new PropertySetBuilder(metric.getProperties()).createPropertySet()
 					: null;
-			switch (dataType) {
-				case DataSet:
-					this.value = metric.getValue() != null
-							? new DataSetBuilder((DataSet) metric.getValue()).createDataSet()
-							: null;
-					break;
-				case Template:
-					this.value = metric.getValue() != null
-							? new TemplateBuilder((Template) metric.getValue()).createTemplate()
-							: null;
-					break;
-				default:
-					this.value = metric.getValue();
+
+			if (dataType.toIntValue() == MetricDataType.DataSet.toIntValue()) {
+				this.value = metric.getValue() != null
+						? new DataSetBuilder((DataSet) metric.getValue()).createDataSet()
+						: null;
+			} else if (dataType.toIntValue() == MetricDataType.Template.toIntValue()) {
+				this.value = metric.getValue() != null
+						? new TemplateBuilder((Template) metric.getValue()).createTemplate()
+						: null;
+			} else {
+				this.value = metric.getValue();
 			}
 		}
 

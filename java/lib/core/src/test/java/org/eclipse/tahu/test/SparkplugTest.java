@@ -400,75 +400,70 @@ public class SparkplugTest {
 		}
 
 		// Test the value
-		switch (type) {
-			case Bytes:
-				compareBytes((byte[]) value, (byte[]) decodedMetric.getValue());
-				assertThat(decodedMetric.getMetaData()).isNull();
-				break;
-			case File:
-				File someFile = (File) value;
-				File decodedFile = (File) decodedMetric.getValue();
-				compareBytes(someFile.getBytes(), decodedFile.getBytes());
-				assertThat(someFile.getFileName()).isEqualTo(decodedFile.getFileName());
-				assertThat(decodedMetric.getMetaData()).isNotNull();
-				assertThat(metaData.getFileName()).isEqualTo(decodedMetric.getMetaData().getFileName());
-				assertThat(metaData.isMultiPart()).isEqualTo(decodedMetric.getMetaData().isMultiPart());
-				assertThat(metaData.getFileType()).isEqualTo(decodedMetric.getMetaData().getFileType());
-				break;
-			case DataSet:
-				// Tests for DataSets
-				DataSet dataSet = (DataSet) value;
-				DataSet decodedDataSet = (DataSet) decodedMetric.getValue();
-				List<String> columnNames = dataSet.getColumnNames();
-				List<String> decodedColumnNames = decodedDataSet.getColumnNames();
-				List<DataSetDataType> types = dataSet.getTypes();
-				List<DataSetDataType> decodedTypes = decodedDataSet.getTypes();
-				List<Row> rows = dataSet.getRows();
-				List<Row> decodedRows = decodedDataSet.getRows();
-				assertThat(dataSet.getNumOfColumns()).isEqualTo(decodedDataSet.getNumOfColumns());
-				// Test Columns
-				for (int i = 0; i < columnNames.size(); i++) {
-					assertThat(columnNames.get(i)).isEqualTo(decodedColumnNames.get(i));
+		if (type.toIntValue() == MetricDataType.Bytes.toIntValue()) {
+			compareBytes((byte[]) value, (byte[]) decodedMetric.getValue());
+			assertThat(decodedMetric.getMetaData()).isNull();
+		} else if (type.toIntValue() == MetricDataType.File.toIntValue()) {
+			File someFile = (File) value;
+			File decodedFile = (File) decodedMetric.getValue();
+			compareBytes(someFile.getBytes(), decodedFile.getBytes());
+			assertThat(someFile.getFileName()).isEqualTo(decodedFile.getFileName());
+			assertThat(decodedMetric.getMetaData()).isNotNull();
+			assertThat(metaData.getFileName()).isEqualTo(decodedMetric.getMetaData().getFileName());
+			assertThat(metaData.isMultiPart()).isEqualTo(decodedMetric.getMetaData().isMultiPart());
+			assertThat(metaData.getFileType()).isEqualTo(decodedMetric.getMetaData().getFileType());
+		} else if (type.toIntValue() == MetricDataType.DataSet.toIntValue()) {
+			// Tests for DataSets
+			DataSet dataSet = (DataSet) value;
+			DataSet decodedDataSet = (DataSet) decodedMetric.getValue();
+			List<String> columnNames = dataSet.getColumnNames();
+			List<String> decodedColumnNames = decodedDataSet.getColumnNames();
+			List<DataSetDataType> types = dataSet.getTypes();
+			List<DataSetDataType> decodedTypes = decodedDataSet.getTypes();
+			List<Row> rows = dataSet.getRows();
+			List<Row> decodedRows = decodedDataSet.getRows();
+			assertThat(dataSet.getNumOfColumns()).isEqualTo(decodedDataSet.getNumOfColumns());
+			// Test Columns
+			for (int i = 0; i < columnNames.size(); i++) {
+				assertThat(columnNames.get(i)).isEqualTo(decodedColumnNames.get(i));
+			}
+			// Test Types
+			for (int i = 0; i < types.size(); i++) {
+				assertThat(types.get(i)).isEqualTo(decodedTypes.get(i));
+			}
+			// Test Rows
+			for (int i = 0; i < rows.size(); i++) {
+				List<Value<?>> values = rows.get(i).getValues();
+				List<Value<?>> decodedValues = decodedRows.get(i).getValues();
+				assertThat(values.size()).isEqualTo(decodedValues.size());
+				for (int j = 0; j < values.size(); j++) {
+					Value<?> rowValue = values.get(j);
+					Value<?> decodedValue = decodedValues.get(j);
+					assertThat(rowValue.getType()).isEqualTo(decodedValue.getType());
+					assertThat(rowValue.getValue()).isEqualTo(decodedValue.getValue());
 				}
-				// Test Types
-				for (int i = 0; i < types.size(); i++) {
-					assertThat(types.get(i)).isEqualTo(decodedTypes.get(i));
-				}
-				// Test Rows
-				for (int i = 0; i < rows.size(); i++) {
-					List<Value<?>> values = rows.get(i).getValues();
-					List<Value<?>> decodedValues = decodedRows.get(i).getValues();
-					assertThat(values.size()).isEqualTo(decodedValues.size());
-					for (int j = 0; j < values.size(); j++) {
-						Value<?> rowValue = values.get(j);
-						Value<?> decodedValue = decodedValues.get(j);
-						assertThat(rowValue.getType()).isEqualTo(decodedValue.getType());
-						assertThat(rowValue.getValue()).isEqualTo(decodedValue.getValue());
-					}
-				}
-				break;
-			case Template:
-				// Tests for Templates
-				Template template = (Template) value;
-				Template decodedTemplate = (Template) decodedMetric.getValue();
-				List<Parameter> parameters = template.getParameters();
-				List<Parameter> decodedParameters = decodedTemplate.getParameters();
-				List<Metric> metrics = template.getMetrics();
-				List<Metric> decodedMetrics = decodedTemplate.getMetrics();
-				// Test Parameters
-				assertThat(parameters.size()).isEqualTo(decodedParameters.size());
-				for (int i = 0; i < parameters.size(); i++) {
-					assertThat(parameters.get(i)).isEqualTo(decodedParameters.get(i));
-				}
-				// Test Metrics
-				for (int i = 0; i < metrics.size(); i++) {
-					doMetricTests(metrics.get(i), decodedMetrics.get(i));
-				}
-				break;
-			default:
-				// Tests for all other types
-				assertThat(value).isEqualTo(decodedMetric.getValue());
-				assertThat(decodedMetric.getMetaData()).isNull();
+			}
+		} else if (type.toIntValue() == MetricDataType.Template.toIntValue()) {
+			// Tests for Templates
+			Template template = (Template) value;
+			Template decodedTemplate = (Template) decodedMetric.getValue();
+			List<Parameter> parameters = template.getParameters();
+			List<Parameter> decodedParameters = decodedTemplate.getParameters();
+			List<Metric> metrics = template.getMetrics();
+			List<Metric> decodedMetrics = decodedTemplate.getMetrics();
+			// Test Parameters
+			assertThat(parameters.size()).isEqualTo(decodedParameters.size());
+			for (int i = 0; i < parameters.size(); i++) {
+				assertThat(parameters.get(i)).isEqualTo(decodedParameters.get(i));
+			}
+			// Test Metrics
+			for (int i = 0; i < metrics.size(); i++) {
+				doMetricTests(metrics.get(i), decodedMetrics.get(i));
+			}
+		} else {
+			// Tests for all other types
+			assertThat(value).isEqualTo(decodedMetric.getValue());
+			assertThat(decodedMetric.getMetaData()).isNull();
 		}
 	}
 

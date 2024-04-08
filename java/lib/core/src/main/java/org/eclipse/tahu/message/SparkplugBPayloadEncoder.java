@@ -28,6 +28,7 @@ import org.eclipse.tahu.message.model.DataSetDataType;
 import org.eclipse.tahu.message.model.File;
 import org.eclipse.tahu.message.model.MetaData;
 import org.eclipse.tahu.message.model.Metric;
+import org.eclipse.tahu.message.model.MetricDataType;
 import org.eclipse.tahu.message.model.Parameter;
 import org.eclipse.tahu.message.model.ParameterDataType;
 import org.eclipse.tahu.message.model.PropertyDataType;
@@ -251,52 +252,36 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		Object value = parameter.getValue();
 		value = type == ParameterDataType.String && value == null ? "" : value;
 		if (value != null) {
-			switch (type) {
-				case Boolean:
-					builder.setBooleanValue(toBoolean(value));
-					break;
-				case DateTime:
-					builder.setLongValue(((Date) value).getTime());
-					break;
-				case Double:
-					builder.setDoubleValue((Double) value);
-					break;
-				case Float:
-					builder.setFloatValue((Float) value);
-					break;
-				case Int8:
-					builder.setIntValue((Byte) value);
-					break;
-				case Int16:
-					builder.setIntValue((Short) value);
-					break;
-				case Int32:
-					builder.setIntValue((Integer) value);
-					break;
-				case Int64:
-					builder.setLongValue((Long) value);
-					break;
-				case UInt8:
-					builder.setIntValue(Short.toUnsignedInt((Short) value));
-					break;
-				case UInt16:
-					builder.setIntValue((int) Integer.toUnsignedLong((Integer) value));
-					break;
-				case UInt32:
-					builder.setLongValue(Long.valueOf(Long.toUnsignedString(((BigInteger) value).longValue())));
-					break;
-				case UInt64:
-					builder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value));
-					break;
-				case Text:
-				case String:
-					builder.setStringValue((String) value);
-					break;
-				case Unknown:
-				default:
-					logger.error("Unknown Type: {}", type);
-					throw new Exception("Failed to encode");
-
+			if (type.toIntValue() == ParameterDataType.Boolean.toIntValue()) {
+				builder.setBooleanValue(toBoolean(value));
+			} else if (type.toIntValue() == ParameterDataType.DateTime.toIntValue()) {
+				builder.setLongValue(((Date) value).getTime());
+			} else if (type.toIntValue() == ParameterDataType.Double.toIntValue()) {
+				builder.setDoubleValue((Double) value);
+			} else if (type.toIntValue() == ParameterDataType.Float.toIntValue()) {
+				builder.setFloatValue((Float) value);
+			} else if (type.toIntValue() == ParameterDataType.Int8.toIntValue()) {
+				builder.setIntValue((Byte) value);
+			} else if (type.toIntValue() == ParameterDataType.Int16.toIntValue()) {
+				builder.setIntValue((Short) value);
+			} else if (type.toIntValue() == ParameterDataType.Int32.toIntValue()) {
+				builder.setIntValue((Integer) value);
+			} else if (type.toIntValue() == ParameterDataType.Int64.toIntValue()) {
+				builder.setLongValue((Long) value);
+			} else if (type.toIntValue() == ParameterDataType.UInt8.toIntValue()) {
+				builder.setIntValue(Short.toUnsignedInt((Short) value));
+			} else if (type.toIntValue() == ParameterDataType.UInt16.toIntValue()) {
+				builder.setIntValue((int) Integer.toUnsignedLong((Integer) value));
+			} else if (type.toIntValue() == ParameterDataType.UInt32.toIntValue()) {
+				builder.setLongValue(Long.valueOf(Long.toUnsignedString(((BigInteger) value).longValue())));
+			} else if (type.toIntValue() == ParameterDataType.UInt64.toIntValue()) {
+				builder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value));
+			} else if (type.toIntValue() == ParameterDataType.Text.toIntValue()
+					|| type.toIntValue() == ParameterDataType.String.toIntValue()) {
+				builder.setStringValue((String) value);
+			} else {
+				logger.error("Unknown Type: {}", type);
+				throw new Exception("Failed to encode");
 			}
 		}
 		return builder;
@@ -313,453 +298,416 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		if (metric.getValue() == null) {
 			metricBuilder.setIsNull(true);
 		} else {
-			switch (metric.getDataType()) {
-				case Boolean:
-					metricBuilder.setBooleanValue(toBoolean(metric.getValue()));
-					break;
-				case DateTime:
-					metricBuilder.setLongValue(((Date) metric.getValue()).getTime());
-					break;
-				case File:
-					metricBuilder.setBytesValue(ByteString.copyFrom(((File) metric.getValue()).getBytes()));
-					SparkplugBProto.Payload.MetaData.Builder metaDataBuilder =
-							SparkplugBProto.Payload.MetaData.newBuilder();
-					metaDataBuilder.setFileName(((File) metric.getValue()).getFileName());
-					metricBuilder.setMetadata(metaDataBuilder);
-					break;
-				case Float:
-					metricBuilder.setFloatValue((Float) metric.getValue());
-					break;
-				case Double:
-					metricBuilder.setDoubleValue((Double) metric.getValue());
-					break;
-				case Int8:
-					metricBuilder.setIntValue((Byte) metric.getValue());
-					break;
-				case Int16:
-					metricBuilder.setIntValue((Short) metric.getValue());
-					break;
-				case Int32:
-					metricBuilder.setIntValue((Integer) metric.getValue());
-					break;
-				case Int64:
-					metricBuilder.setLongValue((Long) metric.getValue());
-					break;
-				case UInt8:
-					metricBuilder.setIntValue(Short.toUnsignedInt((Short) metric.getValue()));
-					break;
-				case UInt16:
-					metricBuilder.setIntValue((int) Integer.toUnsignedLong((Integer) metric.getValue()));
-					break;
-				case UInt32:
-					metricBuilder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) metric.getValue())));
-					break;
-				case UInt64:
-					metricBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) metric.getValue()));
-					break;
-				case String:
-				case Text:
-				case UUID:
-					metricBuilder.setStringValue((String) metric.getValue());
-					break;
-				case Bytes:
-					metricBuilder.setBytesValue(ByteString.copyFrom((byte[]) metric.getValue()));
-					break;
-				case DataSet:
-					DataSet dataSet = (DataSet) metric.getValue();
-					SparkplugBProto.Payload.DataSet.Builder dataSetBuilder =
-							SparkplugBProto.Payload.DataSet.newBuilder();
+			if (metric.getDataType().toIntValue() == MetricDataType.Boolean.toIntValue()) {
+				metricBuilder.setBooleanValue(toBoolean(metric.getValue()));
+			} else if (metric.getDataType().toIntValue() == MetricDataType.DateTime.toIntValue()) {
+				metricBuilder.setLongValue(((Date) metric.getValue()).getTime());
+			} else if (metric.getDataType().toIntValue() == MetricDataType.File.toIntValue()) {
+				metricBuilder.setBytesValue(ByteString.copyFrom(((File) metric.getValue()).getBytes()));
+				SparkplugBProto.Payload.MetaData.Builder metaDataBuilder =
+						SparkplugBProto.Payload.MetaData.newBuilder();
+				metaDataBuilder.setFileName(((File) metric.getValue()).getFileName());
+				metricBuilder.setMetadata(metaDataBuilder);
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Float.toIntValue()) {
+				metricBuilder.setFloatValue((Float) metric.getValue());
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Double.toIntValue()) {
+				metricBuilder.setDoubleValue((Double) metric.getValue());
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Int8.toIntValue()) {
+				metricBuilder.setIntValue((Byte) metric.getValue());
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Int16.toIntValue()) {
+				metricBuilder.setIntValue((Short) metric.getValue());
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Int32.toIntValue()) {
+				metricBuilder.setIntValue((Integer) metric.getValue());
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Int64.toIntValue()) {
+				metricBuilder.setLongValue((Long) metric.getValue());
+			} else if (metric.getDataType().toIntValue() == MetricDataType.UInt8.toIntValue()) {
+				metricBuilder.setIntValue(Short.toUnsignedInt((Short) metric.getValue()));
+			} else if (metric.getDataType().toIntValue() == MetricDataType.UInt16.toIntValue()) {
+				metricBuilder.setIntValue((int) Integer.toUnsignedLong((Integer) metric.getValue()));
+			} else if (metric.getDataType().toIntValue() == MetricDataType.UInt32.toIntValue()) {
+				metricBuilder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) metric.getValue())));
+			} else if (metric.getDataType().toIntValue() == MetricDataType.UInt64.toIntValue()) {
+				metricBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) metric.getValue()));
+			} else if (metric.getDataType().toIntValue() == MetricDataType.String.toIntValue()
+					|| metric.getDataType().toIntValue() == MetricDataType.Text.toIntValue()
+					|| metric.getDataType().toIntValue() == MetricDataType.UUID.toIntValue()) {
+				metricBuilder.setStringValue((String) metric.getValue());
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Bytes.toIntValue()) {
+				metricBuilder.setBytesValue(ByteString.copyFrom((byte[]) metric.getValue()));
+			} else if (metric.getDataType().toIntValue() == MetricDataType.DataSet.toIntValue()) {
+				DataSet dataSet = (DataSet) metric.getValue();
+				SparkplugBProto.Payload.DataSet.Builder dataSetBuilder = SparkplugBProto.Payload.DataSet.newBuilder();
 
-					dataSetBuilder.setNumOfColumns(dataSet.getNumOfColumns());
+				dataSetBuilder.setNumOfColumns(dataSet.getNumOfColumns());
 
-					// Column names
-					List<String> columnNames = dataSet.getColumnNames();
-					if (columnNames != null && !columnNames.isEmpty()) {
-						for (String name : columnNames) {
-							// Add the column name
-							dataSetBuilder.addColumns(name);
-						}
+				// Column names
+				List<String> columnNames = dataSet.getColumnNames();
+				if (columnNames != null && !columnNames.isEmpty()) {
+					for (String name : columnNames) {
+						// Add the column name
+						dataSetBuilder.addColumns(name);
 					}
+				}
 
-					// Column types
-					List<DataSetDataType> columnTypes = dataSet.getTypes();
-					if (columnTypes != null && !columnTypes.isEmpty()) {
-						for (DataSetDataType type : columnTypes) {
-							// Add the column type
-							dataSetBuilder.addTypes(type.toIntValue());
-						}
+				// Column types
+				List<DataSetDataType> columnTypes = dataSet.getTypes();
+				if (columnTypes != null && !columnTypes.isEmpty()) {
+					for (DataSetDataType type : columnTypes) {
+						// Add the column type
+						dataSetBuilder.addTypes(type.toIntValue());
 					}
+				}
 
-					// Dataset rows
-					List<Row> rows = dataSet.getRows();
-					if (rows != null && !rows.isEmpty()) {
-						for (Row row : rows) {
-							SparkplugBProto.Payload.DataSet.Row.Builder protoRowBuilder =
-									SparkplugBProto.Payload.DataSet.Row.newBuilder();
-							List<Value<?>> values = row.getValues();
-							if (values != null && !values.isEmpty()) {
-								for (Value<?> value : values) {
-									// Add the converted element
-									protoRowBuilder.addElements(convertDataSetValue(value));
-								}
-
-								dataSetBuilder.addRows(protoRowBuilder);
+				// Dataset rows
+				List<Row> rows = dataSet.getRows();
+				if (rows != null && !rows.isEmpty()) {
+					for (Row row : rows) {
+						SparkplugBProto.Payload.DataSet.Row.Builder protoRowBuilder =
+								SparkplugBProto.Payload.DataSet.Row.newBuilder();
+						List<Value<?>> values = row.getValues();
+						if (values != null && !values.isEmpty()) {
+							for (Value<?> value : values) {
+								// Add the converted element
+								protoRowBuilder.addElements(convertDataSetValue(value));
 							}
-						}
-					}
 
-					// Finally add the dataset
-					metricBuilder.setDatasetValue(dataSetBuilder);
-					break;
-				case Template:
-					Template template = (Template) metric.getValue();
-					SparkplugBProto.Payload.Template.Builder templateBuilder =
-							SparkplugBProto.Payload.Template.newBuilder();
+							dataSetBuilder.addRows(protoRowBuilder);
+						}
+					}
+				}
 
-					// Set isDefinition
-					templateBuilder.setIsDefinition(template.isDefinition());
+				// Finally add the dataset
+				metricBuilder.setDatasetValue(dataSetBuilder);
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Template.toIntValue()) {
+				Template template = (Template) metric.getValue();
+				SparkplugBProto.Payload.Template.Builder templateBuilder =
+						SparkplugBProto.Payload.Template.newBuilder();
 
-					// Set Version
-					if (template.getVersion() != null) {
-						templateBuilder.setVersion(template.getVersion());
-					}
+				// Set isDefinition
+				templateBuilder.setIsDefinition(template.isDefinition());
 
-					// Set Template Reference
-					if (template.getTemplateRef() != null) {
-						templateBuilder.setTemplateRef(template.getTemplateRef());
-					}
+				// Set Version
+				if (template.getVersion() != null) {
+					templateBuilder.setVersion(template.getVersion());
+				}
 
-					// Set the template metrics
-					if (template.getMetrics() != null) {
-						for (Metric templateMetric : template.getMetrics()) {
-							templateBuilder.addMetrics(convertMetric(templateMetric, stripDataTypes));
-						}
-					}
+				// Set Template Reference
+				if (template.getTemplateRef() != null) {
+					templateBuilder.setTemplateRef(template.getTemplateRef());
+				}
 
-					// Set the template parameters
-					if (template.getParameters() != null) {
-						for (Parameter parameter : template.getParameters()) {
-							templateBuilder.addParameters(convertParameter(parameter));
-						}
+				// Set the template metrics
+				if (template.getMetrics() != null) {
+					for (Metric templateMetric : template.getMetrics()) {
+						templateBuilder.addMetrics(convertMetric(templateMetric, stripDataTypes));
 					}
+				}
 
-					// Add the template to the metric
-					metricBuilder.setTemplateValue(templateBuilder);
-					break;
-				case Int8Array:
-					Byte[] int8ArrayValue = (Byte[]) metric.getValue();
-					ByteBuffer int8ByteBuffer =
-							ByteBuffer.allocate(int8ArrayValue.length).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullInt8ArrayElements = false;
-					for (Byte value : int8ArrayValue) {
-						if (value != null) {
-							int8ByteBuffer.put(value);
-						} else {
-							hasNullInt8ArrayElements = true;
-							int8ByteBuffer.put((byte) 0);
-						}
+				// Set the template parameters
+				if (template.getParameters() != null) {
+					for (Parameter parameter : template.getParameters()) {
+						templateBuilder.addParameters(convertParameter(parameter));
 					}
-					if (hasNullInt8ArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} Int8Array. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (int8ByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(int8ByteBuffer.array()));
-					}
-					break;
-				case Int16Array:
-					Short[] int16ArrayValue = (Short[]) metric.getValue();
-					ByteBuffer int16ByteBuffer =
-							ByteBuffer.allocate(int16ArrayValue.length * 2).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullInt16ArrayElements = false;
-					for (Short value : int16ArrayValue) {
-						if (value != null) {
-							int16ByteBuffer.putShort(value);
-						} else {
-							hasNullInt16ArrayElements = true;
-							int16ByteBuffer.putShort((short) 0);
-						}
-					}
-					if (hasNullInt16ArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} Int16Array. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (int16ByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(int16ByteBuffer.array()));
-					}
-					break;
-				case Int32Array:
-					Integer[] int32ArrayValue = (Integer[]) metric.getValue();
-					ByteBuffer int32ByteBuffer =
-							ByteBuffer.allocate(int32ArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullInt32ArrayElements = false;
-					for (Integer value : int32ArrayValue) {
-						if (value != null) {
-							int32ByteBuffer.putInt(value);
-						} else {
-							hasNullInt32ArrayElements = true;
-							int32ByteBuffer.putInt(0);
-						}
-					}
-					if (hasNullInt32ArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} Int32Array. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (int32ByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(int32ByteBuffer.array()));
-					}
-					break;
-				case Int64Array:
-					Long[] int64ArrayValue = (Long[]) metric.getValue();
-					ByteBuffer int64ByteBuffer =
-							ByteBuffer.allocate(int64ArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullInt64ArrayElements = false;
-					for (Long value : int64ArrayValue) {
-						if (value != null) {
-							int64ByteBuffer.putLong(value);
-						} else {
-							hasNullInt64ArrayElements = true;
-							int64ByteBuffer.putLong(0L);
-						}
-					}
-					if (hasNullInt64ArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} Int64Array. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (int64ByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(int64ByteBuffer.array()));
-					}
-					break;
-				case UInt8Array:
-					Short[] uInt8ArrayValue = (Short[]) metric.getValue();
-					ByteBuffer uInt8ByteBuffer =
-							ByteBuffer.allocate(uInt8ArrayValue.length).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullUnt8ArrayElements = false;
-					for (Short value : uInt8ArrayValue) {
-						if (value != null) {
-							uInt8ByteBuffer.put((byte) (value & 0xffff));
-						} else {
-							hasNullUnt8ArrayElements = true;
-							uInt8ByteBuffer.put((byte) 0);
-						}
-					}
-					if (hasNullUnt8ArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} UInt8Array. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (uInt8ByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(uInt8ByteBuffer.array()));
-					}
-					break;
-				case UInt16Array:
-					Integer[] uInt16ArrayValue = (Integer[]) metric.getValue();
-					ByteBuffer uInt16ByteBuffer =
-							ByteBuffer.allocate(uInt16ArrayValue.length * 2).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullUnt16ArrayElements = false;
-					for (Integer value : uInt16ArrayValue) {
-						if (value != null) {
-							uInt16ByteBuffer.putShort((short) (value & 0xffffffff));
-						} else {
-							hasNullUnt16ArrayElements = true;
-							uInt16ByteBuffer.putShort((short) 0);
-						}
-					}
-					if (hasNullUnt16ArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} UInt16Array. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (uInt16ByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(uInt16ByteBuffer.array()));
-					}
-					break;
-				case UInt32Array:
-					Long[] uInt32ArrayValue = (Long[]) metric.getValue();
-					ByteBuffer uInt32ByteBuffer =
-							ByteBuffer.allocate(uInt32ArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullUnt32ArrayElements = false;
-					for (Long value : uInt32ArrayValue) {
-						if (value != null) {
-							uInt32ByteBuffer.putInt((int) (value & 0xffffffffffffffffL));
-						} else {
-							hasNullUnt32ArrayElements = true;
-							uInt32ByteBuffer.putInt(0);
-						}
-					}
-					if (hasNullUnt32ArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} UInt32Array. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (uInt32ByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(uInt32ByteBuffer.array()));
-					}
-					break;
-				case UInt64Array:
-					BigInteger[] uInt64ArrayValue = (BigInteger[]) metric.getValue();
-					ByteBuffer uInt64ByteBuffer =
-							ByteBuffer.allocate(uInt64ArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullUnt64ArrayElements = false;
-					for (BigInteger value : uInt64ArrayValue) {
-						if (value != null) {
-							uInt64ByteBuffer.putLong(bigIntegerToUnsignedLong(value));
-						} else {
-							hasNullUnt64ArrayElements = true;
-							uInt64ByteBuffer.putLong(0L);
-						}
-					}
-					if (hasNullUnt64ArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} UInt64Array. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (uInt64ByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(uInt64ByteBuffer.array()));
-					}
-					break;
-				case FloatArray:
-					Float[] floatArrayValue = (Float[]) metric.getValue();
-					ByteBuffer floatByteBuffer =
-							ByteBuffer.allocate(floatArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullFloatArrayElements = false;
-					for (Float value : floatArrayValue) {
-						if (value != null) {
-							floatByteBuffer.putFloat(value);
-						} else {
-							hasNullFloatArrayElements = true;
-							floatByteBuffer.putFloat(0);
-						}
-					}
-					if (hasNullFloatArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} FloatArray. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (floatByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(floatByteBuffer.array()));
-					}
-					break;
-				case DoubleArray:
-					Double[] doubleArrayValue = (Double[]) metric.getValue();
-					ByteBuffer doubleByteBuffer =
-							ByteBuffer.allocate(doubleArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullDoubleArrayElements = false;
-					for (Double value : doubleArrayValue) {
-						if (value != null) {
-							doubleByteBuffer.putDouble(value);
-						} else {
-							hasNullDoubleArrayElements = true;
-							doubleByteBuffer.putDouble(0);
-						}
-					}
-					if (hasNullDoubleArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} DoubleArray. All such elements will be set to 0.",
-								metric.getName());
-					}
-					if (doubleByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(doubleByteBuffer.array()));
-					}
-					break;
-				case BooleanArray:
-					Boolean[] booleanArrayValue = (Boolean[]) metric.getValue();
-					int numberOfBytes = (int) Math.ceil((double) booleanArrayValue.length / 8);
-					ByteBuffer booleanByteBuffer =
-							ByteBuffer.allocate(4 + numberOfBytes).order(ByteOrder.LITTLE_ENDIAN);
+				}
 
-					// The first 4 bytes is the number of booleans in the array
-					booleanByteBuffer.putInt(booleanArrayValue.length);
-
-					// Get the remaining bytes
-					boolean hasNullBooleanArrayElements = false;
-					for (int i = 0; i < numberOfBytes; i++) {
-						byte nextByte = 0;
-						for (int bit = 0; bit < 8; bit++) {
-							int index = i * 8 + bit;
-							if (index < booleanArrayValue.length) {
-								Boolean value = booleanArrayValue[index];
-								if (value == null) {
-									hasNullBooleanArrayElements = true;
-									value = Boolean.valueOf(false);
-								}
-								if (value.booleanValue()) {
-									nextByte |= (128 >> bit);
-								}
-							}
-						}
-						booleanByteBuffer.put(nextByte);
+				// Add the template to the metric
+				metricBuilder.setTemplateValue(templateBuilder);
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Int8Array.toIntValue()) {
+				Byte[] int8ArrayValue = (Byte[]) metric.getValue();
+				ByteBuffer int8ByteBuffer = ByteBuffer.allocate(int8ArrayValue.length).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullInt8ArrayElements = false;
+				for (Byte value : int8ArrayValue) {
+					if (value != null) {
+						int8ByteBuffer.put(value);
+					} else {
+						hasNullInt8ArrayElements = true;
+						int8ByteBuffer.put((byte) 0);
 					}
-					if (hasNullBooleanArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} BooleanArray. All such elements will be set to 'false'.",
-								metric.getName());
-					}
-					metricBuilder.setBytesValue(ByteString.copyFrom(booleanByteBuffer.array()));
-					break;
-				case StringArray:
-					String[] stringArrayValue = (String[]) metric.getValue();
-
-					int size = 0;
-					List<byte[]> bytesArrays = new ArrayList<>();
-					boolean hasNullStringArrayElements = false;
-					for (String string : stringArrayValue) {
-						byte[] stringBytes = null;
-						if (string != null) {
-							stringBytes = string.getBytes(StandardCharsets.UTF_8);
-						} else {
-							hasNullStringArrayElements = true;
-							stringBytes = new byte[0];
-						}
-						size = size + stringBytes.length + 1;
-						bytesArrays.add(stringBytes);
-					}
-					if (hasNullStringArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} StringArray. All such elements will be set to an empty string.",
-								metric.getName());
-					}
-					ByteBuffer stringByteBuffer = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
-					for (byte[] bytesArray : bytesArrays) {
-						stringByteBuffer.put(bytesArray);
-						stringByteBuffer.put((byte) 0);
-					}
-					if (stringByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(stringByteBuffer.array()));
-					}
-					break;
-				case DateTimeArray:
-					Date[] dateTimeArrayValue = (Date[]) metric.getValue();
-					ByteBuffer dateTimeByteBuffer =
-							ByteBuffer.allocate(dateTimeArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
-					boolean hasNullDateTimeArrayElements = false;
-					for (Date value : dateTimeArrayValue) {
-						if (value != null) {
-							dateTimeByteBuffer.putLong(value.getTime());
-						} else {
-							hasNullDateTimeArrayElements = true;
-							dateTimeByteBuffer.putLong(new Date(0L).getTime());
-						}
-					}
-					if (hasNullDateTimeArrayElements) {
-						logger.warn(
-								"SparkplugB doesn't support 'null' elements in the {} DateTimeArray. All such elements will be set to start of epoch.",
-								metric.getName());
-					}
-					if (dateTimeByteBuffer.hasArray()) {
-						metricBuilder.setBytesValue(ByteString.copyFrom(dateTimeByteBuffer.array()));
-					}
-					break;
-				case Unknown:
-				default:
-					logger.error("Unsupported MetricDataType: {} for the {} metric", metric.getDataType(),
+				}
+				if (hasNullInt8ArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} Int8Array. All such elements will be set to 0.",
 							metric.getName());
-					throw new Exception("Failed to encode");
+				}
+				if (int8ByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(int8ByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Int16Array.toIntValue()) {
+				Short[] int16ArrayValue = (Short[]) metric.getValue();
+				ByteBuffer int16ByteBuffer =
+						ByteBuffer.allocate(int16ArrayValue.length * 2).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullInt16ArrayElements = false;
+				for (Short value : int16ArrayValue) {
+					if (value != null) {
+						int16ByteBuffer.putShort(value);
+					} else {
+						hasNullInt16ArrayElements = true;
+						int16ByteBuffer.putShort((short) 0);
+					}
+				}
+				if (hasNullInt16ArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} Int16Array. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (int16ByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(int16ByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Int32Array.toIntValue()) {
+				Integer[] int32ArrayValue = (Integer[]) metric.getValue();
+				ByteBuffer int32ByteBuffer =
+						ByteBuffer.allocate(int32ArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullInt32ArrayElements = false;
+				for (Integer value : int32ArrayValue) {
+					if (value != null) {
+						int32ByteBuffer.putInt(value);
+					} else {
+						hasNullInt32ArrayElements = true;
+						int32ByteBuffer.putInt(0);
+					}
+				}
+				if (hasNullInt32ArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} Int32Array. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (int32ByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(int32ByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.Int64Array.toIntValue()) {
+				Long[] int64ArrayValue = (Long[]) metric.getValue();
+				ByteBuffer int64ByteBuffer =
+						ByteBuffer.allocate(int64ArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullInt64ArrayElements = false;
+				for (Long value : int64ArrayValue) {
+					if (value != null) {
+						int64ByteBuffer.putLong(value);
+					} else {
+						hasNullInt64ArrayElements = true;
+						int64ByteBuffer.putLong(0L);
+					}
+				}
+				if (hasNullInt64ArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} Int64Array. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (int64ByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(int64ByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.UInt8Array.toIntValue()) {
+				Short[] uInt8ArrayValue = (Short[]) metric.getValue();
+				ByteBuffer uInt8ByteBuffer = ByteBuffer.allocate(uInt8ArrayValue.length).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullUnt8ArrayElements = false;
+				for (Short value : uInt8ArrayValue) {
+					if (value != null) {
+						uInt8ByteBuffer.put((byte) (value & 0xffff));
+					} else {
+						hasNullUnt8ArrayElements = true;
+						uInt8ByteBuffer.put((byte) 0);
+					}
+				}
+				if (hasNullUnt8ArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} UInt8Array. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (uInt8ByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(uInt8ByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.UInt16Array.toIntValue()) {
+				Integer[] uInt16ArrayValue = (Integer[]) metric.getValue();
+				ByteBuffer uInt16ByteBuffer =
+						ByteBuffer.allocate(uInt16ArrayValue.length * 2).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullUnt16ArrayElements = false;
+				for (Integer value : uInt16ArrayValue) {
+					if (value != null) {
+						uInt16ByteBuffer.putShort((short) (value & 0xffffffff));
+					} else {
+						hasNullUnt16ArrayElements = true;
+						uInt16ByteBuffer.putShort((short) 0);
+					}
+				}
+				if (hasNullUnt16ArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} UInt16Array. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (uInt16ByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(uInt16ByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.UInt32Array.toIntValue()) {
+				Long[] uInt32ArrayValue = (Long[]) metric.getValue();
+				ByteBuffer uInt32ByteBuffer =
+						ByteBuffer.allocate(uInt32ArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullUnt32ArrayElements = false;
+				for (Long value : uInt32ArrayValue) {
+					if (value != null) {
+						uInt32ByteBuffer.putInt((int) (value & 0xffffffffffffffffL));
+					} else {
+						hasNullUnt32ArrayElements = true;
+						uInt32ByteBuffer.putInt(0);
+					}
+				}
+				if (hasNullUnt32ArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} UInt32Array. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (uInt32ByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(uInt32ByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.UInt64Array.toIntValue()) {
+				BigInteger[] uInt64ArrayValue = (BigInteger[]) metric.getValue();
+				ByteBuffer uInt64ByteBuffer =
+						ByteBuffer.allocate(uInt64ArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullUnt64ArrayElements = false;
+				for (BigInteger value : uInt64ArrayValue) {
+					if (value != null) {
+						uInt64ByteBuffer.putLong(bigIntegerToUnsignedLong(value));
+					} else {
+						hasNullUnt64ArrayElements = true;
+						uInt64ByteBuffer.putLong(0L);
+					}
+				}
+				if (hasNullUnt64ArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} UInt64Array. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (uInt64ByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(uInt64ByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.FloatArray.toIntValue()) {
+				Float[] floatArrayValue = (Float[]) metric.getValue();
+				ByteBuffer floatByteBuffer =
+						ByteBuffer.allocate(floatArrayValue.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullFloatArrayElements = false;
+				for (Float value : floatArrayValue) {
+					if (value != null) {
+						floatByteBuffer.putFloat(value);
+					} else {
+						hasNullFloatArrayElements = true;
+						floatByteBuffer.putFloat(0);
+					}
+				}
+				if (hasNullFloatArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} FloatArray. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (floatByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(floatByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.DoubleArray.toIntValue()) {
+				Double[] doubleArrayValue = (Double[]) metric.getValue();
+				ByteBuffer doubleByteBuffer =
+						ByteBuffer.allocate(doubleArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullDoubleArrayElements = false;
+				for (Double value : doubleArrayValue) {
+					if (value != null) {
+						doubleByteBuffer.putDouble(value);
+					} else {
+						hasNullDoubleArrayElements = true;
+						doubleByteBuffer.putDouble(0);
+					}
+				}
+				if (hasNullDoubleArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} DoubleArray. All such elements will be set to 0.",
+							metric.getName());
+				}
+				if (doubleByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(doubleByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.BooleanArray.toIntValue()) {
+				Boolean[] booleanArrayValue = (Boolean[]) metric.getValue();
+				int numberOfBytes = (int) Math.ceil((double) booleanArrayValue.length / 8);
+				ByteBuffer booleanByteBuffer = ByteBuffer.allocate(4 + numberOfBytes).order(ByteOrder.LITTLE_ENDIAN);
 
+				// The first 4 bytes is the number of booleans in the array
+				booleanByteBuffer.putInt(booleanArrayValue.length);
+
+				// Get the remaining bytes
+				boolean hasNullBooleanArrayElements = false;
+				for (int i = 0; i < numberOfBytes; i++) {
+					byte nextByte = 0;
+					for (int bit = 0; bit < 8; bit++) {
+						int index = i * 8 + bit;
+						if (index < booleanArrayValue.length) {
+							Boolean value = booleanArrayValue[index];
+							if (value == null) {
+								hasNullBooleanArrayElements = true;
+								value = Boolean.valueOf(false);
+							}
+							if (value.booleanValue()) {
+								nextByte |= (128 >> bit);
+							}
+						}
+					}
+					booleanByteBuffer.put(nextByte);
+				}
+				if (hasNullBooleanArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} BooleanArray. All such elements will be set to 'false'.",
+							metric.getName());
+				}
+				metricBuilder.setBytesValue(ByteString.copyFrom(booleanByteBuffer.array()));
+			} else if (metric.getDataType().toIntValue() == MetricDataType.StringArray.toIntValue()) {
+				String[] stringArrayValue = (String[]) metric.getValue();
+
+				int size = 0;
+				List<byte[]> bytesArrays = new ArrayList<>();
+				boolean hasNullStringArrayElements = false;
+				for (String string : stringArrayValue) {
+					byte[] stringBytes = null;
+					if (string != null) {
+						stringBytes = string.getBytes(StandardCharsets.UTF_8);
+					} else {
+						hasNullStringArrayElements = true;
+						stringBytes = new byte[0];
+					}
+					size = size + stringBytes.length + 1;
+					bytesArrays.add(stringBytes);
+				}
+				if (hasNullStringArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} StringArray. All such elements will be set to an empty string.",
+							metric.getName());
+				}
+				ByteBuffer stringByteBuffer = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
+				for (byte[] bytesArray : bytesArrays) {
+					stringByteBuffer.put(bytesArray);
+					stringByteBuffer.put((byte) 0);
+				}
+				if (stringByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(stringByteBuffer.array()));
+				}
+			} else if (metric.getDataType().toIntValue() == MetricDataType.DateTimeArray.toIntValue()) {
+				Date[] dateTimeArrayValue = (Date[]) metric.getValue();
+				ByteBuffer dateTimeByteBuffer =
+						ByteBuffer.allocate(dateTimeArrayValue.length * 8).order(ByteOrder.LITTLE_ENDIAN);
+				boolean hasNullDateTimeArrayElements = false;
+				for (Date value : dateTimeArrayValue) {
+					if (value != null) {
+						dateTimeByteBuffer.putLong(value.getTime());
+					} else {
+						hasNullDateTimeArrayElements = true;
+						dateTimeByteBuffer.putLong(new Date(0L).getTime());
+					}
+				}
+				if (hasNullDateTimeArrayElements) {
+					logger.warn(
+							"SparkplugB doesn't support 'null' elements in the {} DateTimeArray. All such elements will be set to start of epoch.",
+							metric.getName());
+				}
+				if (dateTimeByteBuffer.hasArray()) {
+					metricBuilder.setBytesValue(ByteString.copyFrom(dateTimeByteBuffer.array()));
+				}
+			} else {
+				logger.error("Unsupported MetricDataType: {} for the {} metric", metric.getDataType(),
+						metric.getName());
+				throw new Exception("Failed to encode");
 			}
 		}
 		return metricBuilder;
@@ -809,89 +757,75 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		// Set the value
 		DataSetDataType type = value.getType();
 
-		switch (type) {
-			case Int8:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setIntValue((Byte) value.getValue());
-				break;
-			case Int16:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setIntValue((Short) value.getValue());
-				break;
-			case Int32:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setIntValue((Integer) value.getValue());
-				break;
-			case Int64:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setLongValue((Long) value.getValue());
-				break;
-			case UInt8:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setIntValue(Short.toUnsignedInt((Short) value.getValue()));
-				break;
-			case UInt16:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setIntValue((int) Integer.toUnsignedLong((Integer) value.getValue()));
-				break;
-			case UInt32:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) value.getValue())));
-				break;
-			case UInt64:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value.getValue()));
-				break;
-			case Float:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setFloatValue((Float) value.getValue());
-				break;
-			case Double:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setDoubleValue((Double) value.getValue());
-				break;
-			case String:
-			case Text:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setStringValue((String) value.getValue());
-				break;
-			case Boolean:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setBooleanValue(toBoolean(value.getValue()));
-				break;
-			case DateTime:
-				if (value == null || value.getValue() == null) {
-					return protoValueBuilder;
-				}
-				protoValueBuilder.setLongValue(((Date) value.getValue()).getTime());
-				break;
-			default:
-				logger.error("Unknown DataSetDataType DataType: " + value.getType());
-				throw new Exception("Failed to convert value " + value.getType());
+		if (type.toIntValue() == DataSetDataType.Int8.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setIntValue((Byte) value.getValue());
+		} else if (type.toIntValue() == DataSetDataType.Int16.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setIntValue((Short) value.getValue());
+		} else if (type.toIntValue() == DataSetDataType.Int32.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setIntValue((Integer) value.getValue());
+		} else if (type.toIntValue() == DataSetDataType.Int64.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setLongValue((Long) value.getValue());
+		} else if (type.toIntValue() == DataSetDataType.UInt8.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setIntValue(Short.toUnsignedInt((Short) value.getValue()));
+		} else if (type.toIntValue() == DataSetDataType.UInt16.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setIntValue((int) Integer.toUnsignedLong((Integer) value.getValue()));
+		} else if (type.toIntValue() == DataSetDataType.UInt32.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) value.getValue())));
+		} else if (type.toIntValue() == DataSetDataType.UInt64.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value.getValue()));
+		} else if (type.toIntValue() == DataSetDataType.Float.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setFloatValue((Float) value.getValue());
+		} else if (type.toIntValue() == DataSetDataType.Double.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setDoubleValue((Double) value.getValue());
+		} else if (type.toIntValue() == DataSetDataType.String.toIntValue()
+				|| type.toIntValue() == DataSetDataType.Text.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setStringValue((String) value.getValue());
+		} else if (type.toIntValue() == DataSetDataType.Boolean.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setBooleanValue(toBoolean(value.getValue()));
+		} else if (type.toIntValue() == DataSetDataType.DateTime.toIntValue()) {
+			if (value == null || value.getValue() == null) {
+				return protoValueBuilder;
+			}
+			protoValueBuilder.setLongValue(((Date) value.getValue()).getTime());
+		} else {
+			logger.error("Unknown DataSetDataType DataType: " + value.getType());
+			throw new Exception("Failed to convert value " + value.getType());
 		}
 
 		return protoValueBuilder;

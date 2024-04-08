@@ -20,34 +20,53 @@ import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * An enumeration of data types for the value of a {@link Parameter} for a {@link Template}
  */
-public enum ParameterDataType {
+public class ParameterDataType {
 
 	// Basic Types
-	Int8(1, Byte.class),
-	Int16(2, Short.class),
-	Int32(3, Integer.class),
-	Int64(4, Long.class),
-	UInt8(5, Short.class),
-	UInt16(6, Integer.class),
-	UInt32(7, Long.class),
-	UInt64(8, BigInteger.class),
-	Float(9, Float.class),
-	Double(10, Double.class),
-	Boolean(11, Boolean.class),
-	String(12, String.class),
-	DateTime(13, Date.class),
-	Text(14, String.class),
+	public static final ParameterDataType Int8 = new ParameterDataType("Int8", 1, Byte.class);
+	public static final ParameterDataType Int16 = new ParameterDataType("Int16", 2, Short.class);
+	public static final ParameterDataType Int32 = new ParameterDataType("Int32", 3, Integer.class);
+	public static final ParameterDataType Int64 = new ParameterDataType("Int64", 4, Long.class);
+	public static final ParameterDataType UInt8 = new ParameterDataType("UInt8", 5, Short.class);
+	public static final ParameterDataType UInt16 = new ParameterDataType("UInt16", 6, Integer.class);
+	public static final ParameterDataType UInt32 = new ParameterDataType("UInt32", 7, Long.class);
+	public static final ParameterDataType UInt64 = new ParameterDataType("UInt64", 8, BigInteger.class);
+	public static final ParameterDataType Float = new ParameterDataType("Float", 9, Float.class);
+	public static final ParameterDataType Double = new ParameterDataType("Double", 10, Double.class);
+	public static final ParameterDataType Boolean = new ParameterDataType("Boolean", 11, Boolean.class);
+	public static final ParameterDataType String = new ParameterDataType("String", 12, String.class);
+	public static final ParameterDataType DateTime = new ParameterDataType("DateTime", 13, Date.class);
+	public static final ParameterDataType Text = new ParameterDataType("Text", 14, String.class);
 
 	// Unknown
-	Unknown(0, Object.class);
+	public static final ParameterDataType Unknown = new ParameterDataType("Unknown", 0, Object.class);
 
 	private static final Logger logger = LoggerFactory.getLogger(ParameterDataType.class.getName());
 
-	private Class<?> clazz = null;
+	@JsonInclude
+	@JsonValue
+	private final String type;
+
+	@JsonIgnore
 	private int intValue = 0;
+
+	@JsonIgnore
+	private Class<?> clazz = null;
+
+	public ParameterDataType() {
+		type = null;
+	}
+
+	public ParameterDataType(String type) {
+		this.type = type;
+	}
 
 	/**
 	 * Constructor
@@ -56,7 +75,8 @@ public enum ParameterDataType {
 	 *
 	 * @param clazz the {@link Class} type of this {@link ParameterDataType}
 	 */
-	private ParameterDataType(int intValue, Class<?> clazz) {
+	protected ParameterDataType(String type, int intValue, Class<?> clazz) {
+		this.type = type;
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
