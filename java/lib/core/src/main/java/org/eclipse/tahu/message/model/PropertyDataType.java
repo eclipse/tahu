@@ -15,7 +15,9 @@ package org.eclipse.tahu.message.model;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.slf4j.Logger;
@@ -29,6 +31,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enumeration of data types for values of a {@link PropertySet}
  */
 public class PropertyDataType {
+
+	private static final Logger logger = LoggerFactory.getLogger(PropertyDataType.class.getName());
 
 	// Basic Types
 	public static final PropertyDataType Int8 = new PropertyDataType("Int8", 1, Byte.class);
@@ -49,7 +53,26 @@ public class PropertyDataType {
 	public static final PropertyDataType PropertySetList = new PropertyDataType("PropertySetList", 21, List.class);
 	public static final PropertyDataType Unknown = new PropertyDataType("Unknown", 0, Object.class);
 
-	private static final Logger logger = LoggerFactory.getLogger(PropertyDataType.class.getName());
+	protected static final Map<String, PropertyDataType> types = new HashMap<>();
+	static {
+		types.put("Int8", Int8);
+		types.put("Int16", Int16);
+		types.put("Int32", Int32);
+		types.put("Int64", Int64);
+		types.put("UInt8", UInt8);
+		types.put("UInt16", UInt16);
+		types.put("UInt32", UInt32);
+		types.put("UInt64", UInt64);
+		types.put("Float", Float);
+		types.put("Double", Double);
+		types.put("Boolean", Boolean);
+		types.put("String", String);
+		types.put("DateTime", DateTime);
+		types.put("Text", Text);
+		types.put("PropertySet", PropertySet);
+		types.put("PropertySetList", PropertySetList);
+		types.put("Unknown", Unknown);
+	}
 
 	@JsonInclude
 	@JsonValue
@@ -80,6 +103,10 @@ public class PropertyDataType {
 		this.type = type;
 		this.intValue = intValue;
 		this.clazz = clazz;
+	}
+
+	public static PropertyDataType valueOf(String type) {
+		return types.get(type);
 	}
 
 	/**
@@ -155,6 +182,10 @@ public class PropertyDataType {
 		}
 	}
 
+	public String getType() {
+		return type;
+	}
+
 	/**
 	 * Returns the class type for this DataType
 	 * 
@@ -162,5 +193,18 @@ public class PropertyDataType {
 	 */
 	public Class<?> getClazz() {
 		return clazz;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("PropertyDataType [type=");
+		builder.append(type);
+		builder.append(", intValue=");
+		builder.append(intValue);
+		builder.append(", clazz=");
+		builder.append(clazz);
+		builder.append("]");
+		return builder.toString();
 	}
 }

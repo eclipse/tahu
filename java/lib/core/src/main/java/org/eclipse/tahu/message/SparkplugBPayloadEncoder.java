@@ -705,7 +705,7 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					metricBuilder.setBytesValue(ByteString.copyFrom(dateTimeByteBuffer.array()));
 				}
 			} else {
-				logger.error("Unsupported MetricDataType: {} for the {} metric", metric.getDataType(),
+				logger.error("Unsupported MetricDataType: {} for the {} metric", metric.getDataType().getType(),
 						metric.getName());
 				throw new Exception("Failed to encode");
 			}
@@ -750,7 +750,8 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 		return metricBuilder;
 	}
 
-	private SparkplugBProto.Payload.DataSet.DataSetValue.Builder convertDataSetValue(Value<?> value) throws Exception {
+	protected SparkplugBProto.Payload.DataSet.DataSetValue.Builder convertDataSetValue(Value<?> value)
+			throws Exception {
 		SparkplugBProto.Payload.DataSet.DataSetValue.Builder protoValueBuilder =
 				SparkplugBProto.Payload.DataSet.DataSetValue.newBuilder();
 
