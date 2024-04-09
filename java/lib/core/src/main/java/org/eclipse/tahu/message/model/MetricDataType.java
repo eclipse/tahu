@@ -29,6 +29,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public class MetricDataType {
 
+	private static final Logger logger = LoggerFactory.getLogger(MetricDataType.class.getName());
+
 	// Basic Types
 	public static final MetricDataType Int8 = new MetricDataType("Int8", 1, Byte.class);
 	public static final MetricDataType Int16 = new MetricDataType("Int16", 2, Short.class);
@@ -71,8 +73,6 @@ public class MetricDataType {
 
 	// Unknown
 	public static final MetricDataType Unknown = new MetricDataType("Unknown", 0, Object.class);
-
-	private static final Logger logger = LoggerFactory.getLogger(MetricDataType.class.getName());
 
 	@JsonInclude
 	@JsonValue
@@ -217,5 +217,18 @@ public class MetricDataType {
 	 */
 	public Class<?> getClazz() {
 		return clazz;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("MetricDataType [type=");
+		builder.append(type);
+		builder.append(", intValue=");
+		builder.append(intValue);
+		builder.append(", clazz=");
+		builder.append(clazz);
+		builder.append("]");
+		return builder.toString();
 	}
 }

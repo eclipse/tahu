@@ -29,6 +29,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public class ParameterDataType {
 
+	private static final Logger logger = LoggerFactory.getLogger(ParameterDataType.class.getName());
+
 	// Basic Types
 	public static final ParameterDataType Int8 = new ParameterDataType("Int8", 1, Byte.class);
 	public static final ParameterDataType Int16 = new ParameterDataType("Int16", 2, Short.class);
@@ -47,8 +49,6 @@ public class ParameterDataType {
 
 	// Unknown
 	public static final ParameterDataType Unknown = new ParameterDataType("Unknown", 0, Object.class);
-
-	private static final Logger logger = LoggerFactory.getLogger(ParameterDataType.class.getName());
 
 	@JsonInclude
 	@JsonValue
@@ -146,6 +146,10 @@ public class ParameterDataType {
 		}
 	}
 
+	public String getType() {
+		return type;
+	}
+
 	/**
 	 * Returns the class type for this DataType
 	 * 
@@ -153,5 +157,18 @@ public class ParameterDataType {
 	 */
 	public Class<?> getClazz() {
 		return clazz;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ParameterDataType [type=");
+		builder.append(type);
+		builder.append(", intValue=");
+		builder.append(intValue);
+		builder.append(", clazz=");
+		builder.append(clazz);
+		builder.append("]");
+		return builder.toString();
 	}
 }

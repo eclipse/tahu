@@ -476,7 +476,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		}
 	}
 
-	private Collection<Row> convertDataSetRows(List<SparkplugBProto.Payload.DataSet.Row> protoRows,
+	protected Collection<Row> convertDataSetRows(List<SparkplugBProto.Payload.DataSet.Row> protoRows,
 			List<Integer> protoTypes) throws Exception {
 		Collection<Row> rows = new ArrayList<Row>();
 		if (protoRows != null) {
@@ -493,7 +493,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		return rows;
 	}
 
-	private Collection<DataSetDataType> convertDataSetDataTypes(List<Integer> protoTypes) {
+	protected Collection<DataSetDataType> convertDataSetDataTypes(List<Integer> protoTypes) {
 		List<DataSetDataType> types = new ArrayList<DataSetDataType>();
 		// Build up a List of column types
 		for (int type : protoTypes) {
@@ -543,7 +543,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		}
 	}
 
-	private Value<?> convertDataSetValue(int protoType, SparkplugBProto.Payload.DataSet.DataSetValue protoValue)
+	protected Value<?> convertDataSetValue(int protoType, SparkplugBProto.Payload.DataSet.DataSetValue protoValue)
 			throws Exception {
 		DataSetDataType type = DataSetDataType.fromInteger(protoType);
 		if (protoType == DataSetDataType.Boolean.toIntValue()) {

@@ -244,7 +244,18 @@ public class DataSet {
 		builder.append(", columnNames=");
 		builder.append(columnNames);
 		builder.append(", types=");
-		builder.append(types);
+		if (types != null) {
+			builder.append("[");
+			for (int i = 0; i < types.size(); i++) {
+				builder.append(types.get(i).getType());
+				if (i + 1 != types.size()) {
+					builder.append(", ");
+				}
+			}
+			builder.append("]");
+		} else {
+			builder.append("null");
+		}
 		builder.append(", rows=");
 		builder.append(rows);
 		builder.append("]");
