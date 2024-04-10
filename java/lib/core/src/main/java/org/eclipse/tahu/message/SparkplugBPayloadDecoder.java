@@ -144,7 +144,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 						.createMetric();
 	}
 
-	private Map<String, PropertyValue> convertProperties(SparkplugBProto.Payload.PropertySet decodedPropSet)
+	protected Map<String, PropertyValue> convertProperties(SparkplugBProto.Payload.PropertySet decodedPropSet)
 			throws SparkplugInvalidTypeException, Exception {
 		Map<String, PropertyValue> map = new HashMap<String, PropertyValue>();
 		List<String> keys = decodedPropSet.getKeysList();
@@ -157,7 +157,7 @@ public class SparkplugBPayloadDecoder implements PayloadDecoder<SparkplugBPayloa
 		return map;
 	}
 
-	private Object getPropertyValue(SparkplugBProto.Payload.PropertyValue value) throws Exception {
+	protected Object getPropertyValue(SparkplugBProto.Payload.PropertyValue value) throws Exception {
 		PropertyDataType type = PropertyDataType.fromInteger(value.getType());
 		if (value.getIsNull()) {
 			return null;

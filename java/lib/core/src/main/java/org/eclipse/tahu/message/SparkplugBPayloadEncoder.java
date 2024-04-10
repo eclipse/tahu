@@ -185,63 +185,69 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 
 		Map<String, PropertyValue> map = propertySet.getPropertyMap();
 		for (String key : map.keySet()) {
-			SparkplugBProto.Payload.PropertyValue.Builder builder = SparkplugBProto.Payload.PropertyValue.newBuilder();
-			PropertyValue value = map.get(key);
-			PropertyDataType type = value.getType();
-			builder.setType(type.toIntValue());
-			if (value.getValue() == null) {
-				builder.setIsNull(true);
-			} else {
-				if (type.toIntValue() == PropertyDataType.Boolean.toIntValue()) {
-					builder.setBooleanValue((Boolean) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.DateTime.toIntValue()) {
-					builder.setLongValue(((Date) value.getValue()).getTime());
-				} else if (type.toIntValue() == PropertyDataType.Double.toIntValue()) {
-					builder.setDoubleValue((Double) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.Float.toIntValue()) {
-					builder.setFloatValue((Float) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.Int8.toIntValue()) {
-					builder.setIntValue((Byte) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.Int16.toIntValue()) {
-					builder.setIntValue((Short) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.Int32.toIntValue()) {
-					builder.setIntValue((Integer) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.Int64.toIntValue()) {
-					builder.setLongValue((Long) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.UInt8.toIntValue()) {
-					builder.setIntValue(Short.toUnsignedInt((Short) value.getValue()));
-				} else if (type.toIntValue() == PropertyDataType.UInt16.toIntValue()) {
-					builder.setIntValue((int) Integer.toUnsignedLong((Integer) value.getValue()));
-				} else if (type.toIntValue() == PropertyDataType.UInt32.toIntValue()) {
-					builder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) value.getValue())));
-				} else if (type.toIntValue() == PropertyDataType.UInt64.toIntValue()) {
-					builder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value.getValue()));
-				} else if (type.toIntValue() == PropertyDataType.String.toIntValue()) {
-					builder.setStringValue((String) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.Text.toIntValue()) {
-					builder.setStringValue((String) value.getValue());
-				} else if (type.toIntValue() == PropertyDataType.PropertySet.toIntValue()) {
-					builder.setPropertysetValue(convertPropertySet((PropertySet) value.getValue()));
-				} else if (type.toIntValue() == PropertyDataType.PropertySetList.toIntValue()) {
-					List<?> setList = (List<?>) value.getValue();
-					SparkplugBProto.Payload.PropertySetList.Builder listBuilder =
-							SparkplugBProto.Payload.PropertySetList.newBuilder();
-					for (Object obj : setList) {
-						listBuilder.addPropertyset(convertPropertySet((PropertySet) obj));
-					}
-					builder.setPropertysetsValue(listBuilder);
-				} else if (type.toIntValue() == PropertyDataType.Unknown.toIntValue()) {
-					logger.error("Unsupported PropertyDataType: '{}' for the '{}' property", value.getType(), key);
-					throw new Exception("Failed to convert value " + value.getType());
-				} else {
-					logger.error("Unsupported PropertyDataType: '{}' for the '{}' property", value.getType(), key);
-					throw new Exception("Failed to convert value " + value.getType());
-				}
-			}
 			setBuilder.addKeys(key);
-			setBuilder.addValues(builder);
+			setBuilder.addValues(convertProperty(map, key));
 		}
 		return setBuilder;
+	}
+
+	protected SparkplugBProto.Payload.PropertyValue.Builder convertProperty(Map<String, PropertyValue> map, String key)
+			throws Exception {
+		SparkplugBProto.Payload.PropertyValue.Builder builder = SparkplugBProto.Payload.PropertyValue.newBuilder();
+		PropertyValue value = map.get(key);
+		PropertyDataType type = value.getType();
+		builder.setType(type.toIntValue());
+		if (value.getValue() == null) {
+			builder.setIsNull(true);
+		} else {
+			if (type.toIntValue() == PropertyDataType.Boolean.toIntValue()) {
+				builder.setBooleanValue((Boolean) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.DateTime.toIntValue()) {
+				builder.setLongValue(((Date) value.getValue()).getTime());
+			} else if (type.toIntValue() == PropertyDataType.Double.toIntValue()) {
+				builder.setDoubleValue((Double) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.Float.toIntValue()) {
+				builder.setFloatValue((Float) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.Int8.toIntValue()) {
+				builder.setIntValue((Byte) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.Int16.toIntValue()) {
+				builder.setIntValue((Short) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.Int32.toIntValue()) {
+				builder.setIntValue((Integer) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.Int64.toIntValue()) {
+				builder.setLongValue((Long) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.UInt8.toIntValue()) {
+				builder.setIntValue(Short.toUnsignedInt((Short) value.getValue()));
+			} else if (type.toIntValue() == PropertyDataType.UInt16.toIntValue()) {
+				builder.setIntValue((int) Integer.toUnsignedLong((Integer) value.getValue()));
+			} else if (type.toIntValue() == PropertyDataType.UInt32.toIntValue()) {
+				builder.setLongValue(Long.parseUnsignedLong(Long.toUnsignedString((Long) value.getValue())));
+			} else if (type.toIntValue() == PropertyDataType.UInt64.toIntValue()) {
+				builder.setLongValue(bigIntegerToUnsignedLong((BigInteger) value.getValue()));
+			} else if (type.toIntValue() == PropertyDataType.String.toIntValue()) {
+				builder.setStringValue((String) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.Text.toIntValue()) {
+				builder.setStringValue((String) value.getValue());
+			} else if (type.toIntValue() == PropertyDataType.PropertySet.toIntValue()) {
+				builder.setPropertysetValue(convertPropertySet((PropertySet) value.getValue()));
+			} else if (type.toIntValue() == PropertyDataType.PropertySetList.toIntValue()) {
+				List<?> setList = (List<?>) value.getValue();
+				SparkplugBProto.Payload.PropertySetList.Builder listBuilder =
+						SparkplugBProto.Payload.PropertySetList.newBuilder();
+				for (Object obj : setList) {
+					listBuilder.addPropertyset(convertPropertySet((PropertySet) obj));
+				}
+				builder.setPropertysetsValue(listBuilder);
+			} else if (type.toIntValue() == PropertyDataType.Unknown.toIntValue()) {
+				logger.error("Unsupported PropertyDataType: '{}' for the '{}' property", value.getType(), key);
+				throw new Exception("Failed to convert value " + value.getType());
+			} else {
+				logger.error("Unsupported PropertyDataType: '{}' for the '{}' property", value.getType(), key);
+				throw new Exception("Failed to convert value " + value.getType());
+			}
+		}
+
+		return builder;
 	}
 
 	private SparkplugBProto.Payload.Template.Parameter.Builder setParameterValue(
