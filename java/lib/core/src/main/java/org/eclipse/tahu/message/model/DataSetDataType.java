@@ -83,6 +83,8 @@ public class DataSetDataType {
 
 	public DataSetDataType(String type) {
 		this.type = type;
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
 	}
 
 	/**
