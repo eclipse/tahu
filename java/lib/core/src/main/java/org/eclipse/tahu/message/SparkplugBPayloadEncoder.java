@@ -711,8 +711,8 @@ public class SparkplugBPayloadEncoder implements PayloadEncoder<SparkplugBPayloa
 					metricBuilder.setBytesValue(ByteString.copyFrom(dateTimeByteBuffer.array()));
 				}
 			} else {
-				logger.error("Unsupported MetricDataType: {} for the {} metric", metric.getDataType().getType(),
-						metric.getName());
+				logger.error("Unsupported MetricDataType: {} -> {} for the {} metric", metric.getDataType().getType(),
+						metric.getDataType().toIntValue(), metric.getName());
 				throw new Exception("Failed to encode");
 			}
 		}

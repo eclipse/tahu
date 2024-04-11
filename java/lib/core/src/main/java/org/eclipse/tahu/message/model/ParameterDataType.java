@@ -15,6 +15,8 @@ package org.eclipse.tahu.message.model;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.slf4j.Logger;
@@ -50,6 +52,25 @@ public class ParameterDataType {
 	// Unknown
 	public static final ParameterDataType Unknown = new ParameterDataType("Unknown", 0, Object.class);
 
+	protected static final Map<String, ParameterDataType> types = new HashMap<>();
+	static {
+		types.put("Int8", Int8);
+		types.put("Int16", Int16);
+		types.put("Int32", Int32);
+		types.put("Int64", Int64);
+		types.put("UInt8", UInt8);
+		types.put("UInt16", UInt16);
+		types.put("UInt32", UInt32);
+		types.put("UInt64", UInt64);
+		types.put("Float", Float);
+		types.put("Double", Double);
+		types.put("Boolean", Boolean);
+		types.put("String", String);
+		types.put("DateTime", DateTime);
+		types.put("Text", Text);
+		types.put("Unknown", Unknown);
+	}
+
 	@JsonInclude
 	@JsonValue
 	private final String type;
@@ -66,6 +87,8 @@ public class ParameterDataType {
 
 	public ParameterDataType(String type) {
 		this.type = type;
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
 	}
 
 	/**

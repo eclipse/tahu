@@ -90,6 +90,8 @@ public class PropertyDataType {
 
 	public PropertyDataType(String type) {
 		this.type = type;
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
 	}
 
 	/**

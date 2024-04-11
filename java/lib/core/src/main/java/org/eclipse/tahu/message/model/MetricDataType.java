@@ -15,6 +15,8 @@ package org.eclipse.tahu.message.model;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.slf4j.Logger;
@@ -74,6 +76,43 @@ public class MetricDataType {
 	// Unknown
 	public static final MetricDataType Unknown = new MetricDataType("Unknown", 0, Object.class);
 
+	protected static final Map<String, MetricDataType> types = new HashMap<>();
+	static {
+		types.put("Int8", Int8);
+		types.put("Int16", Int16);
+		types.put("Int32", Int32);
+		types.put("Int64", Int64);
+		types.put("UInt8", UInt8);
+		types.put("UInt16", UInt16);
+		types.put("UInt32", UInt32);
+		types.put("UInt64", UInt64);
+		types.put("Float", Float);
+		types.put("Double", Double);
+		types.put("Boolean", Boolean);
+		types.put("String", String);
+		types.put("DateTime", DateTime);
+		types.put("Text", Text);
+		types.put("UUID", UUID);
+		types.put("DataSet", DataSet);
+		types.put("Bytes", Bytes);
+		types.put("File", File);
+		types.put("Template", Template);
+		types.put("Int8Array", Int8Array);
+		types.put("Int16Array", Int16Array);
+		types.put("Int32Array", Int32Array);
+		types.put("Int64Array", Int64Array);
+		types.put("UInt8Array", UInt8Array);
+		types.put("UInt16Array", UInt16Array);
+		types.put("UInt32Array", UInt32Array);
+		types.put("UInt64Array", UInt64Array);
+		types.put("FloatArray", FloatArray);
+		types.put("DoubleArray", DoubleArray);
+		types.put("BooleanArray", BooleanArray);
+		types.put("StringArray", StringArray);
+		types.put("DateTimeArray", DateTimeArray);
+		types.put("Unknown", Unknown);
+	}
+
 	@JsonInclude
 	@JsonValue
 	private final String type;
@@ -90,6 +129,8 @@ public class MetricDataType {
 
 	public MetricDataType(String type) {
 		this.type = type;
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
 	}
 
 	/**
