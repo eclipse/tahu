@@ -262,14 +262,6 @@ public class MetricDataType {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("MetricDataType [type=");
-		builder.append(type);
-		builder.append(", intValue=");
-		builder.append(intValue);
-		builder.append(", clazz=");
-		builder.append(clazz);
-		builder.append("]");
-		return builder.toString();
+		return type;
 	}
 }

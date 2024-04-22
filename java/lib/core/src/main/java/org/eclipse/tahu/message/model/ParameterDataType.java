@@ -184,14 +184,6 @@ public class ParameterDataType {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("ParameterDataType [type=");
-		builder.append(type);
-		builder.append(", intValue=");
-		builder.append(intValue);
-		builder.append(", clazz=");
-		builder.append(clazz);
-		builder.append("]");
-		return builder.toString();
+		return type;
 	}
 }
