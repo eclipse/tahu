@@ -199,14 +199,6 @@ public class PropertyDataType {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("PropertyDataType [type=");
-		builder.append(type);
-		builder.append(", intValue=");
-		builder.append(intValue);
-		builder.append(", clazz=");
-		builder.append(clazz);
-		builder.append("]");
-		return builder.toString();
+		return type;
 	}
 }
