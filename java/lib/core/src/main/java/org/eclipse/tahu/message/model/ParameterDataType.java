@@ -114,7 +114,7 @@ public class ParameterDataType {
 	 */
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
-			logger.warn("Failed type check - " + clazz + " != " + value.getClass().toString());
+			logger.warn("Failed type check - expected " + clazz + " != actual" + value.getClass().toString());
 			throw new SparkplugInvalidTypeException(value.getClass());
 		}
 	}

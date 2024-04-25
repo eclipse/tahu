@@ -106,8 +106,9 @@ public class DataSetDataType {
 
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
-			throw new SparkplugInvalidTypeException("Value of type " + clazz.toString() + " is not assignable from "
-					+ value.getClass().toString() + " where value is " + value, value.getClass());
+			throw new SparkplugInvalidTypeException("Value of expected type " + clazz.toString()
+					+ " is not assignable from " + value.getClass().toString() + " where actual value is " + value,
+					value.getClass());
 		}
 	}
 

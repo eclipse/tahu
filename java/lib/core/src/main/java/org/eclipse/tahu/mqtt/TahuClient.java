@@ -1374,7 +1374,7 @@ public class TahuClient implements MqttCallbackExtended {
 
 	public void publishLwt(boolean waitForLwt) throws MqttException, TahuException {
 		synchronized (clientLock) {
-			boolean clientConnected = client.isConnected();
+			boolean clientConnected = client != null && client.isConnected();
 			boolean lwtDeliveryComplete = false;
 			if (lwtTopic != null && clientConnected) {
 				logger.info("{}: Publishing LWT on {} with qos={} and retain={}", getClientId(), lwtTopic, lwtQoS,

@@ -124,7 +124,7 @@ public class PropertyDataType {
 			if (clazz == List.class && value instanceof List) {
 				// Allow List subclasses
 			} else {
-				logger.warn("Failed type check - " + clazz + " != " + value.getClass().toString());
+				logger.warn("Failed type check - expected " + clazz + " != actual " + value.getClass().toString());
 				throw new SparkplugInvalidTypeException(value.getClass());
 			}
 		}
