@@ -152,6 +152,17 @@ public class Metric {
 		return !(name == null);
 	}
 
+	@JsonIgnore
+	public String getKey() {
+		if (hasName()) {
+			return getTimestamp().getTime() + "_" + getName();
+		} else if (hasAlias()) {
+			return getTimestamp().getTime() + "_" + getAlias();
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Whether or not this {@link Metric} has an alias
 	 *
