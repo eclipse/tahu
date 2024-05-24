@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -26,6 +28,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * A class that maintains a set of properties associated with a {@link Metric}.
  */
 public class PropertySet implements Map<String, PropertyValue> {
+
+	private static Logger logger = LoggerFactory.getLogger(PropertySet.class.getName());
 
 	@JsonIgnore
 	private Map<String, PropertyValue> map;
@@ -41,9 +45,18 @@ public class PropertySet implements Map<String, PropertyValue> {
 	 * Copy Constructor
 	 *
 	 * @param propertySet the {@link PropertySet} to copy
+	 * @throws Exception
 	 */
-	public PropertySet(PropertySet propertySet) {
-		this.map = propertySet.getPropertyMap();
+	public PropertySet(PropertySet propertySet) throws Exception {
+		this.map = new HashMap<>();
+		if (propertySet.getPropertyMap() != null) {
+			for (Entry<String, PropertyValue> entry : propertySet.getPropertyMap().entrySet()) {
+				this.map.put(entry.getKey(), new PropertyValue(entry.getValue()));
+			}
+		}
+
+		logger.trace("Copying - Orig: {}", propertySet);
+		logger.trace("Copying - New : {}", this);
 	}
 
 	/**

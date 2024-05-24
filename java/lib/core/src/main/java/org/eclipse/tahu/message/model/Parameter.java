@@ -19,9 +19,9 @@ import org.eclipse.tahu.SparkplugInvalidTypeException;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * A class to represent a parameter associated with a template.
@@ -63,6 +63,15 @@ public class Parameter {
 		this.name = name;
 		this.type = type;
 		this.value = value;
+		if (value != null) {
+			this.type.checkType(value);
+		}
+	}
+
+	public Parameter(Parameter parameter) throws SparkplugInvalidTypeException {
+		this.name = parameter.getName();
+		this.type = parameter.getType();
+		this.value = parameter.getValue();
 		if (value != null) {
 			this.type.checkType(value);
 		}

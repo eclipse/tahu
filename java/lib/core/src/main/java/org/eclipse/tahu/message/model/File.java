@@ -52,6 +52,15 @@ public class File {
 	}
 
 	/**
+	 * Copy Constructor
+	 *
+	 * @param file the {@link File} to copy
+	 */
+	public File(File file) {
+		this(file.getFileName(), file.getBytes());
+	}
+
+	/**
 	 * Gets the full filename path
 	 *
 	 * @return the full filename path

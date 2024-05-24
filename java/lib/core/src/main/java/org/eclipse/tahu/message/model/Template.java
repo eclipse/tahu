@@ -86,6 +86,30 @@ public class Template {
 	}
 
 	/**
+	 * Copy Constructor
+	 *
+	 * @param template the {@link Template} to copy
+	 * @throws Exception if the instantiation can not complete
+	 */
+	public Template(Template template) throws Exception {
+		this.version = template.getVersion();
+		this.templateRef = template.getTemplateRef();
+		this.isDefinition = template.isDefinition();
+		if (template.getMetrics() != null) {
+			this.metrics = new ArrayList<>();
+			for (Metric metric : template.getMetrics()) {
+				this.metrics.add(new Metric(metric));
+			}
+		}
+		if (template.getParameters() != null) {
+			this.parameters = new ArrayList<>();
+			for (Parameter parameter : template.getParameters()) {
+				this.parameters.add(new Parameter(parameter));
+			}
+		}
+	}
+
+	/**
 	 * Gets the version of this {@link Template}
 	 *
 	 * @return the version of this {@link Template}
@@ -188,6 +212,7 @@ public class Template {
 
 	/**
 	 * Adds a {@link Parameter} to this {@link Template}
+	 * 
 	 * @param parameter a {@link Parameter} to add to this {@link Template}
 	 */
 	public void addParameter(Parameter parameter) {

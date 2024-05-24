@@ -41,6 +41,20 @@ public class Row {
 	}
 
 	/**
+	 * Copy Constructor
+	 *
+	 * @param row the {@link Row} to copy
+	 */
+	public Row(Row row) {
+		this.values = new ArrayList<>();
+		if (row != null && row.getValues() != null) {
+			for (Value<?> value : row.getValues()) {
+				this.values.add(new Value(value));
+			}
+		}
+	}
+
+	/**
 	 * Gets a {@link List} of {@link Value}s in the {@link Row}
 	 *
 	 * @return a {@link List} of {@link Value}s in the {@link Row}
