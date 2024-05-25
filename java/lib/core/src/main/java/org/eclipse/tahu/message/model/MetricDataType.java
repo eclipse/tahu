@@ -305,19 +305,4 @@ public class MetricDataType {
 		result = prime * result + intValue;
 		return result;
 	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		MetricDataType other = (MetricDataType) obj;
-		return intValue == other.intValue;
-	}
 }
