@@ -119,10 +119,74 @@ public class Metric {
 	 * @param metric the {@link Metric} to copy
 	 * @throws SparkplugInvalidTypeException if the {@link Metric} can not be copied due to an invalid {@link DataType}
 	 */
-	public Metric(Metric metric) throws SparkplugInvalidTypeException {
-		this(metric.getName(), metric.getAlias(), metric.getTimestamp(), metric.getDataType(), metric.getIsHistorical(),
-				metric.getIsTransient(), metric.getMetaData() != null ? new MetaData(metric.getMetaData()) : null,
-				metric.getProperties() != null ? new PropertySet(metric.getProperties()) : null, metric.getValue());
+	public Metric(Metric metric) throws Exception {
+		if (metric != null) {
+			this.name = metric.getName();
+			this.alias = metric.getAlias();
+			this.timestamp = metric.getTimestamp();
+			this.dataType = metric.getDataType();
+			this.isHistorical = metric.getIsHistorical();
+			this.isTransient = metric.getIsTransient();
+			this.metaData = metric.getMetaData() != null ? new MetaData(metric.getMetaData()) : null;
+			this.properties = metric.getProperties() != null ? new PropertySet(metric.getProperties()) : null;
+
+			if (metric.getValue() != null) {
+				if (metric.getDataType() == MetricDataType.DataSet) {
+					this.value = new DataSet((DataSet) metric.getValue());
+				} else if (metric.getDataType() == MetricDataType.Bytes) {
+					byte[] originalValue = (byte[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.File) {
+					this.value = new File((File) metric.getValue());
+				} else if (metric.getDataType() == MetricDataType.Int8Array) {
+					Byte[] originalValue = (Byte[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.Int16Array) {
+					Short[] originalValue = (Short[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.Int32Array) {
+					Integer[] originalValue = (Integer[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.Int64Array) {
+					Long[] originalValue = (Long[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.UInt8Array) {
+					Short[] originalValue = (Short[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.UInt16Array) {
+					Integer[] originalValue = (Integer[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.UInt32Array) {
+					Long[] originalValue = (Long[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.UInt64Array) {
+					BigInteger[] originalValue = (BigInteger[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.FloatArray) {
+					Float[] originalValue = (Float[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.DoubleArray) {
+					Double[] originalValue = (Double[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.BooleanArray) {
+					Boolean[] originalValue = (Boolean[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.StringArray) {
+					String[] originalValue = (String[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.DateTimeArray) {
+					Date[] originalValue = (Date[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.Template) {
+					this.value = new Template((Template) metric.getValue());
+				} else {
+					this.value = metric.getValue();
+				}
+			}
+
+			// Check the value is valid per the datatype
+			this.dataType.checkType(value);
+		}
 	}
 
 	/**

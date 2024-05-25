@@ -105,7 +105,6 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 		synchronized (mapLock) {
 			for (Metric metric : metrics) {
 				addMetric(metric);
-				metricIdSet.add(metric.hasName() ? metric.getName() : metric.getAlias().toString());
 			}
 		}
 	}
@@ -140,20 +139,22 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 						try {
 							long timestamp = Long.parseLong(key.substring(0, key.indexOf("_")));
 							// This is a match - remove it
+							logger.debug("Removing metric: {}", metric);
 							it.remove();
 							foundMetric = true;
 						} catch (Exception e) {
-							logger.debug("This isn't the metric we are looking for with key={}: {}", key, metric);
+							logger.trace("This isn't the metric we are looking for with key={}: {}", key, metric);
 							continue;
 						}
 					} else if (metric.hasAlias() && key.contains("_" + metric.getAlias())) {
 						try {
 							long timestamp = Long.parseLong(key.substring(0, key.indexOf("_")));
 							// This is a match - remove it
+							logger.debug("Removing metric: {}", metric);
 							it.remove();
 							foundMetric = true;
 						} catch (Exception e) {
-							logger.debug("This isn't the metric we are looking for with key={}: {}", key, metric);
+							logger.trace("This isn't the metric we are looking for with key={}: {}", key, metric);
 							continue;
 						}
 					}
@@ -190,7 +191,7 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 	public void setMetrics(List<Metric> metrics) {
 		metricMap.clear();
 		for (Metric metric : metrics) {
-			metricMap.put(metric.getKey(), metric);
+			this.addMetric(metric);
 		}
 	}
 
@@ -222,6 +223,7 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 	 */
 	public void updateMetricTimestamps(Date date) {
 		for (Metric metric : metricMap.values()) {
+			logger.debug("Updating metric timestamp for {} to {}", metric, date.getTime());
 			metric.setTimestamp(date);
 			if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
 				updateTemplateTimestamps((Template) metric.getValue(), date);
@@ -232,6 +234,7 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 	private void updateTemplateTimestamps(Template template, Date date) {
 		if (template != null && template.getMetrics() != null) {
 			for (Metric metric : template.getMetrics()) {
+				logger.debug("Updating metric timestamp for {} to {}", metric, date.getTime());
 				metric.setTimestamp(date);
 				if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
 					updateTemplateTimestamps((Template) metric.getValue(), date);
@@ -244,8 +247,12 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 		for (Metric metric : metricMap.values()) {
 			Date uptickedTimestamp = new Date(metric.getTimestamp().getTime() + 1);
 			if (birthTimestamp.before(uptickedTimestamp)) {
+				logger.debug("Updating metric timestamp for {} to birthTimestamp -> {}", metric,
+						uptickedTimestamp.getTime());
 				metric.setTimestamp(birthTimestamp);
 			} else {
+				logger.debug("Updating metric timestamp for {} to uptickedTimestamp -> {}", metric,
+						uptickedTimestamp.getTime());
 				metric.setTimestamp(uptickedTimestamp);
 			}
 			if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {
@@ -259,8 +266,12 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 			for (Metric metric : template.getMetrics()) {
 				Date uptickedTimestamp = new Date(metric.getTimestamp().getTime() + 1);
 				if (birthTimestamp.before(uptickedTimestamp)) {
+					logger.debug("Updating metric timestamp for {} to birthTimestamp -> {}", metric,
+							uptickedTimestamp.getTime());
 					metric.setTimestamp(birthTimestamp);
 				} else {
+					logger.debug("Updating metric timestamp for {} to uptickedTimestamp -> {}", metric,
+							uptickedTimestamp.getTime());
 					metric.setTimestamp(uptickedTimestamp);
 				}
 				if (metric.getDataType() == MetricDataType.Template && metric.getValue() != null) {

@@ -63,7 +63,7 @@ public class MetricDataType {
 	public static final MetricDataType Int16Array = new MetricDataType("Int16Array", 23, Short[].class);
 	public static final MetricDataType Int32Array = new MetricDataType("Int32Array", 24, Integer[].class);
 	public static final MetricDataType Int64Array = new MetricDataType("Int64Array", 25, Long[].class);
-	public static final MetricDataType UInt8Array = new MetricDataType("IUInt8Arraynt8", 26, Short[].class);
+	public static final MetricDataType UInt8Array = new MetricDataType("UInt8Array", 26, Short[].class);
 	public static final MetricDataType UInt16Array = new MetricDataType("UInt16Array", 27, Integer[].class);
 	public static final MetricDataType UInt32Array = new MetricDataType("UInt32Array", 28, Long[].class);
 	public static final MetricDataType UInt64Array = new MetricDataType("UInt64Array", 29, BigInteger[].class);
@@ -129,6 +129,17 @@ public class MetricDataType {
 
 	public MetricDataType(String type) {
 		this.type = type;
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
+	}
+
+	/**
+	 * Copy Constructor
+	 *
+	 * @param metricDataType the {@link MetricDataType} to copy
+	 */
+	public MetricDataType(MetricDataType metricDataType) {
+		this.type = metricDataType.getType();
 		this.intValue = types.get(type).toIntValue();
 		this.clazz = types.get(type).getClazz();
 	}
@@ -258,6 +269,28 @@ public class MetricDataType {
 	 */
 	public Class<?> getClazz() {
 		return clazz;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + intValue;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MetricDataType other = (MetricDataType) obj;
+		if (intValue != other.intValue)
+			return false;
+		return true;
 	}
 
 	@Override

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,6 +59,33 @@ public class TemplateMap extends Template {
 			List<Parameter> parameters) {
 		super(version, templateRef, isDefinition, null, parameters);
 		this.metricMap = metricMap;
+	}
+
+	/**
+	 * Copy Constructor to copy a {@link Template} to a {@link TemplateMap}
+	 *
+	 * @param template the {@link Template} to copy
+	 * @throws Exception if the deep copy to a {@link TemplateMap} fails
+	 */
+	public TemplateMap(Template template) throws Exception {
+		this.metricMap = new HashMap<>();
+		if (template != null) {
+			setVersion(template.getVersion());
+			setTemplateRef(template.getTemplateRef());
+			setDefinition(template.isDefinition());
+			if (template.getMetrics() != null) {
+				for (Metric metric : template.getMetrics()) {
+					addMetric(new Metric(metric));
+				}
+			}
+			if (template.getParameters() != null) {
+				List<Parameter> parametersList = new ArrayList<>();
+				for (Parameter parameter : template.getParameters()) {
+					parametersList.add(new Parameter(parameter));
+				}
+				super.setParameters(parametersList);
+			}
+		}
 	}
 
 	/**
