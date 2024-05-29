@@ -239,21 +239,32 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 
 	private void updateTemplateMetricValues(TemplateMap existingTemplateMap, Metric newMetric,
 			List<Property<?>> customProperties) {
-		Template newTemplate = (Template) newMetric.getValue();
-		List<Metric> newMemberMetrics = newTemplate.getMetrics();
-		if (newMemberMetrics != null && !newMemberMetrics.isEmpty()) {
-			for (Metric newMemberMetric : newMemberMetrics) {
-				Metric existingMetric = existingTemplateMap.getMetricMap().get(newMemberMetric.getName());
-				if (newMemberMetric.getDataType() == MetricDataType.Template && newMemberMetric.getValue() != null) {
-					updateTemplateMetricValues((TemplateMap) existingMetric.getValue(), newMemberMetric,
-							customProperties);
-				} else {
-					existingTemplateMap.getMetricMap().get(newMemberMetric.getName())
-							.setValue(newMemberMetric.getValue());
-				}
+		try {
+			Template newTemplate = (Template) newMetric.getValue();
+			List<Metric> newMemberMetrics = newTemplate.getMetrics();
+			if (newMemberMetrics != null && !newMemberMetrics.isEmpty()) {
+				for (Metric newMemberMetric : newMemberMetrics) {
+					Metric existingMetric = existingTemplateMap.getMetricMap().get(newMemberMetric.getName());
+					if (newMemberMetric.getDataType() == MetricDataType.Template
+							&& newMemberMetric.getValue() != null) {
+						TemplateMap templateMap = null;
+						if (TemplateMap.class.isAssignableFrom(existingMetric.getValue().getClass())) {
+							templateMap = (TemplateMap) (existingMetric.getValue());
+						} else {
+							templateMap = new TemplateMap((Template) (existingMetric.getValue()));
+						}
+						updateTemplateMetricValues(templateMap, newMemberMetric, customProperties);
+					} else {
+						existingTemplateMap.getMetricMap().get(newMemberMetric.getName())
+								.setValue(newMemberMetric.getValue());
+					}
 
-				handleProps(existingMetric, newMemberMetric, customProperties);
+					handleProps(existingMetric, newMemberMetric, customProperties);
+				}
 			}
+		} catch (Exception e) {
+			logger.error("Failed to update Template metric value for {}: {} with customProps={}", newMetric.getName(),
+					newMetric, customProperties, e);
 		}
 	}
 
