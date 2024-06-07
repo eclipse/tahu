@@ -19,11 +19,15 @@ import java.util.Date;
 
 import org.eclipse.tahu.SparkplugException;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.eclipse.tahu.exception.TahuErrorCode;
+import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
 import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
 import org.eclipse.tahu.protobuf.SparkplugBProto.DataType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,6 +44,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 		value = { "isNull" })
 @JsonInclude(Include.NON_NULL)
 public class Metric {
+
+	private static Logger logger = LoggerFactory.getLogger(Metric.class.getName());
 
 	@JsonProperty("name")
 	private String name;
@@ -217,13 +223,80 @@ public class Metric {
 	}
 
 	@JsonIgnore
-	public String getKey() {
-		if (hasName()) {
-			return getTimestamp().getTime() + "_" + getName();
-		} else if (hasAlias()) {
-			return getTimestamp().getTime() + "_" + getAlias();
+	public String getKey() throws Exception {
+		String primaryKeyComponent = hasName() ? getName() : hasAlias() ? getAlias().toString() : null;
+
+		if (dataType == MetricDataType.Template) {
+			String key = getTimestamp().getTime() + "_" + getSecondaryKeyComponent(primaryKeyComponent, this);
+			logger.debug("Returning template key: {}", key);
+			return key;
 		} else {
-			return null;
+			// Fall through to standard metrics
+			if (primaryKeyComponent != null) {
+				String key = getTimestamp().getTime() + "_" + primaryKeyComponent;
+				logger.debug("Returning regular key: {}", key);
+				return key;
+			} else {
+				return null;
+			}
+		}
+	}
+
+	private String getSecondaryKeyComponent(String prefix, Metric metric) throws Exception {
+		if (dataType == MetricDataType.Template) {
+			if (metric.getValue() != null) {
+				if (Template.class.isAssignableFrom(metric.getValue().getClass())) {
+					Template template = (Template) metric.getValue();
+					if (template.getMetrics() != null && template.getMetrics().size() == 1) {
+						Metric memberMetric = template.getMetrics().get(0);
+						String secondaryName = memberMetric.hasName()
+								? memberMetric.getName()
+								: memberMetric.hasAlias() ? memberMetric.getAlias().toString() : null;
+						if (secondaryName != null) {
+							if (memberMetric.getDataType() == MetricDataType.Template) {
+								return getSecondaryKeyComponent(prefix + "_" + secondaryName, memberMetric);
+							} else {
+								return prefix + "_" + secondaryName;
+							}
+						} else {
+							throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+									"Template Metric has an invalid config " + metric);
+						}
+					} else {
+						throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+								"Template Metrics must only have a single member Metric " + metric);
+					}
+				} else if (TemplateMap.class.isAssignableFrom(metric.getValue().getClass())) {
+					TemplateMap templateMap = (TemplateMap) metric.getValue();
+					if (templateMap.getMetrics() != null && templateMap.getMetrics().size() == 1) {
+						Metric memberMetric = templateMap.getMetrics().get(0);
+						String secondaryName = memberMetric.hasName()
+								? memberMetric.getName()
+								: memberMetric.hasAlias() ? memberMetric.getAlias().toString() : null;
+						if (secondaryName != null) {
+							if (memberMetric.getDataType() == MetricDataType.Template) {
+								return getSecondaryKeyComponent(prefix + "_" + secondaryName, memberMetric);
+							} else {
+								return prefix + "_" + secondaryName;
+							}
+						} else {
+							throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+									"Template Metric has an invalid config " + metric);
+						}
+					} else {
+						throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+								"TemplateMap Metrics must only have a single member Metric " + metric);
+					}
+				} else {
+					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+							"Invalid Template MetricDataType " + metric);
+				}
+			} else {
+				throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+						"Template Metrics must only have one member Metric " + metric);
+			}
+		} else {
+			return prefix;
 		}
 	}
 

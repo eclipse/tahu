@@ -219,6 +219,7 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 						templateMap = (TemplateMap) (existingMetric.getValue());
 					} else {
 						templateMap = new TemplateMap((Template) (existingMetric.getValue()));
+						existingMetric.setValue(templateMap);
 					}
 					updateTemplateMetricValues(templateMap, newMetric, customProperties);
 				} else {
@@ -252,6 +253,7 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 							templateMap = (TemplateMap) (existingMetric.getValue());
 						} else {
 							templateMap = new TemplateMap((Template) (existingMetric.getValue()));
+							existingMetric.setValue(templateMap);
 						}
 						updateTemplateMetricValues(templateMap, newMemberMetric, customProperties);
 					} else {
