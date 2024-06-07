@@ -60,8 +60,12 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 		metricMap = new ConcurrentSkipListMap<>();
 		metricIdSet = ConcurrentHashMap.newKeySet();
 		for (Metric metric : metrics) {
-			metricMap.put(metric.getKey(), metric);
-			metricIdSet.add(metric.hasName() ? metric.getName() : metric.getAlias().toString());
+			try {
+				metricMap.put(metric.getKey(), metric);
+				metricIdSet.add(metric.hasName() ? metric.getName() : metric.getAlias().toString());
+			} catch (Exception e) {
+				logger.error("Failed to init Metric: {}", metric);
+			}
 		}
 	}
 
@@ -74,8 +78,19 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 	@Override
 	public void addMetric(Metric metric) {
 		synchronized (mapLock) {
-			metricMap.put(metric.getKey(), metric);
-			metricIdSet.add(metric.hasName() ? metric.getName() : metric.getAlias().toString());
+			try {
+				if (logger.isDebugEnabled()) {
+					if (metricMap.containsKey(metric.getKey())) {
+						logger.debug("Metric key: {}", metric.getKey());
+						logger.debug("\tOverwriting existing metric: {}", metricMap.get(metric.getKey()));
+						logger.debug("\twith new metric: {}", metric);
+					}
+				}
+				metricMap.put(metric.getKey(), metric);
+				metricIdSet.add(metric.hasName() ? metric.getName() : metric.getAlias().toString());
+			} catch (Exception e) {
+				logger.error("Failed to add Metric: {}", metric);
+			}
 		}
 	}
 
@@ -88,8 +103,12 @@ public class SparkplugBPayloadDataMap extends SparkplugBPayload {
 	@Override
 	public void addMetric(int index, Metric metric) {
 		synchronized (mapLock) {
-			metricMap.put(metric.getKey(), metric);
-			metricIdSet.add(metric.hasName() ? metric.getName() : metric.getAlias().toString());
+			try {
+				metricMap.put(metric.getKey(), metric);
+				metricIdSet.add(metric.hasName() ? metric.getName() : metric.getAlias().toString());
+			} catch (Exception e) {
+				logger.error("Failed to init Metric at {}: {}", index, metric);
+			}
 		}
 	}
 
