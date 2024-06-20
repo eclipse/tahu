@@ -19,11 +19,15 @@ import java.util.Date;
 
 import org.eclipse.tahu.SparkplugException;
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.eclipse.tahu.exception.TahuErrorCode;
+import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.message.model.DataSet.DataSetBuilder;
 import org.eclipse.tahu.message.model.MetaData.MetaDataBuilder;
 import org.eclipse.tahu.message.model.PropertySet.PropertySetBuilder;
 import org.eclipse.tahu.message.model.Template.TemplateBuilder;
 import org.eclipse.tahu.protobuf.SparkplugBProto.DataType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,6 +44,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 		value = { "isNull" })
 @JsonInclude(Include.NON_NULL)
 public class Metric {
+
+	private static Logger logger = LoggerFactory.getLogger(Metric.class.getName());
 
 	@JsonProperty("name")
 	private String name;
@@ -119,10 +125,74 @@ public class Metric {
 	 * @param metric the {@link Metric} to copy
 	 * @throws SparkplugInvalidTypeException if the {@link Metric} can not be copied due to an invalid {@link DataType}
 	 */
-	public Metric(Metric metric) throws SparkplugInvalidTypeException {
-		this(metric.getName(), metric.getAlias(), metric.getTimestamp(), metric.getDataType(), metric.getIsHistorical(),
-				metric.getIsTransient(), metric.getMetaData() != null ? new MetaData(metric.getMetaData()) : null,
-				metric.getProperties() != null ? new PropertySet(metric.getProperties()) : null, metric.getValue());
+	public Metric(Metric metric) throws Exception {
+		if (metric != null) {
+			this.name = metric.getName();
+			this.alias = metric.getAlias();
+			this.timestamp = metric.getTimestamp();
+			this.dataType = metric.getDataType();
+			this.isHistorical = metric.getIsHistorical();
+			this.isTransient = metric.getIsTransient();
+			this.metaData = metric.getMetaData() != null ? new MetaData(metric.getMetaData()) : null;
+			this.properties = metric.getProperties() != null ? new PropertySet(metric.getProperties()) : null;
+
+			if (metric.getValue() != null) {
+				if (metric.getDataType() == MetricDataType.DataSet) {
+					this.value = new DataSet((DataSet) metric.getValue());
+				} else if (metric.getDataType() == MetricDataType.Bytes) {
+					byte[] originalValue = (byte[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.File) {
+					this.value = new File((File) metric.getValue());
+				} else if (metric.getDataType() == MetricDataType.Int8Array) {
+					Byte[] originalValue = (Byte[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.Int16Array) {
+					Short[] originalValue = (Short[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.Int32Array) {
+					Integer[] originalValue = (Integer[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.Int64Array) {
+					Long[] originalValue = (Long[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.UInt8Array) {
+					Short[] originalValue = (Short[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.UInt16Array) {
+					Integer[] originalValue = (Integer[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.UInt32Array) {
+					Long[] originalValue = (Long[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.UInt64Array) {
+					BigInteger[] originalValue = (BigInteger[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.FloatArray) {
+					Float[] originalValue = (Float[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.DoubleArray) {
+					Double[] originalValue = (Double[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.BooleanArray) {
+					Boolean[] originalValue = (Boolean[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.StringArray) {
+					String[] originalValue = (String[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.DateTimeArray) {
+					Date[] originalValue = (Date[]) metric.getValue();
+					this.value = Arrays.copyOf(originalValue, originalValue.length);
+				} else if (metric.getDataType() == MetricDataType.Template) {
+					this.value = new Template((Template) metric.getValue());
+				} else {
+					this.value = metric.getValue();
+				}
+			}
+
+			// Check the value is valid per the datatype
+			this.dataType.checkType(value);
+		}
 	}
 
 	/**
@@ -150,6 +220,84 @@ public class Metric {
 	 */
 	public boolean hasName() {
 		return !(name == null);
+	}
+
+	@JsonIgnore
+	public String getKey() throws Exception {
+		String primaryKeyComponent = hasName() ? getName() : hasAlias() ? getAlias().toString() : null;
+
+		if (dataType == MetricDataType.Template) {
+			String key = getTimestamp().getTime() + "_" + getSecondaryKeyComponent(primaryKeyComponent, this);
+			logger.debug("Returning template key: {}", key);
+			return key;
+		} else {
+			// Fall through to standard metrics
+			if (primaryKeyComponent != null) {
+				String key = getTimestamp().getTime() + "_" + primaryKeyComponent;
+				logger.debug("Returning regular key: {}", key);
+				return key;
+			} else {
+				return null;
+			}
+		}
+	}
+
+	private String getSecondaryKeyComponent(String prefix, Metric metric) throws Exception {
+		if (dataType == MetricDataType.Template) {
+			if (metric.getValue() != null) {
+				if (Template.class.isAssignableFrom(metric.getValue().getClass())) {
+					Template template = (Template) metric.getValue();
+					if (template.getMetrics() != null && template.getMetrics().size() == 1) {
+						Metric memberMetric = template.getMetrics().get(0);
+						String secondaryName = memberMetric.hasName()
+								? memberMetric.getName()
+								: memberMetric.hasAlias() ? memberMetric.getAlias().toString() : null;
+						if (secondaryName != null) {
+							if (memberMetric.getDataType() == MetricDataType.Template) {
+								return getSecondaryKeyComponent(prefix + "_" + secondaryName, memberMetric);
+							} else {
+								return prefix + "_" + secondaryName;
+							}
+						} else {
+							throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+									"Template Metric has an invalid config " + metric);
+						}
+					} else {
+						throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+								"Template Metrics must only have a single member Metric " + metric);
+					}
+				} else if (TemplateMap.class.isAssignableFrom(metric.getValue().getClass())) {
+					TemplateMap templateMap = (TemplateMap) metric.getValue();
+					if (templateMap.getMetrics() != null && templateMap.getMetrics().size() == 1) {
+						Metric memberMetric = templateMap.getMetrics().get(0);
+						String secondaryName = memberMetric.hasName()
+								? memberMetric.getName()
+								: memberMetric.hasAlias() ? memberMetric.getAlias().toString() : null;
+						if (secondaryName != null) {
+							if (memberMetric.getDataType() == MetricDataType.Template) {
+								return getSecondaryKeyComponent(prefix + "_" + secondaryName, memberMetric);
+							} else {
+								return prefix + "_" + secondaryName;
+							}
+						} else {
+							throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+									"Template Metric has an invalid config " + metric);
+						}
+					} else {
+						throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+								"TemplateMap Metrics must only have a single member Metric " + metric);
+					}
+				} else {
+					throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+							"Invalid Template MetricDataType " + metric);
+				}
+			} else {
+				throw new TahuException(TahuErrorCode.INVALID_ARGUMENT,
+						"Template Metrics must only have one member Metric " + metric);
+			}
+		} else {
+			return prefix;
+		}
 	}
 
 	/**
@@ -524,19 +672,17 @@ public class Metric {
 			this.properties = metric.getMetaData() != null
 					? new PropertySetBuilder(metric.getProperties()).createPropertySet()
 					: null;
-			switch (dataType) {
-				case DataSet:
-					this.value = metric.getValue() != null
-							? new DataSetBuilder((DataSet) metric.getValue()).createDataSet()
-							: null;
-					break;
-				case Template:
-					this.value = metric.getValue() != null
-							? new TemplateBuilder((Template) metric.getValue()).createTemplate()
-							: null;
-					break;
-				default:
-					this.value = metric.getValue();
+
+			if (dataType.toIntValue() == MetricDataType.DataSet.toIntValue()) {
+				this.value = metric.getValue() != null
+						? new DataSetBuilder((DataSet) metric.getValue()).createDataSet()
+						: null;
+			} else if (dataType.toIntValue() == MetricDataType.Template.toIntValue()) {
+				this.value = metric.getValue() != null
+						? new TemplateBuilder((Template) metric.getValue()).createTemplate()
+						: null;
+			} else {
+				this.value = metric.getValue();
 			}
 		}
 

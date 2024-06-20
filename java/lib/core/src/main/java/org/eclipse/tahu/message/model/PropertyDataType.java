@@ -15,44 +15,90 @@ package org.eclipse.tahu.message.model;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * An enumeration of data types for values of a {@link PropertySet}
  */
-public enum PropertyDataType {
-
-	// Basic Types
-	Int8(1, Byte.class),
-	Int16(2, Short.class),
-	Int32(3, Integer.class),
-	Int64(4, Long.class),
-	UInt8(5, Short.class),
-	UInt16(6, Integer.class),
-	UInt32(7, Long.class),
-	UInt64(8, BigInteger.class),
-	Float(9, Float.class),
-	Double(10, Double.class),
-	Boolean(11, Boolean.class),
-	String(12, String.class),
-	DateTime(13, Date.class),
-	Text(14, String.class),
-
-	// Custom Types for PropertySets
-	PropertySet(20, PropertySet.class),
-	PropertySetList(21, List.class),
-
-	// Unknown
-	Unknown(0, Object.class);
+public class PropertyDataType {
 
 	private static final Logger logger = LoggerFactory.getLogger(PropertyDataType.class.getName());
 
-	private Class<?> clazz = null;
+	// Basic Types
+	public static final PropertyDataType Int8 = new PropertyDataType("Int8", 1, Byte.class);
+	public static final PropertyDataType Int16 = new PropertyDataType("Int16", 2, Short.class);
+	public static final PropertyDataType Int32 = new PropertyDataType("Int32", 3, Integer.class);
+	public static final PropertyDataType Int64 = new PropertyDataType("Int64", 4, Long.class);
+	public static final PropertyDataType UInt8 = new PropertyDataType("UInt8", 5, Short.class);
+	public static final PropertyDataType UInt16 = new PropertyDataType("UInt16", 6, Integer.class);
+	public static final PropertyDataType UInt32 = new PropertyDataType("UInt32", 7, Long.class);
+	public static final PropertyDataType UInt64 = new PropertyDataType("UInt64", 8, BigInteger.class);
+	public static final PropertyDataType Float = new PropertyDataType("Float", 9, Float.class);
+	public static final PropertyDataType Double = new PropertyDataType("Double", 10, Double.class);
+	public static final PropertyDataType Boolean = new PropertyDataType("Boolean", 11, Boolean.class);
+	public static final PropertyDataType String = new PropertyDataType("String", 12, String.class);
+	public static final PropertyDataType DateTime = new PropertyDataType("DateTime", 13, Date.class);
+	public static final PropertyDataType Text = new PropertyDataType("Text", 14, String.class);
+	public static final PropertyDataType PropertySet = new PropertyDataType("PropertySet", 20, PropertySet.class);
+	public static final PropertyDataType PropertySetList = new PropertyDataType("PropertySetList", 21, List.class);
+	public static final PropertyDataType Unknown = new PropertyDataType("Unknown", 0, Object.class);
+
+	protected static final Map<String, PropertyDataType> types = new HashMap<>();
+	static {
+		types.put("Int8", Int8);
+		types.put("Int16", Int16);
+		types.put("Int32", Int32);
+		types.put("Int64", Int64);
+		types.put("UInt8", UInt8);
+		types.put("UInt16", UInt16);
+		types.put("UInt32", UInt32);
+		types.put("UInt64", UInt64);
+		types.put("Float", Float);
+		types.put("Double", Double);
+		types.put("Boolean", Boolean);
+		types.put("String", String);
+		types.put("DateTime", DateTime);
+		types.put("Text", Text);
+		types.put("PropertySet", PropertySet);
+		types.put("PropertySetList", PropertySetList);
+		types.put("Unknown", Unknown);
+	}
+
+	@JsonInclude
+	@JsonValue
+	private final String type;
+
+	@JsonIgnore
 	private int intValue = 0;
+
+	@JsonIgnore
+	private Class<?> clazz = null;
+
+	public PropertyDataType() {
+		type = null;
+	}
+
+	public PropertyDataType(String type) {
+		this.type = type;
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
+	}
+
+	public PropertyDataType(PropertyDataType propertyDataType) {
+		this.type = propertyDataType.getType();
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
+	}
 
 	/**
 	 * Constructor
@@ -61,9 +107,14 @@ public enum PropertyDataType {
 	 *
 	 * @param clazz the {@link Class} type of this {@link PropertyDataType}
 	 */
-	private PropertyDataType(int intValue, Class<?> clazz) {
+	protected PropertyDataType(String type, int intValue, Class<?> clazz) {
+		this.type = type;
 		this.intValue = intValue;
 		this.clazz = clazz;
+	}
+
+	public static PropertyDataType valueOf(String type) {
+		return types.get(type);
 	}
 
 	/**
@@ -79,7 +130,7 @@ public enum PropertyDataType {
 			if (clazz == List.class && value instanceof List) {
 				// Allow List subclasses
 			} else {
-				logger.warn("Failed type check - " + clazz + " != " + value.getClass().toString());
+				logger.warn("Failed type check - expected " + clazz + " != actual " + value.getClass().toString());
 				throw new SparkplugInvalidTypeException(value.getClass());
 			}
 		}
@@ -139,6 +190,10 @@ public enum PropertyDataType {
 		}
 	}
 
+	public String getType() {
+		return type;
+	}
+
 	/**
 	 * Returns the class type for this DataType
 	 * 
@@ -146,5 +201,32 @@ public enum PropertyDataType {
 	 */
 	public Class<?> getClazz() {
 		return clazz;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + intValue;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PropertyDataType other = (PropertyDataType) obj;
+		if (intValue != other.intValue)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return type;
 	}
 }

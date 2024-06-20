@@ -15,39 +15,87 @@ package org.eclipse.tahu.message.model;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * An enumeration of data types for the value of a {@link Parameter} for a {@link Template}
  */
-public enum ParameterDataType {
-
-	// Basic Types
-	Int8(1, Byte.class),
-	Int16(2, Short.class),
-	Int32(3, Integer.class),
-	Int64(4, Long.class),
-	UInt8(5, Short.class),
-	UInt16(6, Integer.class),
-	UInt32(7, Long.class),
-	UInt64(8, BigInteger.class),
-	Float(9, Float.class),
-	Double(10, Double.class),
-	Boolean(11, Boolean.class),
-	String(12, String.class),
-	DateTime(13, Date.class),
-	Text(14, String.class),
-
-	// Unknown
-	Unknown(0, Object.class);
+public class ParameterDataType {
 
 	private static final Logger logger = LoggerFactory.getLogger(ParameterDataType.class.getName());
 
-	private Class<?> clazz = null;
+	// Basic Types
+	public static final ParameterDataType Int8 = new ParameterDataType("Int8", 1, Byte.class);
+	public static final ParameterDataType Int16 = new ParameterDataType("Int16", 2, Short.class);
+	public static final ParameterDataType Int32 = new ParameterDataType("Int32", 3, Integer.class);
+	public static final ParameterDataType Int64 = new ParameterDataType("Int64", 4, Long.class);
+	public static final ParameterDataType UInt8 = new ParameterDataType("UInt8", 5, Short.class);
+	public static final ParameterDataType UInt16 = new ParameterDataType("UInt16", 6, Integer.class);
+	public static final ParameterDataType UInt32 = new ParameterDataType("UInt32", 7, Long.class);
+	public static final ParameterDataType UInt64 = new ParameterDataType("UInt64", 8, BigInteger.class);
+	public static final ParameterDataType Float = new ParameterDataType("Float", 9, Float.class);
+	public static final ParameterDataType Double = new ParameterDataType("Double", 10, Double.class);
+	public static final ParameterDataType Boolean = new ParameterDataType("Boolean", 11, Boolean.class);
+	public static final ParameterDataType String = new ParameterDataType("String", 12, String.class);
+	public static final ParameterDataType DateTime = new ParameterDataType("DateTime", 13, Date.class);
+	public static final ParameterDataType Text = new ParameterDataType("Text", 14, String.class);
+
+	// Unknown
+	public static final ParameterDataType Unknown = new ParameterDataType("Unknown", 0, Object.class);
+
+	protected static final Map<String, ParameterDataType> types = new HashMap<>();
+	static {
+		types.put("Int8", Int8);
+		types.put("Int16", Int16);
+		types.put("Int32", Int32);
+		types.put("Int64", Int64);
+		types.put("UInt8", UInt8);
+		types.put("UInt16", UInt16);
+		types.put("UInt32", UInt32);
+		types.put("UInt64", UInt64);
+		types.put("Float", Float);
+		types.put("Double", Double);
+		types.put("Boolean", Boolean);
+		types.put("String", String);
+		types.put("DateTime", DateTime);
+		types.put("Text", Text);
+		types.put("Unknown", Unknown);
+	}
+
+	@JsonInclude
+	@JsonValue
+	private final String type;
+
+	@JsonIgnore
 	private int intValue = 0;
+
+	@JsonIgnore
+	private Class<?> clazz = null;
+
+	public ParameterDataType() {
+		type = null;
+	}
+
+	public ParameterDataType(String type) {
+		this.type = type;
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
+	}
+
+	public ParameterDataType(ParameterDataType parameterDataType) {
+		this.type = parameterDataType.getType();
+		this.intValue = types.get(type).toIntValue();
+		this.clazz = types.get(type).getClazz();
+	}
 
 	/**
 	 * Constructor
@@ -56,7 +104,8 @@ public enum ParameterDataType {
 	 *
 	 * @param clazz the {@link Class} type of this {@link ParameterDataType}
 	 */
-	private ParameterDataType(int intValue, Class<?> clazz) {
+	protected ParameterDataType(String type, int intValue, Class<?> clazz) {
+		this.type = type;
 		this.intValue = intValue;
 		this.clazz = clazz;
 	}
@@ -71,7 +120,7 @@ public enum ParameterDataType {
 	 */
 	public void checkType(Object value) throws SparkplugInvalidTypeException {
 		if (value != null && !clazz.isAssignableFrom(value.getClass())) {
-			logger.warn("Failed type check - " + clazz + " != " + value.getClass().toString());
+			logger.warn("Failed type check - expected " + clazz + " != actual" + value.getClass().toString());
 			throw new SparkplugInvalidTypeException(value.getClass());
 		}
 	}
@@ -126,6 +175,10 @@ public enum ParameterDataType {
 		}
 	}
 
+	public String getType() {
+		return type;
+	}
+
 	/**
 	 * Returns the class type for this DataType
 	 * 
@@ -133,5 +186,32 @@ public enum ParameterDataType {
 	 */
 	public Class<?> getClazz() {
 		return clazz;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + intValue;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ParameterDataType other = (ParameterDataType) obj;
+		if (intValue != other.intValue)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return type;
 	}
 }

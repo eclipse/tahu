@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.tahu.SparkplugException;
+import org.eclipse.tahu.exception.TahuErrorCode;
+import org.eclipse.tahu.exception.TahuException;
 import org.eclipse.tahu.json.DataSetDeserializer;
 import org.eclipse.tahu.message.model.Row.RowBuilder;
 import org.slf4j.Logger;
@@ -78,6 +80,35 @@ public class DataSet {
 		this.columnNames = columnNames;
 		this.types = types;
 		this.rows = rows;
+	}
+
+	/**
+	 * Copy Constructor
+	 *
+	 * @param dataSet the {@link DataSet} to copy
+	 */
+	public DataSet(DataSet dataSet) throws TahuException {
+		this.numOfColumns = dataSet.getNumOfColumns();
+		if (numOfColumns > 0) {
+			if (dataSet.getColumnNames() == null || dataSet.getTypes() == null
+					|| dataSet.getColumnNames().size() != dataSet.getTypes().size()) {
+				throw new TahuException(TahuErrorCode.INVALID_ARGUMENT, "Invalid DataSet to copy " + dataSet);
+			}
+			this.columnNames = new ArrayList<>();
+			for (String columnName : dataSet.getColumnNames()) {
+				this.columnNames.add(columnName);
+			}
+			this.types = new ArrayList<>();
+			for (DataSetDataType type : dataSet.getTypes()) {
+				this.types.add(type);
+			}
+			this.rows = new ArrayList<>();
+			if (dataSet.getRows() != null) {
+				for (Row row : dataSet.getRows()) {
+					this.rows.add(new Row(row));
+				}
+			}
+		}
 	}
 
 	/**
@@ -244,7 +275,18 @@ public class DataSet {
 		builder.append(", columnNames=");
 		builder.append(columnNames);
 		builder.append(", types=");
-		builder.append(types);
+		if (types != null) {
+			builder.append("[");
+			for (int i = 0; i < types.size(); i++) {
+				builder.append(types.get(i).getType());
+				if (i + 1 != types.size()) {
+					builder.append(", ");
+				}
+			}
+			builder.append("]");
+		} else {
+			builder.append("null");
+		}
 		builder.append(", rows=");
 		builder.append(rows);
 		builder.append("]");

@@ -210,40 +210,63 @@ public class SparkplugBPayloadMap extends SparkplugBPayload {
 
 		Metric existingMetric = metricMap.get(newMetricName);
 
-		// Update the 'qualified value' which is the value, quality, and timestamp
-		if (existingMetric != null) {
-			if (newMetric.getDataType() == MetricDataType.Template && newMetric.getValue() != null) {
-				updateTemplateMetricValues((TemplateMap) (getMetric(newMetricName).getValue()), newMetric,
-						customProperties);
-			} else {
-				existingMetric.setValue(newMetric.getValue());
-			}
+		try {
+			// Update the 'qualified value' which is the value, quality, and timestamp
+			if (existingMetric != null) {
+				if (newMetric.getDataType() == MetricDataType.Template && newMetric.getValue() != null) {
+					TemplateMap templateMap = null;
+					if (TemplateMap.class.isAssignableFrom(existingMetric.getValue().getClass())) {
+						templateMap = (TemplateMap) (existingMetric.getValue());
+					} else {
+						templateMap = new TemplateMap((Template) (existingMetric.getValue()));
+						existingMetric.setValue(templateMap);
+					}
+					updateTemplateMetricValues(templateMap, newMetric, customProperties);
+				} else {
+					existingMetric.setValue(newMetric.getValue());
+				}
 
-			handleProps(existingMetric, newMetric, customProperties);
-			logger.trace("Updated metric in the map: {}", existingMetric);
-		} else {
-			logger.trace("Adding new metric to cache when updating: {}", newMetric);
-			metricMap.put(newMetricName, newMetric);
+				handleProps(existingMetric, newMetric, customProperties);
+				logger.trace("Updated metric in the map: {}", existingMetric);
+			} else {
+				logger.trace("Adding new metric to cache when updating: {}", newMetric);
+				metricMap.put(newMetricName, newMetric);
+			}
+		} catch (Exception e) {
+			logger.error("Failed to update metric value for {}: {} with customProps={}", newMetricName, newMetric,
+					customProperties, e);
 		}
 	}
 
 	private void updateTemplateMetricValues(TemplateMap existingTemplateMap, Metric newMetric,
 			List<Property<?>> customProperties) {
-		Template newTemplate = (Template) newMetric.getValue();
-		List<Metric> newMemberMetrics = newTemplate.getMetrics();
-		if (newMemberMetrics != null && !newMemberMetrics.isEmpty()) {
-			for (Metric newMemberMetric : newMemberMetrics) {
-				Metric existingMetric = existingTemplateMap.getMetricMap().get(newMemberMetric.getName());
-				if (newMemberMetric.getDataType() == MetricDataType.Template && newMemberMetric.getValue() != null) {
-					updateTemplateMetricValues((TemplateMap) existingMetric.getValue(), newMemberMetric,
-							customProperties);
-				} else {
-					existingTemplateMap.getMetricMap().get(newMemberMetric.getName())
-							.setValue(newMemberMetric.getValue());
-				}
+		try {
+			Template newTemplate = (Template) newMetric.getValue();
+			List<Metric> newMemberMetrics = newTemplate.getMetrics();
+			if (newMemberMetrics != null && !newMemberMetrics.isEmpty()) {
+				for (Metric newMemberMetric : newMemberMetrics) {
+					Metric existingMetric = existingTemplateMap.getMetricMap().get(newMemberMetric.getName());
+					if (newMemberMetric.getDataType() == MetricDataType.Template
+							&& newMemberMetric.getValue() != null) {
+						TemplateMap templateMap = null;
+						if (TemplateMap.class.isAssignableFrom(existingMetric.getValue().getClass())) {
+							templateMap = (TemplateMap) (existingMetric.getValue());
+						} else {
+							templateMap = new TemplateMap((Template) (existingMetric.getValue()));
+							existingMetric.setValue(templateMap);
+						}
+						updateTemplateMetricValues(templateMap, newMemberMetric, customProperties);
+					} else {
+						existingTemplateMap.getMetricMap().get(newMemberMetric.getName())
+								.setValue(newMemberMetric.getValue());
+					}
 
-				handleProps(existingMetric, newMemberMetric, customProperties);
+					handleProps(existingMetric, newMemberMetric, customProperties);
+				}
 			}
+		} catch (Exception e) {
+			logger.error("Failed to update Template metric value for {}: {} with customProps={}", newMetric.getName(),
+					newMetric, customProperties, e);
 		}
 	}
 

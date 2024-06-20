@@ -13,9 +13,14 @@
 
 package org.eclipse.tahu.message.model;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.tahu.SparkplugInvalidTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -23,6 +28,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * The value of a property in a {@link PropertySet}.
  */
 public class PropertyValue {
+
+	private static Logger logger = LoggerFactory.getLogger(PropertyValue.class.getName());
 
 	private PropertyDataType type;
 	private Object value;
@@ -46,6 +53,33 @@ public class PropertyValue {
 		this.value = value;
 		isNull = (value == null) ? true : false;
 		type.checkType(value);
+	}
+
+	public PropertyValue(PropertyValue propertyValue) throws Exception {
+		this.type = new PropertyDataType(propertyValue.getType());
+		this.isNull = propertyValue.isNull();
+
+		if (!isNull) {
+			if (type == PropertyDataType.DateTime) {
+				this.value = new Date(((Date) value).getTime());
+			} else if (type == PropertyDataType.PropertySet) {
+				this.value = new PropertySet((PropertySet) value);
+			} else if (type == PropertyDataType.PropertySetList) {
+				@SuppressWarnings("unchecked")
+				List<PropertySet> originalPropertySetList = (List<PropertySet>) value;
+				List<PropertySet> newPropertySetList = new ArrayList<PropertySet>();
+				for (PropertySet propertySet : originalPropertySetList) {
+					newPropertySetList.add(new PropertySet(propertySet));
+				}
+				this.value = newPropertySetList;
+			} else {
+				this.value = propertyValue.getValue();
+			}
+		}
+		type.checkType(value);
+
+		logger.trace("Copying - Orig: {}", propertyValue);
+		logger.trace("copying - New : {}", this);
 	}
 
 	/**

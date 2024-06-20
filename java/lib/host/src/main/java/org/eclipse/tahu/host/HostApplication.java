@@ -50,7 +50,7 @@ public class HostApplication implements CommandPublisher {
 
 	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, List<String> sparkplugSubscriptons,
 			List<MqttServerDefinition> mqttServerDefinitions, RandomStartupDelay randomStartupDelay,
-			PayloadDecoder<SparkplugBPayload> payloadDecoder) {
+			PayloadDecoder<SparkplugBPayload> payloadDecoder, boolean onlineState) {
 		logger.info("Creating the Host Application");
 
 		if (hostId != null) {
@@ -67,7 +67,7 @@ public class HostApplication implements CommandPublisher {
 		SequenceReorderManager sequenceReorderManager = SequenceReorderManager.getInstance();
 		sequenceReorderManager.init(eventHandler, this, payloadDecoder, 5000L);
 		this.tahuHostCallback =
-				new TahuHostCallback(eventHandler, this, sequenceReorderManager, payloadDecoder, hostId);
+				new TahuHostCallback(eventHandler, this, sequenceReorderManager, payloadDecoder, hostId, onlineState);
 	}
 
 	public HostApplication(HostApplicationEventHandler eventHandler, String hostId, List<String> sparkplugSubscriptons,
@@ -90,7 +90,7 @@ public class HostApplication implements CommandPublisher {
 		this.randomStartupDelay = randomStartupDelay;
 	}
 
-	public void start() {
+	public void start(boolean onlineState) {
 		if (mqttServerDefinitions != null) {
 			for (MqttServerDefinition mqttServerDefinition : mqttServerDefinitions) {
 				logger.debug("Starting up the MQTT Client to {}", mqttServerDefinition.getMqttServerName());
@@ -99,8 +99,8 @@ public class HostApplication implements CommandPublisher {
 					tahuClient = new TahuClient(mqttServerDefinition.getMqttClientId(),
 							mqttServerDefinition.getMqttServerName(), mqttServerDefinition.getMqttServerUrl(),
 							mqttServerDefinition.getUsername(), mqttServerDefinition.getPassword(), true,
-							mqttServerDefinition.getKeepAliveTimeout(), tahuHostCallback, randomStartupDelay, true,
-							stateTopic, null, true, stateTopic, null, MqttOperatorDefs.QOS1, true);
+							mqttServerDefinition.getKeepAliveTimeout(), tahuHostCallback, randomStartupDelay,
+							onlineState, true, stateTopic, null, true, stateTopic, null, MqttOperatorDefs.QOS1, true);
 				}
 
 				// Add it to the Map
@@ -143,8 +143,6 @@ public class HostApplication implements CommandPublisher {
 					return;
 				}
 			}
-
-			// Pub
 		} catch (Exception e) {
 			logger.error("Failed to start client {} connecting to {}", tahuClient.getClientId(),
 					tahuClient.getMqttServerUrl(), e);
@@ -192,6 +190,19 @@ public class HostApplication implements CommandPublisher {
 			} else {
 				logger.trace("Cannot shutdown null client");
 			}
+		}
+	}
+
+	/**
+	 * Whether or not the host should be marked as online This should be set to false if the host is not ready to
+	 * receive Sparkplug messages
+	 *
+	 * @param onlineState the state to set
+	 */
+	public void setOnlineState(boolean onlineState) {
+		tahuHostCallback.setOnlineState(onlineState);
+		for (TahuClient tahuClient : tahuClients.values()) {
+			tahuClient.setOnlineState(onlineState);
 		}
 	}
 
