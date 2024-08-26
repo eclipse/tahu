@@ -30,7 +30,6 @@ import org.eclipse.tahu.host.manager.EdgeNodeManager;
 import org.eclipse.tahu.host.manager.SparkplugEdgeNode;
 import org.eclipse.tahu.host.model.HostApplicationMetricMap;
 import org.eclipse.tahu.message.PayloadDecoder;
-import org.eclipse.tahu.message.SparkplugBPayloadDecoder;
 import org.eclipse.tahu.message.model.EdgeNodeDescriptor;
 import org.eclipse.tahu.message.model.MessageType;
 import org.eclipse.tahu.message.model.SparkplugBPayload;
@@ -183,8 +182,7 @@ public class SequenceReorderManager {
 		}
 
 		// Parse the payload
-		PayloadDecoder<SparkplugBPayload> decoder = new SparkplugBPayloadDecoder();
-		SparkplugBPayload payload = decoder.buildFromByteArray(message.getPayload(), HostApplicationMetricMap
+		SparkplugBPayload payload = payloadDecoder.buildFromByteArray(message.getPayload(), HostApplicationMetricMap
 				.getInstance().getMetricDataTypeMap(topic.getEdgeNodeDescriptor(), topic.getSparkplugDescriptor()));
 		logger.trace("Incoming payload: {}", payload);
 
