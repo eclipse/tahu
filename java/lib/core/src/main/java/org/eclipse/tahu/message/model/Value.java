@@ -51,10 +51,14 @@ public class Value<V> {
 	public Value(Value<V> originalValue) {
 		this.type = originalValue.getType();
 		if (type == DataSetDataType.DateTime) {
-			Date date = new Date(((Date) originalValue.getValue()).getTime());
-			this.value = (V) date;
+			if (originalValue.getValue() != null) {
+				Date date = new Date(((Date) originalValue.getValue()).getTime());
+				this.value = (V) date;
+			} else {
+				this.value = null;
+			}
 		} else {
-			this.value = (V) originalValue.getValue();
+			this.value = originalValue.getValue() != null ? (V) originalValue.getValue() : null;
 		}
 	}
 

@@ -854,18 +854,20 @@ public class TahuClient implements MqttCallbackExtended {
 		@Override
 		public void run() {
 			// ensure we are disconnected and null
-			if (client != null) {
-				try {
-					if (client.isConnected()) {
-						client.disconnectForcibly(0, 1, false);
-						shutdownConnectionMonitorThread();
+			synchronized (clientLock) {
+				if (client != null) {
+					try {
+						if (client.isConnected()) {
+							client.disconnectForcibly(0, 1, false);
+							shutdownConnectionMonitorThread();
+						}
+						// client.setCallback(null);
+						client.close();
+					} catch (MqttException e) {
+						logger.error("{}: Error while disconnecting client", getClientId(), e);
+					} finally {
+						client = null;
 					}
-					// client.setCallback(null);
-					client.close();
-				} catch (MqttException e) {
-					logger.error("{}: Error while disconnecting client", getClientId(), e);
-				} finally {
-					client = null;
 				}
 			}
 
